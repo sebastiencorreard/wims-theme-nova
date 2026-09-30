@@ -1,0 +1,140 @@
+<!--begin of $wims_theme/htmlheader.phtml-->
+<meta charset="$wims_main_font">
+<title>$module_title2</title>
+<meta name="GENERATOR" content="wims [$module_language]">
+<meta name="description" content="$module_description $wims_site_description">
+<meta name="keywords" content="$wims_site_keywords, $module_domain, $module_keywords">
+<meta name="Author" content="$module_author">
+
+<!-- makes browsers render all elements more consistently -->
+<link rel="stylesheet" href="scripts/js/external/normalize.min.css">
+
+<!-- Foundation Accordion -->
+<link rel="stylesheet" href="html/themes/_css/foundation_accordion.css">
+
+$wims_CSS
+
+<!-- METAS iOS : -->
+<link rel="apple-touch-icon" href="gifs/wims_logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<!-- prevents links from apps from opening in mobile safari>
+<script src="scripts/js/external/safari_mobile_links/compressed.js"></script-->
+
+<!-- Librairies JQUERY -->
+  <script src="scripts/js/external/jquery/jquery.min.js"></script>
+  <link rel="stylesheet" href="scripts/js/external/jquery-ui/themes/smoothness/jquery-ui.min.css">
+  <script src="scripts/js/external/jquery-ui/jquery-ui.min.js"></script>
+
+<!-- JQUERY pour autocompletion -->
+  <script src="scripts/js/interface/autocomplete.js"></script>
+
+<!-- Style pour impression -->
+  <link rel="stylesheet" media="print" href="html/themes/_css/print.css">
+
+<style>
+
+:root {
+  --wims_bgcolor: $wims_bgcolor;
+  --wims_link_color: $wims_link_color;
+  --wims_vlink_color: $wims_vlink_color;
+  --wims_hlink_color: $wims_hlink_color;
+  --wims_ref_menucolor: $wims_ref_menucolor;
+  --wims_ref_bgcolor: $wims_ref_bgcolor;
+  --wims_ref_button_color: $wims_ref_button_color;
+  --wims_ref_button_bgcolor: $wims_ref_button_bgcolor;
+  --wims_ref_button_help_bgcolor: $wims_ref_button_help_bgcolor;
+  --wims_ref_button_help_color: $wims_ref_button_help_color;
+}
+
+#wimspagebox{
+  background-color: $wims_bgcolor;
+  $wims_bodyimg
+}
+body.main_body {$wims_special_font}
+
+a, .ui-widget-content a{color:$wims_link_color;}
+/*a:visited {color:$wims_vlink_color;}*/
+a:hover, a:focus {color:$wims_hlink_color;}
+
+.wimsmanager a {color:$wims_ref_menucolor;}
+
+#wimsmenubox,#wimsmenumodubox { color: $wims_ref_menucolor; background-color: $wims_ref_bgcolor;}
+#wimstopbox { background-color: $wims_ref_bgcolor;}
+
+.property_fields{border-color: $wims_ref_bgcolor;}
+.property_fields legend{background-color: $wims_ref_bgcolor;}
+.property_fields legend,.property_fields legend>a{color:$wims_ref_menucolor;}
+
+.container h4{ background-color:$wims_ref_bgcolor; color:$wims_ref_button_color;}
+#menu_pendant,#menu_html { background-color:$wims_ref_bgcolor; color:$wims_ref_button_color;}
+#menu_avant,#menu_apres {  background-color:$wims_ref_button_bgcolor; color:$wims_ref_button_color;}
+.infobulle{ background-color: $wims_ref_button_bgcolor; color: $wims_ref_button_color;}
+
+#wimstopbox { color: $wims_ref_menucolor;}
+
+/* Foundation dropdown custom css */
+.dropdown.menu > li.is-dropdown-submenu-parent > a::after { border-top-color: var(--wims_ref_menucolor);}
+.dropdown.menu > li.is-dropdown-submenu-parent:hover > a::after { border-top-color: var(--wims_ref_menucolor);}
+.dropdown.menu > li.is-dropdown-submenu-parent.is-active > a::after{ border-top-color: var(--wims_ref_bgcolor);}
+#wimstopbox>.dropdown.menu > li.is-active>a{
+  background-color: var(--wims_ref_menucolor);color:var(--wims_ref_bgcolor)}
+.menu a:hover,#wimsbodybox .menu a:hover{
+  background-color: var(--wims_ref_bgcolor);color:var(--wims_ref_menucolor)}
+
+
+#wimstopbox>.menu>.menuitem>a:hover,
+#wimsmenubox>.menu a:hover,
+#wimsmenumodubox a:hover,
+#wimsmenumodubox .menu a:hover{
+  color: $wims_ref_bgcolor;
+  background-color:$wims_ref_menucolor;
+}
+
+/* Breadcrumb */
+.breadcrumbs>li>a{color:$wims_ref_bgcolor}
+
+
+.wims_emph {color:$wims_ref_bgcolor;}
+
+#wimstopbox .menuitem:not(.is-submenu-item)>a,
+#wimsmenumodubox a,
+#wimsmenubox .menuitem>a
+ { color: $wims_ref_menucolor;}
+
+/* Tables */
+.wimstable th {background-color: $wims_ref_bgcolor; color:$wims_ref_menucolor;}
+.wimstable th a {color: $wims_ref_menucolor;}
+.wimstable caption, .wims_title_seq,
+.wims_widget_box .title_box{background-color: $wims_ref_bgcolor;color: $wims_ref_menucolor;}
+.wimstable>caption a {color: $wims_ref_menucolor;}
+.wimstable>caption .wims_button{background-color: $wims_ref_button_bgcolor;color: $wims_ref_button_color;}
+.wimstable th .wims_button{background-color: $wims_ref_button_bgcolor;color: $wims_ref_button_color;}
+
+input[type="submit"],input[type="button"],.main_body .wims_button{
+    background-color:$wims_ref_button_bgcolor;
+    color:$wims_ref_button_color;
+}
+.main_body .wims_button_help{
+    background-color:$wims_ref_button_help_bgcolor;
+    color:$wims_ref_button_help_color;
+}
+
+.legend {background-color: $wims_ref_bgcolor;color:$wims_ref_menucolor;}
+
+.wims_color1 {
+   background-color: $wims_ref_bgcolor;
+   color:$wims_ref_menucolor;
+}
+.wims_color2 {
+  background-color:$wims_ref_button_bgcolor;
+  color:$wims_ref_button_color;
+}
+.wims_color3 {
+  background-color:$wims_ref_button_help_bgcolor;
+  color:$wims_ref_button_help_color;
+}
+
+$class_actcolor_css
+</style>
+<!--end $wims_theme/htmlheader.phtml-->

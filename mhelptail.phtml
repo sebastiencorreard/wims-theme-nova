@@ -1,0 +1,18 @@
+!set wims_theme_mhelptail=yes
+  <!-- begin of mhelptail.phtml -->
+    </div> <!--wimsbody-->
+    </div> <!--wimspagebox-->
+!if $slib_geogebra_exists=yes
+  !read themes/_widgets/tailgeogebra.phtml
+!endif
+!!  <div id="wimsmenubox">
+!!   <div class="wimsmenu">
+!!    <div class="menuitem">
+!!    !read oneitem.phtml back2,3,window.close();
+!!    </div><!--menuitem-->
+!!   </div><!--wimsmenu-->
+!!  </div><!--wimsmenubox-->
+ </div><!--wimsbodybox-->
+</div><!--wimsmhelp-->
+
+<!-- end of mhelptail.phtml -->

@@ -1,0 +1,8 @@
+!!can be used to add items on the menu.
+!!The variable is wims_local_menu_items
+!! remove this file extension ".template" to use it.
+!!example :
+!!  !if $wims_class!= and $wims_user=supervisor and $module=adm/class/usermanage
+!!   !set wims_local_menu_items=!append line itemsep,0,\
+!!    Annuaire,1,module=adm/local/usersearch to $wims_local_menu_items
+!!  !endif

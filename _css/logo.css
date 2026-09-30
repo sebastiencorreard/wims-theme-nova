@@ -1,0 +1,26 @@
+/* WIMS Logo */
+.wimslogo {
+  float:right;
+  padding:10px 15px;
+}
+
+/* Institution Logo */
+#wimstopbox .institution_logo{
+  margin:-.5rem .5rem 0 2rem;
+}
+#wimstopbox .institution_logo img{
+  max-height:2.5em;
+}
+#wimstailbox .institution_logo{margin-top:1em;}
+#wimstailbox .institution_logo img{
+  max-height:3em;
+}
+
+/* Class Logo */
+
+#classlogo {
+  padding:10px 22px;
+}
+#classlogo img{
+  max-height: 100px;
+}

@@ -1,0 +1,180 @@
+!! called also for a teacher of a portal or classgroup
+
+<!-- begin of $wims_theme/user.phtml -->
+!! Class participant page theme.
+!nocache
+!if $module!=home
+  !exit
+!endif
+!!initialisation
+!set home_theme=yes
+
+!set percents=!getscorepercent
+!set class_homepage=!getdef class_homepage in wimshome/log/classes/$wims_class/.def
+!set etest=!record 0 of wimshome/log/classes/$wims_class/.parmreg/$wims_user.exam
+!set n_=!wordcnt $etest
+
+!if / isin $class_homepage and _tool notin $wims_session
+  !set deffile=wimshome/log/classes/$wims_class/doc/$class_homepage.def
+  !set t_=!getdef titb in $deffile
+  !if $t_=$empty or $n_>=4
+    !goto normal
+  !endif
+  !read ./userhome.phtml
+  !goto end
+!endif
+
+:normal
+!read classlogo.phtml
+!if $class_logo!=$empty
+  <div id="classlogo" class="float_$class_logoside">
+    <img src="$class_logo" alt="class logo">
+  </div>
+!endif
+!read themes/_widgets/classtitle.phtml
+
+!read adm/class/initclass $wims_superclass, auth
+
+!!FIXME
+!!!if $auth_method isitemof $auth_method_list
+!!   !set wims_user_ext=!defof user_external_auth in wimshome/log/classes/$wims_superclass/.users/$wims_user
+!!!endif
+!!default wims_user_ext=$wims_user
+
+!! (MC) the following seems to be needed for groupement to go back to
+!! the superclass (is it sufficient to change the name of the variable
+!! in the links below?)
+!default wims_user_ext=$ext_login
+
+!!<div class="wims_classes_direct">
+!!!if $wims_superclass=$empty or $wims_superclass=$wims_class
+!!!else
+!!  <span class="wims_classes_direct_portal">
+!!   !href module=adm/class/classes&type=authparticipant&class=$wims_superclass&auth_user=$wims_user_ext $wims_institutionname
+!!  </span>
+!!  !if / isin $class_parent and $class_type=1
+!!   !set pname=!defof class_description in wimshome/log/classes/$class_parent/.def
+!! / $
+!!<span class="wims_classes_direct_class">
+!!  !href module=adm/class/classes&type=authparticipant&class=$class_parent&auth_user=$wims_user_ext $pname
+!! </span>
+!! !endif
+!!!endif
+!!</div> <!--wims_classes_direct-->
+
+!if _tool isin $wims_session
+  !read ./tools.phtml
+  !goto end
+!endif
+
+!if $n_>=4
+  !read themes/_widgets/examsession.phtml $etest
+  !if $shortout!=$empty
+    !goto end
+  !endif
+!endif
+<p class="wims_greetings">$U_greet</p>
+
+!if & isin $newmsgcnt or $newmsgcnt>0
+  <p class="wims_msg info">
+  !href module=adm/forum/mboard $U_newmsg
+  </p>
+!endif
+
+!if $wims_supconnectshowed=yes and $wims_supervisorconnected!=$empty
+  <p class="wims_connected">$U_supconnected</p>
+!endif
+
+!read themes/_widgets/motd.phtml
+
+!if $class_type>=2
+  !read ./subclasses.phtml
+  !set is_interclass=yes
+!endif
+
+!set seq_cnt=!record 0 of wimshome/log/classes/$wims_class/seq/.sequences
+!set seq_cnt=!line 1 of $seq_cnt
+!set seq_open=!defof sequence_open in wimshome/log/classes/$wims_class/seq/.def
+
+!if $seq_open=yes
+  !if $seq_cnt>0
+    !read themes/_widgets/sequence.phtml
+  !endif
+  !goto endbar
+!endif
+
+!read themes/_widgets/user_vardoc.phtml
+!read themes/_widgets/user_vardocp.phtml
+!read themes/_widgets/user_varsheet.phtml
+!read themes/_widgets/user_varexam.phtml
+!read themes/_widgets/user_varvote.phtml
+!read themes/_widgets/user_vartool.phtml
+!read themes/_widgets/user_varglossary.phtml
+!read themes/_widgets/user_varfreework.phtml
+
+<div id="widget_user_list">
+
+!ifval $gcnt+$tcnt+$dcnt+$dpcnt+$n+$m+$v+$fwcnt>1
+  !if $jquery_defined=yes
+    !read adm/tabscript user_list
+  !endif
+  <ul id="wims_user_summary">
+  !if $[$dcnt+$dpcnt]>0
+    <li><a class="wims_doc_item" href="#wims_user_doc">$wims_name_Docs</a></li>
+  !endif
+  !if $n>0
+    <li><a class="wims_sheet_item" href="#wims_user_sheet">$wims_name_Sheets</a></li>
+  !endif
+  !if $m>0
+    <li><a class="wims_exam_item" href="#wims_user_exam">$wims_name_Examens</a></li>
+  !endif
+  !if $v>0
+    <li><a class="wims_vote_item" href="#wims_user_vote">$wims_name_Votes</a></li>
+  !endif
+  !if $gcnt+$tcnt>0
+    <li><a class="wims_tool_item" href="#wims_user_tool">$wims_name_tools</a></li>
+  !endif
+  !if $fwcnt>0
+    <li><a class="wims_freework_item" href="#wims_user_freework">$wims_name_Freeworks</a></li>
+  !endif
+  </ul>
+!endif
+!read themes/_widgets/userdoc.phtml
+!read themes/_widgets/usersheet.phtml
+!read themes/_widgets/userexam.phtml
+!read themes/_widgets/uservote.phtml
+!read themes/_widgets/user_varmanual.phtml
+!read themes/_widgets/usertool.phtml
+!read themes/_widgets/userfreework.phtml
+
+</div>
+
+!ifval $gcnt+$tcnt+$dcnt+$dpcnt+$n+$m+$v+$fwcnt=0
+  !if $is_interclass!=yes
+    <div class="wims_msg info">$U_nosheet</div>
+  !endif
+!endif
+
+:endbar
+</div><!--wimsbody-->
+</div><!--wimspagebox-->
+
+!!must have read user*.phtml,  with *=sheet, exam must be read before
+!distribute items div,div into div0,div1
+
+!read themes/_procs/usermenumodubox.proc
+
+!set wims_homeref_n0=!linecnt $wims_rm_0
+!!read themes/_widgets/usermenumodubox_accordion.phtml
+!read themes/_widgets/menumodubox.phtml
+
+!read themes/_widgets/topback.phtml
+ <br class="clearall">
+</div><!--end of wimsbodybox-->
+:end
+!read themes/_widgets/session_warn.phtml
+!read themes/_widgets/footer_foundation.phtml
+
+</body>
+</html>
+<!-- end of $wims_theme/user.phtml -->

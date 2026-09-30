@@ -1,0 +1,315 @@
+<!-- begin of standard/supervisor.phtml -->
+!! supervisor page definition.
+!nocache
+!if $module!=home
+  !exit
+!endif
+!set home_theme=yes
+
+!set table_spacer=no
+!readproc tabletheme
+
+!read classlogo.phtml
+!if $class_logo!=
+  <div id="classlogo" class="float_$class_logoside">
+    <img src="$class_logo" alt="class logo">
+  </div>
+!endif
+!! classtype=0 or 1
+!let test=!fileexists wimshome/log/manager_msg.phtml.$lang
+!if $test=yes
+  <div id="wims_class_manager_msg" class="wims_class_manager_msg">
+    !read ./wimshome/log/manager_msg.phtml.$lang
+  </div>
+!endif
+!read themes/_widgets/classtitle.phtml
+
+!if _tool isin $wims_session
+  !read ./tools.phtml
+   </div><!--wimsbody-->
+  </div><!--wimspagebox-->
+  !goto end
+!endif
+!!definition for menumodubox
+!distribute items div,div into div0,div1
+!if $class_type isin 3
+  <p class="wims_greetings">
+    $SU_greet.
+  </p>
+  !read ./subclasses.phtml
+  !read ./Subclasses1.phtml
+  !if $class_typename=level
+      </div><!--wimsbody-->
+    </div><!--wimspagebox-->
+    !read themes/_procs/menumodubox3.proc
+    !read themes/_widgets/menumodubox.phtml
+    !goto end
+  !else
+    !goto nocheck
+  !endif
+!endif class_type = 3
+
+!if $class_type notin 13
+  <span class="wims_greetings">
+    $SU_greet
+    $SU_exp1
+    !set d_=!char 7,8 of $class_expiration
+    !set m_=!char 5,6 of $class_expiration
+    !set y_=!char 1 to 4 of $class_expiration
+    !read adm/date.phtml date,$y_,$m_,$d_
+    !href module=adm/class/config $c_date_out
+    $SU_exp2.
+  </span>
+!else
+  <span class="wims_greetings">
+    $SU_greet.
+  </span>
+!endif
+
+!set wims_ref_class=wims_button_help
+!if $class_type=2
+  !set wims_helper=chapter=3&open=3_group#group
+!else
+  !if $class_type=4
+    !set wims_helper=chapter=3&open=3_institution#institution
+  !else
+    !set wims_helper=chapter=3&open=3_sheet#sheet
+  !endif
+!endif
+!href target=wims_help module=help/main&$wims_helper $wims_name_whelp
+
+!! ------- list of program of the class
+!if $class_type=1 and $class_typename=course
+ !read adm/class/graphclsprog $wims_class
+!endif
+!! -------
+!if $wims_numpartconnected>0
+  <p class="wims_connected">$SU_numpartconnected.</p>
+!else
+  <div class="wims_msg info">$SU_nopartconnected.</div>
+!endif
+
+!if $quota_free<2
+  !if $quota_free<=0
+    <div class="wims_msg alert">$wims_name_exceeded</div>
+    <p class="wims_center">
+      !set wims_ref_class=wims_button
+      !href cmd=close&module=home&lang=$lang $wims_name_visitor
+    </p>
+    </div><!--wimsbody-->
+    </div><!--wimspagebox-->
+    !goto end
+  !else
+    <div class="wims_msg warning">
+      <b>$wims_name_warning</b>! $wims_name_reaching_limit
+    </div>
+  !endif
+!endif
+:nocheck
+
+!if & isin $newmsgcnt or $newmsgcnt>0
+  <div class="wims_msg info">
+    !href module=adm/forum/mboard $U_newmsg
+  </div>
+!endif
+!if $class_type=4
+  !if $wims_user=supervisor
+    !read ./subclasses.phtml
+    !read ./Subclasses1.phtml
+  !endif
+   </div><!--/wimsbody-->
+  </div><!--/wimspagebox-->
+
+  !read themes/_procs/menumodubox3.proc
+  !read themes/_widgets/menumodubox.phtml
+  !goto end
+!endif class_type=4
+
+!set test=!replace / by , in $wims_class
+!if $(test[-1])=0
+  !set test_up=!replace internal /0- by in $wims_class-
+  !set wims_ref_class=wims_button
+  !href module=adm/class/classes&type=authsupervisor&class=$test_up $SU_Bprogram
+!endif
+
+!if $class_type notin 24
+  <div id="wims_supervisor_search">
+    !read ./form.phtml
+    <br class="clearall">
+    !read ./result.phtml
+  </div>
+!endif
+!set docpubliccnt=!recordcnt wimshome/log/classes/$wims_class/doc/.docindex
+!set toolcnt=!recordcnt wimshome/log/classes/$wims_class/tool/.toolindex
+!set glossarycnt=!recordcnt wimshome/log/classes/$wims_class/tool/.glossaryindex
+
+!if $sheetcnt+$examcnt+$doccnt+$docpubliccnt+$votecnt+$subclasscnt+$toolcnt+$glossarycnt+$freeworkcnt<=0
+  <div class="wims_msg info">$SU_nosheet</div>
+!else
+  !if $class_type notin 24
+    !set seq_open=!defof sequence_open in wimshome/log/classes/$wims_class/seq/.def
+    !if $seq_open=yes
+      $CR_sequence
+    !endif
+    <div class="wimscenter">
+      !set wims_ref_class=wims_button
+      !href module=adm/class/sequence $wims_name_reorder
+    </div>
+  !endif
+  <div id="widget_supervisor_list">
+    !if $jquery_defined=yes
+      !read adm/tabscript supervisor_list
+    !endif
+    <ul id="wims_supervisor_summary">
+      !if $subclasscnt>0
+        <li><a href="#wims_supervisor_subclass">$wims_name_classlist</a></li>
+      !endif
+      !if $[$docpubliccnt+$doccnt]>0
+        <li><a class="wims_doc_item" href="#wims_supervisor_doc">$wims_name_Docs</a></li>
+      !endif
+      !if $sheetcnt>0
+        <li><a class="wims_sheet_item" href="#wims_supervisor_sheet">$wims_name_Sheets</a></li>
+      !endif
+      !if $examcnt>0
+        <li><a class="wims_exam_item" href="#wims_supervisor_exam">$wims_name_Examens</a></li>
+      !endif
+      !if $votecnt>0
+        <li><a class="wims_vote_item" href="#wims_supervisor_vote">$wims_name_Votes</a></li>
+      !endif
+      !if $toolcnt+$glossarycnt>0
+        <li><a class="wims_tool_item" href="#wims_supervisor_tool">$wims_name_tools</a></li>
+      !endif
+      !if $freeworkcnt>0
+        <li><a class="wims_freework_item" href="#wims_supervisor_freework">$wims_name_Freeworks</a></li>
+      !endif
+
+
+    </ul>
+    !if $subclasscnt>0
+      <div id="wims_supervisor_subclass">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+        $table_hdtr<th scope="col">$wims_name_number</th><th scope="col">$wims_name_title</th><th scope="col">$wims_name_nameteacher</th></tr>
+        !read themes/_widgets/supervisorsubclass.phtml
+        $table_end
+      </div>
+    !endif
+    !set table_htdr_1=$table_hdtr<th scope="col">$wims_name_number</th><th scope="col">$wims_name_title</th>
+    !set table_htdr_2=<th scope="col">$wims_name_Status</th><th scope="col">$wims_name_action</th></tr>
+    !if $seq_open=yes
+      !set table_htdr_seq=<th scope="col">$wims_name_sequence</th>
+    !else
+      !reset table_htdr_seq
+    !endif
+
+    !set table_class=sortable
+    !if $[$doccnt+$docpubliccnt]>0
+      !set table_id=TABLE_supervisor_doc
+      !set table_htdr_=<thead>$table_htdr_1$table_htdr_seq$table_htdr_2</thead>
+      <div id="wims_supervisor_doc">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          !!<caption>$wims_name_Docs</caption>
+          $table_htdr_
+          !read themes/_widgets/supervisordoc.phtml
+          !read themes/_widgets/supervisordocp.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+
+    !set table_exocnt=<th>$wims_name_cnt_exo</th>
+    !if $sheetcnt>0
+      !set table_id=TABLE_supervisor_sheet
+      !set table_htdr_=<thead>$table_htdr_1$table_exocnt$table_htdr_seq$table_htdr_2</thead>
+      <div id="wims_supervisor_sheet">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          !!<caption>$wims_name_Sheets</caption>
+          $table_htdr_
+          !read themes/_widgets/supervisorsheet.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+    !if $examcnt>0
+      !set table_id=TABLE_supervisor_exam
+      !set table_htdr_=<thead>$table_htdr_1$table_exocnt$table_htdr_seq$table_htdr_2</thead>
+      <div id="wims_supervisor_exam">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          $table_htdr_
+          !!<caption>$wims_name_Examens</caption>
+          !read themes/_widgets/supervisorexam.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+    !if $votecnt>0
+      !set table_id=TABLE_supervisor_vote
+      !set table_htdr_=<thead>$table_htdr_1$table_htdr_seq$table_htdr_2</thead>
+      <div id="wims_supervisor_vote">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          !!<caption>$wims_name_Votes</caption>
+          $table_htdr_
+          !read themes/_widgets/supervisorvote.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+    !if $toolcnt+$glossarycnt>0
+      !set table_id=TABLE_supervisor_tool
+      !set table_htdr_=<thead>$table_htdr_1$table_htdr_seq$table_htdr_2</thead>
+      <div id="wims_supervisor_tool">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          !!<caption>$wims_name_Tools</caption>
+          $table_htdr_
+          !read themes/_widgets/supervisortool.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+    !if $freeworkcnt>0
+      !set table_id=TABLE_supervisor_freework
+      !set table_htdr_=<thead>$table_htdr_1$table_htdr_2</thead>
+      <div id="wims_supervisor_freework">
+        !distribute item 1,no into wims_incremental,table_spacer
+        $table_header
+          $table_htdr_
+          !!<caption>$wims_name_Freeworks</caption>
+          !read themes/_widgets/supervisorfreework.phtml
+        $table_end
+        !read tablesort.phtml
+      </div>
+    !endif
+  </div>
+!endif
+
+</div><!--/wimsbody-->
+</div><!--/wimspagebox-->
+!if $class_type isin 24
+  !read themes/_procs/menumodubox2.proc
+!else
+  !read themes/_procs/menumodubox0.proc
+!endif
+!read themes/_widgets/menumodubox_accordion.phtml
+
+:end
+
+!reset div0 div1
+
+!!distribute items div, span into div0,div1
+!!read themes/_procs/supervisormenubox.proc
+!!read themes/_widgets/menubox.phtml
+!!reset div0,div1
+
+</div><!--wimsbodybox-->
+
+!!read themes/_widgets/visitorcredits.phtml
+!read themes/_widgets/session_warn.phtml
+!read themes/_widgets/footer_foundation.phtml
+</body>
+</html>
+<!-- end of $wims_theme/supervisor.phtml -->

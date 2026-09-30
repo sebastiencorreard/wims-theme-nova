@@ -1,0 +1,53 @@
+/* WIMS MENU MODU BOX */
+
+#wimsmenumodubox:not(.accordion) .menu_title{
+  margin: 0 5px;
+  font-size: 1.2em;
+}
+
+#wimsfrontpage #wimsmenumodubox {
+  /*position: absolute;*/
+  padding-top: .8rem;
+}
+
+.modubox_content .menuitem{
+  width:100%;
+}
+/*#wimsmenumodubox .menuitem a{
+  padding-top: 5px;
+}*/
+
+/* Small & medium screens */
+@media only screen and (max-width: 64em) {
+  #wimsmenumodubox .menuitem{
+    display: inline-block;
+  }
+}
+
+/* Medium screens */
+@media only screen and (min-width: 40.063em) and (max-width: 64em) {}
+
+/* Large screens */
+@media only screen and (min-width: 64.063em) {
+
+  #wimsmenumodubox {
+    margin-top: 0;
+    margin-right: 0;
+    /*margin-left: 10px;*/
+    padding:0;
+    position: fixed;
+    /*_position:absolute;*/
+    top:3.5em;
+    max-height: calc(100vh - 3.5em);
+    width:165px;
+    /*left: auto;*/
+    overflow-y: auto;
+    text-align:left;
+    z-index:100;
+  }
+
+  /*#wimsmenumodubox .wimsmenu .menuitem {
+    display:block;
+  }*/
+
+} /* min-width 1025px, large screens */

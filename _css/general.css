@@ -1,0 +1,77 @@
+/* General */
+body {
+  margin:0;
+  font-family: arial, verdana, helvetica, sans-serif;
+}
+
+/*li {margin-bottom: 8px;}*/
+
+a:hover {text-decoration:none;}
+a:hover img{opacity:.75;}
+
+.table-scroll {
+  overflow-x: auto; }
+
+.wimsbody {
+  padding : 5px 20px;
+}
+
+/** Affichage tres contrasté pour des fins de debogage : **/
+.debug{
+  background-color: black;
+  padding:0.5em;
+  color:darkorange;
+  font-family: monospace;
+}
+.debug ul{
+  font-size: 105%;
+}
+
+.wims_seq, .wims_sheet {
+  background-image: linear-gradient(to top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 100%);
+}
+
+.wims_warning{
+  color:brown;
+  font-weight:bold;
+}
+/* warning de type "bloc" */
+div.wims_warning{
+  padding:.5em 20px
+}
+
+
+#docnavigation{
+  /*margin-left: 11em;*/
+  background-color: aliceblue;
+}
+/*#docnavigation .menuitem>a{color:#000;}*/
+
+span.tooltip {color:#A52A2A;}
+
+/* Small screens */
+@media only screen and (max-width: 40em) {
+  .wimsbody {
+    padding : 2px 5px;
+  }
+} /* max-width 640px, mobile-only styles, use when QAing mobile issues */
+
+/* Medium screens */
+@media only screen and (min-width: 40.063em) and (max-width: 64em) {
+  /*.wimsbody {
+    padding : 0 10px;
+  }*/
+} /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+
+/* Large screens */
+@media only screen and (min-width: 64.063em) {
+
+  body {
+    margin: 5px;
+    padding: 0 10px 10px 10px;
+  }
+  .wimsbody, .breadcrumbs li:first-child {
+    margin-left : 170px;
+  }
+
+} /* min-width 1025px, large screens */

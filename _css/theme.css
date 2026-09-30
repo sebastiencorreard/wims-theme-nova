@@ -1,0 +1,197 @@
+/* WIMS BOXES */
+.main_body{
+  max-width:1440px;
+  margin:auto;
+}
+#wimsbodybox {
+  padding: 0;
+  margin: 0;
+}
+#wimspagebox {
+   padding: 0;
+   /*margin: .5em;*/
+   /*min-height:46em;*/
+}
+#wimstopbox {
+  left:auto;
+  right:auto;
+  /*overflow: hidden;*/
+  text-align:right;
+  background-image: linear-gradient(to top, rgba(0,0,0,0) 70%,rgba(0,0,0,.2) 90%);
+  box-shadow: 1px -1px 0 rgba(0, 0, 0, .5);
+  padding: 1em 1em 0 0;
+}
+#wimsmenubox{
+  /*padding: .5em .5em 1em .5em;*/
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, .5);
+}
+
+#wimstailbox {
+  margin-top: 5px;
+  bottom: 0;
+  left: 0;
+}
+
+/* Permalink Styles */
+#export_media{
+    text-align: left;
+}
+#export_media a{
+    min-height: initial;
+    line-height: normal;
+    padding:0;
+}
+
+/*#wimsfrontpage{
+  min-width:650px;
+}*/
+
+/* Permet d'afficher 2 barres de menus sur la même ligne (cf documents) */
+#wimstopbox>.wimsmenu{
+  display:inline-block;
+  /*margin-top:1em;*/
+}
+#wimstopbox>.wimsmenu:not(.dropdown)>.menuitem{
+  margin-left:1em;
+}
+
+#wimstopbox .wimsmenu .topmenuitem a {
+  text-decoration: none;
+}
+/*#wimstopbox .wimsmenu .topmenuitem a:hover,
+#wimsmenumodubox .wimsmenu .menuitem a:hover {
+  text-decoration:underline;
+}*/
+.topmenuitem a {
+  display: inline-block;
+  padding: 5px 5px;
+  text-decoration: none;
+}
+/*.menuitem a {
+  display: inline-block;
+  text-decoration: none;
+}*/
+/*.menuitem:not(.is-submenu-item)>a:hover {text-decoration:underline;}*/
+
+#wimsmenumodubox .wimsmenu {
+  padding-top: 1px;
+  padding-bottom: 4px;
+}
+div.wimsmenu {
+  font-size: 90%;
+}
+#wimstopbox .menuitem {
+  display: inline-block;
+  /*padding: 1px 10px 1px 10px;*/
+  /*min-height:2.5em;*/
+}
+/*div.wimsmenu .menuitem {
+  display: inline-block;
+  _display: inline;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  min-height:2.5em;
+}*/
+div.menublock .menuitem {
+  display: block;
+  _display: inline;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+div.menublock {
+  display: inline-block;
+  _display: block;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+div.tailitem {
+  font-size: small;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  left:0px;
+}
+/* END OF MODUBOX */
+#wimsmhelp .wimsbody {
+  padding-left : 10%;
+  padding-right : 10%;
+  margin-left : 0;
+}
+.wimstail {
+  text-align: center;
+  font-size:80%;
+}
+div.tailsepdoc {display: inline-block;}
+#wimsbodybox #wimsmenutab .wimsmenu .menuitem {
+  display: inline-block;
+  padding: 1px 10px;
+  text-decoration: none;
+  border: thin black solid;
+ /* border-radius : 20px 20px 0 0;*/
+}
+#wimsbodybox #wimsmenutab .wimsmenu .itemsep {
+  display: inline-block;
+  padding: 0px 30px;
+  text-decoration: none;
+}
+/* WIMS BOXES in special context*/
+#wimsexam .wimsbody {
+  padding-left: 10%;
+  padding-right: 10%;
+  margin-left: 0;
+}
+
+#wimslightpopup #wimsbodybox #wimspagebox .wimsbody {
+  padding-left : 20px;
+  padding-right : 20px;
+  margin-left : 0;
+}
+#wimslightpopup #wimstailbox .tailitem {
+  padding-right:20px;
+  text-align:right;
+  color:#555555;
+  font-weight:bold;
+  font-size:90%;
+}
+/* end of WIMS BOXES in special context*/
+
+  /***************************/
+.main_body .menuitem>.wimsmanager{
+   color:white;
+  background-color:black;
+  padding:.5em; /*max-width:100px;*/
+}
+/* Small screens */
+@media only screen and (max-width: 40em) {
+} /* max-width 640px, mobile-only styles, use when QAing mobile issues */
+/* Medium screens */
+@media only screen and (min-width: 40.063em) and (max-width: 64em) {
+} /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
+/* Small & medium screens */
+@media only screen and (max-width: 64em) {
+  #wimsmenubox {
+    border-top:1px solid #FFF;
+  }
+}
+/* Large screens */
+@media only screen and (min-width: 64.063em) {
+  #wimstopbox {
+    /*margin-left: 10px;
+    margin-right: 10px;*/
+   /* border-radius : 20px 20px 0 0;*/
+  }
+  #wimsmenubox {
+    margin-top: 1px;
+    /*margin-left: 10px;
+    margin-right: 10px;*/
+    background-color:white;
+    /*border-radius : 0 0 20px 20px;*/
+    text-align: center;
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 70%,rgba(0,0,0,.2) 90%);
+    position: relative;
+  }
+  #wimsmenubox>.wimsmenu{
+    display: inline-block;
+  }
+} /* min-width 1025px, large screens */

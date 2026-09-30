@@ -1,0 +1,47 @@
+<!-- begin of standard/docheader.phtml -->
+
+!! document menu
+!nocache
+!set wims_theme_docheader=yes
+!set jquery_defined=yes
+
+!if $wims_class=$empty or adm/doc notin $module
+  !set oneitem=oneitem.phtml
+!else
+  !set oneitem=./adm/oneitem.phtml
+!endif
+
+!if $job iswordof read print
+  <div id="wimsdoc"
+  !!if $wims_user=supervisor or $wims_developer!=$empty
+    class="editor_mode"
+  !!endif
+>
+!endif
+
+!if $wims_lightpopup!=yes
+  <div id="wimstopbox">
+    !distribute items span into div1
+    !if $doc!=$helpd
+      <div class="wimsmenu menu float_left">
+        !read themes/_widgets/headhome.phtml
+      </div>
+    !endif
+    !read themes/_widgets/docheadermenu.phtml
+  </div>
+!endif
+
+!if $wims_lightpopup=yes
+  <div id="wimslightpopup">
+!else
+  !read themes/_widgets/ariane.phtml
+!endif
+
+<div id="wimsbodybox">
+  <div id="wimspagebox">
+
+!read themes/_widgets/docnavigation.phtml
+!read themes/_widgets/docsidemenu.phtml
+!read themes/_widgets/alertchat.phtml
+
+<!-- end of docheader.phtml -->

@@ -1,0 +1,53 @@
+<!-- begin of $wims_theme/tail.phtml -->
+!! Tail menu theme.
+!nocache
+!set wims_theme_tail=yes
+   <br class="clearall">
+!read themes/_widgets/nextinsheet.phtml
+  </div><!--end of wimsbody-->
+ <br class="clearall spacer">
+</div><!--end of wimspagebox-->
+!read themes/_widgets/topback.phtml
+
+!if $slib_geogebra_exists=yes
+  !read themes/_widgets/tailgeogebra.phtml
+!endif
+!if $wims_homeref_special!=$empty
+!!    </div><!--end of wimspagebox -->
+  !!!if _exam isin $wims_session
+    !!<div class="wimsmenu">
+    !!<div class="tailitem">$wims_homeref_special</div>
+    !!</div>
+  !!!endif
+  </div><!--wimsbodybox-->
+
+  </div><!--id wimsexam-->
+!else
+
+  !distribute items div,div into div0,div1
+  !read themes/_widgets/menumodubox.phtml
+  !reset div0 div1
+
+  !distribute items div,span into div0,div1
+  !!read themes/_widgets/menubox.phtml
+  !reset div0 div1
+
+  </div><!--wimsbodybox-->
+
+  !!read themes/_widgets/about.phtml
+
+  <!--ENDSUPVIEW-->
+  <!--FIN BAS DE PAGE-->
+
+  !if help isin $wims_session
+    </div><!--wims_mhelp-->
+  !endif
+  !if $wims_lightpopup=yes
+    </div> <!--wimslightpopup-->
+  !endif
+!endif
+
+!read themes/_widgets/session_warn.phtml
+!read themes/_widgets/footer_foundation.phtml
+
+<!-- end of $wims_theme/tail.phtml -->

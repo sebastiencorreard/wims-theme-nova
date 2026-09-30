@@ -1,0 +1,74 @@
+!if $module = home
+  !set w_path = ./adm/
+!else
+  !set w_path = $empty
+!endif
+<!-- begin of standard/header.phtml -->
+!! Header menu bar definition.
+!nocache
+!set wims_theme_header=yes
+!set jquery_defined=yes
+
+!default wims_theme_icon=$class_theme_icon
+!default wims_theme_icon=wimsedu
+
+!if _help isin $wims_session
+  <div id="wimsmhelp">
+!endif
+
+!if _exam isin $wims_session
+  <div id="wimsexam">
+!endif
+
+!if $wims_lightpopup=yes
+  <div id="wimslightpopup">
+   <link rel="stylesheet" href="html/themes/_css/light.css">
+!endif
+
+!set wims_theme_version=1
+!set current_module=!replace / by , in $module
+!set module_path= !item 1 of $current_module
+
+!if $[$wims_home_items_cnt + $wims_hm_cnt + $wims_link_close_cnt]!=0 or ($module_path notitemof home,adm,classes and _exam notin $session and $module_init_parm == $empty)
+  !if $module!=home or $wims_user!=
+    <div id="wimstopbox">
+    !distribute items span into div1
+    <div class="wimsmenu menu float_left">
+    !read themes/_widgets/headhome.phtml
+    </div>
+    !distribute items li into div1
+    !read themes/_widgets/user_links.phtml
+    <div class="wimsmenu menu">
+    !!read themes/_widgets/headmenu.phtml
+    !!read themes/_widgets/about.phtml
+    !if _help notin $wims_session
+      !distribute items div,span into div0,div1
+!!## technical parameters FIXME, should be elsewere
+      !if $class_cas_auth=$empty
+        !set m_init_parm=!replace internal & by $ $ in $module_init_parm
+        !set class_cas_auth=!getopt class_auth in $m_init_parm
+      !endif
+      !if $class_cas_auth!=$empty and $wims_class=$empty
+        <$div1 class="menuitem">
+        !read adm/class/logout_cas
+        </$div1>
+      !endif
+    !endif
+    </div><!--wimsmenu-->
+    <br class="clearall">
+    !reset div1
+    </div><!--wimstopbox-->
+    !if _light notin $wims_session
+      !read themes/_widgets/ariane.phtml
+    !endif
+  !endif
+!endif
+
+!if $module!=home or $wims_user!=
+  <div id="wimsbodybox">
+    <div id="wimspagebox">
+!endif
+
+!read themes/_widgets/alertchat.phtml
+
+<!-- end of standard/header.phtml -->

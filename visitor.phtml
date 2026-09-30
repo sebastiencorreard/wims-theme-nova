@@ -1,0 +1,79 @@
+<!-- begin of standard/visitor.phtml -->
+!! WIMS main entrance page theme.
+!nocache
+!if $module!=home
+  !exit
+!endif
+
+!set home_theme=yes
+!set table_colors=$wims_ref_bgcolor,$wims_ref_bgcolor
+</div>
+<div id="wimsfrontpage">
+
+  <div id="wimstopbox">
+!set positionlogo=left
+!read themes/_widgets/institution_logo.phtml
+
+!! maybe not useful if already called in header.phtml ?
+!read themes/_widgets/user_links.phtml
+
+    <div class="wimsmenu menu">
+!!read themes/_widgets/virtualzone.phtml
+!read themes/_widgets/authlogout.phtml
+!read themes/_widgets/manager.phtml
+    </div><!--wimsmenu-->
+  </div>
+!read themes/_widgets/ariane.phtml
+
+  <div id="wimsbodybox">
+    <div id="wimspagebox">
+      <div class="wimsbody">
+!read themes/_widgets/site_title.phtml
+!read ./form.phtml
+<br class="clearall">
+!if $s_category=V
+  !read ./front.phtml
+!else
+  !read ./result.phtml
+!endif
+      </div><!--end wimsbody-->
+    </div><!--wimspagebox-->
+!distribute items div,div into div0,div1
+
+!! Sets all links to be displayed in menumodubox
+!read themes/_procs/homemenu.proc
+
+!set wims_rm_0 = $wims_rm_0\
+ itemsep,0,$V_cls
+!read themes/_procs/virtualzone.proc
+
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$CR_Docs
+!read themes/_procs/documentation.proc
+
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$CR_1
+!read themes/_procs/devtools.proc
+
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$wims_name_Site
+!read themes/_procs/browsesite.proc
+!read themes/_procs/site.proc
+
+!set wims_homeref_n0 = !linecnt $wims_rm_0
+
+!read themes/_widgets/menumodubox_accordion.phtml
+
+!distribute items div,span into div0,div1
+!read themes/_widgets/visitormenubox.phtml
+!reset div0 div1
+  </div><!--wimsbodybox-->
+
+!read themes/_widgets/tailbox.phtml
+</div><!--wimsfrontpage-->
+
+!read themes/_widgets/footer_foundation.phtml
+!robottrap
+</body>
+</html>
+<!-- end of standard/visitor.phtml -->

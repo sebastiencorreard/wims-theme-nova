@@ -1,0 +1,68 @@
+/* WIMS Standard Theme CSS */
+
+# mkcss.pl will concat all files below
+
+# Avant d'activer foundation_global, il faut s'assurer que les select box sont OK
+# (voir dans le texte à trous avec menus)
+# _css/foundation_global.css ---
+/* _css/foundation_typo.css */
+/* _css/foundation_table.css */
+--- _css/foundation_flex.css ---
+--- _css/foundation_menu.css ---
+--- _css/foundation_dropdown_menu.css ---
+--- _css/foundation_responsive-embed.css ---
+
+--- standard/_css/theme.css ---
+--- standard/_css/general.css ---
+
+--- _css/maths.css ---
+--- _css/typo.css ---
+--- _css/tooltip.css ---
+--- _css/table_sort.css ---
+--- _css/boxes.css ---
+--- _css/utilities.css ---
+--- _css/utilities2.css ---
+--- _css/breadcrumbs.css ---
+--- _css/menumodubox-accordion.css ---
+--- standard/_css/menumodubox_fixed.css ---
+--- standard/_css/logo.css ---
+#---_css/score_colors.css ---
+--- _css/wimstable.css ---
+--- _css/code.css ---
+--- _css/help.css ---
+--- _css/classuser.css ---
+--- _css/classes.css ---
+--- _css/sequence.css ---
+--- _css/forum.css ---
+--- _css/sheet.css ---
+--- _css/exam.css ---
+--- _css/oef.css ---
+--- _css/button.css ---
+--- _css/home.css ---
+--- _css/wimstitle.css ---
+--- _css/createxo.css ---
+--- _css/exercise.css ---
+--- _css/docu.css ---
+--- _css/forms.css ---
+--- _css/input_groups.css ---
+--- _css/search_engine.css ---
+--- _css/lang_select.css ---
+--- _css/errors.css ---
+--- _css/bubble_talk.css ---
+--- _css/scorebar.css ---
+--- _css/foundation_visibility.css ---
+--- standard/_css/std_l2w.css ---
+--- _css/foundation_xygrid.css ---
+--- _css/foundation_card.css ---
+--- _css/foundation_reveal.css ---
+--- _css/glossary.css ---
+--- _css/bootstrap_vars.css ---
+--- _css/bootstrap_nav.css ---
+
+#--- _css/foundation_button.css ---
+## incompatible avec les autres menus
+#--- _css/foundation_menu.css ---
+
+# Choose only one of these :
+#--- _css/seriebar_squares.css ---
+--- _css/seriebar_arrows.css ---

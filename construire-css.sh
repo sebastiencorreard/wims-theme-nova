@@ -1,12 +1,14 @@
 #!/bin/sh
 # Construit css.css à partir de css.css.template, comme themes/mkcss.pl de WIMS, mais sans Java
-# (pas de yuicompressor : le fichier reste lisible) et depuis l'hôte :
+# (minification prudente en Python au lieu de yuicompressor) et depuis l'hôte :
 #   - « --- Nova/… --- » : feuille de ce dépôt ;
 #   - « --- _css/… --- » ou « --- standard/… --- » : feuille commune, lue dans le conteneur wims432 ;
 #   - « *-* nom » : couleur OEF, remplacée d'après Nova/oefcolors s'il existe, sinon themes/oefcolors.
 # Les lignes « # … » du modèle sont des commentaires et ne sont pas copiées.
-#   ./construire-css.sh
+#   ./construire-css.sh            minifié (à livrer)
+#   ./construire-css.sh --lisible  tel quel (pour le développement)
 set -e
+LISIBLE=; [ "${1:-}" = "--lisible" ] && LISIBLE=1
 cd "$(dirname "$0")"
 CONTENEUR=${CONTENEUR:-wims432}
 THEMES=/home/wims/public_html/themes
@@ -34,5 +36,22 @@ printf '%s\n' "$couleurs" | sed -n 's/^!set \([A-Za-z0-9_]*\)=\(#*[A-Za-z0-9]*\)
   sed -i "s/\*-\* *$nom\b/$valeur/g" "$tmp"
 done
 
+feuilles=$(grep -a -c '^/\*! depuis' "$tmp")
+if [ -z "$LISIBLE" ]; then
+  # Minification prudente : commentaires retirés (sauf « /*! … */ », provenance des feuilles),
+  # espaces réduits, aucun espace retiré autour de « : » (« a :hover » ≠ « a:hover ») ni de
+  # « + » et « - » (calc()). Octets lus en latin-1 : rien n'est réencodé.
+  python3 - "$tmp" <<'PY'
+import re, sys
+f = sys.argv[1]
+t = open(f, encoding='latin-1').read()
+t = re.sub(r'/\*(?!!).*?\*/', '', t, flags=re.S)
+t = re.sub(r'\s+', ' ', t)
+t = re.sub(r'\s*([{};,])\s*', r'\1', t)
+t = t.replace(';}', '}')
+t = re.sub(r'(/\*!.*?\*/)', r'\n\1\n', t)
+open(f, 'w', encoding='latin-1').write(t.strip() + '\n')
+PY
+fi
 cp "$tmp" css.css
-echo "css.css : $(wc -c < css.css) octets, $(grep -c '^/\*! depuis' css.css) feuilles"
+echo "css.css : $(wc -c < css.css) octets, $feuilles feuilles${LISIBLE:+ (lisible)}"

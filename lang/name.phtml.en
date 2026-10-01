@@ -5,3 +5,4 @@
 !set nova_chrono_1min=Last minute
 !set nova_chrono_fin=Time is up
 !set nova_chrono_fin_detail=Answers sent now will not be taken into account.
+!set nova_chrono_fin_a=Ends at

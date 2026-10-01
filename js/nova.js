@@ -95,6 +95,17 @@
     }
     new MutationObserver(mettreAJour).observe(temps, { childList: true, characterData: true, subtree: true });
     mettreAJour();
+
+    // Heure de fin, calculée par WIMS (html/examclock.proc) et rangée par tail.phtml dans un
+    // <template> : « 01/10/2026 - 10:48:12 » devient « Fin à 10:48 » dans le chronomètre.
+    var modele = document.getElementById('nova-fin-examen');
+    var heure = modele && /(\d{1,2}:\d{2}):\d{2}/.exec(modele.innerHTML);
+    if (heure) {
+      var fin = document.createElement('span');
+      fin.className = 'nova-chrono-fin';
+      fin.textContent = (boite.getAttribute('data-texte-fin-a') || '') + ' ' + heure[1];
+      boite.appendChild(fin);
+    }
   }
 
   function demarrer() { initialiser(); chronometre(); }

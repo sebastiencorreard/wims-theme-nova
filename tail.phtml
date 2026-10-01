@@ -13,6 +13,11 @@
   !read themes/_widgets/tailgeogebra.phtml
 !endif
 !if $wims_homeref_special!=$empty
+  !! Nova : l'heure de fin d'examen (html/examclock.proc) est rangee dans un <template>, invisible ;
+  !! js/nova.js en extrait l'heure et l'affiche dans le chronometre (" Fin a 10:48 ").
+  !if exam isin $wims_session
+    <template id="nova-fin-examen">$wims_homeref_special</template>
+  !endif
 !!    </div><!--end of wimspagebox -->
   !!!if _exam isin $wims_session
     !!<div class="wimsmenu">

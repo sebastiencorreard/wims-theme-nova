@@ -5,3 +5,4 @@
 !set nova_chrono_1min=Laatste minuut
 !set nova_chrono_fin=De tijd is om
 !set nova_chrono_fin_detail=Antwoorden die nu worden verstuurd, tellen niet meer mee.
+!set nova_chrono_fin_a=Einde om

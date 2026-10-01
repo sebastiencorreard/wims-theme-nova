@@ -5,3 +5,4 @@
 !set nova_chrono_1min=Dernière minute
 !set nova_chrono_fin=Temps écoulé
 !set nova_chrono_fin_detail=Les réponses envoyées maintenant ne seront pas prises en compte.
+!set nova_chrono_fin_a=Fin à

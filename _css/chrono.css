@@ -66,7 +66,7 @@
 @media (max-width: 639.98px) {
   body.nova-examen #wimstopbox { flex-wrap: wrap; padding-top: var(--nova-e2); padding-bottom: var(--nova-e2); }
   #wimstopbox .menuitem.chrono { flex: 1 0 100%; }
-  #wimstopbox .menuitem.chrono .nova-chrono { width: 100%; justify-content: flex-start; }
+  #wimstopbox .menuitem.chrono .nova-chrono { width: 100%; justify-content: flex-start; flex-wrap: wrap; row-gap: 2px; white-space: normal; padding-top: 6px; padding-bottom: 6px; }
   .nova-chrono-temps, .nova-chrono #chrono_exam { font-size: 1.875rem; }
 }
 
@@ -79,4 +79,17 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Heure de fin (html/examclock.proc, ajoutée par js/nova.js) : discrète, à droite du décompte. */
+.nova-chrono-fin {
+  padding-left: 10px;
+  margin-left: 2px;
+  border-left: 1px solid currentColor;
+  font-size: .8125rem;
+  font-weight: 700;
+  opacity: .85;
+}
+@media (max-width: 639.98px) {
+  .nova-chrono-fin { margin-left: auto; }
 }

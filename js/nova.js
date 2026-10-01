@@ -342,7 +342,54 @@
     if (!bouton.parentNode) window.addEventListener('load', function () { setTimeout(function () { placer(); if (!bouton.parentNode) menu.appendChild(bouton); }, 0); });
   }
 
-  function demarrer() { modeExamen(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); }
+  /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
+   * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
+  function centrerBarre() {
+    var barre = document.getElementById('wimstopbox');
+    var centre = barre && barre.querySelector('.menuitem.chrono, .nova-examencours');
+    if (!centre || !window.matchMedia) return;
+    var large = window.matchMedia('(min-width: 768px)');
+    var choc = function () {
+      var r = centre.getBoundingClientRect();
+      return Array.prototype.some.call(
+        barre.querySelectorAll('.menuitem, .nova-classe, .nova-menu-bouton, .nova-plus'),
+        function (e) {
+          if (e === centre || centre.contains(e) || e.contains(centre) ||
+              e.closest('.is-dropdown-submenu, .nova-plus-panneau') || !e.getClientRects().length) return false;
+          var q = e.getBoundingClientRect();
+          return q.right > r.left - 12 && q.left < r.right + 12;
+        });
+    };
+    var placer = function () {
+      centre.classList.remove('nova-centre');
+      barre.classList.remove('nova-serree');
+      if (!large.matches) return;
+      centre.classList.add('nova-centre');
+      if (!choc()) return;
+      barre.classList.add('nova-serree');        // « Retour », « Outils » : pictogrammes seuls
+      if (!choc()) return;
+      barre.classList.remove('nova-serree');
+      centre.classList.remove('nova-centre');
+    };
+    var verifier = function () {
+      placer();
+      // Barre sur deux lignes malgré tout : libellés de « Retour » et « Outils » retirés.
+      if (large.matches && barre.getBoundingClientRect().height > 72) barre.classList.add('nova-serree');
+    };
+    verifier();
+    var attente;
+    window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(verifier, 100); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(verifier);
+  }
+
+  // Infobulles pour les entrées qui peuvent passer en pictogramme seul (cadre.css).
+  function infobulles() {
+    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .menuitem:is(.back, .tools, .class_home) > a'), function (a) {
+      if (!a.title) a.title = a.textContent.trim();
+    });
+  }
+
+  function demarrer() { infobulles(); modeExamen(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

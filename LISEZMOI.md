@@ -22,6 +22,13 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
   et n'offre aucune préférence d'enseignant qu'un thème puisse écrire.
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
+- **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;
+  « back » = croix, ou retour vers la liste dans la fenêtre d'un examen) ; sur écran large, le
+  chronomètre ou « Examen en cours » au centre s'il ne chevauche rien (`centrerBarre`), « Retour » et
+  « Outils » en pictogrammes seuls quand la place manque ; parcours (examen « course ») : progression
+  en bande sous la barre au téléphone.
+- **Menu de pied de page** de l'enseignant et des administrateurs (commenté dans Standard 4.32) :
+  rétabli dans `supervisor.phtml`, sous la page, masqué sous 1024 px.
 - **Une seule couleur d'accent** : `ref_bgcolor` du site ou de la classe ; si elle est restée au
   gris par défaut de WIMS (`#676767`), la prune Nova (`#7A3B69`). Fond, image de fond et couleurs de
   menu de la classe sont ignorés : la lisibilité prime.

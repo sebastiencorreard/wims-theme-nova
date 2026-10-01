@@ -187,7 +187,8 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   #wimsbodybox:has(> #wimsmenumodubox) {
     display: grid;
     grid-template-columns: 264px minmax(0, 1fr);
-    grid-template-areas: "menu page";
+    grid-template-areas: "menu page" "menu pied";
+    grid-template-rows: 1fr auto;
     align-items: start;
   }
   #wimsbodybox:has(> #wimsmenumodubox) > #wimspagebox { grid-area: page; }
@@ -241,8 +242,8 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
     width: 22px;
     height: 22px;
     background: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5'/%3E%3Cpath d='M5 9.5V20h5v-6h4v6h5V9.5'/%3E%3C/svg%3E") center / contain no-repeat;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5'/%3E%3Cpath d='M5 9.5V20h5v-6h4v6h5V9.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    -webkit-mask: var(--nova-picto) center / contain no-repeat;
+            mask: var(--nova-picto) center / contain no-repeat;
   }
   #wimstopbox .nova-classe { flex: 1 1 auto; min-width: 0; max-width: none; padding: 0 var(--nova-e1); font-size: 1rem; }
   /* Compte : le nom, coupé court. */
@@ -411,12 +412,8 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   #wimstopbox .menuitem.back .text_item, #wimstopbox .menuitem.tools .text_item { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   #wimstopbox .menuitem.back > a::before, #wimstopbox .menuitem.tools > a::before {
     content: ""; position: absolute; inset: 0; margin: auto; width: 24px; height: 24px; background: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 6h8M13 12h8M13 18h8'/%3E%3Cpath d='M9 12H2M5 8.5 1.5 12 5 15.5'/%3E%3C/svg%3E") center / contain no-repeat;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 6h8M13 12h8M13 18h8'/%3E%3Cpath d='M9 12H2M5 8.5 1.5 12 5 15.5'/%3E%3C/svg%3E") center / contain no-repeat;
-  }
-  #wimstopbox .menuitem.tools > a::before {
-    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E");
-            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E");
+    -webkit-mask: var(--nova-picto) center / contain no-repeat;
+            mask: var(--nova-picto) center / contain no-repeat;
   }
   #wimstopbox .nova-terminer a { padding: 0 var(--nova-e3); }
 }
@@ -485,3 +482,124 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   cursor: pointer;
 }
 .nova-menu-bascule:hover { color: var(--nova-texte); border-style: solid; background: var(--nova-surface); }
+
+/* ---------- Pictogrammes des entrées de la barre ----------
+ * Une icône par entrée (--nova-picto, masque SVG) : seule au téléphone pour l'accueil, le retour et
+ * les outils (règles plus haut), devant le texte sur les écrans plus larges. « back » ferme la
+ * fenêtre : « Retour à la liste des exercices » dans la fenêtre d'un examen (la seule dont la barre
+ * porte un chronomètre), « Fermer la fenêtre » ailleurs. */
+#wimstopbox .menuitem:is(.class_home, .home) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5'/%3E%3Cpath d='M5 9.5V20h5v-6h4v6h5V9.5'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem.back { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E"); }
+#wimstopbox:has(.menuitem.chrono) .menuitem.back { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 6h8M13 12h8M13 18h8'/%3E%3Cpath d='M9 12H2M5 8.5 1.5 12 5 15.5'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem.tools { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem:is(.help, .whelp) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6'/%3E%3Cpath d='M12 17.5h.01'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem:is(.tchatclose) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem:is(.exit) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 4H5v16h4'/%3E%3Cpath d='M14 8l4 4-4 4M18 12H9'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem.nova-terminer { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4M5 4h11l-2 4 2 4H5'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem.is-dropdown-submenu-parent:has(> a.account) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); }
+@media (min-width: 640px) {
+  #wimstopbox .menuitem:is(.class_home, .home, .back, .tools, .help, .whelp, .tchatclose, .exit, .nova-terminer) > :is(a, .text_item)::before,
+  #wimstopbox .menuitem.is-dropdown-submenu-parent > a.account::before {
+    content: "";
+    display: inline-block;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: -4px;
+    background: currentColor;
+    -webkit-mask: var(--nova-picto) center / contain no-repeat;
+            mask: var(--nova-picto) center / contain no-repeat;
+  }
+  /* Dans le menu du compte (entrées déplacées), pas d'icône. */
+  #wimstopbox .is-dropdown-submenu .menuitem > :is(a, .text_item)::before { content: none; }
+}
+
+/* ---------- Chronomètre ou « Examen en cours » centré dans la barre (écrans larges) ----------
+ * js/nova.js (centrerBarre) pose .nova-centre seulement si rien ne chevauche ; sinon il reste
+ * à sa place. La barre de progression d'un parcours passe alors à gauche. */
+@media (min-width: 768px) {
+  #wimstopbox .nova-centre {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+  }
+  /* Pas la place de centrer avec les libellés : « Retour » et « Outils » en pictogrammes seuls. */
+  #wimstopbox.nova-serree .menuitem:is(.back, .tools) .text_item {
+    position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  #wimstopbox.nova-serree .menuitem:is(.back, .tools) > a { padding: 0 var(--nova-e2); }
+  #wimstopbox.nova-serree .menuitem:is(.back, .tools) > a::before { width: 24px; height: 24px; margin-right: 0; }
+  #wimstopbox:has(.nova-centre) .menuitem.progress {
+    position: absolute;
+    left: var(--nova-e4);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* ---------- Menu de pied de page de l'enseignant (supervisor.phtml), écrans larges ---------- */
+#wimsmenubox.footer {
+  grid-area: pied;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nova-e2) var(--nova-e5);
+  margin: 0;
+  padding: var(--nova-e4) var(--nova-e5);
+  border-top: 1px solid var(--nova-bord);
+  background: var(--nova-surface);
+  font-size: .9375rem;
+}
+#wimsmenubox .wimsmenu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--nova-e1);
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+#wimsmenubox .wimsmenu + .wimsmenu { padding-left: var(--nova-e5); border-left: 1px solid var(--nova-bord); }
+#wimsmenubox .menuitem { display: inline-flex; padding: 0; }
+#wimsmenubox .menuitem a { padding: var(--nova-e1) var(--nova-e2); border-radius: var(--nova-rayon); color: var(--nova-texte-2); text-decoration: none; }
+#wimsmenubox .menuitem a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+@media (max-width: 1023.98px) { #wimsmenubox.footer { display: none; } }
+
+/* Parcours (examen en mode « course ») : au-dessous de 768 px, la barre de progression quitte la
+ * barre du haut (elle s'y empilait sur 300 px) et devient une bande pleine largeur juste dessous,
+ * un segment par exercice, couleurs de WIMS gardées. */
+@media (max-width: 767.98px) {
+  #wimstopbox .menuitem.progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 1;
+    display: block;
+    padding: 3px var(--nova-e2);
+    background: var(--nova-accent);
+    font-size: 0;
+  }
+  #wimstopbox .menuitem.progress .wims_score_bar { display: flex; gap: 3px; width: 100%; }
+  #wimstopbox .menuitem.progress .wims_seed_item {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 6px;
+    margin: 0;
+    border: 0;
+    border-radius: 3px;
+  }
+}
+
+/* Entre 640 et 1024 px, « Retour » et « Outils » en pictogrammes seuls (avec infobulle), comme
+ * dans la barre serrée : leurs libellés faisaient passer la barre sur deux lignes. */
+@media (min-width: 640px) and (max-width: 1023.98px) {
+  #wimstopbox .menuitem:is(.back, .tools) .text_item {
+    position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  #wimstopbox .menuitem:is(.back, .tools) > a { padding: 0 var(--nova-e2); }
+  #wimstopbox .menuitem:is(.back, .tools) > a::before { width: 24px; height: 24px; margin-right: 0; }
+}

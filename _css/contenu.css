@@ -1,0 +1,90 @@
+/* Nova — contenu des modules : ce que WIMS met dans la page (.wimsbody), retouché sans toucher
+ * au HTML. Repères : mesure à 390 px de l'inventaire (inventaire.mjs, mesurerTelephone).
+ * Principe : rien ne doit pousser la page au-delà de l'écran ; ce qui ne peut pas rétrécir
+ * (exercice à largeur fixe, tableau de notes) défile dans sa propre zone. */
+
+/* ---------- Onglets jQuery UI (présentation en séquences, listes de l'enseignant) ---------- */
+.wimsbody .ui-tabs {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--nova-police);
+  color: var(--nova-texte);
+}
+.wimsbody .ui-tabs .ui-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nova-e2);
+  margin: 0 0 var(--nova-e4);
+  padding: 0 0 var(--nova-e3);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--nova-bord);
+  border-radius: 0;
+}
+.wimsbody .ui-tabs .ui-tabs-nav::before, .wimsbody .ui-tabs .ui-tabs-nav::after { content: none; }
+.wimsbody .ui-tabs .ui-tabs-nav li {
+  float: none;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  border: 1px solid var(--nova-bord);
+  border-radius: 999px;
+  background: var(--nova-surface);
+  white-space: normal;
+}
+.wimsbody .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+  float: none;
+  display: block;
+  padding: var(--nova-e2) var(--nova-e4);
+  color: var(--nova-texte);
+  font-size: .9375rem;
+}
+.wimsbody .ui-tabs .ui-tabs-nav li:hover { background: var(--nova-accent-doux); }
+.wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active {
+  background: var(--nova-accent);
+  border-color: var(--nova-accent);
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor { color: var(--nova-sur-accent); font-weight: 700; }
+.wimsbody .ui-tabs .ui-tabs-panel { padding: 0; background: transparent; border: 0; }
+
+/* Séquences : chapitres et leurs feuilles / examens en cartes (sequence.css de WIMS conservé). */
+.wims_seq, .wims_sheet {
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: var(--nova-ombre);
+}
+.wims_title_seq { border-radius: var(--nova-rayon-carte) var(--nova-rayon-carte) 0 0; border-bottom: 1px solid var(--nova-bord); }
+.wims_seq .wims_desc_item { color: var(--nova-texte-2); }
+.wims_sheet_item, .wims_exam_item { max-width: 100%; box-sizing: border-box; }
+
+/* ---------- Rien de plus large que la place disponible ---------- */
+.wimsbody input, .wimsbody select, .wimsbody textarea,
+.wimsbody .field.box, .wimsbody fieldset {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.wimsbody img, .wimsbody svg, .wimsbody canvas, .wimsbody video, .wimsbody iframe { max-width: 100%; }
+.wimsbody img, .wimsbody canvas, .wimsbody video { height: auto; }
+.wimsbody .tox-tinymce { max-width: 100%; }
+.wimsbody .tox .tox-toolbar__group { flex-wrap: wrap; }
+.wimsbody pre, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Téléphone et tablette ---------- */
+@media (max-width: 1023.98px) {
+  /* Filet de sécurité : un contenu à largeur fixe (glisser-déposer d'un exercice, tableau de
+   * notes) défile dans le corps de page au lieu d'élargir toute la page — la barre du haut, et
+   * le chronomètre d'examen, restent à l'écran. */
+  .wimsbody { overflow-x: auto; }
+  .wimsbody table.wimstable { display: block; max-width: 100%; overflow-x: auto; }
+}
+@media (max-width: 639.98px) {
+  /* Onglets : une seule rangée qui défile, plutôt que dix lignes de pastilles. */
+  .wimsbody .ui-tabs .ui-tabs-nav { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x proximity; }
+  .wimsbody .ui-tabs .ui-tabs-nav li { flex: 0 0 auto; scroll-snap-align: start; }
+  .wimsbody .ui-tabs .ui-tabs-nav .ui-tabs-anchor { white-space: nowrap; }
+  .wims_seq, .wims_sheet { margin: var(--nova-e2) 0; }
+}

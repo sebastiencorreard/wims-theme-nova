@@ -435,7 +435,8 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 /* Bouton « Examen en cours » (_widgets/examencours.phtml) : sur les pages de la classe pendant une
  * session d'examen ; mène à la page de l'examen. */
 #wimstopbox .nova-examencours { flex-shrink: 0; }
-#wimstopbox .nova-examencours a {
+#wimstopbox .nova-examencours a,
+#wimstopbox .menuitem.nova-examencours:not(.is-submenu-item) > a {
   gap: 6px;
   min-height: 40px;
   padding: 0 var(--nova-e3);
@@ -445,7 +446,7 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   font-weight: 700;
   white-space: nowrap;
 }
-#wimstopbox .nova-examencours a:hover { background: var(--nova-surface); color: var(--nova-attention-texte); }
+#wimstopbox .menuitem.nova-examencours > a:hover { background: var(--nova-surface); color: var(--nova-attention-texte); }
 #wimstopbox .nova-examencours .nova-court { display: none; }
 @media (max-width: 639.98px) {
   /* Au téléphone, le bouton prend la place du nom de la classe. */

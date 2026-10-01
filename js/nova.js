@@ -160,7 +160,7 @@
       Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li a[href]'), ajouter);
       Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
         if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
-            item.classList.contains('nova-terminer') || item === liCompte) return;
+            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item.classList.contains('nova-examencours') || item === liCompte) return;
         Array.prototype.forEach.call(item.querySelectorAll('a[href]'), ajouter);
         item.remove();
       });
@@ -206,7 +206,7 @@
     function garde(item) {
       return item.classList.contains('chrono') || item.classList.contains('class_home') ||
         item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') || item.classList.contains('tools') ||
-        item.classList.contains('nova-terminer') ||
+        item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') ||
         item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
     }
     function entreesSecondaires() {

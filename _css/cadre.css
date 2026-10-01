@@ -431,3 +431,28 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   margin-bottom: var(--nova-e1);
   white-space: normal;
 }
+
+/* Bouton « Examen en cours » (_widgets/examencours.phtml) : sur les pages de la classe pendant une
+ * session d'examen ; mène à la page de l'examen. */
+#wimstopbox .nova-examencours { flex-shrink: 0; }
+#wimstopbox .nova-examencours a {
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 var(--nova-e3);
+  border-radius: 999px;
+  background: var(--nova-attention-fond);
+  color: var(--nova-attention-texte);
+  font-weight: 700;
+  white-space: nowrap;
+}
+#wimstopbox .nova-examencours a:hover { background: var(--nova-surface); color: var(--nova-attention-texte); }
+#wimstopbox .nova-examencours .nova-court { display: none; }
+@media (max-width: 639.98px) {
+  /* Au téléphone, le bouton prend la place du nom de la classe. */
+  #wimstopbox:has(.nova-examencours) .nova-classe { display: none; }
+  #wimstopbox .nova-examencours a { padding: 0 var(--nova-e2); }
+}
+@media (max-width: 359.98px) {
+  #wimstopbox .nova-examencours .nova-long { display: none; }
+  #wimstopbox .nova-examencours .nova-court { display: inline; }
+}

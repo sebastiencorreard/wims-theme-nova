@@ -13,3 +13,5 @@
 !set nova_menu_aide=Aide et outils
 !set nova_profil=Profil
 !set nova_terminer=Terminer
+!set nova_examencours=Examen en cours
+!set nova_examen_court=Examen

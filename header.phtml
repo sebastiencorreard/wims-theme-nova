@@ -40,6 +40,7 @@
     !if $wims_classname!=$empty and _exam notin $wims_session
       <span class="nova-classe">$wims_classname</span>
     !endif
+    !read themes/Nova/_widgets/examencours.phtml
     </div>
     !distribute items li into div1
     !read themes/Nova/_widgets/user_links.phtml

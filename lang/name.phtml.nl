@@ -13,3 +13,5 @@
 !set nova_menu_aide=Hulp en hulpmiddelen
 !set nova_profil=Profiel
 !set nova_terminer=Beëindigen
+!set nova_examencours=Proefwerk bezig
+!set nova_examen_court=Proefwerk

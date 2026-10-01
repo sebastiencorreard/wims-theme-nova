@@ -1,0 +1,21 @@
+!! Nova : bouton « Examen en cours » dans la barre, sur les pages de la classe tant qu'une session
+!! d'examen est ouverte, c'est-à-dire tant que le verrou .parmreg/<élève>.exam existe (WIMS le pose
+!! au début de la session et le retire quand l'élève la termine ; une session échue mais non
+!! terminée bloque les autres examens : le bouton mène justement là où on la termine).
+!! ($registered ne convient pas : WIMS ne le définit que dans le module d'examen.)
+!! Champs du verrou : IP, session, fin (epoch), numéro d'examen (comme html/examclock.proc).
+!! Pas sur la page de l'examen : elle a son chronomètre.
+!if $wims_user!=supervisor and $wims_user!=$empty and $wims_class!=$empty and $module!=adm/class/exam and _exam notin $wims_session
+  !set nova_examreg=!record 0 of wimshome/log/classes/$wims_class/.parmreg/$wims_user.exam
+  !set nova_examnum=!word 4 of $nova_examreg
+  !default nova_examencours=Exam in progress
+  !default nova_examen_court=Exam
+  !if $nova_examnum!=$empty
+    <span class="menuitem nova-examencours">
+    !set wims_ref_class=nova-examencours-lien
+    !href module=adm/class/exam&exam=$nova_examnum <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-long">$nova_examencours</span><span class="nova-court">$nova_examen_court</span>
+    !reset wims_ref_class
+    </span>
+  !endif
+  !reset nova_examreg nova_examnum
+!endif

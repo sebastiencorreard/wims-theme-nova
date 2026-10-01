@@ -33,12 +33,20 @@
           !endif
         </a>
         <ul id="user_links" class="menu">
-          !for i_=1 to $wims_user_links_cnt
-            !set 1_=!line $i_ of $wims_user_links
-            <li class="menuitem">
-              !read $(w_path)oneitem.phtml $1_
-            </li>
-          !next
+          !! Nova (2026-10-01) : pour un ÉLÈVE, le menu ne montre que son nom et la déconnexion
+          !! (ou « Terminer la session d'examen ») ; compte, mot de passe, préférences et CGU sont
+          !! cachés pour le moment. Les enseignants et les développeurs gardent tout. Pour rendre
+          !! ces liens aux élèves : retirer la condition ci-dessous.
+          !if $wims_user!=supervisor and $wims_user!=$empty and $wims_developer=$empty
+            <li class="menuitem nova-nom" role="presentation">$wims_firstname $wims_lastname</li>
+          !else
+            !for i_=1 to $wims_user_links_cnt
+              !set 1_=!line $i_ of $wims_user_links
+              <li class="menuitem">
+                !read $(w_path)oneitem.phtml $1_
+              </li>
+            !next
+          !endif
 
           !! "WIMS logout"
           !read themes/_widgets/logout.phtml

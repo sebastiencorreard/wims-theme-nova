@@ -1,0 +1,25 @@
+/* Nova — base : police, couleurs de page, liens. Chargée après les feuilles communes de WIMS
+ * pour les accorder aux jetons (jetons.css) sans les réécrire. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body,
+body.main_body {
+  font-family: var(--nova-police);
+  font-size: var(--nova-corps);
+  line-height: var(--nova-interligne);
+  color: var(--nova-texte);
+  background: var(--nova-fond);
+}
+
+#wimspagebox { background: var(--nova-fond); }
+
+a, .ui-widget-content a { color: var(--nova-lien); }
+a:hover, a:focus { color: var(--nova-lien-survol); }
+
+:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--nova-accent) 70%, white);
+  outline-offset: 2px;
+}
+
+/* Les énoncés d'exercice ne sont jamais élargis de force (piège de Pion : table{width:100%}). */
+.oef_indstatement table, .statement table { width: auto; }

@@ -1,0 +1,72 @@
+/* Nova — jetons de design. Toute couleur de Nova passe par ces variables.
+ *
+ * L'accent vient de WIMS : --nova-accent est posé par htmlheader.phtml à partir de
+ * $wims_ref_bgcolor (réglage du site ou de la classe), ou vaut la prune Nova quand le
+ * site garde le gris par défaut de WIMS. Les nuances en sont dérivées ici (color-mix).
+ * Le fond, l'image de fond et les couleurs de menu de la classe sont ignorés : la
+ * lisibilité prime (décision du 2026-10-01).
+ */
+:root {
+  --nova-accent: #7A3B69;
+  --nova-sur-accent: #FFFFFF;
+
+  /* Clair */
+  --nova-fond: #F5F6F8;
+  --nova-surface: #FFFFFF;
+  --nova-surface-2: #F0F2F5;
+  --nova-texte: #1A1D22;
+  --nova-texte-2: #5A6270;
+  --nova-bord: #E1E4E9;
+  --nova-bord-fort: #B9C0CA;
+  --nova-piste: #E9ECF0;
+  --nova-accent-doux: color-mix(in oklab, var(--nova-accent) 12%, white);
+  --nova-lien: color-mix(in oklab, var(--nova-accent) 80%, black);
+  --nova-lien-survol: color-mix(in oklab, var(--nova-accent) 60%, black);
+  --nova-aide: #1F7A3A;
+  --nova-succes: #17663B;       --nova-succes-fond: #E3F3EA;
+  --nova-attention: #9A5200;    --nova-attention-fond: #FFF1DC;  --nova-attention-texte: #7A4100;
+  --nova-erreur: #A3221B;       --nova-erreur-fond: #FBE6E4;
+  --nova-neutre-fort: #2B2F36;
+
+  /* Typographie */
+  --nova-police: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --nova-police-chiffres: 'Atkinson Hyperlegible Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --nova-corps: 1.0625rem;      /* 17 px */
+  --nova-interligne: 1.55;
+  --nova-petit: 0.875rem;       /* 14 px */
+  --nova-titre: 2rem;           /* 32 px */
+  --nova-section: 1.375rem;     /* 22 px */
+
+  /* Espaces, rayons, cibles */
+  --nova-e1: 4px;  --nova-e2: 8px;  --nova-e3: 12px; --nova-e4: 16px;
+  --nova-e5: 24px; --nova-e6: 32px; --nova-e7: 48px;
+  --nova-rayon: 10px;
+  --nova-rayon-carte: 12px;
+  --nova-cible: 44px;
+  --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+/* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand <html data-nova-sombre>.
+ * Tant que le cadre provisoire de Standard et les feuilles métier gardent leurs couleurs écrites
+ * en dur, le sombre rend des pages illisibles (texte clair sur encadré clair, constaté le
+ * 2026-10-01) : htmlheader.phtml ne pose l'attribut qu'une fois toutes les surfaces couvertes. */
+@media (prefers-color-scheme: dark) {
+  :root[data-nova-sombre] {
+    --nova-fond: #121418;
+    --nova-surface: #1B1E23;
+    --nova-surface-2: #23272E;
+    --nova-texte: #ECEEF1;
+    --nova-texte-2: #A7AEB9;
+    --nova-bord: #2E333B;
+    --nova-bord-fort: #4A515C;
+    --nova-piste: #2E333B;
+    --nova-accent-doux: color-mix(in oklab, var(--nova-accent) 30%, #1B1E23);
+    --nova-lien: color-mix(in oklab, var(--nova-accent) 45%, white);
+    --nova-lien-survol: color-mix(in oklab, var(--nova-accent) 30%, white);
+    --nova-succes: #7FD6A2;       --nova-succes-fond: #163323;
+    --nova-attention: #F2B256;    --nova-attention-fond: #3A2A10;  --nova-attention-texte: #F2B256;
+    --nova-erreur: #FF9C94;       --nova-erreur-fond: #3A1715;
+    --nova-neutre-fort: #2E333B;
+    color-scheme: dark;
+  }
+}

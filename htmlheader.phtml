@@ -136,5 +136,11 @@ input[type="submit"],input[type="button"],.main_body .wims_button{
 }
 
 $class_actcolor_css
+
+!! Nova : l'accent est la couleur des barres du site ou de la classe ; le gris #676767 est la
+!! valeur par défaut de WIMS (DF_ref_bgcolor) — personne ne l'a choisi : on garde la prune Nova.
+!if $wims_ref_bgcolor!=$empty and $wims_ref_bgcolor notsametext #676767
+:root { --nova-accent: $wims_ref_bgcolor; }
+!endif
 </style>
 <!--end $wims_theme/htmlheader.phtml-->

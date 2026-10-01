@@ -26,6 +26,9 @@ tar -xzf /chemin/nova-AAAA-MM-JJ-xxxxxxx.tgz      # crée themes/Nova
 chown -R wims:wims Nova                            # le compte qui fait tourner WIMS
 ```
 
+Le dossier doit s'appeler exactement `Nova` : ses gabarits citent leur propre chemin
+(`themes/Nova/_widgets/…`, `html/themes/Nova/js/nova.js`). Ne pas le renommer.
+
 Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossiers qui contiennent un
 `visitor.phtml`). Aucune recompilation, aucun redémarrage.
 

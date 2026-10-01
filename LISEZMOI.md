@@ -14,9 +14,10 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
 - **Feuilles métier de WIMS gardées** (`themes/_css/` : exercices, feuilles, examens, forum…), et
   surchargées par Nova en fin de fichier. Foundation n'est gardé que pour ce que WIMS utilise
   (`_css/foundation-min.css`) ; son JavaScript reste chargé.
-- **Mode sombre** : le cadre (barre, menu, fil d'Ariane, fond) passe en sombre ; la zone de contenu
-  (`.wimsbody`) reste une feuille claire, car modules et jQuery UI écrivent leurs couleurs pour un
-  fond clair (audit : 70 pages sur 88 illisibles en tout-sombre).
+- **Mode sombre : désactivé** (2026-10-01, à la demande). Prêt dans `jetons.css` : cadre sombre,
+  contenu sur feuille claire (en tout-sombre, 70 pages sur 88 illisibles). Pour le rallumer : voir le
+  commentaire en tête de `htmlheader.phtml`.
+- **Téléphone** : la barre du haut tient sur une ligne ; ce qui ne tient pas passe dans le menu « ⋯ ».
 
 ## Organisation
 
@@ -35,7 +36,8 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
 | `js/nova.js` | bouton du menu sur téléphone ; états du chronomètre, bandeau de fin, « Fin à » |
 | `_widgets/headmenu.phtml`, `user_links.phtml` | copies des widgets WIMS ; l'entrée `chrono` devient le chronomètre Nova |
 | `lang/name.phtml.{fr,en,nl}` | textes propres au thème (**latin-1**) |
-| `htmlheader.phtml` | variables `--wims_*` reliées aux jetons ; accent ; `<meta name="nova-sombre">` |
+| `htmlheader.phtml` | variables `--wims_*` reliées aux jetons, `nova.js` (HTML seulement : lu par le C) |
+| `_widgets/accent.phtml` | accent = couleur des barres de la classe, sauf le gris par défaut |
 
 Après toute modification de `_css/` : `./construire-css.sh`.
 
@@ -53,6 +55,11 @@ Après toute modification de `_css/` : `./construire-css.sh`.
   message du dernier essai (`$name_examenlist[8])`) ne peuvent donc pas être corrigés par le thème.
 
 ## Pièges
+
+- **`htmlheader.phtml` est lu par le code C de WIMS, qui remplace les `$variables` mais n'exécute
+  AUCUNE commande** (`!if`, `!read`, commentaires `!!`) : elles partent telles quelles dans la page.
+  Ce fichier ne contient donc que du HTML, du CSS et des variables ; toute logique (l'accent selon
+  la classe) passe par `_widgets/accent.phtml`, lu par les gabarits interprétés.
 
 - `css.css` mélange UTF-8 (feuilles Nova) et latin-1 (feuilles WIMS) et est lu en windows-1252 :
   dans `content:`, écrire les caractères en échappement CSS (`"\203A"`).

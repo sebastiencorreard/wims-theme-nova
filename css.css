@@ -4699,7 +4699,8 @@ div.menublock .menuitem { display: block; padding: 1px 0; }
 .wimsbody img, .wimsbody canvas, .wimsbody video { height: auto; }
 .wimsbody .tox-tinymce { max-width: 100%; }
 .wimsbody .tox .tox-toolbar__group { flex-wrap: wrap; }
-.wimsbody pre, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Code : revient à la ligne partout, fenêtres d'aide (#wimsmhelp) comprises. */
+pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* ---------- Téléphone et tablette ---------- */
 @media (max-width: 1023.98px) {
@@ -4715,6 +4716,14 @@ div.menublock .menuitem { display: block; padding: 1px 0; }
   .wimsbody .ui-tabs .ui-tabs-nav li { flex: 0 0 auto; scroll-snap-align: start; }
   .wimsbody .ui-tabs .ui-tabs-nav .ui-tabs-anchor { white-space: nowrap; }
   .wims_seq, .wims_sheet { margin: var(--nova-e2) 0; }
+  /* Arbre des taxonomies (adm/browse) : jusqu'à sept niveaux de listes ; retrait réduit et
+   * libellés qui passent à la ligne. */
+  [id^="list_URN"] { padding-left: 1em; }
+  [id^="list_URN"] li { white-space: normal; overflow-wrap: anywhere; }
+  /* Fenêtres d'aide et fenêtres légères : même filet que .wimsbody. (Certaines pages allégées
+   * de WIMS — aide de module, taxonomie en job=light — ne chargent AUCUNE feuille : hors
+   * d'atteinte du thème, sous Standard comme sous Nova.) */
+  #wimsmhelp, #wimslightpopup { overflow-x: auto; }
 }
 
 /*! depuis Nova/_css/base.css */

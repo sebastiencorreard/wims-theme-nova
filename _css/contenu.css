@@ -119,3 +119,8 @@ pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
 sup.pastille { background-color: var(--nova-attention); color: #FFFFFF; }
 /* Mots-clés de code (tt.e) en cyan clair. */
 tt.e { color: color-mix(in oklab, #48D1CC 45%, black); }
+/* Statuts des feuilles, examens et documents (cachée, active, expirée) : #666, green, orangered
+ * écrits en dur par WIMS ; « Cachée+Expirée » à 2,6:1 sur son fond gris. */
+.wims_status_0, .wims_doc_status_0 { color: var(--nova-texte-2); }
+.wims_status_1, .wims_doc_status_1 { color: var(--nova-succes); }
+.wims_status_2, .wims_doc_status_2, .wims_status_3 { color: var(--nova-attention-texte); }

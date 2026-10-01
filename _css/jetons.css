@@ -46,12 +46,13 @@
   --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
 }
 
-/* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand <html data-nova-sombre>.
+/* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand htmlheader.phtml pose
+ * <meta name="nova-sombre"> (un gabarit ne peut pas toucher à <html> : :has() le remplace).
  * Tant que le cadre provisoire de Standard et les feuilles métier gardent leurs couleurs écrites
  * en dur, le sombre rend des pages illisibles (texte clair sur encadré clair, constaté le
  * 2026-10-01) : htmlheader.phtml ne pose l'attribut qu'une fois toutes les surfaces couvertes. */
 @media (prefers-color-scheme: dark) {
-  :root[data-nova-sombre] {
+  :root:has(meta[name="nova-sombre"]) {
     --nova-fond: #121418;
     --nova-surface: #1B1E23;
     --nova-surface-2: #23272E;
@@ -68,5 +69,36 @@
     --nova-erreur: #FF9C94;       --nova-erreur-fond: #3A1715;
     --nova-neutre-fort: #2E333B;
     color-scheme: dark;
+  }
+}
+
+/* Sombre, zone de contenu : une feuille claire posée sur le cadre sombre. Les feuilles des modules
+ * et le thème jQuery UI écrivent leurs couleurs en dur pour un fond clair (#222, #595959, code en
+ * bleu, fonds blancs) : audit du 2026-10-01, 70 pages sur 88 illisibles en tout-sombre. Les jetons
+ * reprennent donc leurs valeurs claires dans .wimsbody ; le cadre reste sombre. */
+@media (prefers-color-scheme: dark) {
+  :root:has(meta[name="nova-sombre"]) .wimsbody {
+    --nova-fond: #F5F6F8;
+    --nova-surface: #FFFFFF;
+    --nova-surface-2: #F0F2F5;
+    --nova-texte: #1A1D22;
+    --nova-texte-2: #5A6270;
+    --nova-bord: #E1E4E9;
+    --nova-bord-fort: #B9C0CA;
+    --nova-piste: #E9ECF0;
+    --nova-accent-doux: color-mix(in oklab, var(--nova-accent) 12%, white);
+    --nova-lien: color-mix(in oklab, var(--nova-accent) 80%, black);
+    --nova-lien-survol: color-mix(in oklab, var(--nova-accent) 60%, black);
+    --nova-succes: #17663B;       --nova-succes-fond: #E3F3EA;
+    --nova-attention: #9A5200;    --nova-attention-fond: #FFF1DC;  --nova-attention-texte: #7A4100;
+    --nova-erreur: #A3221B;       --nova-erreur-fond: #FBE6E4;
+    color-scheme: light;
+    color: var(--nova-texte);
+    background: var(--nova-fond);
+  }
+  :root:has(meta[name="nova-sombre"]) #wimspagebox { background: transparent; }
+  :root:has(meta[name="nova-sombre"]) .wimsbody {
+    margin: var(--nova-e4);
+    border-radius: var(--nova-rayon-carte);
   }
 }

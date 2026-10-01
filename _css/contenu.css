@@ -97,3 +97,17 @@ pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
    * d'atteinte du thème, sous Standard comme sous Nova.) */
   #wimsmhelp, #wimslightpopup { overflow-x: auto; }
 }
+
+/* ---------- Barre de série d'exercices (« 1 2 3 4 5 », seriebar_arrows.css) ----------
+ * WIMS écrit les exercices à venir en blanc sur gris clair (contraste 1,3:1) : repris sur les
+ * jetons. À venir : gris, en cours : accent, fait : accent pâle. */
+.wims_serie_bar li { background-color: var(--nova-piste); color: var(--nova-texte-2); }
+.wims_serie_bar li::after { border-left-color: var(--nova-piste); }
+.wims_serie_bar li::before { border-left-color: var(--nova-surface); }
+.wims_serie_bar li a { color: var(--nova-texte); }
+.wims_serie_bar li a:hover { color: var(--nova-lien); }
+.wims_serie_bar .wims_exo_todo { background-color: var(--nova-accent); color: var(--nova-sur-accent); border-color: var(--nova-accent); }
+.wims_serie_bar .wims_exo_todo::after { border-left-color: var(--nova-accent); }
+.wims_serie_bar .wims_exo_todo a { color: var(--nova-sur-accent); }
+.wims_serie_bar .wims_exo_done { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: var(--nova-accent-doux); }
+.wims_serie_bar .wims_exo_done::after { border-left-color: var(--nova-accent-doux); }

@@ -58,4 +58,11 @@ itemsep,0,$nova_menu_aide
 !endif
 
 !reset nova_participants
+
+!! Menu simplifié (comme le thème Pion, sans modifier WIMS) : le menu est envoyé COMPLET et le
+!! navigateur en masque une partie (cadre.css, js/nova.js), selon un choix gardé dans localStorage.
+!! Pourquoi pas côté serveur : WIMS fige les en-têtes du navigateur (dont les cookies) dans la
+!! session à la connexion (modules/home/var.auth) ; $httpd_HTTP_COOKIE ne suit donc pas un choix
+!! fait ensuite, et un thème ne peut écrire aucune préférence d'enseignant.
+!set nova_menu_bascule=1
 !set wims_homeref_n0 = !linecnt $wims_rm_0

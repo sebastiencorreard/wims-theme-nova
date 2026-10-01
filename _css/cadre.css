@@ -457,3 +457,31 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   #wimstopbox .nova-examencours .nova-long { display: none; }
   #wimstopbox .nova-examencours .nova-court { display: inline; }
 }
+
+/* Menu enseignant simplifié (comme le thème Pion) : à l'accueil de la classe (marque
+ * #nova-menu-bascule), seules ces entrées restent ; une famille sans entrée gardée perd son titre.
+ * Liste à tenir à jour avec la doc (LISEZMOI). html.nova-menu-simple : htmlheader.phtml. */
+.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menuitem:not(:has(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool)),
+.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menu_title:not(:has(+ * :is(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool))),
+.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menu_title:not(:has(+ * :is(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool))) + * {
+  display: none !important;
+}
+
+/* Bascule menu simplifié / complet de l'enseignant (js/nova.js, basculeMenu). */
+.nova-menu-bascule {
+  display: block;
+  width: calc(100% - 2 * var(--nova-e3));
+  margin: var(--nova-e4) var(--nova-e3) var(--nova-e3);
+  min-height: var(--nova-cible);
+  padding: 0 var(--nova-e3);
+  border: 1px dashed var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+  background: transparent;
+  color: var(--nova-texte-2);
+  font: inherit;
+  font-size: .9375rem;
+  text-transform: none;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+.nova-menu-bascule:hover { color: var(--nova-texte); border-style: solid; background: var(--nova-surface); }

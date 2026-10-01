@@ -39,7 +39,9 @@ $wims_CSS
      <meta name="nova-sombre" content="auto"> et passer color-scheme a "light dark".
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
-<script src="html/themes/Nova/js/nova.js?v=b0e1e5f324" defer></script>
+<script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu). */
+try { if (localStorage.getItem('nova_menu') !== 'complet') document.documentElement.classList.add('nova-menu-simple'); } catch (e) { document.documentElement.classList.add('nova-menu-simple'); }</script>
+<script src="html/themes/Nova/js/nova.js?v=2f5bf460ea" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

@@ -310,7 +310,39 @@
     });
   }
 
-  function demarrer() { modeExamen(); initialiser(); chronometre(); barreCompacte(); }
+  /* Menu enseignant simplifié / complet (accueil de la classe) : le serveur envoie le menu complet,
+   * la classe html.nova-menu-simple (posée dans htmlheader.phtml) en masque une partie (cadre.css).
+   * Le choix est gardé dans localStorage, donc par navigateur. */
+  function basculeMenu() {
+    var marque = document.getElementById('nova-menu-bascule');
+    var menu = document.getElementById('wimsmenumodubox');
+    if (!marque || !menu) return;
+    var racine = document.documentElement;
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'nova-menu-bascule';
+    var afficher = function () {
+      var simple = racine.classList.contains('nova-menu-simple');
+      bouton.textContent = marque.getAttribute(simple ? 'data-voir-tout' : 'data-simplifier');
+      bouton.setAttribute('aria-pressed', simple ? 'false' : 'true');
+    };
+    bouton.addEventListener('click', function () {
+      var simple = racine.classList.toggle('nova-menu-simple');
+      try { localStorage.setItem('nova_menu', simple ? 'simple' : 'complet'); } catch (e) { /* choix non retenu */ }
+      afficher();
+    });
+    afficher();
+    // Dans le menu (la colonne qui défile), mais APRÈS la construction de l'accordéon par jQuery UI :
+    // présent avant, il en deviendrait un titre de section.
+    var placer = function () {
+      if (bouton.parentNode) return;
+      if (menu.classList.contains('ui-accordion') || !window.jQuery || !jQuery.fn.accordion) menu.appendChild(bouton);
+    };
+    placer();
+    if (!bouton.parentNode) window.addEventListener('load', function () { setTimeout(function () { placer(); if (!bouton.parentNode) menu.appendChild(bouton); }, 0); });
+  }
+
+  function demarrer() { modeExamen(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

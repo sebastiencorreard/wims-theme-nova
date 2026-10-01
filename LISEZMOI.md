@@ -12,6 +12,16 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
   déconnexion (ou « Terminer » en examen) ; compte, mot de passe, préférences et CGU leur sont cachés
   pour le moment (`_widgets/user_links.phtml`, une condition à retirer). Le banc compte ces liens comme
   écarts voulus (`banc-nova/ecarts-voulus.json`).
+- **Menu enseignant simplifié (2026-10-02)**, comme le thème Pion mais sans modifier WIMS : à
+  l'accueil d'une classe, l'enseignant ne voit d'abord que Nouvelle feuille, Nouvel examen, Vue des
+  participants, Notes, Message du jour, Config, Modtool ; « Voir toutes les fonctions » rend le reste.
+  Le serveur envoie **toujours le menu complet** ; le navigateur en masque une partie (règle
+  `.nova-menu-simple` de `cadre.css`, liste des entrées gardées à cet endroit). Choix gardé dans
+  `localStorage` (par navigateur) ; sans JavaScript, menu complet. Pourquoi pas côté serveur : WIMS fige
+  les en-têtes du navigateur, cookies compris, dans la session à la connexion (`modules/home/var.auth`),
+  et n'offre aucune préférence d'enseignant qu'un thème puisse écrire.
+- **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
+  déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Une seule couleur d'accent** : `ref_bgcolor` du site ou de la classe ; si elle est restée au
   gris par défaut de WIMS (`#676767`), la prune Nova (`#7A3B69`). Fond, image de fond et couleurs de
   menu de la classe sont ignorés : la lisibilité prime.
@@ -65,6 +75,7 @@ Après toute modification de `_css/` : `./construire-css.sh`.
   Ce fichier ne contient donc que du HTML, du CSS et des variables ; toute logique (l'accent selon
   la classe) passe par `_widgets/accent.phtml`, lu par les gabarits interprétés.
 
+- Dans un `!if`, `=` est une comparaison : `!if a=b isin $x` ne teste pas « a=b est dans x ».
 - `css.css` mélange UTF-8 (feuilles Nova) et latin-1 (feuilles WIMS) et est lu en windows-1252 :
   dans `content:`, écrire les caractères en échappement CSS (`"\203A"`).
 - Les gabarits `.phtml` et `lang/` sont envoyés au navigateur en windows-1252 : texte affiché en

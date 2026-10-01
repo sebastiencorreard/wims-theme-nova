@@ -133,10 +133,26 @@
       });
       return liste;
     }
-    function fermer() { if (panneau) { panneau.hidden = true; bouton.setAttribute('aria-expanded', 'false'); } }
+    function fermer() { if (panneau && bouton) { panneau.hidden = true; bouton.setAttribute('aria-expanded', 'false'); } }
     function replier() {
       var items = entreesSecondaires();
       if (!items.length) return;
+      // Avec un compte, les entrées vont EN TÊTE de son menu déroulant (pas de bouton de plus :
+      // la barre manque de place) ; sans compte (visiteur, fenêtre d'examen), dans « ⋯ ».
+      var menuCompte = barre.querySelector('#user_links');
+      if (menuCompte) {
+        var filet = document.createElement('li');
+        filet.className = 'nova-deplace-filet';
+        filet.setAttribute('role', 'separator');
+        menuCompte.insertBefore(filet, menuCompte.firstChild);
+        items.slice().reverse().forEach(function (item) {
+          deplaces.push({ item: item, parent: item.parentNode, suivant: item.nextSibling });
+          item.classList.add('nova-deplace');
+          menuCompte.insertBefore(item, menuCompte.firstChild);
+        });
+        conteneur = filet;   // marque « replié » ; retiré au dépliage
+        return;
+      }
       conteneur = document.createElement('div');
       conteneur.className = 'nova-plus';
       bouton = document.createElement('button');
@@ -164,13 +180,13 @@
       });
     }
     function deplier() {
-      deplaces.reverse().forEach(function (d) { d.parent.insertBefore(d.item, d.suivant); });
+      deplaces.reverse().forEach(function (d) { d.item.classList.remove('nova-deplace'); d.parent.insertBefore(d.item, d.suivant); });
       deplaces = [];
       if (conteneur) conteneur.remove();
       conteneur = bouton = panneau = null;
     }
     function appliquer() { if (etroit.matches) { if (!conteneur) replier(); } else if (conteneur) deplier(); }
-    document.addEventListener('click', function (e) { if (conteneur && !conteneur.contains(e.target)) fermer(); });
+    document.addEventListener('click', function (e) { if (panneau && conteneur && !conteneur.contains(e.target)) fermer(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panneau && !panneau.hidden) { fermer(); bouton.focus(); } });
     if (etroit.addEventListener) etroit.addEventListener('change', appliquer); else etroit.addListener(appliquer);
     appliquer();

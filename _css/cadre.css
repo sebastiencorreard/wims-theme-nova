@@ -247,8 +247,19 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   #wimstopbox a.account { max-width: 34vw; }
   #wimstopbox a.account > span { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
   #wimstopbox #language_selector a.lang span { font-size: 0; }
+  /* Menus déroulants de la barre : ouverts vers la gauche, jamais hors de l'écran. */
+  #wimstopbox .is-dropdown-submenu,
+  #wimstopbox .dropdown.menu > li > .is-dropdown-submenu { left: auto; right: 0; max-width: calc(100vw - 16px); }
+  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a { padding-right: 26px; }
+  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a::after { right: 8px; }
   #wimstopbox #language_selector a.lang img { font-size: 1rem; }
 }
+/* Entrées de la barre déplacées en tête du menu du compte (js/nova.js), puis un filet. */
+#wimstopbox #user_links .nova-deplace { display: block; width: 100%; padding: 0; margin: 0; }
+#wimstopbox #user_links .nova-deplace a, #wimstopbox #user_links .nova-deplace .text_item {
+  display: flex; align-items: center; width: 100%; box-sizing: border-box; min-height: 40px; padding: 0 var(--nova-e3); color: var(--nova-texte); white-space: normal;
+}
+#wimstopbox #user_links .nova-deplace-filet { height: 1px; margin: var(--nova-e1) 0; background: var(--nova-bord); }
 /* Menu « ⋯ » du téléphone (js/nova.js) : les entrées de la barre qui ne tiennent pas. */
 .nova-plus { position: relative; flex-shrink: 0; }
 .nova-plus-bouton {

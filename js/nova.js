@@ -205,7 +205,7 @@
 
     function garde(item) {
       return item.classList.contains('chrono') || item.classList.contains('class_home') ||
-        item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') ||
+        item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') || item.classList.contains('tools') ||
         item.classList.contains('nova-terminer') ||
         item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
     }

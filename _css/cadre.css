@@ -211,9 +211,11 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   /* Téléphone : la barre tient TOUJOURS sur une ligne (demande du 2026-10-01). Restent visibles :
    * ☰, l'accueil (icône), le nom de la classe (coupé), le chronomètre, le compte, la langue ;
    * le reste est replié par js/nova.js dans le menu « ⋯ » (.nova-plus). */
-  #wimstopbox { flex-wrap: nowrap; gap: 2px; padding: 0 var(--nova-e1); min-height: 56px; }
+  #wimstopbox { flex-wrap: nowrap; gap: 2px; padding: 0 var(--nova-e1); min-height: 56px; overflow-x: clip; }
   #wimstopbox > .wimsmenu { flex-wrap: nowrap; min-width: 0; gap: 0; }
   #wimstopbox > .wimsmenu.float_left { flex: 1 1 auto; overflow: hidden; }
+  /* Vide (fenêtre d'exercice) : il ne doit pas prendre la place du chronomètre. */
+  #wimstopbox > .wimsmenu.float_left:not(:has(.menuitem, .nova-classe)) { flex: 0 0 0; }
   #wimstopbox a, #wimstopbox .menuitem:not(.is-submenu-item) > a, #wimstopbox .text_item {
     white-space: nowrap;
     padding: 0 var(--nova-e2);
@@ -389,26 +391,33 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 @media (max-width: 639.98px) {
   /* Compte compact : une icône de personne et la flèche, sur une largeur fixe — le nom, quelle
    * que soit sa longueur, ne peut plus pousser la flèche hors de l'écran. */
-  #wimstopbox a.account { position: relative; width: 58px; max-width: none; padding: 0; flex-shrink: 0; }
+  #wimstopbox a.account,
+  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a.account {
+    position: relative; box-sizing: border-box; width: 56px; max-width: none; padding: 0; flex-shrink: 0;
+  }
   #wimstopbox a.account > span {
     position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
   }
   #wimstopbox a.account::before {
     content: "";
-    position: absolute; left: 8px; top: 50%; margin-top: -12px;
+    position: absolute; left: 6px; top: 50%; margin-top: -12px;
     width: 24px; height: 24px;
     background: currentColor;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E") center / contain no-repeat;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E") center / contain no-repeat;
   }
-  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a.account::after { right: 8px; }
+  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a.account::after { right: 6px; }
   /* Fenêtre d'exercice : « Retour à la liste des exercices » en icône. */
-  #wimstopbox .menuitem.back > a { position: relative; width: var(--nova-cible); padding: 0; flex-shrink: 0; }
-  #wimstopbox .menuitem.back .text_item { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  #wimstopbox .menuitem.back > a::before {
-    content: ""; position: absolute; inset: 0; margin: auto; width: 22px; height: 22px; background: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Ccircle cx='4.5' cy='6' r='1'/%3E%3Ccircle cx='4.5' cy='12' r='1'/%3E%3Ccircle cx='4.5' cy='18' r='1'/%3E%3C/svg%3E") center / contain no-repeat;
-            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Ccircle cx='4.5' cy='6' r='1'/%3E%3Ccircle cx='4.5' cy='12' r='1'/%3E%3Ccircle cx='4.5' cy='18' r='1'/%3E%3C/svg%3E") center / contain no-repeat;
+  #wimstopbox .menuitem.back > a, #wimstopbox .menuitem.tools > a { position: relative; width: var(--nova-cible); padding: 0; flex-shrink: 0; }
+  #wimstopbox .menuitem.back .text_item, #wimstopbox .menuitem.tools .text_item { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  #wimstopbox .menuitem.back > a::before, #wimstopbox .menuitem.tools > a::before {
+    content: ""; position: absolute; inset: 0; margin: auto; width: 24px; height: 24px; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 6h8M13 12h8M13 18h8'/%3E%3Cpath d='M9 12H2M5 8.5 1.5 12 5 15.5'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 6h8M13 12h8M13 18h8'/%3E%3Cpath d='M9 12H2M5 8.5 1.5 12 5 15.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  #wimstopbox .menuitem.tools > a::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E");
   }
   #wimstopbox .nova-terminer a { padding: 0 var(--nova-e3); }
 }

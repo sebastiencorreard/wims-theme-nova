@@ -44,13 +44,9 @@
 --- _css/bootstrap_nav.css ---
 --- _css/seriebar_arrows.css ---
 #
-# 3. PROVISOIRE — cadre et Foundation de Standard, en attendant le cadre de Nova (phase 3).
-#    Chaque ligne disparaît quand Nova fournit son remplaçant.
---- _css/foundation_flex.css ---
---- _css/foundation_menu.css ---
---- _css/foundation_dropdown_menu.css ---
---- _css/foundation_visibility.css ---
---- _css/foundation_xygrid.css ---
+# 3. Foundation : seulement ce que WIMS utilise encore (foundation-min.css remplace
+#    foundation_flex, _menu, _dropdown_menu, _visibility et _xygrid ; le JS reste chargé).
+--- Nova/_css/foundation-min.css ---
 #
 # 4. Nova : surcharges, en dernier. Le cadre de Standard (theme.css, general.css, typo.css,
 #    breadcrumbs.css, menumodubox-accordion.css, menumodubox_fixed.css, logo.css, std_l2w.css) est

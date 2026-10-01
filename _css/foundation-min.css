@@ -1,0 +1,99 @@
+/* Nova — ce que WIMS utilise encore de Foundation 6, et rien de plus.
+ * Remplace foundation_flex, foundation_menu, foundation_dropdown_menu, foundation_visibility et
+ * foundation_xygrid (64 Ko, dont 46 de grille). Sous-ensemble relevé le 2026-10-01 : classes
+ * présentes dans modules/adm, modules/home, html, themes/_widgets, themes/_procs, scripts.
+ * Le JavaScript de Foundation reste chargé (_widgets/footer_foundation.phtml) : il pose
+ * is-dropdown-submenu, js-dropdown-active, opens-left/right… que les règles ci-dessous suivent. */
+
+/* ---------- Menus ---------- */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu > li { display: block; }
+.menu a { display: block; padding: .5rem .75rem; line-height: 1.2; }
+.menu.vertical { flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
+.menu.horizontal { flex-direction: row; }
+.menu.align-center { justify-content: center; }
+.menu.expanded > li { flex: 1 1 0; }
+.menu.simple a { padding: 0; margin-right: 1rem; }
+.menu.nested { margin-left: 1rem; }
+.menu .active > a, .menu .is-active > a { background: var(--nova-accent-doux); color: var(--nova-texte); }
+
+/* ---------- Menu déroulant (compte, choix de langue) ---------- */
+.dropdown.menu > li.is-dropdown-submenu-parent { position: relative; }
+.dropdown.menu > li.is-dropdown-submenu-parent > a::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  margin-top: -3px;
+  border: 6px solid transparent;
+  border-bottom-width: 0;
+  border-top-color: currentColor;
+}
+.dropdown .is-dropdown-submenu,
+.is-dropdown-submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 300;
+  min-width: 200px;
+  margin: 0;
+  list-style: none;
+}
+.dropdown .is-dropdown-submenu.opens-left, .is-dropdown-submenu.opens-left { left: auto; right: 0; }
+.dropdown.menu > li.opens-left > .is-dropdown-submenu { left: auto; right: 0; }
+.is-dropdown-submenu.js-dropdown-active { display: block; }
+.dropdown.menu.vertical > li .is-dropdown-submenu { top: 0; left: 100%; }
+.dropdown.menu.vertical > li.opens-left > .is-dropdown-submenu { left: auto; right: 100%; }
+.is-dropdown-submenu .is-dropdown-submenu { top: 0; left: 100%; }
+.is-dropdown-submenu > li { width: 100%; }
+
+/* ---------- Visibilité ---------- */
+.hide { display: none !important; }
+.invisible { visibility: hidden; }
+.show-for-sr, .show-on-focus:not(:focus) {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 39.99875em) {
+  .show-for-medium, .show-for-large, .hide-for-small-only { display: none !important; }
+}
+@media (min-width: 40em) {
+  .show-for-small-only, .hide-for-medium { display: none !important; }
+}
+@media (min-width: 40em) and (max-width: 63.99875em) {
+  .show-for-large, .hide-for-medium-only { display: none !important; }
+}
+@media (min-width: 64em) {
+  .hide-for-large, .show-for-medium-only { display: none !important; }
+}
+
+/* ---------- Grille (adm/class/sheet, adm/createxo, widgets) ---------- */
+.grid-x { display: flex; flex-flow: row wrap; }
+.grid-x > .cell { flex: 0 0 auto; width: 100%; min-width: 0; min-height: 0; }
+.grid-x > .cell.auto { flex: 1 1 0; width: auto; }
+.grid-x > .cell.shrink { width: auto; }
+.grid-x.full, .cell.full { width: 100%; }
+.grid-margin-x { margin-left: -.5rem; margin-right: -.5rem; }
+.grid-margin-x > .cell { width: calc(100% - 1rem); margin-left: .5rem; margin-right: .5rem; }
+.small-up-1 > .cell { width: 100%; }
+.grid-margin-x.small-up-1 > .cell { width: calc(100% - 1rem); }
+@media (min-width: 40em) {
+  .medium-up-3 > .cell { width: 33.33333%; }
+  .grid-margin-x.medium-up-3 > .cell { width: calc(33.33333% - 1rem); }
+}
+@media (min-width: 64em) {
+  .large-up-4 > .cell { width: 25%; }
+  .grid-margin-x.large-up-4 > .cell { width: calc(25% - 1rem); }
+}

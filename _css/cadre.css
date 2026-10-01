@@ -98,7 +98,7 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   color: var(--nova-texte-2);
   cursor: default;
 }
-.breadcrumbs li:not(:last-child)::after { content: "›"; margin: 0 .5em; color: var(--nova-bord-fort); top: 0; }
+.breadcrumbs li:not(:last-child)::after { content: "\203A"; margin: 0 .5em; color: var(--nova-bord-fort); top: 0; }
 .breadcrumbs > li > a, .breadcrumbs a { color: var(--nova-lien); text-decoration: none; }
 .breadcrumbs a:hover { text-decoration: underline; }
 .breadcrumbs .menuitem { padding: 0; }

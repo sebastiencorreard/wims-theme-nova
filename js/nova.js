@@ -278,7 +278,47 @@
     appliquer();
   }
 
+  /* Onglets jQuery UI : au-delà de 3, une liste déroulante les remplace au téléphone (CSS :
+   * .nova-onglets-replies). La liste actionne les onglets eux-mêmes (clic sur l'ancre), qui
+   * restent dans la page ; elle suit aussi les changements faits autrement. Lancé au chargement
+   * complet : jQuery UI construit les onglets après ce script. */
+  function ongletsCompacts() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .ui-tabs'), function (bloc) {
+      var nav = bloc.querySelector(':scope > .ui-tabs-nav');
+      if (!nav || bloc.querySelector(':scope > .nova-onglets-liste')) return;
+      var ancres = nav.querySelectorAll('.ui-tabs-anchor');
+      if (ancres.length <= 3) return;
+      var liste = document.createElement('select');
+      liste.className = 'nova-onglets-liste';
+      liste.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Tabs' : 'Onglets');
+      Array.prototype.forEach.call(ancres, function (a, i) {
+        var o = document.createElement('option');
+        o.value = i;
+        o.textContent = (i + 1) + ' · ' + a.textContent.trim();
+        liste.appendChild(o);
+      });
+      var synchroniser = function () {
+        Array.prototype.forEach.call(ancres, function (a, i) {
+          if (a.parentNode.classList.contains('ui-tabs-active')) liste.value = i;
+        });
+      };
+      synchroniser();
+      liste.addEventListener('change', function () { ancres[liste.value].click(); });
+      new MutationObserver(synchroniser).observe(nav, { attributes: true, subtree: true, attributeFilter: ['class'] });
+      bloc.insertBefore(liste, nav);
+      bloc.classList.add('nova-onglets-replies');
+    });
+  }
+
   function demarrer() { modeExamen(); initialiser(); chronometre(); barreCompacte(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
+  // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :
+  // on surveille l'apparition de .ui-tabs pendant dix secondes ; ongletsCompacts est idempotente.
+  ongletsCompacts();
+  if (window.MutationObserver) {
+    var veille = new MutationObserver(function () { ongletsCompacts(); });
+    veille.observe(document.documentElement, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    setTimeout(function () { veille.disconnect(); }, 10000);
+  }
 })();

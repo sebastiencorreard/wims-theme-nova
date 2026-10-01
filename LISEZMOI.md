@@ -8,6 +8,10 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
 
 - **Le HTML de WIMS n'est pas touché.** Les liens et formulaires (les fonctions) viennent des
   modules et des widgets ; Nova les *dispose* (CSS) et ajoute ce qui manque (JS sans dépendance).
+- **Exception voulue (2026-10-01)** : le menu du compte des **élèves** ne montre que leur nom et la
+  déconnexion (ou « Terminer » en examen) ; compte, mot de passe, préférences et CGU leur sont cachés
+  pour le moment (`_widgets/user_links.phtml`, une condition à retirer). Le banc compte ces liens comme
+  écarts voulus (`banc-nova/ecarts-voulus.json`).
 - **Une seule couleur d'accent** : `ref_bgcolor` du site ou de la classe ; si elle est restée au
   gris par défaut de WIMS (`#676767`), la prune Nova (`#7A3B69`). Fond, image de fond et couleurs de
   menu de la classe sont ignorés : la lisibilité prime.

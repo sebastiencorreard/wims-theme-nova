@@ -11,3 +11,5 @@
 !set nova_menu_communication=Communication
 !set nova_menu_classe=Classe
 !set nova_menu_aide=Aide et outils
+!set nova_profil=Profil
+!set nova_terminer=Terminer

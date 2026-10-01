@@ -11,3 +11,5 @@
 !set nova_menu_communication=Communicatie
 !set nova_menu_classe=Klas
 !set nova_menu_aide=Hulp en hulpmiddelen
+!set nova_profil=Profiel
+!set nova_terminer=Beëindigen

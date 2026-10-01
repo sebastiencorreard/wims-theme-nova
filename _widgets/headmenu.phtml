@@ -12,6 +12,8 @@
 !default nova_chrono_fin=Time is up
 !default nova_chrono_fin_detail=Answers sent now will not be taken into account.
 !default nova_chrono_fin_a=Ends at
+!default nova_profil=Profile
+!default nova_terminer=Finish
 !for i_=1 to $wims_hm_cnt
   !set 1_=!line $i_ of $wims_hm
   !set wims_ref_class = !item 1 of $1_
@@ -35,4 +37,7 @@
   !endif
   !reset wims_ref_class
 !next i_
+!! Textes du thème pour js/nova.js, utiles aussi hors de la fenêtre d'exercice (page de l'examen,
+!! où le chronomètre est recopié depuis la page ; section « Profil »).
+<span id="nova-textes" hidden data-libelle="$nova_chrono_libelle" data-texte-5min="$nova_chrono_5min" data-texte-1min="$nova_chrono_1min" data-texte-fin="$nova_chrono_fin" data-texte-fin-detail="$nova_chrono_fin_detail" data-profil="$nova_profil" data-terminer="$nova_terminer"></span>
 <!-- end Nova/_widgets/headmenu.phtml -->

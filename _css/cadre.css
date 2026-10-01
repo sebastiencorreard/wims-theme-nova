@@ -368,3 +368,47 @@ div.menublock .menuitem { display: block; padding: 1px 0; }
   #wimspagebox { position: relative; }
   #wimsdoc #left_toc { max-width: 160px; box-sizing: content-box; left: 0; margin: 0; top: 9.5em; min-width: 10em; }
 }
+
+/* ---------- Page de l'examen pendant une session (js/nova.js, modeExamen) ----------
+ * Barre : ☰, accueil, chronomètre (recopié du décompte de la page), « Terminer ». Le compte, Aide…
+ * sont dans le menu latéral, section « Profil ». */
+body.nova-examen-session #wimstopbox .nova-classe { display: none; }
+#wimstopbox .nova-terminer { margin-left: auto; flex-shrink: 0; }
+#wimstopbox .nova-terminer a,
+#wimstopbox .menuitem.nova-terminer > a {
+  min-height: 40px;
+  padding: 0 var(--nova-e4);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  color: var(--nova-accent);
+  font-weight: 700;
+}
+#wimstopbox .nova-terminer a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+#wimsmenumodubox .nova-profil-nom { padding: var(--nova-e1) var(--nova-e3) var(--nova-e2); font-weight: 700; color: var(--nova-texte); }
+
+@media (max-width: 639.98px) {
+  /* Compte compact : une icône de personne et la flèche, sur une largeur fixe — le nom, quelle
+   * que soit sa longueur, ne peut plus pousser la flèche hors de l'écran. */
+  #wimstopbox a.account { position: relative; width: 58px; max-width: none; padding: 0; flex-shrink: 0; }
+  #wimstopbox a.account > span {
+    position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  #wimstopbox a.account::before {
+    content: "";
+    position: absolute; left: 8px; top: 50%; margin-top: -12px;
+    width: 24px; height: 24px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a.account::after { right: 8px; }
+  /* Fenêtre d'exercice : « Retour à la liste des exercices » en icône. */
+  #wimstopbox .menuitem.back > a { position: relative; width: var(--nova-cible); padding: 0; flex-shrink: 0; }
+  #wimstopbox .menuitem.back .text_item { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  #wimstopbox .menuitem.back > a::before {
+    content: ""; position: absolute; inset: 0; margin: auto; width: 22px; height: 22px; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Ccircle cx='4.5' cy='6' r='1'/%3E%3Ccircle cx='4.5' cy='12' r='1'/%3E%3Ccircle cx='4.5' cy='18' r='1'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Ccircle cx='4.5' cy='6' r='1'/%3E%3Ccircle cx='4.5' cy='12' r='1'/%3E%3Ccircle cx='4.5' cy='18' r='1'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  #wimstopbox .nova-terminer a { padding: 0 var(--nova-e3); }
+}

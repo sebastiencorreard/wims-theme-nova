@@ -49,7 +49,7 @@
    * viennent des data-texte-* écrits par le widget (lang/name.phtml.<langue>). */
   function chronometre() {
     var boite = document.querySelector('.nova-chrono');
-    var temps = document.getElementById('chrono_exam');
+    var temps = boite && boite.querySelector('#chrono_exam, .nova-chrono-miroir');
     if (!boite || !temps) return;
     var libelle = boite.querySelector('.nova-chrono-libelle');
     var libelleNormal = libelle ? libelle.textContent : '';
@@ -108,6 +108,91 @@
     }
   }
 
+  /* Page de l'examen pendant une session (WIMS met alors « Terminer cette session d'examen » —
+   * a.endexam — dans le menu du compte). Barre réduite à : ☰, accueil, chronomètre, « Terminer ».
+   *  - le chronomètre recopie le décompte de la page (#exam_clock, « Temps restant… ») ;
+   *  - « Terminer » est le lien de WIMS lui-même, sorti du menu du compte ;
+   *  - le compte, Aide et les autres entrées de la barre passent dans le menu latéral, section
+   *    « Profil » (sur téléphone : derrière ☰). Le nom de la classe est masqué (CSS). */
+  function modeExamen() {
+    var barre = document.getElementById('wimstopbox');
+    var fin = barre && barre.querySelector('#user_links a.endexam');
+    if (!fin) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    document.body.classList.add('nova-examen', 'nova-examen-session');
+
+    // « Terminer » : le lien lui-même, dans la barre, libellé court ; le long reste pour l'accessibilité.
+    var liFin = fin.closest('li');
+    var long = fin.textContent.trim();
+    var place = document.createElement('div');
+    place.className = 'menuitem nova-terminer';
+    fin.setAttribute('aria-label', long);
+    fin.setAttribute('title', long);
+    fin.textContent = t('terminer', 'Terminer');
+    place.appendChild(fin);
+    barre.appendChild(place);
+    if (liFin) liFin.remove();
+
+    // Profil : le contenu du menu du compte et les autres entrées de la barre, dans le menu latéral.
+    var menu = document.getElementById('wimsmenumodubox');
+    var compte = barre.querySelector('a.account');
+    var liCompte = compte && compte.closest('li');
+    if (menu && liCompte) {
+      var cible = menu.querySelector('.modubox_content') || menu;
+      var titre = document.createElement('h2');
+      titre.className = 'menu_title nova-profil-titre';
+      titre.textContent = t('profil', 'Profil');
+      var groupe = document.createElement('div');
+      groupe.className = 'wimsmenu menu nova-profil';
+      var ajouter = function (lien) {
+        if (!lien || !lien.getAttribute('href') || lien.getAttribute('href') === '#user_links') return;
+        var d = document.createElement('div');
+        d.className = 'menuitem';
+        d.appendChild(lien);
+        groupe.appendChild(d);
+      };
+      // Le nom de l'élève en tête, en texte (le lien « #user_links » n'ouvrait que le menu).
+      var nom = document.createElement('div');
+      nom.className = 'menuitem nova-profil-nom';
+      nom.textContent = compte.textContent.trim();
+      groupe.appendChild(nom);
+      Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li a[href]'), ajouter);
+      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
+        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
+            item.classList.contains('nova-terminer') || item === liCompte) return;
+        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), ajouter);
+        item.remove();
+      });
+      liCompte.remove();
+      cible.insertBefore(groupe, cible.firstChild);
+      cible.insertBefore(titre, groupe);
+    }
+
+    // Chronomètre recopié du décompte de la page.
+    var horloge = document.getElementById('exam_clock');
+    if (horloge && !barre.querySelector('.nova-chrono')) {
+      var item = document.createElement('div');
+      item.className = 'menuitem chrono';
+      item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
+        '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
+        '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-chrono-libelle"></span>' +
+        '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
+      var boite = item.firstChild;
+      ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'].forEach(function (a) { if (textes) boite.setAttribute('data-' + a, textes.getAttribute('data-' + a) || ''); });
+      boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
+      boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
+      var miroir = boite.querySelector('.nova-chrono-miroir');
+      var copier = function () { miroir.textContent = horloge.textContent.trim(); };
+      copier();
+      new MutationObserver(copier).observe(horloge, { childList: true, characterData: true, subtree: true });
+      var maison = barre.querySelector('.class_home');
+      var bloc = maison ? maison.parentNode : barre;
+      bloc.insertBefore(item, maison ? maison.nextSibling : bloc.firstChild);
+    }
+  }
+
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -120,7 +205,8 @@
 
     function garde(item) {
       return item.classList.contains('chrono') || item.classList.contains('class_home') ||
-        item.id === 'language_selector' || item.querySelector('a.account') ||
+        item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') ||
+        item.classList.contains('nova-terminer') ||
         item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
     }
     function entreesSecondaires() {
@@ -192,7 +278,7 @@
     appliquer();
   }
 
-  function demarrer() { initialiser(); chronometre(); barreCompacte(); }
+  function demarrer() { modeExamen(); initialiser(); chronometre(); barreCompacte(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
 })();

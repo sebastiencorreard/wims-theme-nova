@@ -94,3 +94,6 @@
   font-weight: 700;
   opacity: .85;
 }
+
+/* Page de l'examen (chronomètre recopié) : ☰, accueil, chronomètre, puis « Terminer » à droite. */
+body.nova-examen-session #wimstopbox .menuitem.chrono { order: 0; margin-right: 0; }

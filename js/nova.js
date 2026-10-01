@@ -84,7 +84,9 @@
       var m = /(\d+):(\d\d)/.exec(temps.textContent);
       if (!m) return;
       var s = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
-      var etat = s === 0 ? 'fin' : s <= 60 ? 'critique' : s <= 300 ? 'attention' : 'normal';
+      var critique = +(boite.getAttribute('data-seuil-critique') || 60);
+      var attention = +(boite.getAttribute('data-seuil-attention') || 300);
+      var etat = s === 0 ? 'fin' : s <= critique ? 'critique' : s <= attention ? 'attention' : 'normal';
       if (etat === precedent) return;
       boite.setAttribute('data-etat', etat);
       document.body.setAttribute('data-nova-chrono', etat);
@@ -170,28 +172,50 @@
     }
 
     // Chronomètre recopié du décompte de la page.
-    var horloge = document.getElementById('exam_clock');
-    if (horloge && !barre.querySelector('.nova-chrono')) {
-      var item = document.createElement('div');
-      item.className = 'menuitem chrono';
-      item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
-        '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
-        '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-chrono-libelle"></span>' +
-        '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
-      var boite = item.firstChild;
-      ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'].forEach(function (a) { if (textes) boite.setAttribute('data-' + a, textes.getAttribute('data-' + a) || ''); });
-      boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
-      boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
-      var miroir = boite.querySelector('.nova-chrono-miroir');
-      var copier = function () { miroir.textContent = horloge.textContent.trim(); };
-      copier();
-      new MutationObserver(copier).observe(horloge, { childList: true, characterData: true, subtree: true });
-      var maison = barre.querySelector('.class_home');
-      var bloc = maison ? maison.parentNode : barre;
-      bloc.insertBefore(item, maison ? maison.nextSibling : bloc.firstChild);
-    }
+    chronoMiroir(document.getElementById('exam_clock'), true);
   }
+
+  /* Chronomètre Nova dans la barre, recopié d'un décompte que WIMS écrit dans la page
+   * (#exam_clock d'un examen, #clockoef d'un exercice chronométré). examen=false : seuils relatifs
+   * à la durée (ambre au dernier quart, au moins 15 s ; rouge aux 10 dernières secondes), sans libellé en
+   * minutes ; le bandeau « Temps écoulé » reste. */
+  function chronoMiroir(horloge, examen) {
+    var barre = document.getElementById('wimstopbox');
+    if (!horloge || !barre || barre.querySelector('.nova-chrono')) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var item = document.createElement('div');
+    item.className = 'menuitem chrono';
+    item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
+      '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
+      '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-chrono-libelle"></span>' +
+      '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
+    var boite = item.firstChild;
+    var attributs = examen ? ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'] : ['texte-fin', 'texte-fin-detail'];
+    attributs.forEach(function (a) { boite.setAttribute('data-' + a, t(a, '')); });
+    if (examen) boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
+    boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
+    var miroir = boite.querySelector('.nova-chrono-miroir');
+    var copier = function () {
+      var texte = horloge.textContent.trim();
+      var m = /(\d+):(\d\d)/.exec(texte);
+      if (!examen && m && !boite.hasAttribute('data-seuil-critique')) {
+        var duree = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        boite.setAttribute('data-seuil-critique', 10);
+        boite.setAttribute('data-seuil-attention', Math.max(15, Math.round(duree / 4)));
+      }
+      miroir.textContent = texte;
+    };
+    copier();
+    new MutationObserver(copier).observe(horloge, { childList: true, characterData: true, subtree: true });
+    var maison = barre.querySelector('.class_home');
+    var bloc = maison ? maison.parentNode : (barre.querySelector('.wimsmenu') || barre);
+    bloc.insertBefore(item, maison ? maison.nextSibling : bloc.firstChild);
+  }
+
+  // Exercice OEF chronométré (scripts/oef/Main.phtml : « Cet exercice est chronométré » + #clockoef).
+  function chronoExercice() { chronoMiroir(document.getElementById('clockoef'), false); }
 
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
@@ -389,7 +413,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

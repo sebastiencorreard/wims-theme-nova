@@ -35,6 +35,10 @@
     !distribute items span into div1
     <div class="wimsmenu menu float_left">
     !read themes/_widgets/headhome.phtml
+    !! Nova : le nom de la classe a cote de l'accueil (pas pendant un examen : place au chronometre).
+    !if $wims_classname!=$empty and _exam notin $wims_session
+      <span class="nova-classe">$wims_classname</span>
+    !endif
     </div>
     !distribute items li into div1
     !read themes/Nova/_widgets/user_links.phtml

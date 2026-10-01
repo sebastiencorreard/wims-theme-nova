@@ -4274,6 +4274,19 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 }
 #wimstopbox .class_home .text_item,
 #wimstopbox .class_home > a { font-size: 1.125rem; font-weight: 700; padding-left: 0; }
+/* Nom de la classe (Nova/header.phtml) ; l'entrée « Page d'accueil » de WIMS devient secondaire. */
+#wimstopbox .nova-classe {
+  display: inline-block;
+  max-width: 42vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 var(--nova-e2);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+#wimstopbox .float_left:has(.nova-classe) .class_home .text_item,
+#wimstopbox .float_left:has(.nova-classe) .class_home > a { font-size: 1rem; font-weight: 400; opacity: .9; }
 #wimstopbox a:hover, #wimstopbox a:focus-visible { background: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
 #wimstopbox .menu a:hover,
 #wimstopbox > .menu > .menuitem > a:hover { background-color: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
@@ -4419,6 +4432,18 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 }
 
 /* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */
+@media (max-width: 639.98px) {
+  /* Barre du visiteur et des pages riches en liens : deux rangées nettes plutôt que des
+   * libellés coupés en deux. */
+  #wimstopbox { flex-wrap: wrap; row-gap: 0; }
+  #wimstopbox a, #wimstopbox .menuitem:not(.is-submenu-item) > a, #wimstopbox .text_item {
+    white-space: nowrap;
+    padding: 0 var(--nova-e2);
+    font-size: .9375rem;
+  }
+  #wimstopbox .is-dropdown-submenu a { white-space: normal; }
+  #wimstopbox .nova-classe { max-width: 50vw; font-size: 1rem; }
+}
 @media (max-width: 1023.98px) {
   #wimstopbox { padding: 0 var(--nova-e2) 0 var(--nova-e2); }
   .wimsbody { padding: var(--nova-e4); }

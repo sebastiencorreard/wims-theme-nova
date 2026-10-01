@@ -46,7 +46,11 @@ Après toute modification de `_css/` : `./construire-css.sh`.
   sont lus par le code C. Il n'y a **pas** de surcharge générale de `html/*.phtml`.
 - Un thème peut lire **ses propres copies de widgets** (`!read themes/Nova/_widgets/…`).
 - Traductions : `lang/<module avec des _>_<script>.<langue>` est lu après le module
-  (`scripts/adm/language`), par exemple `lang/adm_class_exam_lang_names.phtml.fr`.
+  (`scripts/adm/language`, `scripts/adm/class/classlang`), par exemple
+  `lang/adm_class_exam_lang_names.phtml.fr`. **Limite** : un module qui relit ses textes lui-même
+  écrase la surcharge. C'est le cas de `adm/class/exam` en vue élève (`var.proc`, `job=student` :
+  `!read lang/names.phtml.$moduclass_lang`) — le temps restant « (session 0) » et la coquille du
+  message du dernier essai (`$name_examenlist[8])`) ne peuvent donc pas être corrigés par le thème.
 
 ## Pièges
 

@@ -6,3 +6,8 @@
 !set nova_chrono_fin=Temps écoulé
 !set nova_chrono_fin_detail=Les réponses envoyées maintenant ne seront pas prises en compte.
 !set nova_chrono_fin_a=Fin à
+!set nova_menu_activites=Activités
+!set nova_menu_participants=Participants
+!set nova_menu_communication=Communication
+!set nova_menu_classe=Classe
+!set nova_menu_aide=Aide et outils

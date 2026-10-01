@@ -6,3 +6,8 @@
 !set nova_chrono_fin=Time is up
 !set nova_chrono_fin_detail=Answers sent now will not be taken into account.
 !set nova_chrono_fin_a=Ends at
+!set nova_menu_activites=Activities
+!set nova_menu_participants=Participants
+!set nova_menu_communication=Communication
+!set nova_menu_classe=Class
+!set nova_menu_aide=Help and tools

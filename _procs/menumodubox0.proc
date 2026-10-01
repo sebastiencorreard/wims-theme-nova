@@ -1,0 +1,61 @@
+!! Nova : copie de themes/_procs/menumodubox0.proc qui REGROUPE le menu enseignant d'une classe en
+!! familles (maquette validée le 2026-10-01) : Activités, Participants, Communication, Classe, Aide et
+!! outils. Les liens restent ceux des procédures de WIMS (classtools, supervisorusermanage,
+!! supervisorscore…), lues dans le même ordre : seuls les titres de groupe changent ou disparaissent.
+!! Titres : lang/name.phtml.<langue> du thème ; repli en anglais.
+!default nova_menu_activites=Activities
+!default nova_menu_participants=Participants
+!default nova_menu_communication=Communication
+!default nova_menu_classe=Class
+!default nova_menu_aide=Help and tools
+
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$nova_menu_activites
+!read themes/_procs/classtools.proc
+
+!! Participants : gestion des comptes, puis bilan des évaluations (WIMS en fait deux groupes).
+!set nova_participants=0
+!if $wims_typename notwordof program and /0// notin $wims_class//
+  !set wims_rm_0 = $wims_rm_0\
+   itemsep,0,$nova_menu_participants
+  !set nova_participants=1
+  !read themes/_procs/supervisorusermanage.proc
+!endif
+!if ($wims_supertype<4 and $wims_typename=class) or \
+    ($wims_supertype=4 and $wims_typename iswordof course program and /0// notin $wims_class//)
+  !if $nova_participants=0
+    !set wims_rm_0 = $wims_rm_0\
+itemsep,0,$nova_menu_participants
+  !endif
+  !read themes/_procs/supervisorscore.proc
+  !read themes/_procs/supervisorstat.proc
+!endif
+
+!if $wims_typename notwordof program and /0// notin $wims_class//
+  !set wims_rm_0 = $wims_rm_0\
+itemsep,0,$nova_menu_communication
+  !read themes/_procs/supervisorclassactivity.proc
+!endif
+
+!! Classe : configuration, puis les liens vers les autres classes (sans titre propre).
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$nova_menu_classe
+!read themes/_procs/supervisorconfig.proc 0
+
+!read themes/_procs/extlink.proc cnt
+!if $class_ent_n0 >0
+  !read themes/_procs/extlink.proc proc
+!endif
+!if $class_type=0
+  !read themes/_procs/supervisorotherclass.proc
+!endif
+
+!set wims_rm_0 = $wims_rm_0\
+itemsep,0,$nova_menu_aide
+!read themes/_procs/documentation.proc
+!if $wims_supertype!=4 or $class_typename!=class
+  !read themes/_procs/classdevtools.proc
+!endif
+
+!reset nova_participants
+!set wims_homeref_n0 = !linecnt $wims_rm_0

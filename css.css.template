@@ -49,16 +49,12 @@
 --- _css/foundation_flex.css ---
 --- _css/foundation_menu.css ---
 --- _css/foundation_dropdown_menu.css ---
---- standard/_css/theme.css ---
---- standard/_css/general.css ---
---- _css/typo.css ---
---- _css/breadcrumbs.css ---
---- _css/menumodubox-accordion.css ---
---- standard/_css/menumodubox_fixed.css ---
---- standard/_css/logo.css ---
 --- _css/foundation_visibility.css ---
---- standard/_css/std_l2w.css ---
 --- _css/foundation_xygrid.css ---
 #
-# 4. Nova : surcharges, en dernier.
+# 4. Nova : surcharges, en dernier. Le cadre de Standard (theme.css, general.css, typo.css,
+#    breadcrumbs.css, menumodubox-accordion.css, menumodubox_fixed.css, logo.css, std_l2w.css) est
+#    remplacé par cadre.css et composants.css, qui en reprennent les contextes particuliers.
+--- Nova/_css/composants.css ---
+--- Nova/_css/cadre.css ---
 --- Nova/_css/base.css ---

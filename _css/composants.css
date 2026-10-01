@@ -1,0 +1,90 @@
+/* Nova — composants partagés avec les modules de WIMS.
+ * Reprend, sur les jetons, les règles de couleur que htmlheader.phtml de Standard écrivait en
+ * dur à partir des réglages de la classe (tableaux, légendes, boutons, wims_color1..3…). */
+
+/* Boutons */
+input[type="submit"], input[type="button"], .main_body .wims_button, button.wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  border: 0;
+  border-radius: var(--nova-rayon);
+  font-family: var(--nova-police);
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 var(--nova-e4);
+  cursor: pointer;
+}
+input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:hover {
+  background-color: color-mix(in oklab, var(--nova-accent) 85%, black);
+  color: var(--nova-sur-accent);
+}
+.main_body .wims_button_help, .main_body a.wims_button_help {
+  background-color: var(--nova-aide);
+  color: #FFFFFF;
+  border-radius: var(--nova-rayon);
+}
+.main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Champs */
+input[type="text"], input[type="password"], input[type="email"], input[type="number"],
+input[type="date"], input[type="url"], input[type="search"], input:not([type]), select, textarea {
+  font-family: var(--nova-police);
+  font-size: 1rem;
+  color: var(--nova-texte);
+  background-color: var(--nova-surface);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+}
+
+/* Tableaux WIMS */
+.wimstable th { background-color: var(--nova-surface-2); color: var(--nova-texte); }
+.wimstable th a { color: inherit; }
+.wimstable caption, .wims_title_seq, .wims_widget_box .title_box {
+  background-color: var(--nova-accent-doux);
+  color: var(--nova-texte);
+}
+.wimstable > caption a { color: inherit; }
+.wimstable > caption .wims_button, .wimstable th .wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+}
+
+/* Encadrés et légendes */
+.property_fields { border-color: var(--nova-bord); border-radius: var(--nova-rayon-carte); }
+.property_fields legend { background-color: var(--nova-accent); color: var(--nova-sur-accent); border-radius: 6px; }
+.property_fields legend > a { color: var(--nova-sur-accent); }
+.legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_emph { color: var(--nova-lien); }
+
+/* Couleurs de rôle que des modules demandent par classe */
+.wims_color1 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+.wims_color2 { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_color3 { background-color: var(--nova-aide); color: #FFFFFF; }
+
+/* Documents (adm/doc) et infobulles */
+.container h4 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_pendant, #menu_html { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_avant, #menu_apres { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.infobulle { background-color: var(--nova-neutre-fort); color: #FFFFFF; }
+
+/* Messages */
+.wims_msg { border-radius: var(--nova-rayon); }
+.wims_msg.info { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: transparent; }
+.wims_msg.success { background-color: var(--nova-succes-fond); color: var(--nova-succes); }
+.wims_msg.warning { background-color: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.wims_msg.alert { background-color: var(--nova-erreur-fond); color: var(--nova-erreur); }
+
+/* Typographie de contenu (reprise de _css/typo.css, retiré du modèle) */
+img { max-width: 100%; }
+blockquote { margin: .5rem 0 1rem; padding: .5rem 1.25rem; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); }
+cite { display: block; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+abbr[title] { border-bottom: 1px dotted currentColor; cursor: help; text-decoration: none; }
+a { background-color: transparent; text-decoration: none; cursor: pointer; }
+a img { border: 0; }
+.link_icon.erase { color: var(--nova-erreur); }
+a.erase:hover { color: color-mix(in oklab, var(--nova-erreur) 80%, black); }
+.table-scroll { overflow-x: auto; }
+.wims_warning { color: var(--nova-attention-texte); font-weight: 700; }
+div.wims_warning { padding: .5em 20px; }
+span.tooltip { color: var(--nova-lien); }
+.debug { background: #000; padding: .5em; color: darkorange; font-family: monospace; }

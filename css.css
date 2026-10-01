@@ -4701,639 +4701,6 @@ div.wims_prems{
   .is-dropdown-submenu.js-dropdown-active {
     display: block; }
 
-/*! depuis standard/_css/theme.css */
-/* WIMS BOXES */
-.main_body{
-  max-width:1440px;
-  margin:auto;
-}
-#wimsbodybox {
-  padding: 0;
-  margin: 0;
-}
-#wimspagebox {
-   padding: 0;
-   /*margin: .5em;*/
-   /*min-height:46em;*/
-}
-#wimstopbox {
-  left:auto;
-  right:auto;
-  /*overflow: hidden;*/
-  text-align:right;
-  background-image: linear-gradient(to top, rgba(0,0,0,0) 70%,rgba(0,0,0,.2) 90%);
-  box-shadow: 1px -1px 0 rgba(0, 0, 0, .5);
-  padding: 1em 1em 0 0;
-}
-#wimsmenubox{
-  /*padding: .5em .5em 1em .5em;*/
-  box-shadow: 1px 2px 3px rgba(0, 0, 0, .5);
-}
-
-#wimstailbox {
-  margin-top: 5px;
-  bottom: 0;
-  left: 0;
-}
-
-/* Permalink Styles */
-#export_media{
-    text-align: left;
-}
-#export_media a{
-    min-height: initial;
-    line-height: normal;
-    padding:0;
-}
-
-/*#wimsfrontpage{
-  min-width:650px;
-}*/
-
-/* Permet d'afficher 2 barres de menus sur la même ligne (cf documents) */
-#wimstopbox>.wimsmenu{
-  display:inline-block;
-  /*margin-top:1em;*/
-}
-#wimstopbox>.wimsmenu:not(.dropdown)>.menuitem{
-  margin-left:1em;
-}
-
-#wimstopbox .wimsmenu .topmenuitem a {
-  text-decoration: none;
-}
-/*#wimstopbox .wimsmenu .topmenuitem a:hover,
-#wimsmenumodubox .wimsmenu .menuitem a:hover {
-  text-decoration:underline;
-}*/
-.topmenuitem a {
-  display: inline-block;
-  padding: 5px 5px;
-  text-decoration: none;
-}
-/*.menuitem a {
-  display: inline-block;
-  text-decoration: none;
-}*/
-/*.menuitem:not(.is-submenu-item)>a:hover {text-decoration:underline;}*/
-
-#wimsmenumodubox .wimsmenu {
-  padding-top: 1px;
-  padding-bottom: 4px;
-}
-div.wimsmenu {
-  font-size: 90%;
-}
-#wimstopbox .menuitem {
-  display: inline-block;
-  /*padding: 1px 10px 1px 10px;*/
-  /*min-height:2.5em;*/
-}
-/*div.wimsmenu .menuitem {
-  display: inline-block;
-  _display: inline;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  min-height:2.5em;
-}*/
-div.menublock .menuitem {
-  display: block;
-  _display: inline;
-  padding-top: 1px;
-  padding-bottom: 1px;
-}
-div.menublock {
-  display: inline-block;
-  _display: block;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-div.tailitem {
-  font-size: small;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  left:0px;
-}
-/* END OF MODUBOX */
-#wimsmhelp .wimsbody {
-  padding-left : 10%;
-  padding-right : 10%;
-  margin-left : 0;
-}
-.wimstail {
-  text-align: center;
-  font-size:80%;
-}
-div.tailsepdoc {display: inline-block;}
-#wimsbodybox #wimsmenutab .wimsmenu .menuitem {
-  display: inline-block;
-  padding: 1px 10px;
-  text-decoration: none;
-  border: thin black solid;
- /* border-radius : 20px 20px 0 0;*/
-}
-#wimsbodybox #wimsmenutab .wimsmenu .itemsep {
-  display: inline-block;
-  padding: 0px 30px;
-  text-decoration: none;
-}
-/* WIMS BOXES in special context*/
-#wimsexam .wimsbody {
-  padding-left: 10%;
-  padding-right: 10%;
-  margin-left: 0;
-}
-
-#wimslightpopup #wimsbodybox #wimspagebox .wimsbody {
-  padding-left : 20px;
-  padding-right : 20px;
-  margin-left : 0;
-}
-#wimslightpopup #wimstailbox .tailitem {
-  padding-right:20px;
-  text-align:right;
-  color:#555555;
-  font-weight:bold;
-  font-size:90%;
-}
-/* end of WIMS BOXES in special context*/
-
-  /***************************/
-.main_body .menuitem>.wimsmanager{
-   color:white;
-  background-color:black;
-  padding:.5em; /*max-width:100px;*/
-}
-/* Small screens */
-@media only screen and (max-width: 40em) {
-} /* max-width 640px, mobile-only styles, use when QAing mobile issues */
-/* Medium screens */
-@media only screen and (min-width: 40.063em) and (max-width: 64em) {
-} /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
-/* Small & medium screens */
-@media only screen and (max-width: 64em) {
-  #wimsmenubox {
-    border-top:1px solid #FFF;
-  }
-}
-/* Large screens */
-@media only screen and (min-width: 64.063em) {
-  #wimstopbox {
-    /*margin-left: 10px;
-    margin-right: 10px;*/
-   /* border-radius : 20px 20px 0 0;*/
-  }
-  #wimsmenubox {
-    margin-top: 1px;
-    /*margin-left: 10px;
-    margin-right: 10px;*/
-    background-color:white;
-    /*border-radius : 0 0 20px 20px;*/
-    text-align: center;
-    background-image: linear-gradient(to bottom, rgba(0,0,0,0) 70%,rgba(0,0,0,.2) 90%);
-    position: relative;
-  }
-  #wimsmenubox>.wimsmenu{
-    display: inline-block;
-  }
-} /* min-width 1025px, large screens */
-
-/*! depuis standard/_css/general.css */
-/* General */
-body {
-  margin:0;
-  font-family: arial, verdana, helvetica, sans-serif;
-}
-
-/*li {margin-bottom: 8px;}*/
-
-a:hover {text-decoration:none;}
-a:hover img{opacity:.75;}
-
-.table-scroll {
-  overflow-x: auto; }
-
-.wimsbody {
-  padding : 5px 20px;
-}
-
-/** Affichage tres contrast� pour des fins de debogage : **/
-.debug{
-  background-color: black;
-  padding:0.5em;
-  color:darkorange;
-  font-family: monospace;
-}
-.debug ul{
-  font-size: 105%;
-}
-
-.wims_seq, .wims_sheet {
-  background-image: linear-gradient(to top, rgba(255,255,255,0) 0%,rgba(255,255,255,0.5) 100%);
-}
-
-.wims_warning{
-  color:brown;
-  font-weight:bold;
-}
-/* warning de type "bloc" */
-div.wims_warning{
-  padding:.5em 20px
-}
-
-
-#docnavigation{
-  /*margin-left: 11em;*/
-  background-color: aliceblue;
-}
-/*#docnavigation .menuitem>a{color:#000;}*/
-
-span.tooltip {color:#A52A2A;}
-
-/* Small screens */
-@media only screen and (max-width: 40em) {
-  .wimsbody {
-    padding : 2px 5px;
-  }
-} /* max-width 640px, mobile-only styles, use when QAing mobile issues */
-
-/* Medium screens */
-@media only screen and (min-width: 40.063em) and (max-width: 64em) {
-  /*.wimsbody {
-    padding : 0 10px;
-  }*/
-} /* min-width 641px and max-width 1024px, use when QAing tablet-only issues */
-
-/* Large screens */
-@media only screen and (min-width: 64.063em) {
-
-  body {
-    margin: 5px;
-    padding: 0 10px 10px 10px;
-  }
-  .wimsbody, .breadcrumbs li:first-child {
-    margin-left : 170px;
-  }
-
-} /* min-width 1025px, large screens */
-
-/*! depuis _css/typo.css */
-/***********************************************/
-/********** Base Typography ********************/
-/***********************************************/
-
-/*
-Typography in Foundation 6 is meant to make your life easier by providing clean,
- attractive, simple default styles for all of the most basic typographical elements.
-*/
-
-img{max-width: 100%}
-
-/* Citation Blockquotes */
-blockquote, blockquote p {
-  line-height: 1.6;
-  color: #666;
-}
-blockquote {
-  font-family: "Times New Roman", Georgia, Serif;
-  font-size: 1rem;
-  margin: .5rem 0 1rem;
-  padding: .5625rem 1.25rem;
-  border-left: 3px solid #cacaca;
-}
-
-/* author of a blockquote */
-cite {
-  display: block;
-  font-size: 0.8125rem;
-  color: #717171;
-}
-
-/* abbreviations */
-
-abbr, abbr[title] {
-    border-bottom: 1px dotted #0a0a0a;
-    cursor: help;
-    text-decoration: none;
-}
-
-
-/* Links
-       ========================================================================== */
-/**
-     * 1. Remove the gray background on active links in IE 10.
-     * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.
-     */
-a {
-  background-color: transparent;
-  /* 1 */
-  -webkit-text-decoration-skip: objects;
-  /* 2 */ }
-
-/**
-     * Remove the outline on focused links when they are also active or hovered
-     * in all browsers (opinionated).
-     */
-a:active,
-a:hover {
-  outline-width: 0; }
-
-a {
-  line-height: inherit;
-  text-decoration: none;
-  cursor: pointer; }
-  a img {border: 0; }
-
-.link_icon.erase {color:#CC4B37;}/*A52A2A*/
-a.erase:hover {color:#A53B2A;}
-
-/*! depuis _css/breadcrumbs.css */
-/** Default breadcrumbs ("fil d'ariane") style (from Foundation for Sites 6.2.1 Breadcrumbs) */
-
-/* WIMS CUSTOM styles */
-
-.breadcrumbs {
-  margin:0;
-  /* prevents a too large display when dyslexic mode is activated*/
-  line-height: 1em;
-}
-
-.breadcrumbs .menuitem{
-  padding: 0;
-  /*min-height: 1em;*/
-}
-
-#wimstopbox .breadcrumbs>.menuitem>a,
-.breadcrumbs>.menuitem>a,
-.breadcrumbs .menuitem>.text_item{
-  background-size: contain;
-  background-repeat: no-repeat;
-  line-height: 1em;
-  /*padding: 0 0 0 1.5em;*/
-}
-.breadcrumb_root a{
-  background-image: none;
-}
-
-
-
-/*Foundation 5 style*/
-.breadcrumbs {
-  border-style: solid;
-  border-width: 1px;
-  /*display: block;*/
-  /*list-style: none;*/
-  /*margin-left: 0;*/
-  /*overflow: hidden;*/
-  padding: 0.5rem 0.77778rem 0.5rem;
-  background-color: #f4f4f4;
-  border-color: gainsboro;
-  /*border-radius: 3px;*/
-}
-
-
-/* Foundation 6 */
-
-.breadcrumbs {
-  list-style:none;
-  /*margin:0 0 1rem;*/
-}
-
-.breadcrumbs::before,.breadcrumbs::after {
-  content:' ';
-  display:table;
-}
-
-.breadcrumbs::after {
-  clear:both;
-}
-
-.breadcrumbs li {
-  float: left;
-  color: #0a0a0a;
-  font-size: .6875rem;
-  cursor: default;
-  text-transform: uppercase;
-  /*font-variant:small-caps;*/
-}
-
-.breadcrumbs li:not(:last-child)::after {
-  color: #cacaca;
-  content: "/";
-  position: relative;
-  top: 1px;
-  opacity: 1;
-  margin: 0 .75em;
-}
-
-.breadcrumbs>li>a {
-  color: #2ba6cb;
-  text-decoration: none;
-}
-
-.breadcrumbs a:hover {
-  text-decoration: underline;
-}
-
-.breadcrumbs .disabled {
-  color: #cacaca;
-  cursor: not-allowed;
-}
-
-/*! depuis _css/menumodubox-accordion.css */
-/* WIMS MENU MODU BOX - Accordion style */
-
-#wimsbodybox #wimsmenumodubox{
-  padding-bottom:.8rem;
-  padding-top:.8rem;
-  /*padding-right:5px;*/
-}
-
-#wimsmenumodubox .menu_title{
-  margin: 0 1px;
-  padding-left: .4em;
-}
-
-#wimsmenumodubox .wimsmenu{
-  background: transparent;
-  text-align:left;
-  border:none;
-  padding-right:0;
-  padding-left: 0;
-}
-
-/*#wimsmenumodubox .ui-accordion-icons{
-  padding-left: 1em;
-}*/
-#wimsmenumodubox .ui-accordion-header .ui-accordion-header-icon{
-  left: 0;
-}
-
-#wimsmenumodubox .wimsmenu>.menuitem{
-  width:100%;
-}
-#wimsmenumodubox .wimsmenu>.menuitem>a{
-  /* overwrite icon.css rule */
-  display:block;
-}
-
-
-.modubox_content .wims_button_help{
-  margin:0 2px;
-  width:100%;
-}
-#wimsmenumodubox .menu a.wims_button_help:hover{
-  background-color: var(--wims_ref_button_help_bgcolor);
-  color: var(--wims_ref_button_help_color);
-}
-
-
-/*#wimsmenumodubox .menuitem>a{
-  margin-bottom : 5px;
-}*/
-
-/*#wimsmenumodubox .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{
-  background-color: transparent;
-  background-image: none;
-}*/
-
-/*#wimsmenumodubox .menu_title{
-  margin:0;
-  margin-left:.5em;
-}
-
-#wimsmenumodubox h2{
-  font-size: 1em;
-}
-
-#wimsmhelp #wimsmenumodubox {visibility:hidden;}
-
-#wimsmenumodubox .wimsmenu{
-  padding:5px;
-}
-
-#wimsmenumodubox .wimsmenu .menuitem {
-  text-align:left;
-  min-height:1.5em;
-}
-
-#wimsmenumodubox ul.wimsmenu li.menuitem {
-  display:block;
-  text-align:left;
-  min-height:1.5em;
-}
-
-#wimsmenumodubox .wimsmenu .menuitem a {
-  display: block;
-  padding-top: 0;
-  padding-bottom: .4em;
-  text-decoration: none;
-}*/
-
-/*#wimsmenumodubox .wimsmenu .itemsep {
-  display: block;
-  margin:10px;
-  border-top: thin white solid;
-}
-#wimsmenumodubox hr.itemsep {
-  margin-top:-.25em;
-}
-
-#wimsmenumodubox .wimstail {
-  text-align: left;
-  font-size:80%;
-  padding:10px;
-  margin:10px;
-  border-radius : 20px;
-}*/
-
-
-
-/*! depuis standard/_css/menumodubox_fixed.css */
-/* WIMS MENU MODU BOX */
-
-#wimsmenumodubox:not(.accordion) .menu_title{
-  margin: 0 5px;
-  font-size: 1.2em;
-}
-
-#wimsfrontpage #wimsmenumodubox {
-  /*position: absolute;*/
-  padding-top: .8rem;
-}
-
-.modubox_content .menuitem{
-  width:100%;
-}
-/*#wimsmenumodubox .menuitem a{
-  padding-top: 5px;
-}*/
-
-/* Small & medium screens */
-@media only screen and (max-width: 64em) {
-  #wimsmenumodubox .menuitem{
-    display: inline-block;
-  }
-}
-
-/* Medium screens */
-@media only screen and (min-width: 40.063em) and (max-width: 64em) {}
-
-/* Large screens */
-@media only screen and (min-width: 64.063em) {
-
-  #wimsmenumodubox {
-    margin-top: 0;
-    margin-right: 0;
-    /*margin-left: 10px;*/
-    padding:0;
-    position: fixed;
-    /*_position:absolute;*/
-    top:3.5em;
-    max-height: calc(100vh - 3.5em);
-    width:165px;
-    /*left: auto;*/
-    overflow-y: auto;
-    text-align:left;
-    z-index:100;
-  }
-
-  /*#wimsmenumodubox .wimsmenu .menuitem {
-    display:block;
-  }*/
-
-} /* min-width 1025px, large screens */
-
-/*! depuis standard/_css/logo.css */
-/* WIMS Logo */
-.wimslogo {
-  float:right;
-  padding:10px 15px;
-}
-
-/* Institution Logo */
-#wimstopbox .institution_logo{
-  margin:-.5rem .5rem 0 2rem;
-}
-#wimstopbox .institution_logo img{
-  max-height:2.5em;
-}
-#wimstailbox .institution_logo{margin-top:1em;}
-#wimstailbox .institution_logo img{
-  max-height:3em;
-}
-
-/* Class Logo */
-
-#classlogo {
-  padding:10px 22px;
-}
-#classlogo img{
-  max-height: 100px;
-}
-
 /*! depuis _css/foundation_visibility.css */
 /**
  * Foundation for Sites
@@ -5429,32 +4796,6 @@ a.erase:hover {color:#A53B2A;}
     .hide-for-landscape,
     .show-for-portrait {
       display: block !important; } }
-
-/*! depuis standard/_css/std_l2w.css */
-/* Special Media queries for Latex2WIMS in standard theme */
-
-/* Large screens */
-@media only screen and (min-width: 64.063em) {
-  /*display l2w left toc under wimsmenumodubox */
-  #wimspagebox{position:relative;}
-  #wimsdoc #left_toc, #wimsdoc #wimsmenumodubox{
-    max-width: 160px;
-    box-sizing: content-box;
-  }
-  #wimsdoc #wimsmenumodubox{
-    /*top:0;
-    margin-top:-2.3em;*/
-    position: absolute;
-    padding-top:0;
-    padding-bottom: 0;
-  }
-  #wimsdoc #left_toc{
-    left:0;
-    margin:0;
-    top:9.5em;
-    min-width:10em;
-  }
-}
 
 /*! depuis _css/foundation_xygrid.css */
 /**
@@ -6888,6 +6229,379 @@ a.erase:hover {color:#A53B2A;}
 @media print, screen and (min-width: 64em) {
   .grid-margin-y.large-grid-frame {
     height: calc(100vh + 1.875rem); } }
+
+/*! depuis Nova/_css/composants.css */
+/* Nova — composants partagés avec les modules de WIMS.
+ * Reprend, sur les jetons, les règles de couleur que htmlheader.phtml de Standard écrivait en
+ * dur à partir des réglages de la classe (tableaux, légendes, boutons, wims_color1..3…). */
+
+/* Boutons */
+input[type="submit"], input[type="button"], .main_body .wims_button, button.wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  border: 0;
+  border-radius: var(--nova-rayon);
+  font-family: var(--nova-police);
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 var(--nova-e4);
+  cursor: pointer;
+}
+input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:hover {
+  background-color: color-mix(in oklab, var(--nova-accent) 85%, black);
+  color: var(--nova-sur-accent);
+}
+.main_body .wims_button_help, .main_body a.wims_button_help {
+  background-color: var(--nova-aide);
+  color: #FFFFFF;
+  border-radius: var(--nova-rayon);
+}
+.main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Champs */
+input[type="text"], input[type="password"], input[type="email"], input[type="number"],
+input[type="date"], input[type="url"], input[type="search"], input:not([type]), select, textarea {
+  font-family: var(--nova-police);
+  font-size: 1rem;
+  color: var(--nova-texte);
+  background-color: var(--nova-surface);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+}
+
+/* Tableaux WIMS */
+.wimstable th { background-color: var(--nova-surface-2); color: var(--nova-texte); }
+.wimstable th a { color: inherit; }
+.wimstable caption, .wims_title_seq, .wims_widget_box .title_box {
+  background-color: var(--nova-accent-doux);
+  color: var(--nova-texte);
+}
+.wimstable > caption a { color: inherit; }
+.wimstable > caption .wims_button, .wimstable th .wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+}
+
+/* Encadrés et légendes */
+.property_fields { border-color: var(--nova-bord); border-radius: var(--nova-rayon-carte); }
+.property_fields legend { background-color: var(--nova-accent); color: var(--nova-sur-accent); border-radius: 6px; }
+.property_fields legend > a { color: var(--nova-sur-accent); }
+.legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_emph { color: var(--nova-lien); }
+
+/* Couleurs de rôle que des modules demandent par classe */
+.wims_color1 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+.wims_color2 { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_color3 { background-color: var(--nova-aide); color: #FFFFFF; }
+
+/* Documents (adm/doc) et infobulles */
+.container h4 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_pendant, #menu_html { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_avant, #menu_apres { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.infobulle { background-color: var(--nova-neutre-fort); color: #FFFFFF; }
+
+/* Messages */
+.wims_msg { border-radius: var(--nova-rayon); }
+.wims_msg.info { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: transparent; }
+.wims_msg.success { background-color: var(--nova-succes-fond); color: var(--nova-succes); }
+.wims_msg.warning { background-color: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.wims_msg.alert { background-color: var(--nova-erreur-fond); color: var(--nova-erreur); }
+
+/* Typographie de contenu (reprise de _css/typo.css, retiré du modèle) */
+img { max-width: 100%; }
+blockquote { margin: .5rem 0 1rem; padding: .5rem 1.25rem; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); }
+cite { display: block; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+abbr[title] { border-bottom: 1px dotted currentColor; cursor: help; text-decoration: none; }
+a { background-color: transparent; text-decoration: none; cursor: pointer; }
+a img { border: 0; }
+.link_icon.erase { color: var(--nova-erreur); }
+a.erase:hover { color: color-mix(in oklab, var(--nova-erreur) 80%, black); }
+.table-scroll { overflow-x: auto; }
+.wims_warning { color: var(--nova-attention-texte); font-weight: 700; }
+div.wims_warning { padding: .5em 20px; }
+span.tooltip { color: var(--nova-lien); }
+.debug { background: #000; padding: .5em; color: darkorange; font-family: monospace; }
+
+/*! depuis Nova/_css/cadre.css */
+/* Nova — cadre de page : barre du haut, fil d'Ariane, menu latéral, corps.
+ *
+ * Structure produite par WIMS (header.phtml, tail.phtml et themes/_widgets), identique pour
+ * tous les rôles :
+ *   body > #wimstopbox                      barre du haut (classe, compte, aide…)
+ *   body > nav > ul.breadcrumbs             fil d'Ariane
+ *   body > #wimsbodybox > #wimspagebox      la page (.wimsbody)
+ *                       > #wimsmenumodubox  le menu latéral, APRÈS la page dans le HTML
+ * Nova ne touche pas à ce HTML (il porte les liens, c'est-à-dire les fonctions) : il le
+ * dispose. Ordinateur (≥ 1024 px) : menu à gauche dans une grille. Téléphone et tablette :
+ * menu replié, ouvert par le bouton que js/nova.js ajoute à la barre du haut.
+ */
+
+body.main_body { max-width: none; margin: 0; padding: 0; }
+
+/* ---------- Barre du haut ---------- */
+#wimstopbox {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  min-height: 64px;
+  box-sizing: border-box;
+  padding: 0 var(--nova-e5);
+  background: var(--nova-accent);
+  background-image: none;
+  box-shadow: none;
+  color: var(--nova-sur-accent);
+  text-align: left;
+}
+#wimstopbox > .wimsmenu { display: flex; align-items: center; gap: var(--nova-e1); margin: 0; }
+#wimstopbox > .wimsmenu.float_left { float: none; margin-right: auto; }
+#wimstopbox .menuitem { display: inline-flex; align-items: center; margin: 0; }
+#wimstopbox > .wimsmenu:not(.dropdown) > .menuitem { margin-left: 0; }
+#wimstopbox a,
+#wimstopbox .menuitem:not(.is-submenu-item) > a,
+#wimstopbox .text_item {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nova-cible);
+  padding: 0 var(--nova-e3);
+  border-radius: 8px;
+  color: var(--nova-sur-accent);
+  font-size: 1rem;
+  text-decoration: none;
+  background: transparent;
+}
+#wimstopbox .class_home .text_item,
+#wimstopbox .class_home > a { font-size: 1.125rem; font-weight: 700; padding-left: 0; }
+#wimstopbox a:hover, #wimstopbox a:focus-visible { background: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
+#wimstopbox .menu a:hover,
+#wimstopbox > .menu > .menuitem > a:hover { background-color: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
+#wimstopbox > .dropdown.menu > li.is-active > a { background-color: rgb(255 255 255 / 18%); color: var(--nova-sur-accent); }
+#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a { padding-right: 32px; position: relative; }
+#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a::after { border-top-color: var(--nova-sur-accent); right: 12px; }
+
+/* Sous-menu du compte (menu déroulant Foundation : le JS de Foundation reste chargé) */
+#wimstopbox .is-dropdown-submenu {
+  min-width: 220px;
+  padding: var(--nova-e2);
+  background: var(--nova-surface);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+}
+#wimstopbox .is-dropdown-submenu .menuitem { display: block; }
+#wimstopbox .is-dropdown-submenu a,
+#wimstopbox .is-dropdown-submenu .menuitem > a {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--nova-texte);
+  min-height: 40px;
+}
+#wimstopbox .is-dropdown-submenu a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+
+/* ---------- Fil d'Ariane ---------- */
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nova-e1);
+  margin: 0;
+  padding: var(--nova-e3) var(--nova-e5);
+  list-style: none;
+  line-height: 1.3;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--nova-bord);
+}
+.breadcrumbs::before, .breadcrumbs::after { content: none; }
+.breadcrumbs li {
+  float: none;
+  font-size: var(--nova-petit);
+  text-transform: none;
+  color: var(--nova-texte-2);
+  cursor: default;
+}
+.breadcrumbs li:not(:last-child)::after { content: "›"; margin: 0 .5em; color: var(--nova-bord-fort); top: 0; }
+.breadcrumbs > li > a, .breadcrumbs a { color: var(--nova-lien); text-decoration: none; }
+.breadcrumbs a:hover { text-decoration: underline; }
+.breadcrumbs .menuitem { padding: 0; }
+
+/* ---------- Corps ---------- */
+#wimsbodybox { padding: 0; margin: 0; }
+#wimspagebox { padding: 0; background: var(--nova-fond); }
+.wimsbody { padding: var(--nova-e6) var(--nova-e7); margin-left: 0; }
+
+/* ---------- Menu latéral ---------- */
+#wimsmenumodubox {
+  box-sizing: border-box;
+  padding: var(--nova-e4) var(--nova-e3);
+  background: var(--nova-surface);
+  border-right: 1px solid var(--nova-bord);
+  color: var(--nova-texte);
+  text-align: left;
+  font-size: 1rem;
+}
+#wimsmenumodubox .wimsmenu { padding: 0; background: transparent; border: 0; font-size: 1rem; }
+#wimsmenumodubox .menuitem { display: block; width: 100%; padding: 0; }
+#wimsmenumodubox .wimsmenu > .menuitem > a,
+#wimsmenumodubox .menuitem > a {
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  min-height: 40px;
+  padding: 0 var(--nova-e3);
+  border-radius: var(--nova-rayon);
+  color: var(--nova-texte);
+  text-decoration: none;
+  background: transparent;
+}
+#wimsmenumodubox .menuitem > a:hover,
+#wimsmenumodubox .menu a:hover,
+#wimsmenumodubox a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+#wimsmenumodubox .menuitem > a::before { color: var(--nova-texte-2); }
+
+/* Titres de groupe. Chez l'enseignant, WIMS fait du menu un accordéon jQuery UI : Nova montre
+ * tous les groupes ouverts (comme sur la maquette) et retire l'apparence d'accordéon. */
+#wimsmenumodubox .menu_title,
+#wimsmenumodubox .menu_title.ui-accordion-header,
+#wimsmenumodubox .ui-accordion-header.ui-state-default,
+#wimsmenumodubox .ui-accordion-header.ui-state-active {
+  margin: var(--nova-e4) 0 var(--nova-e1);
+  padding: 0 var(--nova-e3);
+  font-family: var(--nova-police);
+  font-size: .8125rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--nova-texte-2);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: default;
+}
+#wimsmenumodubox .menu_title:first-child { margin-top: 0; }
+#wimsmenumodubox .ui-accordion-header-icon { display: none; }
+#wimsmenumodubox .ui-accordion-content {
+  display: block !important;   /* jQuery UI replie les groupes par un style en ligne */
+  height: auto !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+#wimsmenumodubox.ui-widget, #wimsmenumodubox .ui-widget-content { font-family: var(--nova-police); }
+.modubox_content .wims_button_help { width: 100%; margin: 0; }
+
+/* Ordinateur : grille menu | page, le menu restant visible au défilement. */
+@media (min-width: 1024px) {
+  #wimsbodybox:has(> #wimsmenumodubox) {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+    grid-template-areas: "menu page";
+    align-items: start;
+  }
+  #wimsbodybox:has(> #wimsmenumodubox) > #wimspagebox { grid-area: page; }
+  #wimsbodybox > #wimsmenumodubox {
+    grid-area: menu;
+    position: sticky;
+    top: 64px;
+    width: auto;
+    max-height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+    overflow-y: auto;
+    margin: 0;
+    z-index: 100;
+  }
+  body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: calc(264px + var(--nova-e5)); }
+  #wimstopbox .nova-menu-bouton { display: none; }
+}
+
+/* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */
+@media (max-width: 1023.98px) {
+  #wimstopbox { padding: 0 var(--nova-e2) 0 var(--nova-e2); }
+  .wimsbody { padding: var(--nova-e4); }
+  .breadcrumbs { padding: var(--nova-e2) var(--nova-e4); }
+  #wimsbodybox > #wimsmenumodubox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 86vw);
+    max-height: none;
+    overflow-y: auto;
+    z-index: 300;
+    padding-top: var(--nova-e5);
+    transform: translateX(-102%);
+    transition: transform .2s ease;
+    box-shadow: 0 0 32px rgb(0 0 0 / 25%);
+    visibility: hidden;
+  }
+  body.nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  body.nova-menu-ouvert::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background: rgb(0 0 0 / 40%);
+  }
+  #wimsmenumodubox .menuitem { display: block; }
+}
+.nova-menu-bouton {
+  order: -1;
+  flex-shrink: 0;
+  width: var(--nova-cible);
+  height: var(--nova-cible);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--nova-rayon);
+  background: rgb(255 255 255 / 14%);
+  color: var(--nova-sur-accent);
+  cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { #wimsbodybox > #wimsmenumodubox { transition: none; } }
+
+/* ---------- Bas de page et retour en haut ---------- */
+.wimstail { text-align: center; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+div.tailitem { font-size: var(--nova-petit); padding: 1px 0; }
+div.tailsepdoc { display: inline-block; }
+
+/* ---------- Contextes particuliers (repris de standard/_css/theme.css) ---------- */
+#wimsmhelp .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
+#wimsexam .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
+#wimslightpopup #wimsbodybox #wimspagebox .wimsbody { padding-left: 20px; padding-right: 20px; margin-left: 0; }
+#wimslightpopup #wimstailbox .tailitem { padding-right: 20px; text-align: right; color: var(--nova-texte-2); font-weight: 700; font-size: 90%; }
+#export_media { text-align: left; }
+#export_media a { min-height: initial; line-height: normal; padding: 0; }
+#docnavigation { background-color: var(--nova-accent-doux); }
+#wimsbodybox #wimsmenutab .wimsmenu .menuitem {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: 8px 8px 0 0;
+}
+#wimsbodybox #wimsmenutab .wimsmenu .itemsep { display: inline-block; padding: 0 30px; }
+div.menublock { display: inline-block; padding: 0 15px; }
+div.menublock .menuitem { display: block; padding: 1px 0; }
+
+/* Logos (repris de standard/_css/logo.css) */
+.wimslogo { float: right; padding: 10px 15px; }
+#wimstopbox .institution_logo { margin: 0 .5rem 0 0; }
+#wimstopbox .institution_logo img { max-height: 40px; }
+#wimstailbox .institution_logo { margin-top: 1em; }
+#wimstailbox .institution_logo img { max-height: 3em; }
+#classlogo { padding: 10px 22px; }
+#classlogo img { max-height: 100px; }
+
+/* latex2wims (repris de standard/_css/std_l2w.css) : table des matières sous le menu */
+@media (min-width: 1024px) {
+  #wimspagebox { position: relative; }
+  #wimsdoc #left_toc { max-width: 160px; box-sizing: content-box; left: 0; margin: 0; top: 9.5em; min-width: 10em; }
+}
 
 /*! depuis Nova/_css/base.css */
 /* Nova — base : police, couleurs de page, liens. Chargée après les feuilles communes de WIMS

@@ -1,0 +1,279 @@
+/* Nova — cadre de page : barre du haut, fil d'Ariane, menu latéral, corps.
+ *
+ * Structure produite par WIMS (header.phtml, tail.phtml et themes/_widgets), identique pour
+ * tous les rôles :
+ *   body > #wimstopbox                      barre du haut (classe, compte, aide…)
+ *   body > nav > ul.breadcrumbs             fil d'Ariane
+ *   body > #wimsbodybox > #wimspagebox      la page (.wimsbody)
+ *                       > #wimsmenumodubox  le menu latéral, APRÈS la page dans le HTML
+ * Nova ne touche pas à ce HTML (il porte les liens, c'est-à-dire les fonctions) : il le
+ * dispose. Ordinateur (≥ 1024 px) : menu à gauche dans une grille. Téléphone et tablette :
+ * menu replié, ouvert par le bouton que js/nova.js ajoute à la barre du haut.
+ */
+
+body.main_body { max-width: none; margin: 0; padding: 0; }
+
+/* ---------- Barre du haut ---------- */
+#wimstopbox {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  min-height: 64px;
+  box-sizing: border-box;
+  padding: 0 var(--nova-e5);
+  background: var(--nova-accent);
+  background-image: none;
+  box-shadow: none;
+  color: var(--nova-sur-accent);
+  text-align: left;
+}
+#wimstopbox > .wimsmenu { display: flex; align-items: center; gap: var(--nova-e1); margin: 0; }
+#wimstopbox > .wimsmenu.float_left { float: none; margin-right: auto; }
+#wimstopbox .menuitem { display: inline-flex; align-items: center; margin: 0; }
+#wimstopbox > .wimsmenu:not(.dropdown) > .menuitem { margin-left: 0; }
+#wimstopbox a,
+#wimstopbox .menuitem:not(.is-submenu-item) > a,
+#wimstopbox .text_item {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nova-cible);
+  padding: 0 var(--nova-e3);
+  border-radius: 8px;
+  color: var(--nova-sur-accent);
+  font-size: 1rem;
+  text-decoration: none;
+  background: transparent;
+}
+#wimstopbox .class_home .text_item,
+#wimstopbox .class_home > a { font-size: 1.125rem; font-weight: 700; padding-left: 0; }
+#wimstopbox a:hover, #wimstopbox a:focus-visible { background: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
+#wimstopbox .menu a:hover,
+#wimstopbox > .menu > .menuitem > a:hover { background-color: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
+#wimstopbox > .dropdown.menu > li.is-active > a { background-color: rgb(255 255 255 / 18%); color: var(--nova-sur-accent); }
+#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a { padding-right: 32px; position: relative; }
+#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a::after { border-top-color: var(--nova-sur-accent); right: 12px; }
+
+/* Sous-menu du compte (menu déroulant Foundation : le JS de Foundation reste chargé) */
+#wimstopbox .is-dropdown-submenu {
+  min-width: 220px;
+  padding: var(--nova-e2);
+  background: var(--nova-surface);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+}
+#wimstopbox .is-dropdown-submenu .menuitem { display: block; }
+#wimstopbox .is-dropdown-submenu a,
+#wimstopbox .is-dropdown-submenu .menuitem > a {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--nova-texte);
+  min-height: 40px;
+}
+#wimstopbox .is-dropdown-submenu a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+
+/* ---------- Fil d'Ariane ---------- */
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nova-e1);
+  margin: 0;
+  padding: var(--nova-e3) var(--nova-e5);
+  list-style: none;
+  line-height: 1.3;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--nova-bord);
+}
+.breadcrumbs::before, .breadcrumbs::after { content: none; }
+.breadcrumbs li {
+  float: none;
+  font-size: var(--nova-petit);
+  text-transform: none;
+  color: var(--nova-texte-2);
+  cursor: default;
+}
+.breadcrumbs li:not(:last-child)::after { content: "›"; margin: 0 .5em; color: var(--nova-bord-fort); top: 0; }
+.breadcrumbs > li > a, .breadcrumbs a { color: var(--nova-lien); text-decoration: none; }
+.breadcrumbs a:hover { text-decoration: underline; }
+.breadcrumbs .menuitem { padding: 0; }
+
+/* ---------- Corps ---------- */
+#wimsbodybox { padding: 0; margin: 0; }
+#wimspagebox { padding: 0; background: var(--nova-fond); }
+.wimsbody { padding: var(--nova-e6) var(--nova-e7); margin-left: 0; }
+
+/* ---------- Menu latéral ---------- */
+#wimsmenumodubox {
+  box-sizing: border-box;
+  padding: var(--nova-e4) var(--nova-e3);
+  background: var(--nova-surface);
+  border-right: 1px solid var(--nova-bord);
+  color: var(--nova-texte);
+  text-align: left;
+  font-size: 1rem;
+}
+#wimsmenumodubox .wimsmenu { padding: 0; background: transparent; border: 0; font-size: 1rem; }
+#wimsmenumodubox .menuitem { display: block; width: 100%; padding: 0; }
+#wimsmenumodubox .wimsmenu > .menuitem > a,
+#wimsmenumodubox .menuitem > a {
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  min-height: 40px;
+  padding: 0 var(--nova-e3);
+  border-radius: var(--nova-rayon);
+  color: var(--nova-texte);
+  text-decoration: none;
+  background: transparent;
+}
+#wimsmenumodubox .menuitem > a:hover,
+#wimsmenumodubox .menu a:hover,
+#wimsmenumodubox a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+#wimsmenumodubox .menuitem > a::before { color: var(--nova-texte-2); }
+
+/* Titres de groupe. Chez l'enseignant, WIMS fait du menu un accordéon jQuery UI : Nova montre
+ * tous les groupes ouverts (comme sur la maquette) et retire l'apparence d'accordéon. */
+#wimsmenumodubox .menu_title,
+#wimsmenumodubox .menu_title.ui-accordion-header,
+#wimsmenumodubox .ui-accordion-header.ui-state-default,
+#wimsmenumodubox .ui-accordion-header.ui-state-active {
+  margin: var(--nova-e4) 0 var(--nova-e1);
+  padding: 0 var(--nova-e3);
+  font-family: var(--nova-police);
+  font-size: .8125rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--nova-texte-2);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  cursor: default;
+}
+#wimsmenumodubox .menu_title:first-child { margin-top: 0; }
+#wimsmenumodubox .ui-accordion-header-icon { display: none; }
+#wimsmenumodubox .ui-accordion-content {
+  display: block !important;   /* jQuery UI replie les groupes par un style en ligne */
+  height: auto !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+#wimsmenumodubox.ui-widget, #wimsmenumodubox .ui-widget-content { font-family: var(--nova-police); }
+.modubox_content .wims_button_help { width: 100%; margin: 0; }
+
+/* Ordinateur : grille menu | page, le menu restant visible au défilement. */
+@media (min-width: 1024px) {
+  #wimsbodybox:has(> #wimsmenumodubox) {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+    grid-template-areas: "menu page";
+    align-items: start;
+  }
+  #wimsbodybox:has(> #wimsmenumodubox) > #wimspagebox { grid-area: page; }
+  #wimsbodybox > #wimsmenumodubox {
+    grid-area: menu;
+    position: sticky;
+    top: 64px;
+    width: auto;
+    max-height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+    overflow-y: auto;
+    margin: 0;
+    z-index: 100;
+  }
+  body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: calc(264px + var(--nova-e5)); }
+  #wimstopbox .nova-menu-bouton { display: none; }
+}
+
+/* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */
+@media (max-width: 1023.98px) {
+  #wimstopbox { padding: 0 var(--nova-e2) 0 var(--nova-e2); }
+  .wimsbody { padding: var(--nova-e4); }
+  .breadcrumbs { padding: var(--nova-e2) var(--nova-e4); }
+  #wimsbodybox > #wimsmenumodubox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 86vw);
+    max-height: none;
+    overflow-y: auto;
+    z-index: 300;
+    padding-top: var(--nova-e5);
+    transform: translateX(-102%);
+    transition: transform .2s ease;
+    box-shadow: 0 0 32px rgb(0 0 0 / 25%);
+    visibility: hidden;
+  }
+  body.nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  body.nova-menu-ouvert::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background: rgb(0 0 0 / 40%);
+  }
+  #wimsmenumodubox .menuitem { display: block; }
+}
+.nova-menu-bouton {
+  order: -1;
+  flex-shrink: 0;
+  width: var(--nova-cible);
+  height: var(--nova-cible);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--nova-rayon);
+  background: rgb(255 255 255 / 14%);
+  color: var(--nova-sur-accent);
+  cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { #wimsbodybox > #wimsmenumodubox { transition: none; } }
+
+/* ---------- Bas de page et retour en haut ---------- */
+.wimstail { text-align: center; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+div.tailitem { font-size: var(--nova-petit); padding: 1px 0; }
+div.tailsepdoc { display: inline-block; }
+
+/* ---------- Contextes particuliers (repris de standard/_css/theme.css) ---------- */
+#wimsmhelp .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
+#wimsexam .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
+#wimslightpopup #wimsbodybox #wimspagebox .wimsbody { padding-left: 20px; padding-right: 20px; margin-left: 0; }
+#wimslightpopup #wimstailbox .tailitem { padding-right: 20px; text-align: right; color: var(--nova-texte-2); font-weight: 700; font-size: 90%; }
+#export_media { text-align: left; }
+#export_media a { min-height: initial; line-height: normal; padding: 0; }
+#docnavigation { background-color: var(--nova-accent-doux); }
+#wimsbodybox #wimsmenutab .wimsmenu .menuitem {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: 8px 8px 0 0;
+}
+#wimsbodybox #wimsmenutab .wimsmenu .itemsep { display: inline-block; padding: 0 30px; }
+div.menublock { display: inline-block; padding: 0 15px; }
+div.menublock .menuitem { display: block; padding: 1px 0; }
+
+/* Logos (repris de standard/_css/logo.css) */
+.wimslogo { float: right; padding: 10px 15px; }
+#wimstopbox .institution_logo { margin: 0 .5rem 0 0; }
+#wimstopbox .institution_logo img { max-height: 40px; }
+#wimstailbox .institution_logo { margin-top: 1em; }
+#wimstailbox .institution_logo img { max-height: 3em; }
+#classlogo { padding: 10px 22px; }
+#classlogo img { max-height: 100px; }
+
+/* latex2wims (repris de standard/_css/std_l2w.css) : table des matières sous le menu */
+@media (min-width: 1024px) {
+  #wimspagebox { position: relative; }
+  #wimsdoc #left_toc { max-width: 160px; box-sizing: content-box; left: 0; margin: 0; top: 9.5em; min-width: 10em; }
+}

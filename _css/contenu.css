@@ -111,3 +111,11 @@ pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
 .wims_serie_bar .wims_exo_todo a { color: var(--nova-sur-accent); }
 .wims_serie_bar .wims_exo_done { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: var(--nova-accent-doux); }
 .wims_serie_bar .wims_exo_done::after { border-left-color: var(--nova-accent-doux); }
+
+/* ---------- Contrastes repris (audit 2026-10-01 ; trop pâles en clair comme en sombre) ---------- */
+/* Curseur de niveau du moteur de recherche (« Cycle 1 … Master ») : #999 sur blanc, 2,8:1. */
+.ui-slider-label { color: var(--nova-texte-2); }
+/* Pastille « 490 exercices » (adm/browse) : blanc sur orange, 2,1:1. */
+sup.pastille { background-color: var(--nova-attention); color: #FFFFFF; }
+/* Mots-clés de code (tt.e) en cyan clair. */
+tt.e { color: color-mix(in oklab, #48D1CC 45%, black); }

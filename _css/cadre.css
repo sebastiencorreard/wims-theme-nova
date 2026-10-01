@@ -217,6 +217,10 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
     font-size: .9375rem;
   }
   #wimstopbox .is-dropdown-submenu a { white-space: normal; }
+  /* Un nom d'élève long (« Anne Sophie Élisabeth Lefèvre Dumoulin de la Motte ») ne doit pas
+   * élargir la page : il est coupé avec des points de suspension. */
+  #wimstopbox a.account { max-width: 62vw; }
+  #wimstopbox a.account > span { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
   #wimstopbox .nova-classe { max-width: 50vw; font-size: 1rem; }
 }
 @media (max-width: 1023.98px) {

@@ -208,21 +208,72 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 
 /* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */
 @media (max-width: 639.98px) {
-  /* Barre du visiteur et des pages riches en liens : deux rangées nettes plutôt que des
-   * libellés coupés en deux. */
-  #wimstopbox { flex-wrap: wrap; row-gap: 0; }
+  /* Téléphone : la barre tient TOUJOURS sur une ligne (demande du 2026-10-01). Restent visibles :
+   * ☰, l'accueil (icône), le nom de la classe (coupé), le chronomètre, le compte, la langue ;
+   * le reste est replié par js/nova.js dans le menu « ⋯ » (.nova-plus). */
+  #wimstopbox { flex-wrap: nowrap; gap: 2px; padding: 0 var(--nova-e1); min-height: 56px; }
+  #wimstopbox > .wimsmenu { flex-wrap: nowrap; min-width: 0; gap: 0; }
+  #wimstopbox > .wimsmenu.float_left { flex: 1 1 auto; overflow: hidden; }
   #wimstopbox a, #wimstopbox .menuitem:not(.is-submenu-item) > a, #wimstopbox .text_item {
     white-space: nowrap;
     padding: 0 var(--nova-e2);
     font-size: .9375rem;
   }
   #wimstopbox .is-dropdown-submenu a { white-space: normal; }
-  /* Un nom d'élève long (« Anne Sophie Élisabeth Lefèvre Dumoulin de la Motte ») ne doit pas
-   * élargir la page : il est coupé avec des points de suspension. */
-  #wimstopbox a.account { max-width: 62vw; }
+  /* Accueil : une icône de maison ; le texte reste pour les lecteurs d'écran. */
+  #wimstopbox .class_home .text_item,
+  #wimstopbox .class_home > a {
+    position: relative;
+    width: var(--nova-cible);
+    padding: 0;
+    overflow: hidden;
+    text-indent: 200%;
+    flex-shrink: 0;
+  }
+  #wimstopbox .class_home .text_item::before,
+  #wimstopbox .class_home > a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 22px;
+    height: 22px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5'/%3E%3Cpath d='M5 9.5V20h5v-6h4v6h5V9.5'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5 12 3l9 7.5'/%3E%3Cpath d='M5 9.5V20h5v-6h4v6h5V9.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  #wimstopbox .nova-classe { flex: 1 1 auto; min-width: 0; max-width: none; padding: 0 var(--nova-e1); font-size: 1rem; }
+  /* Compte : le nom, coupé court. */
+  #wimstopbox a.account { max-width: 34vw; }
   #wimstopbox a.account > span { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
-  #wimstopbox .nova-classe { max-width: 50vw; font-size: 1rem; }
+  #wimstopbox #language_selector a.lang span { font-size: 0; }
+  #wimstopbox #language_selector a.lang img { font-size: 1rem; }
 }
+/* Menu « ⋯ » du téléphone (js/nova.js) : les entrées de la barre qui ne tiennent pas. */
+.nova-plus { position: relative; flex-shrink: 0; }
+.nova-plus-bouton {
+  width: var(--nova-cible); height: var(--nova-cible);
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0; border: 0; border-radius: var(--nova-rayon);
+  background: transparent; color: var(--nova-sur-accent); cursor: pointer;
+}
+.nova-plus-bouton[aria-expanded="true"] { background: rgb(255 255 255 / 18%); }
+.nova-plus-panneau {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 400;
+  min-width: 220px; max-width: 86vw;
+  margin: 0; padding: var(--nova-e2); list-style: none;
+  background: var(--nova-surface); border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte); box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+.nova-plus-panneau[hidden] { display: none; }
+#wimstopbox .nova-plus-panneau .menuitem { display: block; width: 100%; }
+#wimstopbox .nova-plus-panneau a,
+#wimstopbox .nova-plus-panneau .menuitem > a,
+#wimstopbox .nova-plus-panneau .text_item {
+  display: flex; width: 100%; box-sizing: border-box; min-height: var(--nova-cible);
+  white-space: normal; color: var(--nova-texte); font-size: 1rem;
+}
+#wimstopbox .nova-plus-panneau a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
 @media (max-width: 1023.98px) {
   #wimstopbox { padding: 0 var(--nova-e2) 0 var(--nova-e2); }
   .wimsbody { padding: var(--nova-e4); }

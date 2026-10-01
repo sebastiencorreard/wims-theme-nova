@@ -1,0 +1,7 @@
+!! Nova : accent = couleur des barres du site ou de la classe ($wims_ref_bgcolor). Le gris #676767 est
+!! la valeur par défaut de WIMS (DF_ref_bgcolor) : personne ne l'a choisi, on garde la prune Nova
+!! (_css/jetons.css). Lu par header, visitor, docheader et mhelpheader : ces gabarits-là sont
+!! interprétés par WIMS, contrairement à htmlheader.phtml (lu par le code C, !if non exécuté).
+!if $wims_ref_bgcolor!=$empty and $wims_ref_bgcolor notsametext #676767
+<style>:root { --nova-accent: $wims_ref_bgcolor; }</style>
+!endif

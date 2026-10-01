@@ -108,7 +108,75 @@
     }
   }
 
-  function demarrer() { initialiser(); chronometre(); }
+  /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
+   * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
+   * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
+   * à leur place exacte quand l'écran s'élargit. */
+  function barreCompacte() {
+    var barre = document.getElementById('wimstopbox');
+    if (!barre || !window.matchMedia) return;
+    var etroit = window.matchMedia('(max-width: 639.98px)');
+    var conteneur = null, bouton = null, panneau = null, deplaces = [];
+
+    function garde(item) {
+      return item.classList.contains('chrono') || item.classList.contains('class_home') ||
+        item.id === 'language_selector' || item.querySelector('a.account') ||
+        item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
+    }
+    function entreesSecondaires() {
+      var liste = [];
+      Array.prototype.forEach.call(barre.children, function (bloc) {
+        if (!bloc.classList || !bloc.classList.contains('wimsmenu')) return;
+        Array.prototype.forEach.call(bloc.children, function (item) {
+          if (item.classList.contains('menuitem') && !garde(item) && item.textContent.trim()) liste.push(item);
+        });
+      });
+      return liste;
+    }
+    function fermer() { if (panneau) { panneau.hidden = true; bouton.setAttribute('aria-expanded', 'false'); } }
+    function replier() {
+      var items = entreesSecondaires();
+      if (!items.length) return;
+      conteneur = document.createElement('div');
+      conteneur.className = 'nova-plus';
+      bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'nova-plus-bouton';
+      bouton.setAttribute('aria-expanded', 'false');
+      bouton.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'More' : 'Plus');
+      bouton.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+        '<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+      panneau = document.createElement('div');
+      panneau.className = 'nova-plus-panneau';
+      panneau.hidden = true;
+      items.forEach(function (item) {
+        deplaces.push({ item: item, parent: item.parentNode, suivant: item.nextSibling });
+        panneau.appendChild(item);
+      });
+      conteneur.appendChild(bouton);
+      conteneur.appendChild(panneau);
+      barre.appendChild(conteneur);
+      bouton.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var ouvrir = panneau.hidden;
+        panneau.hidden = !ouvrir;
+        bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+      });
+    }
+    function deplier() {
+      deplaces.reverse().forEach(function (d) { d.parent.insertBefore(d.item, d.suivant); });
+      deplaces = [];
+      if (conteneur) conteneur.remove();
+      conteneur = bouton = panneau = null;
+    }
+    function appliquer() { if (etroit.matches) { if (!conteneur) replier(); } else if (conteneur) deplier(); }
+    document.addEventListener('click', function (e) { if (conteneur && !conteneur.contains(e.target)) fermer(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panneau && !panneau.hidden) { fermer(); bouton.focus(); } });
+    if (etroit.addEventListener) etroit.addEventListener('change', appliquer); else etroit.addListener(appliquer);
+    appliquer();
+  }
+
+  function demarrer() { initialiser(); chronometre(); barreCompacte(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
 })();

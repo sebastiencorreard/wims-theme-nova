@@ -63,11 +63,15 @@
 .nova-chrono-bandeau strong { font-size: 1.125rem; }
 
 /* Téléphone : le chronomètre occupe sa propre ligne en tête de la barre. */
+/* Pas de libellé « Temps restant » (trop large, demande du 2026-10-01) : l'icône et le décompte
+ * suffisent ; les états d'alerte gardent leur libellé sur grand écran, la couleur seule au
+ * téléphone. Les lecteurs d'écran ont toujours l'aria-label et les annonces de js/nova.js. */
+.nova-chrono[data-etat="normal"] .nova-chrono-libelle { display: none; }
 @media (max-width: 639.98px) {
-  body.nova-examen #wimstopbox { flex-wrap: wrap; padding-top: var(--nova-e2); padding-bottom: var(--nova-e2); }
-  #wimstopbox .menuitem.chrono { flex: 1 0 100%; }
-  #wimstopbox .menuitem.chrono .nova-chrono { width: 100%; justify-content: flex-start; flex-wrap: wrap; row-gap: 2px; white-space: normal; padding-top: 6px; padding-bottom: 6px; }
-  .nova-chrono-temps, .nova-chrono #chrono_exam { font-size: 1.875rem; }
+  .nova-chrono-libelle { display: none; }
+  #wimstopbox .menuitem.chrono { flex: 0 0 auto; margin-right: auto; }
+  .nova-chrono { min-height: 44px; padding: 0 var(--nova-e3); gap: var(--nova-e2); }
+  .nova-chrono-temps, .nova-chrono #chrono_exam { font-size: 1.5rem; }
 }
 
 /* Texte réservé aux lecteurs d'écran (annonces du chronomètre). */
@@ -89,7 +93,4 @@
   font-size: .8125rem;
   font-weight: 700;
   opacity: .85;
-}
-@media (max-width: 639.98px) {
-  .nova-chrono-fin { margin-left: auto; }
 }

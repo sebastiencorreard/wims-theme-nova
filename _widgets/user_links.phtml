@@ -1,0 +1,64 @@
+!!## Menu on top right (headmenus + wims about + user links + languages)
+!! user links and languages have dropdown submenus.
+
+!! _help _test _tool
+
+!set div1=li
+<!-- widget user_links -->
+<ul class="wimsmenu dropdown menu" data-dropdown-menu data-options="data-autoclose:true;">
+
+  !if _help isin $wims_session or _test isin $wims_session
+    !read themes/Nova/_widgets/headmenu.phtml
+  !else
+
+    !! about WIMS
+    !if $module=home and $wims_user=$empty
+      !default wims_name_aboutw=$wims_name_about
+      !set wims_hm = !append line aboutw,4,cmd=help&special_parm=about,mhelp to $wims_hm
+      !set wims_hm_cnt = !linecnt $wims_hm
+    !endif
+
+    !! head menus
+    !read themes/Nova/_widgets/headmenu.phtml
+
+    !! User Links
+    !if _ notin $wims_session and $wims_firstname$wims_lastname$wims_user$wims_developer!=$empty and ($module!=adm/class/tchat or $job!=viewpage)
+      !read themes/_procs/userlinks.proc
+      !default wims_which_user=[no_name]
+      <li class="menuitem is-dropdown-submenu-parent">
+        <a href="#user_links" class="account">
+          <span>$wims_which_user</span>
+          !if $wims_developer!=$empty
+            <span class="user_type">[modtool]</span>
+          !endif
+        </a>
+        <ul id="user_links" class="menu">
+          !for i_=1 to $wims_user_links_cnt
+            !set 1_=!line $i_ of $wims_user_links
+            <li class="menuitem">
+              !read $(w_path)oneitem.phtml $1_
+            </li>
+          !next
+
+          !! "WIMS logout"
+          !read themes/_widgets/logout.phtml
+          !! "CAS logout"
+          !read themes/_widgets/authlogout.phtml
+        </ul>
+      </li>
+    !endif
+    !if $module iswordof adm/modtool or $wims_firstname$wims_lastname$wims_user=$empty
+      !readproc languages
+      !! Language selector (displayed only if you're not connected)
+      !if $wims_language_cnt>1
+        <li id="language_selector" class="language_selector menuitem is-dropdown-submenu-parent">
+          <a href="#lang_list" class="lang">
+            <span><img src="gifs/$lang.gif" alt="$(Lang_name_$lang)"> $wims_name_Language</span>
+          </a>
+          !read themes/_widgets/language_selector.phtml
+        </li>
+      !endif
+    !endif
+  !endif
+</ul>
+<!-- end widget user_links -->

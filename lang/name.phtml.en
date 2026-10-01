@@ -1,0 +1,7 @@
+!! Nova : textes propres au thème (en). Lu par html/headmenu*.phtml (themes/$wims_theme/lang/).
+!! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!set nova_chrono_libelle=Time left
+!set nova_chrono_5min=Less than 5 minutes left
+!set nova_chrono_1min=Last minute
+!set nova_chrono_fin=Time is up
+!set nova_chrono_fin_detail=Answers sent now will not be taken into account.

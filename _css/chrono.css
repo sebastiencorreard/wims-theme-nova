@@ -1,0 +1,82 @@
+/* Nova — chronomètre d'examen (maquette validée le 2026-10-01).
+ * Markup : Nova/_widgets/headmenu.phtml ; états posés par js/nova.js (data-etat).
+ * La barre du haut est collante : le chronomètre reste visible pendant tout l'exercice. */
+
+#wimstopbox .menuitem.chrono { order: -1; margin-right: auto; }
+
+.nova-chrono {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 var(--nova-e4);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  white-space: nowrap;
+}
+.nova-chrono-icone { flex-shrink: 0; }
+.nova-chrono-libelle {
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.nova-chrono-temps, .nova-chrono #chrono_exam {
+  font-family: var(--nova-police-chiffres);
+  font-size: 1.625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.nova-chrono[data-etat="attention"] {
+  background: var(--nova-attention-fond);
+  color: var(--nova-attention-texte);
+  border-color: var(--nova-attention);
+}
+.nova-chrono[data-etat="critique"] {
+  background: var(--nova-erreur);
+  color: #FFFFFF;
+  border-color: var(--nova-erreur);
+}
+.nova-chrono[data-etat="fin"] {
+  background: var(--nova-neutre-fort);
+  color: #FFFFFF;
+  border-color: var(--nova-neutre-fort);
+}
+
+/* Bandeau à 00:00 : WIMS ne dit rien, mais refusera la suite (« Vous n'avez plus de temps »). */
+.nova-chrono-bandeau {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nova-e1) var(--nova-e3);
+  align-items: baseline;
+  margin: 0 0 var(--nova-e5);
+  padding: var(--nova-e4) var(--nova-e5);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-neutre-fort);
+  color: #FFFFFF;
+}
+.nova-chrono-bandeau strong { font-size: 1.125rem; }
+
+/* Téléphone : le chronomètre occupe sa propre ligne en tête de la barre. */
+@media (max-width: 639.98px) {
+  body.nova-examen #wimstopbox { flex-wrap: wrap; padding-top: var(--nova-e2); padding-bottom: var(--nova-e2); }
+  #wimstopbox .menuitem.chrono { flex: 1 0 100%; }
+  #wimstopbox .menuitem.chrono .nova-chrono { width: 100%; justify-content: flex-start; }
+  .nova-chrono-temps, .nova-chrono #chrono_exam { font-size: 1.875rem; }
+}
+
+/* Texte réservé aux lecteurs d'écran (annonces du chronomètre). */
+.nova-sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

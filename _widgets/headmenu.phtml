@@ -1,0 +1,37 @@
+!default div1=div
+<!-- Nova/_widgets/headmenu.phtml -->
+!! Copie de themes/_widgets/headmenu.phtml : écrit les entrées de la barre du haut ($wims_hm,
+!! préparées par html/headmenu*.phtml). Seule différence : l'entrée « chrono » (session d'examen,
+!! html/headmenu_user.phtml) devient le chronomètre de Nova. Son contenu WIMS - le span
+!! #chrono_exam et le script clockid() qui le fait décompter et recharge la fenêtre parente - est
+!! écrit tel quel à l'intérieur ; js/nova.js lit le décompte et pose les états (data-etat).
+!! Textes : lang/name.phtml.<langue> du thème, lus par html/headmenu*.phtml.
+!default nova_chrono_libelle=Time left
+!default nova_chrono_5min=Less than 5 minutes left
+!default nova_chrono_1min=Last minute
+!default nova_chrono_fin=Time is up
+!default nova_chrono_fin_detail=Answers sent now will not be taken into account.
+!for i_=1 to $wims_hm_cnt
+  !set 1_=!line $i_ of $wims_hm
+  !set wims_ref_class = !item 1 of $1_
+  !if " isin $wims_ref_class
+    !reset wims_ref_class
+  !endif
+  !if $wims_ref_class=chrono
+    <$div1 class="menuitem chrono">
+    <div class="nova-chrono" data-etat="normal" data-texte-5min="$nova_chrono_5min" data-texte-1min="$nova_chrono_1min" data-texte-fin="$nova_chrono_fin" data-texte-fin-detail="$nova_chrono_fin_detail">
+      <svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>
+      <span class="nova-chrono-libelle">$nova_chrono_libelle</span>
+      <span class="nova-chrono-temps" role="timer" aria-label="$nova_chrono_libelle">
+      !read $(w_path)oneitem.phtml $1_
+      </span>
+    </div>
+    </$div1>
+  !else
+    <$div1 class="menuitem $wims_ref_class">
+    !read $(w_path)oneitem.phtml $1_
+    </$div1>
+  !endif
+  !reset wims_ref_class
+!next i_
+<!-- end Nova/_widgets/headmenu.phtml -->

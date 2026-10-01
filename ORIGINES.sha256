@@ -1,0 +1,18 @@
+# Fichiers de WIMS 4.32 dont Nova contient une copie adaptée, avec leur empreinte d'origine.
+# Sur un serveur : cd public_html/themes && sha256sum -c Nova/ORIGINES.sha256
+# Une ligne « ÉCHEC » = l'original a changé depuis la 4.32 : comparer et reporter dans la copie de Nova.
+c358646a7e4831b6c87f00ed038b7e6532095f8acf54306dc3cec3dd32cdd895  _widgets/headmenu.phtml
+9b61fe6273f6564f4f9d4c6ce902fb81de6ea3ac98b9bd3ff940fce5cf339b8b  _widgets/user_links.phtml
+ccbb05d1c2f72930641bf4dad9ef8746d7270eb8b339a803baa0d64f2776bacf  _procs/menumodubox0.proc
+a4e4f4a4a3c82631cc1f4964234d7829f9bb074a4fa8a921b3e08f41cb54dff8  standard/header.phtml
+b2d1c6f5c71a952076f40e07db1e71d5a515010680e36d03df4a6d0f5a343355  standard/tail.phtml
+5175af66e219d4b36f699aa0178c896e93f870bbe722abf0adf925afc101580b  standard/htmlheader.phtml
+36122ea0b0c09dbc44a051cce4b4d02e2c1a9b79225e3f6bcf9eebb68de44eb5  standard/supervisor.phtml
+58932dbb392f9dc4327b66d496964cd250ff4f9cfa1d42916125d86c822de7ba  standard/user.phtml
+8497b03ca26bb8e92623607a2e0cd4bc42cdb9504f112d8aa57fca7a9b287a61  standard/visitor.phtml
+fe5a278b897d495fbf6c37cd8ee2e0e9a0e4b8084ee522a3da0b46fe870066f2  standard/docheader.phtml
+460fd2e3ed4372f29e5b99599a5cdd35d2b446914574766000255dc7ab9b2a4e  standard/doctail.phtml
+efff1740fd482f345400e58f1d7fcc4ae2328bd5ad58ac86fe18507bb3c0eed7  standard/mhelpheader.phtml
+305e550eb8ce762aa59e9b22a56f55a1d5a7a618bc71167d8e19f1f7399f5fea  standard/mhelptail.phtml
+add4e8b444b1d2813d484883d00398744a6fe001181eac481e73d1bf27bb719e  standard/table.proc
+a41cf09ada5a0b9b5295ac721039a1e181749974aecbbd31e81899c49ce2c715  standard/local.phtml.template

@@ -1,0 +1,68 @@
+# Installer Nova sur un serveur WIMS
+
+Nova a été écrit et vérifié pour **WIMS 4.32**. Il remplace la présentation, pas les fonctions :
+retirer le thème rend le serveur tel qu'il était.
+
+## 1. Vérifier la compatibilité
+
+Nova contient des copies adaptées de quelques fichiers de WIMS (widgets de la barre du haut,
+procédure du menu enseignant, gabarits de Standard). Avant d'installer sur une autre version :
+
+```sh
+cd /home/wims/public_html/themes          # racine WIMS du serveur
+tar -xzf /chemin/nova-AAAA-MM-JJ-xxxxxxx.tgz Nova/ORIGINES.sha256
+grep -v '^#' Nova/ORIGINES.sha256 | sha256sum -c
+```
+
+Tout à « OK » : les originaux n'ont pas changé, installer. Une ligne « ÉCHEC » : WIMS a modifié ce
+fichier depuis la 4.32 ; comparer l'original avec la copie de Nova et reporter la modification avant
+d'installer (sinon une fonction ajoutée par WIMS pourrait manquer à Nova).
+
+## 2. Installer
+
+```sh
+cd /home/wims/public_html/themes
+tar -xzf /chemin/nova-AAAA-MM-JJ-xxxxxxx.tgz      # crée themes/Nova
+chown -R wims:wims Nova                            # le compte qui fait tourner WIMS
+```
+
+Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossiers qui contiennent un
+`visitor.phtml`). Aucune recompilation, aucun redémarrage.
+
+## 3. Activer
+
+- **Pour tout le site** : maintenance du site (`module=adm/manage`) → Configuration → thème par
+  défaut : `Nova`. Vaut pour les visiteurs et pour les classes qui n'ont pas choisi de thème.
+- **Pour une classe** : l'enseignant, Config / Maintenance → Présentation → thème `Nova`. Dans un
+  groupement ou un portail, chaque classe, niveau ou cours a son propre réglage.
+
+L'accent de Nova suit la « couleur des barres » du site ou de la classe ; si elle est restée au gris
+par défaut de WIMS, Nova prend sa prune.
+
+## 4. Vérifier
+
+- Une page de classe charge `html/themes/Nova/css.css` (outils de développement du navigateur).
+- Le menu de la classe est à gauche sur ordinateur, replié derrière ☰ sur téléphone.
+- Un examen montre le chronomètre Nova (libellé « Temps restant », heure de fin).
+- Les navigateurs gardent l'ancien `css.css` en cache (son adresse porte `?ver=<version de WIMS>`,
+  inchangée par une mise à jour du thème) : forcer le rechargement (Ctrl+Maj+R) après une mise à jour.
+
+## 5. Revenir en arrière
+
+Remettre `standard` (ou l'ancien thème) dans la configuration du site et des classes concernées,
+puis, si l'on veut, supprimer `themes/Nova`. Une classe dont le thème n'existe plus retombe sur le
+thème par défaut du site.
+
+## Mettre à jour Nova
+
+Remplacer le dossier par la nouvelle archive (mêmes commandes qu'à l'étape 2), puis forcer le
+rechargement des navigateurs. Les réglages de thème des classes ne changent pas.
+
+## Bon à savoir
+
+- Le mode sombre suit le réglage de l'appareil ; la zone de contenu reste claire (lisibilité des
+  exercices, écrits par les modules pour un fond clair).
+- Les textes propres à Nova sont en français, anglais et néerlandais (`lang/`), anglais pour les
+  autres langues. Les fichiers de `lang/` sont en latin-1.
+- Si un administrateur lance `themes/mkcss.pl`, le `css.css` de Nova est reconstruit à partir de
+  `css.css.template` et de `_css/` : c'est prévu, les sources sont livrées.

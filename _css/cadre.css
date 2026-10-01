@@ -603,3 +603,7 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   #wimstopbox .menuitem:is(.back, .tools) > a { padding: 0 var(--nova-e2); }
   #wimstopbox .menuitem:is(.back, .tools) > a::before { width: 24px; height: 24px; margin-right: 0; }
 }
+
+/* L'accueil (maison) toujours en tête de son bloc, quel que soit l'endroit où nova.js insère le
+ * chronomètre recopié (observé au téléphone dans une classe de portail : chrono avant la maison). */
+#wimstopbox .float_left > .menuitem.class_home { order: -1; }

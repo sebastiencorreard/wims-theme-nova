@@ -76,11 +76,46 @@ input[type="date"], input[type="url"], input[type="search"], input:not([type]), 
 }
 
 /* Tableaux WIMS */
-.wimstable th { background-color: var(--nova-surface-2); color: var(--nova-texte); }
+/* ---------- Tableaux de WIMS (wimstable, wimsborder) — 2026-10-02 ----------
+ * Même mise en page que WIMS (largeur, marges, retraits, alignements : wimstable.css) ; plus de
+ * grille grise ni de zébrage franc. Une carte au bord fin et aux coins arrondis, des filets
+ * horizontaux, un en-tête sur fond doux (filets verticaux seulement là, pour les groupes de
+ * colonnes), un zébrage léger et la ligne survolée teintée. Le zébrage est posé sur les lignes :
+ * une cellule colorée (notes) garde sa couleur. */
+.wimstable, table.wimsborder {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  overflow: hidden;
+}
+.wimstable :is(caption, th, td), table.wimsborder :is(caption, tr, th, td) { border: 0; }
+.wimstable td, table.wimsborder td { border-top: 1px solid var(--nova-bord); }
+/* Pas de filet en double : sous une ligne d'en-tête (qui a déjà le sien), ni en tête du tableau. */
+.wimstable tbody > tr:first-child > td, table.wimsborder tbody > tr:first-child > td,
+.wimstable tr:not(:has(> td)) + tr > td, table.wimsborder tr:not(:has(> td)) + tr > td { border-top: 0; }
+.wimstable th, table.wimsborder th {
+  background-color: var(--nova-surface-2);
+  color: var(--nova-texte);
+  font-weight: 700;
+  border-bottom: 1px solid var(--nova-bord);
+}
+.wimstable th + th, table.wimsborder th + th { border-left: 1px solid var(--nova-bord); }
+.wimstable tr:nth-child(odd), table.wimsborder tr:nth-child(odd) { background-color: var(--nova-surface); }
+.wimstable tr:nth-child(even), table.wimsborder tr:nth-child(even) { background-color: var(--nova-fond); }
+.wimstable tr:hover:has(> td), table.wimsborder tr:hover:has(> td) { background-color: color-mix(in oklab, var(--nova-accent) 6%, var(--nova-surface)); }
 .wimstable th a { color: inherit; }
-.wimstable caption, .wims_title_seq, .wims_widget_box .title_box {
+.wims_title_seq, .wims_widget_box .title_box {
   background-color: var(--nova-accent-doux);
   color: var(--nova-texte);
+}
+/* Titre d'un tableau : un titre en gras au-dessus, sans fond ni cadre (alignement de WIMS gardé). */
+.wimstable > caption, table.wimsborder > caption {
+  padding: 0 0 var(--nova-e2);
+  background: none;
+  color: var(--nova-texte);
+  font-weight: 700;
 }
 .wimstable > caption a { color: inherit; }
 .wimstable > caption .wims_button, .wimstable th .wims_button {

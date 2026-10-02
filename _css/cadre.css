@@ -469,12 +469,14 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   min-height: 40px;
   padding: 0 var(--nova-e3);
   border-radius: 999px;
-  background: var(--nova-attention-fond);
-  color: var(--nova-attention-texte);
+  /* Une version très éclaircie de la couleur de la barre, pas le jaune « attention » (demande de
+   * l'utilisateur, 2026-10-02) ; texte dans la couleur de la barre, assombrie. */
+  background: color-mix(in oklab, var(--nova-accent) 12%, white);
+  color: var(--nova-lien);
   font-weight: 700;
   white-space: nowrap;
 }
-#wimstopbox .menuitem.nova-examencours > a:hover { background: var(--nova-surface); color: var(--nova-attention-texte); }
+#wimstopbox .menuitem.nova-examencours > a:hover { background: var(--nova-surface); color: var(--nova-lien); }
 #wimstopbox .nova-examencours .nova-court { display: none; }
 @media (max-width: 639.98px) {
   /* Au téléphone, le bouton prend la place du nom de la classe. */
@@ -864,3 +866,28 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
   .nova-pages-liste > li.nova-page-r { margin-right: 4px; }
 }
 .nova-pages-info { margin: 0 0 var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); }
+
+/* Fenêtre d'un exercice d'examen (la seule dont la barre porte un chronomètre) : « Retour à la liste
+ * des exercices » en tête, à gauche (demande de l'utilisateur, 2026-10-02). */
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back {
+  position: absolute;
+  left: var(--nova-e2);
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* Pictogramme seul (le libellé reste pour les lecteurs d'écran, et en infobulle) : sorti du flux, il
+ * chevaucherait la barre de progression. */
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back .text_item {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back > a { width: var(--nova-cible); padding: 0; justify-content: center; }
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back > a::before { margin-right: 0; }
+/* La barre de progression d'un parcours, placée à gauche (plus haut), passe après lui. */
+@media (min-width: 768px) {
+  #wimstopbox:has(.nova-centre) .menuitem.progress { left: calc(var(--nova-e2) + var(--nova-cible) + var(--nova-e3)); }
+}
+
+/* Logo animé de WIMS (js/nova.js, logoAnime) : le GIF par défaut (gifs/logo.gif) reste caché
+ * jusqu'à ce que la vidéo le remplace, pour ne pas le voir un instant. */
+.nova-js img[src$="gifs/logo.gif"]:not(.nova-logo-repli) { visibility: hidden; }
+video.nova-logo-anime, .wimsbody video.nova-logo-anime { display: block; width: auto; height: 87px; max-width: 100%; }

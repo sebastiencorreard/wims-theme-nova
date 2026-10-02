@@ -86,6 +86,7 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 | `css.css.template` | liste ordonnée des feuilles concaténées dans `css.css` |
 | `construire-css.sh` | construit `css.css` (remplace `mkcss.pl`, sans Java) ; `--lisible` pour ne pas minifier |
 | `_css/polices.css`, `polices/` | Atkinson Hyperlegible Next et Mono, servies localement (OFL) |
+| `img/wims-logo-128.webm` | logo animé de WIMS (vidéo en boucle), à la place de `gifs/logo.gif` (`js/nova.js`, `logoAnime`) |
 | `img/logo-wims-blanc.svg` | logo de WIMS (blanc) devant « WIMS » dans la barre (`_widgets/headhome.phtml`) |
 | `_css/jetons.css` | toutes les couleurs, tailles, espaces ; clair, sombre, et contenu clair en sombre |
 | `_css/composants.css` | boutons, champs, tableaux, légendes, messages (couleurs que Standard écrivait dans htmlheader) |

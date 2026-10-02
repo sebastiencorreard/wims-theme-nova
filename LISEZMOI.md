@@ -48,8 +48,10 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   compris). Au téléphone, le logo seul.
 - **Vérification d'un exercice d'examen (2026-10-02)** (« Détails des examens », clic sur une note) :
   la barre liste TOUTES les pages, nommées d'après leur type dans le journal de l'élève (une question
-  — new, next — devient Qk, une réponse — reply — Rk ; lu par `tail.phtml` sur la page « Détails des
-  examens », seule à avoir accès aux journaux, et transmis par le navigateur), la
+  — new, next — devient Qk, une réponse — reply — Rk ; dans un exercice à étapes ou une course, chaque
+  réponse intermédiaire affiche la question suivante et la dernière l'analyse de toutes : Q1 … Q10
+  R1-10 ; lu par `tail.phtml` sur la page « Détails des examens », seule à avoir accès aux journaux,
+  et transmis par le navigateur), pas de chronomètre ni de « Temps écoulé » dans cette fenêtre, la
   courante en évidence, « Fermer » tout à droite ; WIMS n'en montrait que cinq, avec « ... ». Les « … »
   de Nova n'interviennent que si la place manque (pages les plus éloignées de la courante d'abord).
   L'information « élève : exercice, N steps, note » passe en tête de page (`js/nova.js`,

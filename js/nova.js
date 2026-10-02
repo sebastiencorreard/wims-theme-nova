@@ -237,7 +237,12 @@
   }
 
   // Exercice OEF chronométré (scripts/oef/Main.phtml : « Cet exercice est chronométré » + #clockoef).
-  function chronoExercice() { chronoMiroir(document.getElementById('clockoef'), false); }
+  /* Fenêtre de vérification d'un exercice d'examen (session « …_check ») : l'exercice y est rejoué,
+   * son horloge vaut 00:00 ; ni chronomètre ni « Temps écoulé » (signalé le 2026-10-02). */
+  function fenetreVerification() {
+    return /[?&+]session=[^&]*_check/.test(location.href) || !!document.querySelector('a[href*="_check."]');
+  }
+  function chronoExercice() { if (!fenetreVerification()) chronoMiroir(document.getElementById('clockoef'), false); }
 
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
@@ -629,8 +634,9 @@
    * la première, la précédente, la courante, la suivante et la dernière page, « ... » ailleurs, quelle
    * que soit la place. Nova reconstruit TOUTES les pages, nommées d'après leur type, lu dans le journal
    * de l'élève sur la page « Détails des examens » (tail.phtml, typesExamen) : une question (new, next) devient Qk, une
-   * réponse (reply) Rk — Q1 R1 Q2 R2..., ou Q1 R1 R2... pour un exercice à étapes (une question, puis
-   * une réponse par étape). La courante est mise en évidence ; « Pages : » disparaît. Les « … »
+   * réponse (reply) Rk — Q1 R1 Q2 R2... Dans un exercice à étapes ou une course (une question, puis une
+   * réponse par étape), chaque réponse intermédiaire affiche la question suivante et la dernière
+   * l'analyse de toutes : Q1 Q2 ... Q10 R1-10. La courante est mise en évidence ; « Pages : » disparaît. Les « … »
    * n'interviennent qu'en dernier recours : on cache d'abord les pages les plus éloignées de la
    * courante, en gardant toujours la première, la dernière et les voisines. L'information « élève :
    * exercice, N steps, note » descend en tête de page. */
@@ -682,10 +688,19 @@
       types = [];
       for (var t = 1; t <= total; t++) types.push(t % 2 ? 'q' : 'r');
     }
-    var numeros = [], nq = 0, nr = 0;
-    types.forEach(function (t) { numeros.push(t === 'q' ? ++nq : ++nr); });
+    // Libellés. Une question (q) est Qk. Une réponse suivie d'une autre réponse (exercice à étapes,
+    // course) affiche en fait la question suivante : Qk+1. La dernière réponse d'une suite affiche
+    // l'analyse de toute la suite : Rk, ou Rk-m si elle couvre les questions k à m.
+    var libelles = [], titres = [], nq = 0, debut = 0;
+    types.forEach(function (t, i) {
+      if (t === 'q') { debut = ++nq; libelles.push('Q' + nq); titres.push(mots[0] + ' ' + nq); return; }
+      if (types[i + 1] === 'r') { libelles.push('Q' + (++nq)); titres.push(mots[0] + ' ' + nq); return; }
+      var de = debut || 1, a = Math.max(nq, de);
+      libelles.push(de === a ? 'R' + a : 'R' + de + '-' + a);
+      titres.push(mots[1] + ' ' + (de === a ? a : de + '-' + a));
+    });
     var element = function (n) {
-      var question = types[n - 1] === 'q', k = numeros[n - 1];
+      var question = libelles[n - 1].charAt(0) === 'Q';
       var li = document.createElement('li');
       li.className = question ? 'nova-page-q' : 'nova-page-r';
       var e;
@@ -698,8 +713,8 @@
         e.className = 'nova-page';
         e.href = modele.replace(/checkstep=\d+/, 'checkstep=' + n);
       }
-      e.textContent = (question ? 'Q' : 'R') + k;
-      e.title = mots[question ? 0 : 1] + ' ' + k;
+      e.textContent = libelles[n - 1];
+      e.title = titres[n - 1];
       li.appendChild(e);
       return li;
     };

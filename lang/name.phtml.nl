@@ -17,3 +17,4 @@
 !set nova_examen_court=Proefwerk
 !set nova_menu_voir_tout=Alle functies tonen
 !set nova_menu_simplifier=Menu vereenvoudigen
+!set nova_plus=Meer

@@ -17,3 +17,4 @@
 !set nova_examen_court=Examen
 !set nova_menu_voir_tout=Voir toutes les fonctions
 !set nova_menu_simplifier=Simplifier le menu
+!set nova_plus=Plus

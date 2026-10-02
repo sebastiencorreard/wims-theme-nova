@@ -247,20 +247,30 @@
     function replier() {
       var items = entreesSecondaires();
       if (!items.length) return;
-      // Avec un compte, les entrées vont EN TÊTE de son menu déroulant (pas de bouton de plus :
-      // la barre manque de place) ; sans compte (visiteur, fenêtre d'examen), dans « ⋯ ».
-      var menuCompte = barre.querySelector('#user_links');
-      if (menuCompte) {
-        var filet = document.createElement('li');
-        filet.className = 'nova-deplace-filet';
-        filet.setAttribute('role', 'separator');
-        menuCompte.insertBefore(filet, menuCompte.firstChild);
-        items.slice().reverse().forEach(function (item) {
+      // Avec un menu latéral (☰), les entrées vont EN TÊTE de ce menu, sous un titre « Plus » (le
+      // menu du compte de l'élève ne doit montrer que son nom et la déconnexion) ; titre + bloc
+      // forment une paire, comme les familles de l'accordéon jQuery UI. Sinon (visiteur, fenêtre
+      // d'examen), dans « ⋯ ».
+      var lateral = document.getElementById('wimsmenumodubox');
+      if (lateral) {
+        var textes = document.getElementById('nova-textes');
+        var titre = document.createElement('h2');
+        titre.className = 'menu_title nova-deplace-titre';
+        titre.textContent = (textes && textes.getAttribute('data-plus')) || 'Plus';
+        var groupe = document.createElement('div');
+        groupe.className = 'wimsmenu menu nova-deplaces';
+        items.forEach(function (item) {
           deplaces.push({ item: item, parent: item.parentNode, suivant: item.nextSibling });
           item.classList.add('nova-deplace');
-          menuCompte.insertBefore(item, menuCompte.firstChild);
+          groupe.appendChild(item);
         });
-        conteneur = filet;   // marque « replié » ; retiré au dépliage
+        var cible = lateral.querySelector('.modubox_content') || lateral;
+        var apres = cible.querySelector('.nova-profil');   // section « Profil » d'un examen
+        var ref = apres ? apres.nextSibling : cible.firstChild;
+        cible.insertBefore(titre, ref);
+        cible.insertBefore(groupe, ref);
+        conteneur = groupe;
+        conteneur.nova_titre = titre;
         return;
       }
       conteneur = document.createElement('div');
@@ -292,7 +302,7 @@
     function deplier() {
       deplaces.reverse().forEach(function (d) { d.item.classList.remove('nova-deplace'); d.parent.insertBefore(d.item, d.suivant); });
       deplaces = [];
-      if (conteneur) conteneur.remove();
+      if (conteneur) { if (conteneur.nova_titre) conteneur.nova_titre.remove(); conteneur.remove(); }
       conteneur = bouton = panneau = null;
     }
     function appliquer() { if (etroit.matches) { if (!conteneur) replier(); } else if (conteneur) deplier(); }

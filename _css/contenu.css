@@ -6,9 +6,11 @@
 /* ---------- Onglets jQuery UI (présentation en séquences, listes de l'enseignant) ----------
  * Onglets soulignés compacts (demande du 2026-10-01 : les pastilles prenaient trop de place).
  * Au téléphone, au-delà de 3 onglets, js/nova.js les remplace par une liste déroulante. */
-.wimsbody .ui-tabs {
+.wimsbody .ui-tabs,
+.wimsbody .ui-tabs.ui-widget.ui-widget-content {
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
   font-family: var(--nova-police);
   color: var(--nova-texte);
@@ -21,7 +23,6 @@
   padding: 0;
   background: none;
   border: 0;
-  border-bottom: 1px solid var(--nova-bord);
   border-radius: 0;
 }
 .wimsbody .ui-tabs .ui-tabs-nav::before, .wimsbody .ui-tabs .ui-tabs-nav::after { content: none; }
@@ -39,17 +40,30 @@
 .wimsbody .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
   float: none;
   display: block;
-  padding: 6px var(--nova-e3);
-  border-bottom: 3px solid transparent;
+  position: relative;
+  padding: 6px var(--nova-e3) 9px;
+  border: 0;
+  border-radius: var(--nova-rayon);
   color: var(--nova-texte-2);
   font-size: .9375rem;
   line-height: 1.3;
 }
-.wimsbody .ui-tabs .ui-tabs-nav li:hover .ui-tabs-anchor { color: var(--nova-texte); border-bottom-color: var(--nova-bord-fort); }
+.wimsbody .ui-tabs .ui-tabs-nav li:hover .ui-tabs-anchor { color: var(--nova-texte); background: var(--nova-accent-doux); }
 .wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor {
-  color: var(--nova-texte);
+  color: var(--nova-accent);
   font-weight: 700;
-  border-bottom-color: var(--nova-accent);
+  background: none;
+}
+/* Onglet actif : un trait d'accent aux bouts arrondis, sous le libellé (pas de filet gris). */
+.wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor::after {
+  content: "";
+  position: absolute;
+  left: var(--nova-e3);
+  right: var(--nova-e3);
+  bottom: 2px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--nova-accent);
 }
 .wimsbody .ui-tabs .ui-tabs-panel { padding: 0; background: transparent; border: 0; }
 

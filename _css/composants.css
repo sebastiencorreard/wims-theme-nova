@@ -388,3 +388,24 @@ fieldset.wims_work_legend > legend {
   color: var(--nova-texte);
 }
 @media (prefers-reduced-motion: reduce) { .accordion-title::before { transition: none; } }
+
+/* Fenêtre de confirmation (data-reveal de WIMS, mise dans un <dialog> par js/nova.js : revelations) :
+ * une carte au centre, fond assombri. */
+.nova-dialogue {
+  width: min(32rem, calc(100vw - 32px));
+  padding: var(--nova-e4, 24px);
+  border: 0;
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 22%);
+}
+.nova-dialogue::backdrop { background: rgb(20 20 30 / 45%); }
+.nova-dialogue > .reveal { display: block; position: static; top: auto; width: auto; max-width: none; padding: 0; border: 0; background: none; }
+.nova-dialogue h1 { margin: 0 32px var(--nova-e3) 0; font-size: 1.25rem; }
+.nova-dialogue .close-button { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; font-size: 1.5rem; line-height: 1; color: var(--nova-texte-2); cursor: pointer; }
+.nova-dialogue .close-button:hover { background: var(--nova-accent-doux); }
+.nova-dialogue .wimscenter { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--nova-e2); margin-top: var(--nova-e3); }
+/* Panneau « Abandonner » (scripts/oef/Main.phtml) : jQuery UI en fait une boîte de dialogue au
+ * chargement ; caché jusque-là (les attributs data-toggle / data-dropdown de Foundation y sont inertes). */
+.dropdown-pane:not(.ui-dialog-content) { display: none; }

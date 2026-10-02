@@ -420,6 +420,48 @@
     });
   }
 
+  /* Fenêtres « reveal » de Foundation (data-reveal ; scripts/oef/form.phtml : « Êtes-vous sûr ? »
+   * quand des réponses sont vides), dans un <dialog> natif (2026-10-03). WIMS les ouvre par
+   * jQuery(...).foundation('open') (scripts/oef/var.proc, formcheck) : cet appel est intercepté pour
+   * elles, le reste va à Foundation tant qu'il est chargé. data-open="id" ouvre, data-close ferme,
+   * Échap aussi (natif). Le <dialog> est mis dans <body>, hors du formulaire, comme le faisait Foundation. */
+  function revelations() {
+    var fenetres = document.querySelectorAll('[data-reveal]');
+    if (!fenetres.length || typeof document.createElement('dialog').showModal !== 'function') return;
+    Array.prototype.forEach.call(fenetres, function (el) {
+      el.removeAttribute('data-reveal');
+      var d = document.createElement('dialog');
+      d.className = 'nova-dialogue';
+      var titre = el.querySelector('h1, h2');
+      if (titre) { if (!titre.id) titre.id = (el.id || 'nova-dialogue') + '-titre'; d.setAttribute('aria-labelledby', titre.id); }
+      d.appendChild(el);
+      document.body.appendChild(d);
+      el.novaDialogue = d;
+      d.addEventListener('click', function (e) {
+        if (e.target === d || e.target.closest('[data-close]')) d.close();   // clic sur le fond, Non, ×
+      });
+    });
+    function ouvrir(el) { if (el && el.novaDialogue && !el.novaDialogue.open) el.novaDialogue.showModal(); }
+    document.addEventListener('click', function (e) {
+      var o = e.target.closest && e.target.closest('[data-open]');
+      if (!o) return;
+      var el = document.getElementById(o.getAttribute('data-open'));
+      if (el && el.novaDialogue) { e.preventDefault(); ouvrir(el); }
+    });
+    var jq = window.jQuery;
+    if (jq && jq.fn) {
+      var origine = jq.fn.foundation;
+      jq.fn.foundation = function (methode) {
+        if (typeof methode === 'string' && this.length && this[0].novaDialogue) {
+          if (methode === 'open') ouvrir(this[0]);
+          else if (methode === 'close') this[0].novaDialogue.close();
+          return this;
+        }
+        return origine ? origine.apply(this, arguments) : this;
+      };
+    }
+  }
+
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -1097,7 +1139,7 @@
     });
   }
 
-  function demarrer() { accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -34,10 +34,12 @@ Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossier
 
 ## 3. Activer
 
+- **Pour une classe** : depuis le compte enseignant : Config / Maintenance → Présentation → thème `Nova`. Dans un
+  groupement ou un portail, chaque classe, niveau ou cours a son propre réglage. On peut utiliser le thème à la
+  racine, puis le propager partout en utilisant "Répercuter les configurations aux classes dépendantes" et en
+  cochant "Thème" (et éventuellement "Couleurs")
 - **Pour tout le site** : maintenance du site (`module=adm/manage`) → Configuration → thème par
   défaut : `Nova`. Vaut pour les visiteurs et pour les classes qui n'ont pas choisi de thème.
-- **Pour une classe** : l'enseignant, Config / Maintenance → Présentation → thème `Nova`. Dans un
-  groupement ou un portail, chaque classe, niveau ou cours a son propre réglage.
 
 L'accent de Nova suit la « couleur des barres » du site ou de la classe ; si elle est restée au gris
 par défaut de WIMS, Nova prend sa prune.

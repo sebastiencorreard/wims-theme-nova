@@ -32,3 +32,4 @@
 !set nova_taxonomie=Taxonomie
 !set nova_glossaires=Woordenlijsten
 !set nova_parcourir=Site doorbladeren
+!set nova_accueil=Start

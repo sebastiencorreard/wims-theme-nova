@@ -32,3 +32,4 @@
 !set nova_taxonomie=Taxonomie
 !set nova_glossaires=Glossaires
 !set nova_parcourir=Parcourir le site
+!set nova_accueil=Accueil

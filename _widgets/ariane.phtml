@@ -1,0 +1,63 @@
+!! Nova : fil d'Ariane (copie adaptée de themes/_widgets/ariane.phtml de WIMS 4.32, 2026-10-02).
+!! WIMS écrit chaque entrée « clé nom » (class_home Portail test) et html/oneitem.phtml affiche le nom
+!! de la clé devant (« Page d'accueil Portail test »). Nova : « Accueil » pour la racine, et plus de
+!! préfixe devant une entrée qui porte un nom (Portail test, 6e5...) ; le lien vers l'accueil de la
+!! classe, sans nom chez WIMS, prend celui de la classe. Les autres affichages de
+!! wims_name_home / wims_name_class_home (barre du haut, menus) ne changent pas : les noms sont
+!! rétablis après la boucle.
+!! options :
+!! wims_ariane_home = no ==> don't use $wims_home_items
+!! wims_ariane_self = no ==> don't generate automatically : home / module
+!if $wims_ariane_home=no and $wims_ariane_self=no and $wims_ariane=$empty
+  !exit
+!endif
+
+!read themes/_procs/ariane.proc
+!default nova_accueil=Home
+!set nova_ariane_home=$wims_name_home
+!set nova_ariane_class_home=$wims_name_class_home
+<!-- Nova/_widgets/ariane.phtml -->
+<nav aria-label="You are here:">
+  <ul class="breadcrumbs">
+  !for i_=1 to $wims_ariane_cnt
+    !set 1_=!line $i_ of $wims_ariane_list
+    !if " notin $(1_[1]) and * notin $(1_[1])
+      !set wims_ref_class = !word 1 of $(1_[1])
+    !endif
+    !if $wims_ref_class!=$empty
+      !set css_class = class="$wims_ref_class menuitem"
+    !endif
+    !set wims_name_home=$nova_ariane_home
+    !set wims_name_class_home=$nova_ariane_class_home
+    !set nova_cle=!word 1 of $(1_[1])
+    !set nova_reste=!word 2 to -1 of $(1_[1])
+    !if " notin $(1_[1]) and $nova_cle isitemof home,class_home
+      !if $nova_reste=$empty
+        !! Sans nom : la racine (étiquette) s'appelle « Accueil » ; un lien vers l'accueil de la
+        !! classe (page d'un module de la classe) prend le nom de la classe.
+        !set nova_type=!item 2 of $1_
+        !if $nova_cle=class_home and $nova_type=1 and $wims_classname!=$empty
+          !set wims_name_class_home=$wims_classname
+        !else
+          !if $i_=1
+            !set wims_name_$nova_cle=$nova_accueil
+          !endif
+        !endif
+      !else
+        !set wims_name_$nova_cle=
+      !endif
+    !endif
+    <li $css_class>
+      !read $(w_path)oneitem.phtml $1_
+      !if $i_=$wims_ariane_cnt
+        <span class="show-for-sr">(Current)</span>
+      !endif
+    </li>
+    !reset css_class
+  !next
+  </ul>
+</nav>
+!set wims_name_home=$nova_ariane_home
+!set wims_name_class_home=$nova_ariane_class_home
+!reset nova_ariane_home nova_ariane_class_home nova_cle nova_reste nova_type
+<!-- end of Nova/_widgets/ariane.phtml -->

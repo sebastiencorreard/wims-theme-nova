@@ -47,7 +47,9 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   (copie adaptée de `_widgets/headhome.phtml`, listée dans ORIGINES ; logo en image, dégradés
   compris). Au téléphone, le logo seul.
 - **Vérification d'un exercice d'examen (2026-10-02)** (« Détails des examens », clic sur une note) :
-  la barre liste TOUTES les pages, nommées Q1 R1 Q2 R2… (page 2k+1 = question, 2k+2 = réponse), la
+  la barre liste TOUTES les pages, nommées d'après leur type dans le journal de l'élève (une question
+  — new, next — devient Qk, une réponse — reply — Rk ; lu par `tail.phtml` sur la page « Détails des
+  examens », seule à avoir accès aux journaux, et transmis par le navigateur), la
   courante en évidence, « Fermer » tout à droite ; WIMS n'en montrait que cinq, avec « ... ». Les « … »
   de Nova n'interviennent que si la place manque (pages les plus éloignées de la courante d'abord).
   L'information « élève : exercice, N steps, note » passe en tête de page (`js/nova.js`,

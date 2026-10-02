@@ -609,11 +609,28 @@
     maj();
   }
 
+  /* Page « Détails des examens » : garde dans le navigateur les types des pages de vérification
+   * (q, r) que tail.phtml a lus dans les journaux, pour la fenêtre de vérification (pagesExamen). */
+  function typesExamen() {
+    var e = document.getElementById('nova-examtypes');
+    if (!e) return;
+    var cle = 'nova_examtypes_' + (e.getAttribute('data-user') || '');
+    var connus = {};
+    try { connus = JSON.parse(localStorage.getItem(cle) || '{}') || {}; } catch (x) { connus = {}; }
+    (e.getAttribute('data-types') || '').split(';').forEach(function (entree) {
+      var i = entree.indexOf('=');
+      if (i > 0) connus[entree.slice(0, i).trim()] = entree.slice(i + 1).replace(/\s+/g, '');
+    });
+    try { localStorage.setItem(cle, JSON.stringify(connus)); } catch (x) { /* fenêtre sans Q/R exacts */ }
+  }
+
   /* Fenêtre « vérification d'un exercice d'examen » (adm/class/userscore, job=examcheck ; demandé le
    * 2026-10-02). WIMS (html/headmenu_user.phtml) écrit dans la barre « Pages : 1 ... 4 5 6 ... 12 » :
    * la première, la précédente, la courante, la suivante et la dernière page, « ... » ailleurs, quelle
-   * que soit la place. Nova reconstruit TOUTES les pages, nommées Q1 R1 Q2 R2... (page 2k+1 = question
-   * k+1, page 2k+2 = réponse k+1), la courante mise en évidence ; « Pages : » disparaît. Les « … »
+   * que soit la place. Nova reconstruit TOUTES les pages, nommées d'après leur type, lu dans le journal
+   * de l'élève sur la page « Détails des examens » (tail.phtml, typesExamen) : une question (new, next) devient Qk, une
+   * réponse (reply) Rk — Q1 R1 Q2 R2..., ou Q1 R1 R2... pour un exercice à étapes (une question, puis
+   * une réponse par étape). La courante est mise en évidence ; « Pages : » disparaît. Les « … »
    * n'interviennent qu'en dernier recours : on cache d'abord les pages les plus éloignées de la
    * courante, en gardant toujours la première, la dernière et les voisines. L'information « élève :
    * exercice, N steps, note » descend en tête de page. */
@@ -653,8 +670,22 @@
       }
       info.remove();
     }
+    // Type de chaque page (q = question, r = réponse), lu dans le journal sur la page « Détails des
+    // examens » (tail.phtml, typesExamen) et gardé dans le navigateur ; à défaut, l'alternance.
+    var types = [];
+    var cle = function (nom) { var r = new RegExp('[?&+]' + nom + '=([^&]*)').exec(modele); return r ? decodeURIComponent(r[1]) : ''; };
+    try {
+      var connus = JSON.parse(localStorage.getItem('nova_examtypes_' + cle('checkuser')) || '{}');
+      types = (connus[cle('checksession') + ':' + cle('checkexo')] || '').split(',');
+    } catch (e) { types = []; }
+    if (types.length !== total || types.some(function (t) { return t !== 'q' && t !== 'r'; })) {
+      types = [];
+      for (var t = 1; t <= total; t++) types.push(t % 2 ? 'q' : 'r');
+    }
+    var numeros = [], nq = 0, nr = 0;
+    types.forEach(function (t) { numeros.push(t === 'q' ? ++nq : ++nr); });
     var element = function (n) {
-      var k = Math.ceil(n / 2), question = n % 2 === 1;
+      var question = types[n - 1] === 'q', k = numeros[n - 1];
       var li = document.createElement('li');
       li.className = question ? 'nova-page-q' : 'nova-page-r';
       var e;
@@ -861,7 +892,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

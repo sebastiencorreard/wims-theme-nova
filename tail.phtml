@@ -8,6 +8,37 @@
  <br class="clearall spacer">
 </div><!--end of wimspagebox-->
 !read themes/_widgets/topback.phtml
+!! Nova : types des pages de vérification des examens (« Détails des examens », adm/class/userscore,
+!! job=examcheck). Chaque page est un enregistrement du journal de l'élève (examlog) : new, renew,
+!! next = une question (q), reply = une réponse (r). Lus ICI, où le module a accès aux journaux (la
+!! fenêtre de vérification, elle, tourne dans le module de l'exercice, qui n'y a pas accès) ;
+!! js/nova.js les garde dans le navigateur pour cette fenêtre (pagesExamen). « session:exo=q,r,...; »
+!if $module=adm/class/userscore and $job=examcheck and $checksession=$empty and $checksessions!=$empty
+  !reset nova_et
+  !for nova_s in $checksessions
+    !for nova_x in $(exo$nova_s)
+      !set nova_f=wimshome/log/classes/$wims_class/examlog/$checkuser/$nova_s/$nova_x
+      !set nova_n=!recordcnt $nova_f
+      !reset nova_t
+      !for nova_k=1 to $nova_n
+        !set nova_r=!record $nova_k of $nova_f
+        !set nova_r=!trim $nova_r
+        !set nova_c=!line 3 of $nova_r
+        !! « w_cmd= » retiré hors du !if, où « = » serait lu comme une comparaison.
+        !set nova_c=!replace internal w_cmd= by $empty in $nova_c
+        !set nova_c=!trim $nova_c
+        !if $nova_c=reply
+          !set nova_t=!append item r to $nova_t
+        !else
+          !set nova_t=!append item q to $nova_t
+        !endif
+      !next nova_k
+      !set nova_et=$nova_et$nova_s:$nova_x=$nova_t;
+    !next nova_x
+  !next nova_s
+  <span id="nova-examtypes" hidden data-user="$checkuser" data-types="$nova_et"></span>
+  !reset nova_et nova_s nova_x nova_f nova_n nova_t nova_k nova_r nova_c
+!endif
 
 !if $slib_geogebra_exists=yes
   !read themes/_widgets/tailgeogebra.phtml

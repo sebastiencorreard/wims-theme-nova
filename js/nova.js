@@ -772,36 +772,6 @@
     });
   }
 
-  /* Logo de WIMS : le GIF par défaut (gifs/logo.gif : accueil du site, accueil d'une classe sans logo
-   * propre) devient la vidéo img/wims-logo-128.webm, muette et en boucle (demande de l'utilisateur,
-   * 2026-10-02). Mouvement réduit demandé : la vidéo reste sur sa première image. Navigateur sans
-   * WebM : retour au GIF. */
-  function logoAnime() {
-    var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    Array.prototype.forEach.call(document.querySelectorAll('img[src$="gifs/logo.gif"]'), function (img) {
-      var v = document.createElement('video');
-      v.className = 'nova-logo-anime';
-      v.src = 'html/themes/Nova/img/wims-logo-128.webm';
-      v.muted = true;
-      v.loop = true;
-      v.playsInline = true;
-      v.setAttribute('muted', '');
-      v.setAttribute('playsinline', '');
-      if (!reduit) { v.autoplay = true; v.setAttribute('autoplay', ''); }
-      v.setAttribute('role', 'img');
-      v.setAttribute('aria-label', img.alt || 'WIMS');
-      var repli = function () {
-        if (!v.parentNode) return;
-        img.classList.add('nova-logo-repli');
-        v.parentNode.replaceChild(img, v);
-      };
-      v.addEventListener('error', repli);
-      if (v.canPlayType && !v.canPlayType('video/webm; codecs="vp9"')) { img.classList.add('nova-logo-repli'); return; }
-      img.parentNode.replaceChild(v, img);
-      if (!reduit) { var lecture = v.play(); if (lecture && lecture.catch) lecture.catch(function () { /* lecture refusée : première image */ }); }
-    });
-  }
-
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
    * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
   function centrerBarre() {
@@ -956,7 +926,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); logoAnime(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

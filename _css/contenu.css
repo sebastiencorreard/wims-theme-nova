@@ -234,8 +234,8 @@ pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* ---------- Barre de série d'exercices : un indicateur d'étapes (2026-10-02) ----------
  * Remplace les chevrons de seriebar_arrows.css. Des pastilles reliées par un trait fin, dans la
- * famille des pages Q/R et de la barre de score : en cours = accent plein, faite = accent doux et
- * coche, non travaillée = discrète, suivante = contour d'accent (js/nova.js retire le « > » que
+ * famille des pages Q/R et de la barre de score : en cours = accent plein, faite = accent doux,
+ * non travaillée = discrète, suivante = contour d'accent (js/nova.js retire le « > » que
  * WIMS écrit). La phrase de WIMS reste au-dessus, en petit. */
 .oef_serie_exo, .oef_serie_exo2 { font-size: var(--nova-petit); color: var(--nova-texte-2); text-align: center; }
 ul.wims_serie_bar, #oef_actions ul.wims_serie_bar {
@@ -268,7 +268,7 @@ ul.wims_serie_bar > li {
   cursor: default;
 }
 ul.wims_serie_bar > li:first-child { margin-left: 0; }
-/* Le trait qui relie chaque étape à la précédente (::before) ; ::after sert à la coche. */
+/* Le trait qui relie chaque étape à la précédente (::before). */
 ul.wims_serie_bar > li::before {
   content: "";
   position: absolute;
@@ -295,24 +295,11 @@ ul.wims_serie_bar > li.wims_exo_todo {
   color: var(--nova-sur-accent);
   box-shadow: 0 0 0 3px var(--nova-accent-doux);
 }
-/* Faite : accent doux, et une petite coche en haut à droite. */
+/* Faite : accent doux. */
 ul.wims_serie_bar > li.wims_exo_done {
   border-color: transparent;
   background: var(--nova-accent-doux);
   color: var(--nova-accent);
-}
-ul.wims_serie_bar > li.wims_exo_done::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  left: auto;
-  width: 15px;
-  height: 15px;
-  margin: 0;
-  border: 2px solid var(--nova-surface);
-  border-radius: 50%;
-  background: var(--nova-accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 9px no-repeat;
 }
 /* Suivante : une pastille comme les autres, mise en valeur par son contour d'accent (demande de
  * l'utilisateur, 2026-10-02 : pas de flèche) ; toute la pastille est le lien. */

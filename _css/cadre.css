@@ -886,8 +886,3 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
 @media (min-width: 768px) {
   #wimstopbox:has(.nova-centre) .menuitem.progress { left: calc(var(--nova-e2) + var(--nova-cible) + var(--nova-e3)); }
 }
-
-/* Logo animé de WIMS (js/nova.js, logoAnime) : le GIF par défaut (gifs/logo.gif) reste caché
- * jusqu'à ce que la vidéo le remplace, pour ne pas le voir un instant. */
-.nova-js img[src$="gifs/logo.gif"]:not(.nova-logo-repli) { visibility: hidden; }
-video.nova-logo-anime, .wimsbody video.nova-logo-anime { display: block; width: auto; height: 87px; max-width: 100%; }

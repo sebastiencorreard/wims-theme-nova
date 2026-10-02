@@ -422,3 +422,76 @@ fieldset.wims_work_legend > legend {
 }
 .nova-menu-deroulant .is-dropdown-submenu a { display: flex; align-items: center; gap: var(--nova-e1); }
 .nova-menu-deroulant .is-dropdown-submenu a:hover { background: var(--nova-accent-doux); }
+
+/* Boutons des exercices et des modules (2026-10-03, demande de l'utilisateur) : les feuilles de
+ * WIMS (button.css, oef.css) leur donnaient un dégradé, une police de 12 px, et un fond gris aux
+ * boutons secondaires (« Abandonner » : body.main_body .wims_secondary_button, plus précis que
+ * la règle de Nova). Même bouton partout : accent plein, ou contour pour le secondaire. */
+body.main_body :is(input[type="submit"], input[type="button"], button.wims_button, .wims_button) {
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  font-size: .9375rem;
+  line-height: 1.2;
+}
+body.main_body :is(.wims_button, button, input).wims_secondary_button {
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  border: 1px solid var(--nova-bord-fort);
+}
+body.main_body :is(.wims_button, button, input).wims_secondary_button:hover {
+  background: var(--nova-surface-2);
+  color: var(--nova-texte);
+  border-color: var(--nova-texte-2);
+}
+body.main_body .wims_button_help { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; font-size: .875rem; min-height: 36px; padding: 0 var(--nova-e3); background-image: none; box-shadow: none; text-shadow: none; }
+
+/* Boîtes de dialogue jQuery UI (« Abandonner » d'un exercice, alertes de WIMS) : la même carte que
+ * la confirmation (.nova-dialogue), au lieu du thème « smoothness » (barre de titre grise en dégradé,
+ * boutons gris). Le premier bouton (« Oui ») est le bouton principal. */
+.ui-widget-overlay { background: rgb(20 20 30); opacity: .45; }
+.ui-dialog.ui-widget.ui-widget-content {
+  padding: var(--nova-e4);
+  border: 0;
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  font-family: var(--nova-police);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 22%);
+  max-width: calc(100vw - 32px);
+}
+.ui-dialog .ui-dialog-titlebar {
+  padding: 0 40px var(--nova-e2) 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--nova-texte);
+}
+.ui-dialog .ui-dialog-title { font-size: 1.25rem; font-weight: 700; white-space: normal; }
+.ui-dialog .ui-dialog-titlebar-close {
+  top: 0; right: 0; margin: 0;
+  width: 36px; height: 36px;
+  border: 0; border-radius: 8px;
+  background: none;
+}
+.ui-dialog .ui-dialog-titlebar-close:hover { background: var(--nova-accent-doux); }
+.ui-dialog .ui-dialog-titlebar-close .ui-icon { left: 50%; top: 50%; margin: -8px 0 0 -8px; }
+.ui-dialog .ui-dialog-content { padding: 0; color: var(--nova-texte); font-size: 1rem; }
+.ui-dialog .ui-dialog-buttonpane { margin-top: var(--nova-e4); padding: 0; border: 0; background: none; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--nova-e2); }
+.ui-dialog .ui-dialog-buttonpane .ui-button {
+  margin: 0;
+  min-height: 40px;
+  padding: 0 var(--nova-e4);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  font-family: var(--nova-police);
+  font-size: .9375rem;
+  font-weight: 700;
+}
+.ui-dialog .ui-dialog-buttonpane .ui-button:hover { background: var(--nova-surface-2); }
+.ui-dialog .ui-dialog-buttonpane .ui-button:first-child { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
+.ui-dialog .ui-dialog-buttonpane .ui-button:first-child:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); }
+.ui-dialog .ui-button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }

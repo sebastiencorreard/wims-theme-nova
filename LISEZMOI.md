@@ -13,7 +13,7 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   écarts voulus (`banc-nova/ecarts-voulus.json`).
 - **Menu enseignant simplifié (2026-10-02)**, comme le thème Pion mais sans modifier WIMS : à
   l'accueil d'une classe, l'enseignant ne voit d'abord que Nouvelle feuille, Nouvel examen, Vue des
-  participants, Notes, Message du jour, Config, Modtool ; « Voir toutes les fonctions » rend le reste.
+  participants, Notes, Message du jour, Config, Modtool ; « Menu complet » rend le reste.
   **Personnalisable** : « Choisir les entrées du menu » affiche toutes les entrées avec un œil ; un
   clic sur la ligne ou sur l'œil la cache ou la montre, l'œil d'un titre agit sur toute la famille,
   « Revenir au menu par défaut » rétablit la liste de départ (`js/nova.js`, `menuPersonnel`).

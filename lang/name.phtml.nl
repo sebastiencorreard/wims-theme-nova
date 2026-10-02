@@ -15,7 +15,7 @@
 !set nova_terminer=Beëindigen
 !set nova_examencours=Proefwerk bezig
 !set nova_examen_court=Proefwerk
-!set nova_menu_voir_tout=Alle functies tonen
+!set nova_menu_voir_tout=Volledig menu
 !set nova_menu_simplifier=Menu vereenvoudigen
 !set nova_menu_personnaliser=Menu-items kiezen
 !set nova_menu_termine=Klaar

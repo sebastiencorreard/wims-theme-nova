@@ -15,7 +15,7 @@
 !set nova_terminer=Terminer
 !set nova_examencours=Examen en cours
 !set nova_examen_court=Examen
-!set nova_menu_voir_tout=Voir toutes les fonctions
+!set nova_menu_voir_tout=Menu complet
 !set nova_menu_simplifier=Simplifier le menu
 !set nova_menu_personnaliser=Choisir les entrées du menu
 !set nova_menu_termine=Terminé

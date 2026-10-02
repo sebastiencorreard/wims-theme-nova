@@ -1,8 +1,7 @@
 # Nova — thème WIMS
 
-Thème pour WIMS 4.32, dérivé de `standard` : sobre et lumineux, adapté au téléphone, mode sombre
-automatique, chronomètre d'examen lisible. Maquettes validées :
-https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
+Thème pour WIMS 4.32, dérivé de `standard` : sobre et lumineux, adapté au téléphone, chronomètre
+d'examen lisible. Installation : voir `INSTALLER.md`.
 
 ## Principes
 
@@ -97,3 +96,10 @@ Après toute modification de `_css/` : `./construire-css.sh`.
 
 Le banc de test est dans `../../banc-nova` (voir son LISEZMOI) : inventaire de toutes les pages par
 rôle, comparaison avec Standard, scénario d'examen, mesures à 390 px et en sombre.
+
+## Licence
+
+Nova reprend et adapte des gabarits et des feuilles de style de WIMS : il est distribué, comme WIMS,
+sous la **GNU General Public License, version 2 ou (à votre choix) toute version ultérieure**
+(`LICENSE`). Les polices Atkinson Hyperlegible Next et Mono (`polices/`) sont sous **SIL Open Font
+License 1.1** (`polices/OFL.txt`).

@@ -612,6 +612,16 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   /* Dans le menu du compte (entrées déplacées), pas d'icône. */
   #wimstopbox .is-dropdown-submenu .menuitem > :is(a, .text_item)::before { content: none; }
 }
+/* Accueil : le logo de WIMS au lieu de la maison (img/logo-wims-blanc.svg, blanc pour la barre
+ * d'accent), suivi de « WIMS » (_widgets/headhome.phtml). Une image et non un masque : le logo a
+ * des dégradés, qu'un masque aplatirait. Au téléphone, le logo seul (règles plus haut). */
+#wimstopbox .menuitem:is(.class_home, .home) > :is(a, .text_item)::before {
+  width: 20px;
+  height: 22px;
+  background: url("img/logo-wims-blanc.svg") center / contain no-repeat;
+  -webkit-mask: none;
+          mask: none;
+}
 
 /* ---------- Chronomètre ou « Examen en cours » centré dans la barre (écrans larges) ----------
  * js/nova.js (centrerBarre) pose .nova-centre seulement si rien ne chevauche ; sinon il reste

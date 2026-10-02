@@ -1,0 +1,25 @@
+<!-- Nova/_widgets/headhome.phtml -->
+!! Copie adaptée de themes/_widgets/headhome.phtml (WIMS 4.32), 2026-10-02 : l'entrée d'accueil de
+!! la barre (home ou class_home, sans nom) affiche « WIMS », précédé du logo de WIMS (cadre.css),
+!! au lieu de « Page d'accueil » et d'une maison. Son infobulle (wims_name_title_...) garde la
+!! destination. Les autres entrées ne changent pas.
+!for i_=1 to $wims_home_items_cnt
+ !set 1_=!line $i_ of $wims_home_items
+ !set wims_ref_class = !item 1 of $1_
+ !set nova_cle=!word 1 of $(1_[1])
+ !set nova_reste=!word 2 to -1 of $(1_[1])
+ !reset nova_nom_sauve
+ !if " notin $(1_[1]) and $nova_cle isitemof home,class_home and $nova_reste=$empty
+   !set nova_nom_sauve=$(wims_name_$(nova_cle))
+   !default wims_name_title_$(nova_cle)=$nova_nom_sauve
+   !set wims_name_$(nova_cle)=WIMS
+ !endif
+ <$div1 class="menuitem $wims_ref_class">
+  !read $(w_path)oneitem.phtml $1_
+ </$div1>
+ !if $nova_nom_sauve!=$empty
+   !set wims_name_$(nova_cle)=$nova_nom_sauve
+ !endif
+ !reset wims_ref_class nova_cle nova_reste nova_nom_sauve
+!next i_
+<!-- end Nova/_widgets/headhome.phtml -->

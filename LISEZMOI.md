@@ -43,6 +43,9 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   de la classe porte le nom de la classe. Copie adaptée du widget de WIMS (`_widgets/ariane.phtml`,
   listée dans ORIGINES) ; la barre du haut garde « Page d'accueil ». L'icône de maison du jeu d'icônes
   (Font_Awesome) ne reste que sur la racine (`cadre.css`).
+- **Barre du haut : « WIMS » et son logo (2026-10-02)** au lieu d'une maison et de « Page d'accueil »
+  (copie adaptée de `_widgets/headhome.phtml`, listée dans ORIGINES ; logo en image, dégradés
+  compris). Au téléphone, le logo seul.
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;
@@ -73,6 +76,7 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 | `css.css.template` | liste ordonnée des feuilles concaténées dans `css.css` |
 | `construire-css.sh` | construit `css.css` (remplace `mkcss.pl`, sans Java) ; `--lisible` pour ne pas minifier |
 | `_css/polices.css`, `polices/` | Atkinson Hyperlegible Next et Mono, servies localement (OFL) |
+| `img/logo-wims-blanc.svg` | logo de WIMS (blanc) devant « WIMS » dans la barre (`_widgets/headhome.phtml`) |
 | `_css/jetons.css` | toutes les couleurs, tailles, espaces ; clair, sombre, et contenu clair en sombre |
 | `_css/composants.css` | boutons, champs, tableaux, légendes, messages (couleurs que Standard écrivait dans htmlheader) |
 | `_css/cadre.css` | barre du haut, fil d'Ariane, menu latéral (grille sur ordinateur, replié sur téléphone), contextes particuliers |

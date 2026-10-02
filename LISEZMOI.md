@@ -27,6 +27,9 @@ https://claude.ai/artifact/BGmJJSzw8F45U1YmS9ZPrN
   chronomètre ou « Examen en cours » au centre s'il ne chevauche rien (`centrerBarre`), « Retour » et
   « Outils » en pictogrammes seuls quand la place manque ; parcours (examen « course ») : progression
   en bande sous la barre au téléphone.
+- **Élèves sans fil d'Ariane (2026-10-02)** : masqué en CSS (marque `#nova-eleve`, header.phtml) ;
+  bouton « ← Retour » dans la barre vers le niveau précédent du fil (`retourEleve`, nova.js). Les
+  liens du fil restent dans la page. Enseignants et admins gardent le fil.
 - **Menu de pied de page** de l'enseignant et des administrateurs (commenté dans Standard 4.32) :
   rétabli dans `supervisor.phtml`, sous la page, masqué sous 1024 px.
 - **Une seule couleur d'accent** : `ref_bgcolor` du site ou de la classe ; si elle est restée au

@@ -41,6 +41,10 @@
       <span class="nova-classe">$wims_classname</span>
     !endif
     !read themes/Nova/_widgets/examencours.phtml
+    !! Nova : marque des participants (eleves) : fil d'Ariane masque, bouton Retour (js/nova.js).
+    !if $wims_user!=$empty and $wims_user!=supervisor and $wims_developer=$empty
+      <span id="nova-eleve" hidden></span>
+    !endif
     </div>
     !distribute items li into div1
     !read themes/Nova/_widgets/user_links.phtml

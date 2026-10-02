@@ -22,3 +22,4 @@
 !set nova_examen_a_terminer_court=Terminer
 !set nova_fin_session=Vous avez terminé.
 !set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).
+!set nova_retour=Retour

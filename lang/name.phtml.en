@@ -22,3 +22,4 @@
 !set nova_examen_a_terminer_court=Finish
 !set nova_fin_session=You have finished.
 !set nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.
+!set nova_retour=Back

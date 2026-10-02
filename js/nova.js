@@ -252,6 +252,7 @@
     function garde(item) {
       return item.classList.contains('chrono') || item.classList.contains('class_home') ||
         item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') || item.classList.contains('tools') ||
+        item.classList.contains('nova-retour') ||
         item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') ||
         item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
     }
@@ -445,7 +446,37 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
+  /* Élèves (#nova-eleve, header.phtml) : pas de fil d'Ariane (masqué en CSS), mais un bouton
+   * « Retour » dans la barre, juste après ☰, vers le niveau précédent du fil — le dernier lien
+   * de celui-ci (exercice → feuille → chapitre → accueil). Rien sur l'accueil (aucun lien), ni
+   * pendant un examen ou dans la fenêtre d'exercice, qui ont leurs propres boutons. */
+  function retourEleve() {
+    if (!document.getElementById('nova-eleve') || document.body.classList.contains('nova-examen-session')) return;
+    var barre = document.getElementById('wimstopbox');
+    var fil = document.querySelector('.breadcrumbs');
+    if (!barre || !fil || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
+    var liens = fil.querySelectorAll('a[href]');
+    if (!liens.length) return;
+    var precedent = liens[liens.length - 1];
+    var textes = document.getElementById('nova-textes');
+    var libelle = (textes && textes.getAttribute('data-retour')) || 'Retour';
+    var item = document.createElement('span');
+    item.className = 'menuitem nova-retour';
+    var a = document.createElement('a');
+    a.href = precedent.href;
+    a.className = 'nova-retour-lien';
+    a.title = libelle + ' : ' + precedent.textContent.trim();
+    a.setAttribute('aria-label', a.title);
+    var texte = document.createElement('span');
+    texte.className = 'text_item';
+    texte.textContent = libelle;
+    a.appendChild(texte);
+    item.appendChild(a);
+    var bloc = barre.querySelector('.wimsmenu.float_left') || barre;
+    bloc.insertBefore(item, bloc.firstChild);
+  }
+
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

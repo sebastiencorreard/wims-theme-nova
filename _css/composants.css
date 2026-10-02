@@ -89,9 +89,104 @@ input[type="date"], input[type="url"], input[type="search"], input:not([type]), 
 }
 
 /* Encadrés et légendes */
-.property_fields { border-color: var(--nova-bord); border-radius: var(--nova-rayon-carte); }
-.property_fields legend { background-color: var(--nova-accent); color: var(--nova-sur-accent); border-radius: 6px; }
-.property_fields legend > a { color: var(--nova-sur-accent); }
+/* ---------- Cadres de formulaire (fieldset) — tous, de la même façon (2026-10-02) ----------
+ * WIMS les dessine en dégradé, champs zébrés et bordés, légende encadrée posée dans le trait
+ * (.property_fields de forms.css). Nova : une carte comme celles de l'accueil — surface, bord fin,
+ * coins arrondis, ombre légère — dont la légende est le titre, à l'intérieur. Restent à part : la
+ * légende des cartes d'activités (.wims_work_legend) et les filtres du moteur de recherche
+ * (#affined_search, un accordéon) ; le moteur de l'accueil du site garde sa carte (accueil.css). */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) {
+  min-width: 0;
+  margin-block: var(--nova-e4);
+  padding: var(--nova-e4) var(--nova-e5) var(--nova-e5);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: var(--nova-ombre);
+}
+/* Un cadre dans un cadre : sans ombre, sur le fond doux. */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) .wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) {
+  padding: var(--nova-e3) var(--nova-e4) var(--nova-e4);
+  background: var(--nova-surface-2);
+  box-shadow: none;
+}
+/* La légende, titre de la carte. Flottante, elle n'est plus dessinée dans le trait du cadre ; dans un
+ * .property_fields (flex), elle prend une ligne entière. */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 var(--nova-e3);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--nova-texte);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+}
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend > a { color: var(--nova-lien); }
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend + * { clear: both; }
+/* Les champs : plus de zébrage ni de bordure, libellé au-dessus, aide en gris. */
+.property_fields .field, .property_fields .field.box,
+.property_fields .field:nth-child(odd), .property_fields .field:nth-child(even) {
+  min-height: 0;
+  padding: var(--nova-e2) 0;
+  border: 0;
+  background: none;
+}
+.property_fields .field > label:first-child {
+  display: block;
+  margin-bottom: var(--nova-e1);
+  font-size: .875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--nova-texte);
+}
+.property_fields .formHelp, .formHelp { margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
+.property_fields p { padding: 0; }
+.property_fields .actions, .property_fields .wimsform {
+  flex-wrap: wrap;
+  gap: var(--nova-e2);
+  margin-top: var(--nova-e2);
+  padding: var(--nova-e2) 0 0;
+}
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) :is(input[type="submit"], input[type="button"], button.wims_button, a.wims_button:not(.wims_button_help)) { font-size: .9375rem; }
+/* Filtres du moteur de recherche (accordéon jQuery UI) : mêmes champs, sans cases bordées. */
+#affined_search > legend.ui-accordion-header {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nova-e1);
+  min-height: 40px;
+  margin: 0;
+  padding: 0 var(--nova-e4);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  background-image: none;
+  color: var(--nova-texte);
+  font-size: .9375rem;
+  font-weight: 700;
+}
+#affined_search > legend.ui-accordion-header:hover { background: var(--nova-surface-2); }
+#affined_search .ui-accordion-content { padding: var(--nova-e3) 0 0; border: 0; background: none; }
+#affined_search .field.box { min-height: 0; padding: var(--nova-e2) var(--nova-e3) var(--nova-e2) 0; border: 0; background: none; }
+#affined_search .field.box > label:first-child { font-size: .875rem; font-weight: 700; color: var(--nova-texte); }
+/* Bouton secondaire (« Mot de passe oublié »…) : à contour, au lieu du dégradé gris de WIMS. */
+.main_body a.wims_button.wims_secondary_button, a.wims_button.wims_secondary_button, button.wims_secondary_button {
+  background: var(--nova-surface);
+  background-image: none;
+  color: var(--nova-texte);
+  border: 1px solid var(--nova-bord-fort);
+  box-shadow: none;
+  text-shadow: none;
+}
+.main_body a.wims_button.wims_secondary_button:hover, a.wims_button.wims_secondary_button:hover, button.wims_secondary_button:hover {
+  background: var(--nova-surface-2);
+  color: var(--nova-texte);
+  border-color: var(--nova-texte-2);
+}
 .legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
 .wims_emph { color: var(--nova-lien); }
 

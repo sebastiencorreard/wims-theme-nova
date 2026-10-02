@@ -274,13 +274,22 @@
   function menusDeroulants() {
     var survol = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)');
     var menus = [];
-    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent'), function (li) {
+    // Autres menus Foundation de WIMS (adm/manage/motd : langue du message du jour).
+    Array.prototype.forEach.call(document.querySelectorAll('[data-dropdown-menu]'), function (ul) {
+      ul.removeAttribute('data-dropdown-menu');
+      ul.classList.add('dropdown', 'menu', 'nova-menu-deroulant');
+      Array.prototype.forEach.call(ul.children, function (li) {
+        if (li.querySelector(':scope > ul') && li.querySelector(':scope > a')) li.classList.add('is-dropdown-submenu-parent');
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent, .nova-menu-deroulant > li.is-dropdown-submenu-parent'), function (li) {
       var lien = li.querySelector(':scope > a'), liste = li.querySelector(':scope > ul');
       if (!lien || !liste) return;
       liste.classList.add('vertical', 'submenu', 'is-dropdown-submenu');
       Array.prototype.forEach.call(liste.children, function (e) { e.classList.add('is-submenu-item', 'is-dropdown-submenu-item'); });
       if (!liste.id) liste.id = 'nova-sousmenu-' + menus.length;
       lien.setAttribute('role', 'button');
+      if (!lien.hasAttribute('href')) lien.tabIndex = 0;
       lien.setAttribute('aria-controls', liste.id);
       lien.setAttribute('aria-expanded', 'false');
       var m = { li: li, lien: lien, liste: liste, epingle: false, minuterie: 0 };
@@ -294,7 +303,8 @@
         if (estOuvert(m) && m.epingle) fermer(m); else { ouvrir(m); m.epingle = true; }
       });
       lien.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowDown' || e.key === ' ') {
+        if (e.key === 'Enter' && !lien.hasAttribute('href')) { e.preventDefault(); lien.click(); }
+        else if (e.key === 'ArrowDown' || e.key === ' ') {
           e.preventDefault();
           ouvrir(m); m.epingle = true;
           var a = entrees()[0]; if (a) a.focus();
@@ -460,6 +470,56 @@
         return origine ? origine.apply(this, arguments) : this;
       };
     }
+  }
+
+  /* Panneaux déroulants de Foundation (bouton data-toggle="X" + div#X.dropdown-pane[data-dropdown] :
+   * scripts/js/dropdownbutton.phtml — sauvegarde de classe, vérification d'examen, feuilles), sans
+   * Foundation (2026-10-03). Le bouton ouvre et ferme (classe is-open, que le CSS de WIMS suit) ; le
+   * panneau se place sous le bouton (data-alignment="right" : aligné à droite) ; Échap, clic ailleurs
+   * le referment ; data-auto-focus : focus sur le premier lien. Le panneau « Abandonner » des
+   * exercices (scripts/oef/Main.phtml) est une boîte de dialogue jQuery UI : laissé à jQuery UI. */
+  function panneaux() {
+    var ouverts = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.dropdown-pane[data-dropdown][id]'), function (p) {
+      var boutons = document.querySelectorAll('[data-toggle="' + p.id + '"]');
+      if (!boutons.length) return;
+      p.removeAttribute('data-dropdown');
+      Array.prototype.forEach.call(boutons, function (b) {
+        b.removeAttribute('data-toggle');
+        b.setAttribute('aria-controls', p.id);
+        b.setAttribute('aria-expanded', 'false');
+        b.addEventListener('click', function (e) {
+          if (p.classList.contains('ui-dialog-content') || p.id === 'exo_giveup') return;
+          e.stopPropagation();
+          if (p.classList.contains('is-open')) fermer(p); else ouvrir(p, b);
+        });
+      });
+    });
+    function fermer(p) {
+      p.classList.remove('is-open');
+      Array.prototype.forEach.call(document.querySelectorAll('[aria-controls="' + p.id + '"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+      ouverts = ouverts.filter(function (q) { return q !== p; });
+    }
+    function ouvrir(p, b) {
+      ouverts.slice().forEach(fermer);
+      p.classList.add('is-open');
+      b.setAttribute('aria-expanded', 'true');
+      var parent = p.offsetParent || document.body;
+      var rp = parent.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      var haut = rb.bottom - rp.top + parent.scrollTop + 4;
+      var gauche = p.getAttribute('data-alignment') === 'right' ? rb.right - rp.left - p.offsetWidth : rb.left - rp.left;
+      gauche = Math.max(4 - rp.left, Math.min(gauche, document.documentElement.clientWidth - rp.left - p.offsetWidth - 4));
+      p.style.top = haut + 'px';
+      p.style.left = gauche + parent.scrollLeft + 'px';
+      ouverts.push(p);
+      if (p.getAttribute('data-auto-focus') === 'true') { var a = p.querySelector('a[href], button, input'); if (a) a.focus(); }
+    }
+    document.addEventListener('click', function (e) { ouverts.slice().forEach(function (p) { if (!p.contains(e.target)) fermer(p); }); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || !ouverts.length) return;
+      var p = ouverts[0], b = document.querySelector('[aria-controls="' + p.id + '"]');
+      fermer(p); if (b) b.focus();
+    });
   }
 
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
@@ -1139,7 +1199,7 @@
     });
   }
 
-  function demarrer() { revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

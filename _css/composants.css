@@ -409,3 +409,16 @@ fieldset.wims_work_legend > legend {
 /* Panneau « Abandonner » (scripts/oef/Main.phtml) : jQuery UI en fait une boîte de dialogue au
  * chargement ; caché jusque-là (les attributs data-toggle / data-dropdown de Foundation y sont inertes). */
 .dropdown-pane:not(.ui-dialog-content) { display: none; }
+/* Panneaux des boutons à liste déroulante (scripts/js/dropdownbutton.phtml, ouverts par js/nova.js :
+ * panneaux) et menus déroulants hors de la barre (adm/manage/motd) : cartes comme les sous-menus. */
+.dropdown-pane.is-open { display: block; visibility: visible; }
+.dropdown-pane[aria-labelledby], .dropdown-pane[id^="dropdown"],
+.nova-menu-deroulant .is-dropdown-submenu {
+  padding: var(--nova-e2);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+}
+.nova-menu-deroulant .is-dropdown-submenu a { display: flex; align-items: center; gap: var(--nova-e1); }
+.nova-menu-deroulant .is-dropdown-submenu a:hover { background: var(--nova-accent-doux); }

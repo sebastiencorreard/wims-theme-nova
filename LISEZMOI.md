@@ -24,7 +24,7 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   des entrées gardées). Sans JavaScript, menu complet. Pourquoi pas côté serveur : WIMS fige
   les en-têtes du navigateur, cookies compris, dans la session à la connexion (`modules/home/var.auth`),
   et n'offre aucune préférence d'enseignant qu'un thème puisse écrire.
-- **Accueil du site (2026-10-02)**, disposition choisie par l'utilisateur : « Rechercher une ressource »
+- **Accueil du site (2026-10-02)**, disposition choisie par l'utilisateur : en première ligne l'actualité et les exemples (`_widgets/infos.phtml`), puis « Rechercher une ressource »
   (le formulaire de WIMS, filtres compris ; la carte prend toute la largeur quand ils sont ouverts) et
   « Rechercher une classe » (`_widgets/search_classe.phtml`, d'après Nikaia) côte à côte ; puis
   l'actualité et les exemples côte à côte ; puis « Sur ce site » et une ligne Explorer (taxonomie,

@@ -1,27 +1,11 @@
 !! Nova : contenu de l'accueil du site (d'après modules/home/front.phtml, disposition B du 2026-10-02).
-!! Message du site, puis l'actualité et les exemples côte à côte (widgets de WIMS, données du
-!! « Module de messages » réglé par le gestionnaire : frontmsg dans wims.conf, lu par
-!! themes/_procs/frontmsg.proc dans modules/home/var.proc), sans l'accordéon « Informations » de
-!! _widgets/frontmsg.phtml ; enfin « Sur ce site » (log/front.phtml.$lang du gestionnaire, sinon
-!! le texte de WIMS) et une ligne Explorer.
+!! « Sur ce site » (log/front.phtml.$lang du gestionnaire, sinon le texte de WIMS) et une ligne
+!! Explorer. Le message du site, l'actualité et les exemples sont en tête : _widgets/infos.phtml.
 !default nova_explorer=Explore
 !default nova_taxonomie=Taxonomy
 !default nova_glossaires=Glossaries
 !default nova_parcourir=Browse the site
 !if $wims_user=$empty
-  <div class="wims_motd">
-    !read ./wimshome/log/motd.phtml.$lang
-  </div>
-  !if $front_nbactu>0 or $front_nbslide>0
-    <div class="nova-accueil-infos">
-    !if $front_nbactu>0
-      !read themes/_widgets/news.phtml
-    !endif
-    !if $front_nbslide>0
-      !read themes/_widgets/examples.phtml
-    !endif
-    </div>
-  !endif
   <div class="wims_frontpage nova-accueil-site">
     !readproc wimshome/log/front.phtml.$lang
     !if yes notin $front_exist

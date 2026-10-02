@@ -1,0 +1,19 @@
+!! Nova : en tête de l'accueil du site, le message du site puis l'actualité et les exemples côte à
+!! côte (widgets de WIMS, données du « Module de messages » réglé par le gestionnaire : frontmsg dans
+!! wims.conf, lu par themes/_procs/frontmsg.proc dans modules/home/var.proc), sans l'accordéon
+!! « Informations » de _widgets/frontmsg.phtml. Demandé en première ligne le 2026-10-02.
+!if $wims_user=$empty and $s_category=V
+  <div class="wims_motd">
+    !read ./wimshome/log/motd.phtml.$lang
+  </div>
+  !if $front_nbactu>0 or $front_nbslide>0
+    <div class="nova-accueil-infos">
+    !if $front_nbactu>0
+      !read themes/_widgets/news.phtml
+    !endif
+    !if $front_nbslide>0
+      !read themes/_widgets/examples.phtml
+    !endif
+    </div>
+  !endif
+!endif

@@ -573,6 +573,23 @@
     }, true);
   }
 
+  /* Retour en haut : la pastille (cadre.css) n'apparaît qu'après trois quarts d'écran de défilement ;
+   * le lien vide de WIMS reçoit un nom accessible (son title). */
+  function retourEnHaut() {
+    var lien = document.getElementById('back-to-top');
+    if (!lien) return;
+    if (lien.title && !lien.getAttribute('aria-label')) lien.setAttribute('aria-label', lien.title);
+    var racine = document.documentElement, attente = false;
+    var maj = function () {
+      attente = false;
+      racine.classList.toggle('nova-defile', window.scrollY > window.innerHeight * 0.75);
+    };
+    window.addEventListener('scroll', function () {
+      if (!attente) { attente = true; window.requestAnimationFrame(maj); }
+    }, { passive: true });
+    maj();
+  }
+
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
    * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
   function centrerBarre() {
@@ -727,7 +744,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); sectionsRepliables(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

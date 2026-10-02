@@ -45,6 +45,7 @@ $wims_CSS
    n'apparaisse un instant. Pas de signe dollar dans ce script : le C de WIMS le remplacerait. */
 (function () {
   var d = document.documentElement;
+  d.classList.add('nova-js');  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
   var defaut = ['add_sheet', 'add_exam', 'participantview', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
   var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), style: function (liste) {
     var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
@@ -64,7 +65,7 @@ $wims_CSS
   document.head.appendChild(s);
 })();
 </script>
-<script src="html/themes/Nova/js/nova.js?v=9ad52c0732" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=efc154158d" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

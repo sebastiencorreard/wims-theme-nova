@@ -39,9 +39,32 @@ $wims_CSS
      <meta name="nova-sombre" content="auto"> et passer color-scheme a "light dark".
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
-<script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu). */
-try { if (localStorage.getItem('nova_menu') !== 'complet') document.documentElement.classList.add('nova-menu-simple'); } catch (e) { document.documentElement.classList.add('nova-menu-simple'); }</script>
-<script src="html/themes/Nova/js/nova.js?v=0136ce8119" defer></script>
+<script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
+   Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
+   de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
+   n'apparaisse un instant. Pas de signe dollar dans ce script : le C de WIMS le remplacerait. */
+(function () {
+  var d = document.documentElement;
+  var defaut = ['add_sheet', 'add_exam', 'participantview', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
+  var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), style: function (liste) {
+    var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
+      .map(function (c) { return '.' + c; }).join(', ') || '.nova-aucune';
+    var p = '.nova-menu-simple:not(.nova-menu-edition) body:has(#nova-menu-bascule) #wimsmenumodubox ';
+    var titre = p + '.menu_title:not(:has(+ * :is(' + k + ')))';
+    return p + '.menuitem:not(:is(' + k + ')), ' + titre + ', ' + titre + ' + * { display: none !important; }';
+  } };
+  try {
+    if (localStorage.getItem('nova_menu') !== 'complet') d.classList.add('nova-menu-simple');
+    var g = JSON.parse(localStorage.getItem('nova_menu_garde') || 'null');
+    if (Array.isArray(g)) menu.garde = g;
+  } catch (e) { d.classList.add('nova-menu-simple'); }
+  var s = document.createElement('style');
+  s.id = 'nova-menu-style';
+  s.textContent = menu.style(menu.garde);
+  document.head.appendChild(s);
+})();
+</script>
+<script src="html/themes/Nova/js/nova.js?v=2491b9d9a4" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

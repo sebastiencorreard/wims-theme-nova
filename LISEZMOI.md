@@ -14,9 +14,14 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 - **Menu enseignant simplifié (2026-10-02)**, comme le thème Pion mais sans modifier WIMS : à
   l'accueil d'une classe, l'enseignant ne voit d'abord que Nouvelle feuille, Nouvel examen, Vue des
   participants, Notes, Message du jour, Config, Modtool ; « Voir toutes les fonctions » rend le reste.
-  Le serveur envoie **toujours le menu complet** ; le navigateur en masque une partie (règle
-  `.nova-menu-simple` de `cadre.css`, liste des entrées gardées à cet endroit). Choix gardé dans
-  `localStorage` (par navigateur) ; sans JavaScript, menu complet. Pourquoi pas côté serveur : WIMS fige
+  **Personnalisable** : « Choisir les entrées du menu » affiche toutes les entrées avec un œil ; un
+  clic sur la ligne ou sur l'œil la cache ou la montre, l'œil d'un titre agit sur toute la famille,
+  « Revenir au menu par défaut » rétablit la liste de départ (`js/nova.js`, `menuPersonnel`).
+  Le serveur envoie **toujours le menu complet** ; le navigateur en masque une partie. La règle est
+  écrite dès l'en-tête par le script de `htmlheader.phtml` (liste par défaut `window.novaMenu.defaut`,
+  `<style id="nova-menu-style">`), avant l'affichage : aucune entrée n'apparaît un instant. Choix gardés
+  dans `localStorage` (par navigateur) : `nova_menu` (simple ou complet), `nova_menu_garde` (classes
+  des entrées gardées). Sans JavaScript, menu complet. Pourquoi pas côté serveur : WIMS fige
   les en-têtes du navigateur, cookies compris, dans la session à la connexion (`modules/home/var.auth`),
   et n'offre aucune préférence d'enseignant qu'un thème puisse écrire.
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste

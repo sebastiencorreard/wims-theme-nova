@@ -17,6 +17,11 @@
 !set nova_examen_court=Exam
 !set nova_menu_voir_tout=Show all features
 !set nova_menu_simplifier=Simplify the menu
+!set nova_menu_personnaliser=Choose menu items
+!set nova_menu_termine=Done
+!set nova_menu_defaut=Back to the default menu
+!set nova_menu_cacher=Hide
+!set nova_menu_montrer=Show
 !set nova_plus=More
 !set nova_examen_a_terminer=Exam to finish
 !set nova_examen_a_terminer_court=Finish

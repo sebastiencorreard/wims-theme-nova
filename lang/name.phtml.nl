@@ -17,6 +17,11 @@
 !set nova_examen_court=Proefwerk
 !set nova_menu_voir_tout=Alle functies tonen
 !set nova_menu_simplifier=Menu vereenvoudigen
+!set nova_menu_personnaliser=Menu-items kiezen
+!set nova_menu_termine=Klaar
+!set nova_menu_defaut=Terug naar het standaardmenu
+!set nova_menu_cacher=Verbergen
+!set nova_menu_montrer=Tonen
 !set nova_plus=Meer
 !set nova_examen_a_terminer=Proefwerk afsluiten
 !set nova_examen_a_terminer_court=Afsluiten

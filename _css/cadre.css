@@ -456,13 +456,10 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 }
 
 /* Menu enseignant simplifié (comme le thème Pion) : à l'accueil de la classe (marque
- * #nova-menu-bascule), seules ces entrées restent ; une famille sans entrée gardée perd son titre.
- * Liste à tenir à jour avec la doc (LISEZMOI). html.nova-menu-simple : htmlheader.phtml. */
-.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menuitem:not(:has(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool)),
-.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menu_title:not(:has(+ * :is(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool))),
-.nova-menu-simple body:has(#nova-menu-bascule) #wimsmenumodubox .menu_title:not(:has(+ * :is(.add_sheet, .add_exam, .participantview, .Score1, .SE_mod, .backteacher, .SE_config, .modtool))) + * {
-  display: none !important;
-}
+ * #nova-menu-bascule), seules les entrées gardées restent ; une famille sans entrée gardée perd son
+ * titre. La règle est écrite par le script de htmlheader.phtml (<style id="nova-menu-style">), à partir
+ * du choix de l'enseignant (localStorage) ou de la liste de Pion ; js/nova.js la réécrit pendant
+ * l'édition (menuPersonnel). */
 
 /* Bascule menu simplifié / complet de l'enseignant (js/nova.js, basculeMenu). */
 .nova-menu-bascule {
@@ -482,6 +479,76 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   cursor: pointer;
 }
 .nova-menu-bascule:hover { color: var(--nova-texte); border-style: solid; background: var(--nova-surface); }
+/* « Choisir les entrées du menu » : un lien discret sous la bascule ; « Terminé », en édition, le
+ * bouton principal, collé au bas de la colonne pour rester à portée pendant le défilement. */
+.nova-menu-defaut, .nova-menu-bascule.nova-menu-editer {
+  display: block;
+  margin: 0 var(--nova-e3) var(--nova-e3);
+  padding: var(--nova-e1) 0;
+  border: 0;
+  background: none;
+  color: var(--nova-lien);
+  font: inherit;
+  font-size: var(--nova-petit);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.nova-menu-bascule.nova-menu-editer { width: auto; min-height: 0; margin-top: calc(-1 * var(--nova-e2)); }
+.nova-menu-defaut[hidden], .nova-menu-bascule[hidden] { display: none; }
+.nova-menu-edition .nova-menu-actions {
+  position: sticky;
+  bottom: 0;
+  padding: var(--nova-e2) 0 var(--nova-e1);
+  background: var(--nova-surface);
+  border-top: 1px solid var(--nova-bord);
+}
+.nova-menu-edition .nova-menu-bascule.nova-menu-editer {
+  width: calc(100% - 2 * var(--nova-e3));
+  min-height: var(--nova-cible);
+  margin: var(--nova-e2) var(--nova-e3);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  font-size: .9375rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Édition du menu simplifié (js/nova.js, menuPersonnel) : toutes les entrées, chacune avec un œil ;
+ * une entrée cachée reste à sa place, estompée. Un clic sur la ligne ou sur l'œil la bascule. */
+#wimsmenumodubox .nova-oeil { display: none; }
+.nova-menu-edition #wimsmenumodubox .menuitem,
+.nova-menu-edition #wimsmenumodubox .menu_title { display: flex !important; align-items: center; }
+.nova-menu-edition #wimsmenumodubox .menuitem > a { flex: 1; min-width: 0; }
+.nova-menu-edition #wimsmenumodubox .menu_title { cursor: pointer; }
+.nova-menu-edition #wimsmenumodubox .nova-oeil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--nova-cible);
+  height: 36px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--nova-rayon);
+  background: transparent;
+  cursor: pointer;
+}
+.nova-menu-edition #wimsmenumodubox .nova-oeil::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background-color: var(--nova-accent);
+  -webkit-mask: var(--nova-oeil) center / contain no-repeat;
+          mask: var(--nova-oeil) center / contain no-repeat;
+}
+.nova-menu-edition #wimsmenumodubox .nova-oeil:hover { background: var(--nova-accent-doux); }
+#wimsmenumodubox .nova-oeil { --nova-oeil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+#wimsmenumodubox .nova-masquee > .nova-oeil { --nova-oeil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.6 5.1A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.5M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18'/%3E%3C/svg%3E"); }
+.nova-menu-edition #wimsmenumodubox .nova-masquee > .nova-oeil::before { background-color: var(--nova-texte-2); }
+.nova-menu-edition #wimsmenumodubox .menuitem.nova-masquee > a { color: var(--nova-texte-2); text-decoration: line-through; text-decoration-color: var(--nova-bord-fort); }
+.nova-menu-edition #wimsmenumodubox .menu_title.nova-masquee { opacity: .55; }
 
 /* ---------- Pictogrammes des entrées de la barre ----------
  * Une icône par entrée (--nova-picto, masque SVG) : seule au téléphone pour l'accueil, le retour et

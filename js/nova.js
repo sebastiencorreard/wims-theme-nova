@@ -368,35 +368,153 @@
   }
 
   /* Menu enseignant simplifié / complet (accueil de la classe) : le serveur envoie le menu complet,
-   * la classe html.nova-menu-simple (posée dans htmlheader.phtml) en masque une partie (cadre.css).
-   * Le choix est gardé dans localStorage, donc par navigateur. */
+   * la classe html.nova-menu-simple (posée dans htmlheader.phtml) en masque une partie, d'après la
+   * règle écrite par ce même script (<style id="nova-menu-style">, window.novaMenu). Les choix sont
+   * gardés dans localStorage, donc par navigateur : nova_menu (simple ou complet) et nova_menu_garde
+   * (les entrées gardées, repérées par la classe de leur .menuitem). */
   function basculeMenu() {
     var marque = document.getElementById('nova-menu-bascule');
     var menu = document.getElementById('wimsmenumodubox');
     if (!marque || !menu) return;
     var racine = document.documentElement;
+    var texte = function (nom) { return marque.getAttribute('data-' + nom) || ''; };
+    var memoriser = function (cle, valeur) { try { localStorage.setItem(cle, valeur); } catch (e) { /* choix non retenu */ } };
     var bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'nova-menu-bascule';
     var afficher = function () {
       var simple = racine.classList.contains('nova-menu-simple');
-      bouton.textContent = marque.getAttribute(simple ? 'data-voir-tout' : 'data-simplifier');
+      bouton.textContent = texte(simple ? 'voir-tout' : 'simplifier');
       bouton.setAttribute('aria-pressed', simple ? 'false' : 'true');
+      bouton.hidden = racine.classList.contains('nova-menu-edition');
     };
     bouton.addEventListener('click', function () {
       var simple = racine.classList.toggle('nova-menu-simple');
-      try { localStorage.setItem('nova_menu', simple ? 'simple' : 'complet'); } catch (e) { /* choix non retenu */ }
+      memoriser('nova_menu', simple ? 'simple' : 'complet');
       afficher();
     });
+    var actions = document.createElement('div');
+    actions.className = 'nova-menu-actions';
+    actions.appendChild(bouton);
+    var personnel = menuPersonnel(menu, racine, texte, memoriser, afficher);
+    if (personnel) personnel.forEach(function (e) { actions.appendChild(e); });
     afficher();
     // Dans le menu (la colonne qui défile), mais APRÈS la construction de l'accordéon par jQuery UI :
     // présent avant, il en deviendrait un titre de section.
     var placer = function () {
-      if (bouton.parentNode) return;
-      if (menu.classList.contains('ui-accordion') || !window.jQuery || !jQuery.fn.accordion) menu.appendChild(bouton);
+      if (actions.parentNode) return;
+      if (menu.classList.contains('ui-accordion') || !window.jQuery || !jQuery.fn.accordion) menu.appendChild(actions);
     };
     placer();
-    if (!bouton.parentNode) window.addEventListener('load', function () { setTimeout(function () { placer(); if (!bouton.parentNode) menu.appendChild(bouton); }, 0); });
+    if (!actions.parentNode) window.addEventListener('load', function () { setTimeout(function () { placer(); if (!actions.parentNode) menu.appendChild(actions); }, 0); });
+  }
+
+  /* Choisir les entrées du menu simplifié : en édition, toutes les entrées s'affichent avec un œil ;
+   * un clic sur la ligne (le lien ne s'ouvre pas) ou sur l'œil cache ou montre l'entrée ; l'œil d'un
+   * titre agit sur toute sa famille. La règle de masquage est réécrite à chaque changement. */
+  function menuPersonnel(menu, racine, texte, memoriser, afficher) {
+    var regle = document.getElementById('nova-menu-style');
+    var nm = window.novaMenu;
+    if (!regle || !nm || !texte('personnaliser')) return null;
+    var garde = nm.garde.slice();
+    var cle = function (item) {
+      for (var i = 0; i < item.classList.length; i++) {
+        var c = item.classList[i];
+        if (c !== 'menuitem' && c.indexOf('nova-') !== 0 && !/[^A-Za-z0-9_-]/.test(c)) return c;
+      }
+      return null;
+    };
+    var nom = function (e) { return (e.querySelector('a') || e).textContent.replace(/\s+/g, ' ').trim(); };
+    var familles = [];  // [titre, [entrées]]
+    Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (titre) {
+      var bloc = titre.nextElementSibling;
+      var items = bloc ? Array.prototype.filter.call(bloc.querySelectorAll('.menuitem'), cle) : [];
+      if (items.length) familles.push([titre, items]);
+    });
+    if (!familles.length) return null;
+    var editer = document.createElement('button');
+    editer.type = 'button';
+    editer.className = 'nova-menu-bascule nova-menu-editer';
+    var defaut = document.createElement('button');
+    defaut.type = 'button';
+    defaut.className = 'nova-menu-defaut';
+    defaut.textContent = texte('defaut');
+    defaut.hidden = true;
+    var oeil = function (parent) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'nova-oeil';
+      parent.appendChild(b);
+    };
+    var rafraichir = function () {
+      familles.forEach(function (f) {
+        var visibles = 0;
+        f[1].forEach(function (item) {
+          var vue = garde.indexOf(cle(item)) >= 0;
+          if (vue) visibles++;
+          item.classList.toggle('nova-masquee', !vue);
+          var b = item.querySelector(':scope > .nova-oeil');
+          if (b) {
+            b.setAttribute('aria-pressed', vue ? 'true' : 'false');
+            b.setAttribute('aria-label', texte(vue ? 'cacher' : 'montrer') + ' : ' + nom(item));
+          }
+        });
+        f[0].classList.toggle('nova-masquee', !visibles);
+        var bt = f[0].querySelector(':scope > .nova-oeil');
+        if (bt) bt.setAttribute('aria-label', texte(visibles ? 'cacher' : 'montrer') + ' : ' + nom(f[0]));
+      });
+      regle.textContent = nm.style(garde);
+      defaut.hidden = !enEdition() || garde.slice().sort().join() === nm.defaut.slice().sort().join();
+    };
+    var basculer = function (cles, montrer) {
+      cles.forEach(function (c) {
+        var i = garde.indexOf(c);
+        if (montrer && i < 0) garde.push(c);
+        if (!montrer && i >= 0) garde.splice(i, 1);
+      });
+      memoriser('nova_menu_garde', JSON.stringify(garde));
+      rafraichir();
+    };
+    var enEdition = function () { return racine.classList.contains('nova-menu-edition'); };
+    var etiqueter = function () {
+      editer.textContent = texte(enEdition() ? 'termine' : 'personnaliser');
+      editer.setAttribute('aria-pressed', enEdition() ? 'true' : 'false');
+    };
+    editer.addEventListener('click', function () {
+      if (!enEdition()) {
+        if (!menu.querySelector('.nova-oeil')) familles.forEach(function (f) { oeil(f[0]); f[1].forEach(oeil); });
+        racine.classList.add('nova-menu-edition');
+      } else {
+        // Terminé : on revient au menu simplifié, celui qu'on vient de composer.
+        racine.classList.remove('nova-menu-edition');
+        racine.classList.add('nova-menu-simple');
+        memoriser('nova_menu', 'simple');
+      }
+      rafraichir();
+      etiqueter();
+      afficher();
+    });
+    defaut.addEventListener('click', function () {
+      garde = nm.defaut.slice();
+      try { localStorage.removeItem('nova_menu_garde'); } catch (e) { /* rien à oublier */ }
+      rafraichir();
+    });
+    // En édition, un clic dans le menu bascule l'entrée ou la famille au lieu d'ouvrir le lien ou
+    // de replier l'accordéon (écouteur en capture : il passe avant ceux de jQuery UI).
+    menu.addEventListener('click', function (ev) {
+      if (!enEdition()) return;
+      var item = ev.target.closest('.menuitem');
+      var titre = ev.target.closest('.menu_title');
+      var f = null;
+      familles.forEach(function (x) { if (x[0] === titre) f = x; });
+      if (item && cle(item)) basculer([cle(item)], item.classList.contains('nova-masquee'));
+      else if (f) basculer(f[1].map(cle), f[0].classList.contains('nova-masquee'));
+      else return;
+      ev.preventDefault();
+      ev.stopPropagation();
+    }, true);
+    etiqueter();
+    return [editer, defaut];
   }
 
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne

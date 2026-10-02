@@ -476,6 +476,10 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   font-weight: 700;
   white-space: nowrap;
 }
+/* Pas d'icône du jeu de la classe (Font_Awesome pose un tiret devant tout lien de .menuitem) :
+ * la pastille a son propre pictogramme ; « Terminer » n'en a pas au téléphone. */
+#wimstopbox .menuitem.nova-examencours > a::before { content: none; }
+@media (max-width: 639.98px) { #wimstopbox .menuitem.nova-terminer > a::before { content: none; } }
 #wimstopbox .menuitem.nova-examencours > a:hover { background: var(--nova-surface); color: var(--nova-lien); }
 #wimstopbox .nova-examencours .nova-court { display: none; }
 @media (max-width: 639.98px) {

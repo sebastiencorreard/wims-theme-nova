@@ -573,16 +573,35 @@
     }, true);
   }
 
-  /* Retour en haut : la pastille (cadre.css) n'apparaît qu'après trois quarts d'écran de défilement ;
-   * le lien vide de WIMS reçoit un nom accessible (son title). */
+  /* Retour en haut : la pastille (cadre.css) n'apparaît qu'après une demi-hauteur d'écran de
+   * défilement. WIMS ne pose son widget (_widgets/topback.phtml) que dans tail, doctail et user : pas
+   * sur l'accueil enseignant d'une classe ni sur celui du site, pourtant longs. Nova le crée alors,
+   * pour que la règle soit la même partout. Le lien vide de WIMS reçoit un nom accessible. */
   function retourEnHaut() {
     var lien = document.getElementById('back-to-top');
-    if (!lien) return;
+    if (!lien) {
+      if (!document.getElementById('wimstopbox')) return;
+      var noms = { fr: 'Haut de page', en: 'Top of page', nl: 'Naar boven' };
+      var langue = (document.documentElement.lang || 'fr').slice(0, 2);
+      var bloc = document.createElement('div');
+      bloc.className = 'wims_topback';
+      lien = document.createElement('a');
+      lien.id = 'back-to-top';
+      lien.href = '#wimstopbox';
+      lien.title = noms[langue] || noms.en;
+      lien.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var doux = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        window.scrollTo({ top: 0, behavior: doux ? 'smooth' : 'auto' });
+      });
+      bloc.appendChild(lien);
+      document.body.appendChild(bloc);
+    }
     if (lien.title && !lien.getAttribute('aria-label')) lien.setAttribute('aria-label', lien.title);
     var racine = document.documentElement, attente = false;
     var maj = function () {
       attente = false;
-      racine.classList.toggle('nova-defile', window.scrollY > window.innerHeight * 0.75);
+      racine.classList.toggle('nova-defile', window.scrollY > window.innerHeight * 0.5);
     };
     window.addEventListener('scroll', function () {
       if (!attente) { attente = true; window.requestAnimationFrame(maj); }

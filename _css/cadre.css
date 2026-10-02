@@ -762,8 +762,9 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
 }
 
 /* ---------- Retour en haut (_widgets/topback.phtml de WIMS) ----------
- * Pastille ronde flottante, qui n'apparaît qu'après un défilement (js/nova.js, retourEnHaut, pose
- * html.nova-defile) ; sans JavaScript, toujours visible. Remplace la flèche « ⇡ » d'utilities2.css,
+ * Pastille ronde flottante, qui n'apparaît qu'après une demi-hauteur d'écran de défilement
+ * (js/nova.js, retourEnHaut, pose html.nova-defile, et crée le bouton là où WIMS n'en met pas) ;
+ * sans JavaScript, toujours visible là où WIMS le pose. Remplace la flèche « ⇡ » d'utilities2.css,
  * visible même en haut de page (décision du 2026-10-02). */
 .wims_topback {
   position: fixed;

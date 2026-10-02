@@ -722,7 +722,7 @@
       compte.textContent = reussis + '/' + cases.length;
       barre.appendChild(compte);
     });
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div):not(.wims_score_bar)'), function (bloc) {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div, span):not(.wims_score_bar, .wims_seq_item_n)'), function (bloc) {
       if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
     });
   }

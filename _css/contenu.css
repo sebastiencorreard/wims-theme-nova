@@ -169,6 +169,20 @@ li.wims_sheet_item > a:first-of-type::after, li.wims_exam_item > a:first-of-type
   font-weight: 700;
 }
 li[class*="_item"]::before { order: -2; }
+/* Le titre reste TOUJOURS au-dessus du contenu de la carte (barre de score, description, statut,
+ * échéance…), même quand la place permettrait de le mettre à côté (demande du 2026-10-02) : un saut
+ * de ligne invisible (::after, toute la largeur) suit le titre ; le contenu passe dessous en gardant
+ * sa taille et son alignement ; l'espacement vertical passe du gap (qui compterait aussi la ligne du
+ * saut) à une marge au-dessus de chaque élément de contenu. Un élément vide de WIMS (espaces seuls) est marqué .nova-vide par
+ * js/nova.js et masqué : il n'ouvre pas de ligne. */
+li.wims_sheet_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_exam_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_doc_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_vote_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_tool_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_glossary_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_freework_item > :not(a:first-of-type, .wims_seq_item_n) { order: 2; margin-top: 6px; }
+li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)) { row-gap: 0; }
+li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after {
+  content: "";
+  order: 1;
+  flex: 0 0 100%;
+  height: 0;
+}
 /* Ce qui reste interactif au-dessus de la zone cliquable : barre de score, autres liens. */
 li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_doc_item .wims_score_bar, li.wims_vote_item .wims_score_bar, li.wims_tool_item .wims_score_bar, li.wims_glossary_item .wims_score_bar, li.wims_freework_item .wims_score_bar,
 li.wims_sheet_item > :not(a:first-of-type) a, li.wims_exam_item > :not(a:first-of-type) a, li.wims_doc_item > :not(a:first-of-type) a, li.wims_vote_item > :not(a:first-of-type) a, li.wims_tool_item > :not(a:first-of-type) a, li.wims_glossary_item > :not(a:first-of-type) a, li.wims_freework_item > :not(a:first-of-type) a {

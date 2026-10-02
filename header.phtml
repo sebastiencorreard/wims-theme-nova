@@ -42,7 +42,8 @@
     !endif
     !read themes/Nova/_widgets/examencours.phtml
     !! Nova : marque des participants (eleves) : fil d'Ariane masque, bouton Retour (js/nova.js).
-    !if $wims_user!=$empty and $wims_user!=supervisor and $wims_developer=$empty
+    !read themes/Nova/_procs/eleve.proc
+    !if $nova_est_eleve=yes
       <span id="nova-eleve" hidden></span>
     !endif
     </div>

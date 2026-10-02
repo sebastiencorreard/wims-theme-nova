@@ -131,7 +131,8 @@ input[type="date"], input[type="url"], input[type="search"], input:not([type]), 
  * légende des cartes d'activités (.wims_work_legend) et les filtres du moteur de recherche
  * (#affined_search, un accordéon) ; le moteur de l'accueil du site garde sa carte (accueil.css). */
 .wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) {
-  min-width: 0;
+  /* Pas de min-width: 0 : un fieldset s'élargit par défaut jusqu'à son contenu ; réduit, il laissait
+   * déborder le contenu hors de la page (« Statistique de participants », vérification du 2026-10-02). */
   margin-block: var(--nova-e4);
   padding: var(--nova-e4) var(--nova-e5) var(--nova-e5);
   border: 1px solid var(--nova-bord);

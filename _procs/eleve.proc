@@ -1,0 +1,17 @@
+!! Nova : l'utilisateur connecté est-il un ÉLÈVE (participant) ? Pose nova_est_eleve=yes, ou rien.
+!! Un enseignant n'est pas seulement « supervisor » : dans un établissement ou un groupement, il se
+!! connecte avec son propre identifiant (vérification du 2026-10-02 : profmaths était pris pour un
+!! élève, menu du compte réduit, fil d'Ariane masqué). WIMS le marque user_supervisable=yes dans sa
+!! fiche ; la variable est posée selon les modules (user_supervisable sur une page de module,
+!! supervisable sur l'accueil), sinon relue dans la fiche quand le module y a accès.
+!reset nova_est_eleve
+!if $wims_user!=$empty and $wims_user!=supervisor and $wims_developer=$empty
+  !set nova_ens=$user_supervisable $supervisable
+  !if yes notin $nova_ens and $wims_superclass!=$empty
+    !set nova_ens=!defof user_supervisable in wimshome/log/classes/$wims_superclass/.users/$wims_user
+  !endif
+  !if yes notin $nova_ens
+    !set nova_est_eleve=yes
+  !endif
+  !reset nova_ens
+!endif

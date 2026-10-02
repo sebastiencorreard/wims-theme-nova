@@ -35,9 +35,11 @@
         <ul id="user_links" class="menu">
           !! Nova (2026-10-01) : pour un ÉLÈVE, le menu ne montre que son nom et la déconnexion
           !! (ou « Terminer la session d'examen ») ; compte, mot de passe, préférences et CGU sont
-          !! cachés pour le moment. Les enseignants et les développeurs gardent tout. Pour rendre
-          !! ces liens aux élèves : retirer la condition ci-dessous.
-          !if $wims_user!=supervisor and $wims_user!=$empty and $wims_developer=$empty
+          !! cachés pour le moment. Les enseignants (y compris ceux d'un établissement ou d'un
+          !! groupement, connectés avec leur identifiant : _procs/eleve.proc) et les développeurs
+          !! gardent tout. Pour rendre ces liens aux élèves : retirer la condition ci-dessous.
+          !read themes/Nova/_procs/eleve.proc
+          !if $nova_est_eleve=yes
             <li class="menuitem nova-nom" role="presentation">$wims_firstname $wims_lastname</li>
           !else
             !for i_=1 to $wims_user_links_cnt

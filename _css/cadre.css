@@ -810,3 +810,53 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .wims_topback, .wims_topback a { transition: none; } }
 @media print { .wims_topback { display: none; } }
+
+/* ---------- Vérification d'un exercice d'examen : pages Q1 R1 Q2 R2… (js/nova.js, pagesExamen) ----------
+ * La liste des pages prend toute la place libre de la barre, « Fermer » part tout à droite ; le nom
+ * de la classe s'efface dans cette fenêtre (2026-10-02). */
+#wimstopbox:has(.nova-pages) .nova-classe { display: none; }
+#wimstopbox:has(.nova-pages) > ul.wimsmenu { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: nowrap; align-items: center; }
+#wimstopbox .menuitem.nova-pages { order: 1; flex: 1 1 auto; min-width: 0; padding: 0 var(--nova-e2); }
+/* La liste ne prend que la largeur de son élément : c'est là que js/nova.js mesure le débordement. */
+#wimstopbox .menuitem.nova-pages > nav { display: block; width: 100%; min-width: 0; }
+#wimstopbox:has(.nova-pages) .menuitem.back { order: 2; margin-left: auto; flex-shrink: 0; }
+.nova-pages-liste {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+}
+.nova-pages-liste > li { flex: none; margin: 0; padding: 0; list-style: none; }
+.nova-pages-liste > li.nova-page-r { margin-right: 6px; }   /* un couple question-réponse, puis un écart */
+.nova-pages-liste > li:last-child { margin-right: 0; }
+#wimstopbox .nova-page {
+  display: inline-grid;
+  place-items: center;
+  min-width: 38px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 14%);
+  color: var(--nova-sur-accent);
+  font-size: .875rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+#wimstopbox a.nova-page:hover { background: rgb(255 255 255 / 28%); }
+#wimstopbox a.nova-page:focus-visible { outline: 2px solid var(--nova-sur-accent); outline-offset: 2px; }
+#wimstopbox .nova-page-courante { background: var(--nova-sur-accent); color: var(--nova-accent); }
+.nova-pages-liste > .nova-page-ellipse { padding: 0 2px; color: rgb(255 255 255 / 80%); font-weight: 700; }
+@media (max-width: 639.98px) {
+  #wimstopbox .nova-page { min-width: 34px; padding: 0 4px; }
+  .nova-pages-liste { gap: 3px; }
+  .nova-pages-liste > li.nova-page-r { margin-right: 4px; }
+}
+.nova-pages-info { margin: 0 0 var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); }

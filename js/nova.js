@@ -252,7 +252,7 @@
     function garde(item) {
       return item.classList.contains('chrono') || item.classList.contains('class_home') ||
         item.id === 'language_selector' || item.querySelector('a.account') || item.classList.contains('back') || item.classList.contains('tools') ||
-        item.classList.contains('nova-retour') ||
+        item.classList.contains('nova-retour') || item.classList.contains('nova-pages') ||
         item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') ||
         item.classList.contains('is-submenu-item') || item.closest('.is-dropdown-submenu');
     }
@@ -609,6 +609,104 @@
     maj();
   }
 
+  /* Fenêtre « vérification d'un exercice d'examen » (adm/class/userscore, job=examcheck ; demandé le
+   * 2026-10-02). WIMS (html/headmenu_user.phtml) écrit dans la barre « Pages : 1 ... 4 5 6 ... 12 » :
+   * la première, la précédente, la courante, la suivante et la dernière page, « ... » ailleurs, quelle
+   * que soit la place. Nova reconstruit TOUTES les pages, nommées Q1 R1 Q2 R2... (page 2k+1 = question
+   * k+1, page 2k+2 = réponse k+1), la courante mise en évidence ; « Pages : » disparaît. Les « … »
+   * n'interviennent qu'en dernier recours : on cache d'abord les pages les plus éloignées de la
+   * courante, en gardant toujours la première, la dernière et les voisines. L'information « élève :
+   * exercice, N steps, note » descend en tête de page. */
+  function pagesExamen() {
+    var nav = document.querySelector('#wimstopbox li.menuitem.nav');
+    if (!nav) return;
+    var liens = nav.querySelectorAll('a[href*="checkstep="]');
+    var modele = liens.length ? liens[0].getAttribute('href') : '';
+    if (modele.indexOf('job=examcheck') < 0) return;
+    var courant = 0, maxi = 0;
+    Array.prototype.forEach.call(nav.childNodes, function (n) {
+      if (n.nodeType === 3) (n.textContent.match(/\d+/g) || []).forEach(function (x) { courant = +x; });
+    });
+    Array.prototype.forEach.call(liens, function (a) { maxi = Math.max(maxi, parseInt(a.textContent, 10) || 0); });
+    var info = document.querySelector('#wimstopbox li.menuitem.score');
+    var m = info && info.textContent.match(/(\d+)\s*steps?/);
+    var total = Math.max(m ? +m[1] : 0, maxi, courant);
+    if (!total) return;
+    var langue = (document.documentElement.lang || 'fr').slice(0, 2);
+    var mots = { fr: ['Question', 'R\u00e9ponse', 'Pages'], en: ['Question', 'Answer', 'Pages'], nl: ['Vraag', 'Antwoord', "Pagina's"] }[langue] ||
+      ['Question', 'Answer', 'Pages'];
+    var liste = document.createElement('ol');
+    liste.className = 'nova-pages-liste';
+    var bloc = document.createElement('nav');
+    bloc.setAttribute('aria-label', mots[2]);
+    bloc.appendChild(liste);
+    nav.textContent = '';
+    nav.appendChild(bloc);
+    nav.classList.add('nova-pages');
+    if (info && info.textContent.trim()) {
+      var corps = document.querySelector('.wimsbody');
+      if (corps) {
+        var ligne = document.createElement('p');
+        ligne.className = 'nova-pages-info';
+        ligne.innerHTML = info.innerHTML;
+        corps.insertBefore(ligne, corps.firstChild);
+      }
+      info.remove();
+    }
+    var element = function (n) {
+      var k = Math.ceil(n / 2), question = n % 2 === 1;
+      var li = document.createElement('li');
+      li.className = question ? 'nova-page-q' : 'nova-page-r';
+      var e;
+      if (n === courant) {
+        e = document.createElement('span');
+        e.setAttribute('aria-current', 'page');
+        e.className = 'nova-page nova-page-courante';
+      } else {
+        e = document.createElement('a');
+        e.className = 'nova-page';
+        e.href = modele.replace(/checkstep=\d+/, 'checkstep=' + n);
+      }
+      e.textContent = (question ? 'Q' : 'R') + k;
+      e.title = mots[question ? 0 : 1] + ' ' + k;
+      li.appendChild(e);
+      return li;
+    };
+    var dessiner = function (visibles) {
+      liste.textContent = '';
+      var avant = 0;
+      visibles.forEach(function (n) {
+        if (avant && n > avant + 1) {
+          var trou = document.createElement('li');
+          trou.className = 'nova-page-ellipse';
+          trou.setAttribute('aria-hidden', 'true');
+          trou.textContent = '\u2026';
+          liste.appendChild(trou);
+        }
+        liste.appendChild(element(n));
+        avant = n;
+      });
+    };
+    var ajuster = function () {
+      var visibles = [];
+      for (var n = 1; n <= total; n++) visibles.push(n);
+      dessiner(visibles);
+      var c = courant || 1;
+      while (liste.scrollWidth > liste.clientWidth + 1) {
+        var retirable = visibles.filter(function (n) { return n !== 1 && n !== total && Math.abs(n - c) > 1; });
+        // Dernier recours : les voisines aussi ; restent la première, la courante et la dernière.
+        if (!retirable.length) retirable = visibles.filter(function (n) { return n !== 1 && n !== total && n !== c; });
+        if (!retirable.length) break;
+        retirable.sort(function (a, b) { return Math.abs(b - c) - Math.abs(a - c) || b - a; });
+        visibles.splice(visibles.indexOf(retirable[0]), 1);
+        dessiner(visibles);
+      }
+    };
+    ajuster();
+    if (window.ResizeObserver) new ResizeObserver(function () { window.requestAnimationFrame(ajuster); }).observe(nav);
+    else window.addEventListener('resize', ajuster);
+  }
+
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
    * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
   function centrerBarre() {
@@ -763,7 +861,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

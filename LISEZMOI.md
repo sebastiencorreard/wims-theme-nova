@@ -46,6 +46,12 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 - **Barre du haut : « WIMS » et son logo (2026-10-02)** au lieu d'une maison et de « Page d'accueil »
   (copie adaptée de `_widgets/headhome.phtml`, listée dans ORIGINES ; logo en image, dégradés
   compris). Au téléphone, le logo seul.
+- **Vérification d'un exercice d'examen (2026-10-02)** (« Détails des examens », clic sur une note) :
+  la barre liste TOUTES les pages, nommées Q1 R1 Q2 R2… (page 2k+1 = question, 2k+2 = réponse), la
+  courante en évidence, « Fermer » tout à droite ; WIMS n'en montrait que cinq, avec « ... ». Les « … »
+  de Nova n'interviennent que si la place manque (pages les plus éloignées de la courante d'abord).
+  L'information « élève : exercice, N steps, note » passe en tête de page (`js/nova.js`,
+  `pagesExamen`).
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;

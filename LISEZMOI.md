@@ -24,6 +24,16 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   des entrées gardées). Sans JavaScript, menu complet. Pourquoi pas côté serveur : WIMS fige
   les en-têtes du navigateur, cookies compris, dans la session à la connexion (`modules/home/var.auth`),
   et n'offre aucune préférence d'enseignant qu'un thème puisse écrire.
+- **Accueil du site (2026-10-02)**, disposition choisie par l'utilisateur : « Rechercher une ressource »
+  (le formulaire de WIMS, filtres compris ; la carte prend toute la largeur quand ils sont ouverts) et
+  « Rechercher une classe » (`_widgets/search_classe.phtml`, d'après Nikaia) côte à côte ; puis
+  l'actualité et les exemples côte à côte ; puis « Sur ce site » et une ligne Explorer (taxonomie,
+  glossaires, parcourir). Actualité et exemples sont les widgets de WIMS (`_widgets/news.phtml`,
+  `examples.phtml`, carrousel Slick), lus par `_widgets/front.phtml` sans l'accordéon « Informations » ;
+  ils n'apparaissent que si le gestionnaire a réglé le **module de messages** (Configuration ›
+  Apparence, `frontmsg` dans `wims.conf` : un module de `local/data/` avec `data/blocnews` et
+  `data/blocexamples`). « Sur ce site » reste `log/front.phtml.<langue>` du gestionnaire s'il existe.
+  Au téléphone, une colonne ; le menu du visiteur est dans ☰. Styles : `_css/accueil.css`.
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;

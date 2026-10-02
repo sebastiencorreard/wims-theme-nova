@@ -28,3 +28,7 @@
 !set nova_fin_session=Je bent klaar.
 !set nova_fin_session_detail=Klik op Afsluiten om deze sessie te sluiten: daarna kun je een ander proefwerk beginnen. Je wordt afgemeld.
 !set nova_retour=Terug
+!set nova_explorer=Verkennen
+!set nova_taxonomie=Taxonomie
+!set nova_glossaires=Woordenlijsten
+!set nova_parcourir=Site doorbladeren

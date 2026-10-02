@@ -1,0 +1,184 @@
+/* Nova — accueil du site (visitor.phtml, _widgets/front.phtml, _widgets/search_classe.phtml).
+ * Disposition B, choisie par l'utilisateur le 2026-10-02 : les deux recherches côte à côte, puis
+ * l'actualité et les exemples côte à côte (widgets de WIMS : _widgets/news.phtml, examples.phtml,
+ * carrousel Slick), puis « Sur ce site » et une ligne Explorer. Une colonne au téléphone. */
+
+#wimsfrontpage #wims_title .wims_title { font-size: clamp(1.375rem, 4vw, 2rem); line-height: 1.2; }
+
+.nova-accueil-recherches, .nova-accueil-infos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--nova-e4);
+  align-items: start;
+  margin: 0 0 var(--nova-e4);
+  clear: both;   /* sous le logo du site, qui flotte à droite du titre */
+}
+
+/* Les cartes : recherches, actualité, exemples, « Sur ce site ». */
+.nova-accueil-carte,
+.nova-accueil-infos > .wims_widget_box,
+.nova-accueil-site {
+  min-width: 0;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: var(--nova-e4);
+  float: none;
+  background: var(--nova-surface);
+  border: 0;
+  border-radius: var(--nova-rayon-carte);
+  box-shadow: var(--nova-ombre);
+}
+.nova-accueil-infos > .cell { flex: none; }
+.nova-accueil-site > .wims_widget_box { margin: 0; padding: 0; border: 0; box-shadow: none; background: none; width: auto; max-width: none; }
+.nova-accueil-infos .box_content, .nova-accueil-site .box_content { padding: 0; border: 0; background: none; box-shadow: none; }
+.nova-accueil-carte > h2.wims_title,
+.nova-accueil-infos .title_box,
+.nova-accueil-site .title_box {
+  margin: 0 0 var(--nova-e3);
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+}
+.nova-accueil-carte > h2.wims_title,
+.nova-accueil-infos .title_box .wims_title,
+.nova-accueil-site .title_box .wims_title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--nova-texte);
+  text-align: left;
+  background: none;
+}
+
+/* Rechercher une ressource : le formulaire de WIMS sans son cadre ni sa légende (gardée pour les
+ * lecteurs d'écran : elle étiquette le champ). */
+.nova-recherche-ressource fieldset.wims_search_engine {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.nova-recherche-ressource fieldset.wims_search_engine > legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.nova-recherche-ressource .wims_form { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e3) var(--nova-e4); }
+.nova-recherche-ressource .search_field {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nova-e2) var(--nova-e4);
+  margin: 0;
+}
+.nova-recherche-ressource .search_field > input[type="search"] { flex: 1 1 12rem; min-width: 0; width: auto; }
+.nova-recherche-ressource .search_field { gap: 0; }
+.nova-recherche-ressource .search_field > input[type="search"] { border-radius: var(--nova-rayon) 0 0 var(--nova-rayon); }
+.nova-recherche-ressource .search_field > button { border-radius: 0 var(--nova-rayon) var(--nova-rayon) 0; }
+.nova-recherche-ressource .search_field > span { flex-basis: 100%; margin: var(--nova-e3) 0 0 !important; }   /* style en ligne de WIMS */
+.nova-recherche-ressource #affined_search { order: 1; flex: 1 1 auto; margin: 0; padding: 0; border: 0; }
+.nova-recherche-ressource .wims_button_help { order: 2; float: none; margin-left: auto; }
+/* Filtres ouverts : la carte prend toute la largeur, la recherche de classe passe dessous. */
+.nova-recherche-ressource:has(#affined_search .ui-accordion-header-active) { grid-column: 1 / -1; }
+.nova-recherche-ressource:has(#affined_search .ui-accordion-header-active) #affined_search { flex-basis: 100%; }
+.nova-accueil-liens { margin: var(--nova-e3) 0 0; font-size: var(--nova-petit); }
+
+/* Actualité */
+#actualites .wims_home_list { margin: 0; padding: 0; list-style: none; }
+#actualites .wims_home_list > li {
+  margin: 0;
+  padding: var(--nova-e2) 0;
+  background: none;
+  border-bottom: 1px solid var(--nova-bord);
+}
+#actualites .wims_home_list > li:last-child { border-bottom: 0; }
+#actualites .actu_title { margin: 0; font-size: 1rem; font-weight: 700; }
+#actualites .actu_date {
+  display: block;
+  order: -1;
+  font-size: var(--nova-petit);
+  font-weight: 400;
+  color: var(--nova-texte-2);
+}
+#actualites .actu_content { margin-top: var(--nova-e1); font-size: var(--nova-petit); }
+#actualites > .box_content > a.float_right { float: none; display: inline-block; margin-top: var(--nova-e2); font-size: var(--nova-petit); }
+
+/* Exemples (carrousel Slick) : texte et image côte à côte dans la diapositive. */
+#exemples .slick-slide .grid-x {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
+  gap: var(--nova-e3);
+  align-items: start;
+  margin: 0;
+}
+#exemples .slick-slide .grid-x > .cell { width: auto; max-width: none; margin: 0; }
+#exemples .slick-slide img {
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: var(--nova-rayon);
+}
+#exemples .carousel_titre { margin: 0 0 var(--nova-e2); font-size: 1rem; text-align: left; }
+#exemples .carousel_desc { font-size: var(--nova-petit); }
+#exemples .carousel_desc h4 {
+  margin: var(--nova-e2) 0 0;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--nova-texte-2);
+}
+#exemples .carousel_desc p { margin: 0; }
+#exemples .carousel { position: relative; padding: 0 var(--nova-e6); }
+#exemples .slick-autoplay-toggle-button {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--nova-bord);
+  border-radius: 50%;
+  background: var(--nova-surface);
+  color: var(--nova-texte-2);
+  cursor: pointer;
+}
+#exemples .slick-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+#exemples .slick-autoplay-toggle-button { display: grid; place-items: center; }
+#exemples .slick-pause-icon { display: inline-block; width: 10px; height: 12px; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
+#exemples .slick-play-icon { display: inline-block; width: 0; height: 0; margin-left: 3px; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent currentColor; }
+#exemples .slick-prev, #exemples .slick-next { color: var(--nova-accent); }
+#exemples .slick-dots li button::before, #exemples .slick-dots .slick-dot-icon { color: var(--nova-accent); }
+@media (max-width: 479.98px) {
+  #exemples .slick-slide .grid-x { grid-template-columns: 1fr; }
+  #exemples .slick-slide .grid-x > .cell:last-child { order: -1; }
+  #exemples .carousel { padding: 0 var(--nova-e5); }
+}
+
+/* Sur ce site : sans les bandes grises ; Explorer en ligne de liens. */
+.nova-accueil-site .wims_home_list { margin: 0; padding: 0 0 0 1.1em; }
+.nova-accueil-site .wims_home_list > li { padding: var(--nova-e1) 0; background: none; }
+.nova-accueil-explorer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--nova-e2) var(--nova-e4);
+  margin: var(--nova-e4) 0 0;
+  font-size: var(--nova-petit);
+}
+.nova-accueil-explorer > span { font-weight: 700; color: var(--nova-texte-2); }

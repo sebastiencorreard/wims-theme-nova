@@ -28,3 +28,7 @@
 !set nova_fin_session=Vous avez terminé.
 !set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).
 !set nova_retour=Retour
+!set nova_explorer=Explorer
+!set nova_taxonomie=Taxonomie
+!set nova_glossaires=Glossaires
+!set nova_parcourir=Parcourir le site

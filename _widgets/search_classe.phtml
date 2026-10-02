@@ -1,0 +1,20 @@
+!! Nova : « Rechercher une classe » sur l'accueil du site (d'après themes/Nikaia/widgets/search_classe.phtml).
+!! Textes de adm/search_engine/names.$lang, lus par le module home.
+<section id="search_classes" class="nova-accueil-carte">
+  <h2 class="wims_title">$name_search_class</h2>
+  !form new
+    <input type="hidden" name="module" value="adm/class/classes">
+    <input type="hidden" name="type" value="participant">
+    <div class="input-group">
+      <label class="show-for-sr" for="nova_classe_mot">$name_search_class</label>
+      <input type="search" class="input-group-field" name="keyword" id="nova_classe_mot" value="$keyword"
+             placeholder="$name_keywords_enter" autosave="class_keywords" results="5">
+      <div class="input-group-button">
+        <button class="wims_button" type="submit">$N_Search</button>
+      </div>
+    </div>
+  !formend
+  <p class="nova-accueil-liens">
+  !href module=adm/class/classes&type=example $wims_name_n_example
+  </p>
+</section>

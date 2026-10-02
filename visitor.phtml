@@ -30,10 +30,16 @@
     <div id="wimspagebox">
       <div class="wimsbody">
 !read themes/_widgets/site_title.phtml
+!! Nova : disposition B (2026-10-02), les deux recherches côte à côte, puis le contenu.
+<div class="nova-accueil-recherches">
+  <section class="nova-accueil-carte nova-recherche-ressource">
+    <h2 class="wims_title">$name_search_all</h2>
 !read ./form.phtml
-<br class="clearall">
+  </section>
+!read themes/Nova/_widgets/search_classe.phtml
+</div>
 !if $s_category=V
-  !read ./front.phtml
+  !read themes/Nova/_widgets/front.phtml
 !else
   !read ./result.phtml
 !endif

@@ -28,3 +28,7 @@
 !set nova_fin_session=You have finished.
 !set nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.
 !set nova_retour=Back
+!set nova_explorer=Explore
+!set nova_taxonomie=Taxonomy
+!set nova_glossaires=Glossaries
+!set nova_parcourir=Browse the site

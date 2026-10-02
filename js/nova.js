@@ -169,6 +169,22 @@
       liCompte.remove();
       cible.insertBefore(groupe, cible.firstChild);
       cible.insertBefore(titre, groupe);
+    } else if (liCompte) {
+      // Pas de menu latéral (page qui confirme « Terminer », 2026-10-03) : le menu du compte, vide
+      // pour un élève en session, disparaît ; Aide et les autres entrées passent à droite, devant
+      // « Terminer ».
+      var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links a[href]'), function (a) {
+        return a.getAttribute('href') !== '#user_links';
+      });
+      if (!restants.length) liCompte.remove();
+      var droite = document.createElement('div');
+      droite.className = 'wimsmenu menu nova-avant-terminer';
+      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
+        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
+            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item === liCompte) return;
+        droite.appendChild(item);
+      });
+      if (droite.children.length) barre.insertBefore(droite, place);
     }
 
     // Chronomètre recopié du décompte de la page.

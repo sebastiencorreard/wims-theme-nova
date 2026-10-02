@@ -747,7 +747,8 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 #wimstopbox .menuitem.nova-examen-a-terminer:not(.is-submenu-item) > a { background: #fff; color: var(--nova-accent); }
 
 /* Élèves : pas de fil d'Ariane ; « Retour » dans la barre (js/nova.js, retourEleve). */
-body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
+/* Où qu'il soit : dans la fenêtre d'un exercice d'examen, il est rangé dans #wimsexam (2026-10-03). */
+body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 #wimstopbox .menuitem.nova-retour {
   order: -2;
   flex-shrink: 0;
@@ -868,21 +869,18 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
 .nova-pages-info { margin: 0 0 var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); }
 
 /* Fenêtre d'un exercice d'examen (la seule dont la barre porte un chronomètre) : « Retour à la liste
- * des exercices » en tête, à gauche (demande de l'utilisateur, 2026-10-02). */
-#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back {
-  position: absolute;
-  left: var(--nova-e2);
-  top: 50%;
-  transform: translateY(-50%);
-}
-/* Pictogramme seul (le libellé reste pour les lecteurs d'écran, et en infobulle) : sorti du flux, il
- * chevaucherait la barre de progression. */
-#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back .text_item {
-  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
-}
-#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back > a { width: var(--nova-cible); padding: 0; justify-content: center; }
-#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back > a::before { margin-right: 0; }
-/* La barre de progression d'un parcours, placée à gauche (plus haut), passe après lui. */
+ * des exercices » en tête, à gauche, avec son libellé sur les écrans larges (demandes de
+ * l'utilisateur, 2026-10-02 et 03), puis la barre de progression d'un parcours ; « Outils » à droite.
+ * Au téléphone, le libellé est masqué par les règles des petits écrans (plus haut). */
+#wimstopbox:has(.menuitem.chrono) > ul.wimsmenu { flex: 1 1 auto; min-width: 0; }
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.back { order: -2; }
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.progress { order: -1; }
+#wimstopbox:has(.menuitem.chrono) ul.wimsmenu > .menuitem.tools { margin-left: auto; }
 @media (min-width: 768px) {
-  #wimstopbox:has(.nova-centre) .menuitem.progress { left: calc(var(--nova-e2) + var(--nova-cible) + var(--nova-e3)); }
+  #wimstopbox:has(.nova-centre) .menuitem.progress { position: static; transform: none; }
 }
+
+/* Page qui confirme « Terminer » (pas de menu latéral) : Aide et les autres entrées, à droite,
+ * devant « Terminer » (js/nova.js, modeExamen). */
+#wimstopbox > .nova-avant-terminer { display: flex; align-items: center; margin-left: auto; }
+#wimstopbox > .nova-avant-terminer + .nova-terminer { margin-left: var(--nova-e2); }

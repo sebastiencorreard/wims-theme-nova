@@ -272,3 +272,83 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   box-shadow: none;
   transform: none;
 }
+
+/* ---------- Barres de score (charte Nova) ----------
+ * Feuille : un segment arrondi par exercice + compteur « réussis/total » ; examen : pastille de
+ * note. Couleurs (WIMS les écrit parfois en ligne : !important) :
+ *   non commencé #E3E6EB · commencé #F0A830 · réussi #2E9E5B · excellent #17734A (liseré or)
+ *   · à retravailler #E06A4E ; notes : faible corail, moyen ambre, bon vert (fond doux, texte foncé). */
+.wimsbody li.nova-vide, .wimsbody .nova-vide { display: none !important; }
+.wims_score_bar.nova-score {
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  float: none;
+  max-width: none;
+  margin: 0;
+}
+.wims_score_bar.nova-score ol {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li {
+  flex: 1 1 0;
+  min-width: 8px;
+  max-width: 32px;
+  height: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  box-shadow: none;
+  overflow: hidden;
+  background: #E3E6EB !important;
+}
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li:hover { box-shadow: 0 0 0 2px var(--nova-accent); }
+.wims_score_bar.nova-score ol > li.wims_exo_undone { background: #F0A830 !important; }
+.wims_score_bar.nova-score ol > li.wims_exo_unwork { background: #E06A4E !important; }
+.wims_score_bar.nova-score ol > li.wims_exo_done { background: #2E9E5B !important; }
+.wims_score_bar.nova-score ol > li.wims_exo_done.wims_congratulation { background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
+.nova-score-compte {
+  flex: 0 0 auto;
+  color: var(--nova-texte-2);
+  font-size: .8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* Examen : pastille de note. */
+.wims_score_bar.nova-score-examen { justify-content: flex-end; }
+.wims_score_bar.nova-score-examen ol { flex: 0 0 auto; }
+.wims_score_bar.nova-score-examen ol > li.nova-note {
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none;
+  overflow: visible;
+}
+.wims_score_bar.nova-score-examen ol > li.nova-note a {
+  display: inline-block;
+  padding: 2px 10px;
+  color: inherit;
+  font-size: .8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+.wims_score_bar ol > li.nova-note[data-niveau="faible"] { background: #FBE3DD !important; color: #A3361F; }
+.wims_score_bar ol > li.nova-note[data-niveau="moyen"]  { background: #FCEFD3 !important; color: #845400; }
+.wims_score_bar ol > li.nova-note[data-niveau="bon"]    { background: #DDF2E5 !important; color: #17734A; }
+
+/* Liseré coloré hérité de sheet.css (border-left-color par type) : retiré. */
+.wimsbody li.wims_sheet_item, .wimsbody li.wims_exam_item, .wimsbody li.wims_doc_item, .wimsbody li.wims_vote_item, .wimsbody li.wims_tool_item, .wimsbody li.wims_glossary_item, .wimsbody li.wims_freework_item { border-left-color: var(--nova-bord); }
+.wimsbody li.wims_sheet_item:hover, .wimsbody li.wims_exam_item:hover, .wimsbody li.wims_doc_item:hover, .wimsbody li.wims_vote_item:hover, .wimsbody li.wims_tool_item:hover, .wimsbody li.wims_glossary_item:hover, .wimsbody li.wims_freework_item:hover { border-color: var(--nova-accent); }
+.wimsbody li.wims_sheet_item:not(:has(> a)), .wimsbody li.wims_exam_item:not(:has(> a)), .wimsbody li.wims_doc_item:not(:has(> a)), .wimsbody li.wims_vote_item:not(:has(> a)), .wimsbody li.wims_tool_item:not(:has(> a)), .wimsbody li.wims_glossary_item:not(:has(> a)), .wimsbody li.wims_freework_item:not(:has(> a)) { border-color: transparent; }

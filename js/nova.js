@@ -476,7 +476,44 @@
     bloc.insertBefore(item, bloc.firstChild);
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
+  /* Barres de score (themes/_widgets/userbar.phtml) : charte Nova (cadre.css / contenu.css).
+   *  - feuille : segments par exercice, état lu dans la classe WIMS (untry, undone, done,
+   *    congratulation, unwork) + compteur « réussis/total » ;
+   *  - examen : une case colorée en ligne par WIMS, note dans le titre (« Note:4/20 ») → pastille
+   *    « 4/20 », niveau faible / moyen / bon.
+   * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
+  function scores() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
+      if (barre.classList.contains('nova-score')) return;
+      var cases = barre.querySelectorAll('ol > li');
+      if (!cases.length) return;
+      barre.classList.add('nova-score');
+      var notes = 0;
+      Array.prototype.forEach.call(cases, function (li) {
+        var a = li.querySelector('a');
+        var titre = (a && a.getAttribute('title')) || li.getAttribute('title') || '';
+        var m = /(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)/.exec(titre);
+        if (li.style.backgroundColor && m) {
+          var r = parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.'));
+          li.setAttribute('data-niveau', r >= 0.8 ? 'bon' : r >= 0.5 ? 'moyen' : 'faible');
+          li.classList.add('nova-note');
+          if (a) a.textContent = m[1] + '/' + m[2];
+          notes++;
+        }
+      });
+      if (notes) { barre.classList.add('nova-score-examen'); return; }
+      var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
+      var compte = document.createElement('span');
+      compte.className = 'nova-score-compte';
+      compte.textContent = reussis + '/' + cases.length;
+      barre.appendChild(compte);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div):not(.wims_score_bar)'), function (bloc) {
+      if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
+    });
+  }
+
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

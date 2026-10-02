@@ -522,6 +522,42 @@
     });
   }
 
+  /* Feuille d'exercices (adm/sheet, contenu.css) : le score de WIMS est un texte « Qualité: 0/10
+   * Réussite: 0% Points requis:10 » ; il devient des étiquettes (libellé + valeur), et la valeur en %
+   * une barre de réussite (verte à 100 %). Libellés repris tels quels : toutes les langues. */
+  function feuilleExercices() {
+    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
+      if (bloc.querySelector('.nova-scores')) return;
+      var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, puces = [], pourcent = null;
+      while ((m = re.exec(texte))) {
+        puces.push([m[1].trim(), m[2].replace(/\s+/g, '')]);
+        if (/%$/.test(m[2].trim()) && pourcent === null) pourcent = parseFloat(m[2].replace(',', '.'));
+      }
+      if (!puces.length) return;
+      var liste = document.createElement('span');
+      liste.className = 'nova-scores';
+      puces.forEach(function (p) {
+        var e = document.createElement('span'), v = document.createElement('strong');
+        e.className = 'nova-score';
+        e.appendChild(document.createTextNode(p[0]));
+        v.textContent = p[1];
+        e.appendChild(v);
+        liste.appendChild(e);
+      });
+      bloc.textContent = '';
+      bloc.appendChild(liste);
+      if (pourcent !== null && !isNaN(pourcent)) {
+        var barre = document.createElement('div'), plein = document.createElement('span');
+        barre.className = 'nova-barre-reussite';
+        barre.setAttribute('aria-hidden', 'true');
+        plein.style.width = Math.max(0, Math.min(100, pourcent)) + '%';
+        if (pourcent >= 100) barre.setAttribute('data-plein', '');
+        barre.appendChild(plein);
+        bloc.appendChild(barre);
+      }
+    });
+  }
+
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -1201,7 +1237,7 @@
     });
   }
 
-  function demarrer() { panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

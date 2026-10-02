@@ -324,8 +324,9 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 }
 /* Examen : historique des sessions (js/nova.js, historique) — petites tuiles colorées, la plus
  * récente en grand avec sa note ; les plus anciennes résumées en « +k ». */
-.wims_score_bar.nova-score-examen { justify-content: flex-end; }
-.wims_score_bar.nova-score-examen ol { flex: 0 1 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
+.wims_score_bar.nova-score-examen { justify-content: flex-end; min-width: 0; overflow: hidden; }
+.wims_score_bar.nova-score-examen ol { flex: 0 0 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
+.wims_score_bar.nova-score-examen ol > li { flex-shrink: 0; }
 .wims_score_bar.nova-score-examen ol > li.nova-note {
   width: 14px;
   height: 14px;

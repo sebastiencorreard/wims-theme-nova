@@ -483,25 +483,43 @@
    *    « 4/20 », niveau faible / moyen / bon.
    * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
   /* Examen : la barre est l'HISTORIQUE des sessions passées (themes/_widgets/userexambar.phtml,
-   * de la plus ancienne à la plus récente, nombre illimité). Les 6 dernières restent visibles —
-   * la plus récente en grand, avec sa note —, les plus anciennes se résument en « +k ». */
+   * de la plus ancienne à la plus récente, nombre illimité — jusqu'à 99 pour certains DM). On en
+   * montre autant que la largeur de la carte le permet : la plus récente en grand, avec sa note ;
+   * les plus anciennes qui ne tiennent pas se résument en « +k » (notes en infobulle). Recalculé
+   * quand la carte change de largeur (rotation, fenêtre). */
   function historique(barre, cases) {
-    var VISIBLES = 6;
     barre.classList.add('nova-score-examen');
     var n = cases.length;
-    Array.prototype.forEach.call(cases, function (li, i) {
-      if (i < n - VISIBLES) li.classList.add('nova-ancienne');
-      if (i === n - 1) li.classList.add('nova-derniere');
-    });
-    if (n > VISIBLES) {
-      var plus = document.createElement('li');
-      plus.className = 'nova-plus-anciennes';
-      plus.textContent = '+' + (n - VISIBLES);
-      plus.title = Array.prototype.slice.call(cases, 0, n - VISIBLES).map(function (li) {
+    var ol = cases[0].parentNode;
+    cases[n - 1].classList.add('nova-derniere');
+    var plus = document.createElement('li');
+    plus.className = 'nova-plus-anciennes';
+    var ajuster = function () {
+      Array.prototype.forEach.call(cases, function (li) { li.classList.remove('nova-ancienne'); });
+      if (plus.parentNode) plus.remove();
+      var dispo = barre.clientWidth;
+      if (!dispo || ol.scrollWidth <= dispo) return;
+      ol.insertBefore(plus, cases[0]);
+      for (var k = 1; k < n; k++) {
+        cases[k - 1].classList.add('nova-ancienne');
+        plus.textContent = '+' + k;
+        if (ol.scrollWidth <= dispo) break;
+      }
+      plus.title = Array.prototype.slice.call(cases, 0, k).map(function (li) {
         var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
       }).join(' \u00B7 ');
-      cases[0].parentNode.insertBefore(plus, cases[0]);
+    };
+    ajuster();
+    if (window.ResizeObserver) {
+      var largeur = barre.clientWidth, attente = 0;
+      new ResizeObserver(function () {
+        if (barre.clientWidth === largeur) return;
+        largeur = barre.clientWidth;
+        cancelAnimationFrame(attente);
+        attente = requestAnimationFrame(ajuster);
+      }).observe(barre);
     }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
   }
 
   function scores() {

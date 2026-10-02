@@ -15,6 +15,8 @@
 !default nova_profil=Profile
 !default nova_plus=More
 !default nova_terminer=Finish
+!default nova_fin_session=You have finished.
+!default nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.
 !for i_=1 to $wims_hm_cnt
   !set 1_=!line $i_ of $wims_hm
   !set wims_ref_class = !item 1 of $1_
@@ -40,5 +42,5 @@
 !next i_
 !! Textes du thème pour js/nova.js, utiles aussi hors de la fenêtre d'exercice (page de l'examen,
 !! où le chronomètre est recopié depuis la page ; section « Profil »).
-<span id="nova-textes" hidden data-libelle="$nova_chrono_libelle" data-texte-5min="$nova_chrono_5min" data-texte-1min="$nova_chrono_1min" data-texte-fin="$nova_chrono_fin" data-texte-fin-detail="$nova_chrono_fin_detail" data-profil="$nova_profil" data-plus="$nova_plus" data-terminer="$nova_terminer"></span>
+<span id="nova-textes" hidden data-libelle="$nova_chrono_libelle" data-texte-5min="$nova_chrono_5min" data-texte-1min="$nova_chrono_1min" data-texte-fin="$nova_chrono_fin" data-texte-fin-detail="$nova_chrono_fin_detail" data-profil="$nova_profil" data-plus="$nova_plus" data-terminer="$nova_terminer" data-fin-session="$nova_fin_session" data-fin-session-detail="$nova_fin_session_detail"></span>
 <!-- end Nova/_widgets/headmenu.phtml -->

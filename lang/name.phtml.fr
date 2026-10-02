@@ -18,3 +18,7 @@
 !set nova_menu_voir_tout=Voir toutes les fonctions
 !set nova_menu_simplifier=Simplifier le menu
 !set nova_plus=Plus
+!set nova_examen_a_terminer=Examen à terminer
+!set nova_examen_a_terminer_court=Terminer
+!set nova_fin_session=Vous avez terminé.
+!set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).

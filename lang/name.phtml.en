@@ -18,3 +18,7 @@
 !set nova_menu_voir_tout=Show all features
 !set nova_menu_simplifier=Simplify the menu
 !set nova_plus=More
+!set nova_examen_a_terminer=Exam to finish
+!set nova_examen_a_terminer_court=Finish
+!set nova_fin_session=You have finished.
+!set nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.

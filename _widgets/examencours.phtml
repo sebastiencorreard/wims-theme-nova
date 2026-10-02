@@ -8,14 +8,25 @@
 !if $wims_user!=supervisor and $wims_user!=$empty and $wims_class!=$empty and $module!=adm/class/exam and _exam notin $wims_session
   !set nova_examreg=!record 0 of wimshome/log/classes/$wims_class/.parmreg/$wims_user.exam
   !set nova_examnum=!word 4 of $nova_examreg
+  !set nova_examfin=!word 3 of $nova_examreg
   !default nova_examencours=Exam in progress
   !default nova_examen_court=Exam
+  !default nova_examen_a_terminer=Exam to finish
+  !default nova_examen_a_terminer_court=Finish
+  !! Heure de fin dépassée : la session reste ouverte (et bloque les autres examens) tant que
+  !! l'élève n'a pas cliqué sur « Terminer » ; le bouton le dit.
+  !set nova_examclasse=nova-examencours
+  !if $nova_examfin!=$empty and $nova_examfin<$wims_nowseconds
+    !set nova_examclasse=nova-examencours nova-examen-a-terminer
+    !set nova_examencours=$nova_examen_a_terminer
+    !set nova_examen_court=$nova_examen_a_terminer_court
+  !endif
   !if $nova_examnum!=$empty
-    <span class="menuitem nova-examencours">
+    <span class="menuitem $nova_examclasse">
     !set wims_ref_class=nova-examencours-lien
     !href module=adm/class/exam&exam=$nova_examnum <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-long">$nova_examencours</span><span class="nova-court">$nova_examen_court</span>
     !reset wims_ref_class
     </span>
   !endif
-  !reset nova_examreg nova_examnum
+  !reset nova_examreg nova_examnum nova_examfin nova_examclasse
 !endif

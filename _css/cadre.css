@@ -607,3 +607,31 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 /* L'accueil (maison) toujours en tête de son bloc, quel que soit l'endroit où nova.js insère le
  * chronomètre recopié (observé au téléphone dans une classe de portail : chrono avant la maison). */
 #wimstopbox .float_left > .menuitem.class_home { order: -1; }
+
+/* Fin d'une session d'examen ou de course (js/nova.js, modeExamen) : plus rien à faire, il faut
+ * cliquer sur « Terminer ». Et, sur les autres pages, « Examen à terminer » (heure de fin passée). */
+.nova-fin-session {
+  margin: var(--nova-e4) auto;
+  max-width: 44rem;
+  padding: var(--nova-e4) var(--nova-e5);
+  border: 2px solid var(--nova-accent);
+  border-radius: var(--nova-rayon-l, 12px);
+  background: var(--nova-accent-doux);
+  text-align: center;
+}
+.nova-fin-session strong { display: block; font-size: 1.25rem; }
+.nova-fin-session p { margin: var(--nova-e2) 0 var(--nova-e3); }
+.nova-fin-session .nova-fin-session-bouton {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--nova-cible);
+  padding: 0 var(--nova-e5);
+  border-radius: 999px;
+  background: var(--nova-accent);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.nova-fin-session .nova-fin-session-bouton:hover { filter: brightness(1.1); color: #fff; }
+#wimstopbox .nova-examen-a-terminer a,
+#wimstopbox .menuitem.nova-examen-a-terminer:not(.is-submenu-item) > a { background: #fff; color: var(--nova-accent); }

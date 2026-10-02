@@ -173,6 +173,28 @@
 
     // Chronomètre recopié du décompte de la page.
     chronoMiroir(document.getElementById('exam_clock'), true);
+
+    // Plus aucun exercice à ouvrir (tout est fait, course arrêtée, ou temps écoulé) : la session
+    // reste ouverte chez WIMS, et bloque les autres examens, tant que l'élève n'a pas cliqué sur
+    // « Terminer » — qui le déconnecte. On le lui dit, avec le bouton sous la main.
+    var corps = document.querySelector('.wimsbody');
+    if (corps && !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {
+      var encadre = document.createElement('div');
+      encadre.className = 'nova-fin-session';
+      encadre.setAttribute('role', 'status');
+      var fort = document.createElement('strong');
+      fort.textContent = t('fin-session', '');
+      var detail = document.createElement('p');
+      detail.textContent = t('fin-session-detail', '');
+      var bouton = document.createElement('a');
+      bouton.className = 'nova-fin-session-bouton';
+      bouton.href = fin.href;
+      bouton.textContent = t('terminer', 'Terminer');
+      encadre.appendChild(fort);
+      encadre.appendChild(detail);
+      encadre.appendChild(bouton);
+      corps.insertBefore(encadre, corps.firstChild);
+    }
   }
 
   /* Chronomètre Nova dans la barre, recopié d'un décompte que WIMS écrit dans la page

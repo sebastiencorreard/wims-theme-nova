@@ -18,3 +18,7 @@
 !set nova_menu_voir_tout=Alle functies tonen
 !set nova_menu_simplifier=Menu vereenvoudigen
 !set nova_plus=Meer
+!set nova_examen_a_terminer=Proefwerk afsluiten
+!set nova_examen_a_terminer_court=Afsluiten
+!set nova_fin_session=Je bent klaar.
+!set nova_fin_session_detail=Klik op Afsluiten om deze sessie te sluiten: daarna kun je een ander proefwerk beginnen. Je wordt afgemeld.

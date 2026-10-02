@@ -507,3 +507,45 @@ body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover 
   background: color-mix(in oklab, var(--nova-accent) 24%, white);
   color: var(--nova-lien);
 }
+
+/* Zones de travail de l'enseignant (accueil d'un établissement ou d'un groupement : <details> de WIMS
+ * autour de l'arbre .wims_subclasses) : la carte des accordéons (maquette A), titre en gras, chevron
+ * à droite qui pivote, au lieu du triangle noir et du cadre à ombre. Demande de l'utilisateur, 2026-10-03. */
+.wimsbody details:has(.wims_subclasses) {
+  margin: var(--nova-e4) 0;
+  padding: 0;
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: none;
+  overflow: hidden;
+}
+.wimsbody details:has(.wims_subclasses) > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nova-e2);
+  padding: 14px 18px;
+  list-style: none;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--nova-texte);
+  cursor: pointer;
+}
+.wimsbody details:has(.wims_subclasses) > summary::-webkit-details-marker { display: none; }
+.wimsbody details:has(.wims_subclasses) > summary::after {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform .2s;
+}
+.wimsbody details[open]:has(.wims_subclasses) > summary { color: var(--nova-accent); }
+.wimsbody details[open]:has(.wims_subclasses) > summary::after { transform: rotate(180deg); }
+.wimsbody details:has(.wims_subclasses) > summary:hover { background: var(--nova-accent-doux); }
+.wimsbody details:has(.wims_subclasses) > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+.wimsbody details:has(.wims_subclasses) > .wims_subclasses { margin: 0; padding: 0 18px 16px; }
+@media (prefers-reduced-motion: reduce) { .wimsbody details:has(.wims_subclasses) > summary::after { transition: none; } }

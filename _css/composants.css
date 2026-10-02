@@ -175,3 +175,30 @@ h1.wims_title [class^="wims_classes_direct_"] { padding: .05em .45em .1em .35em;
 .wims_work_legend ul { display: flex; flex-wrap: wrap; gap: var(--nova-e2); list-style: none; }
 /* `.inline>li` de WIMS ajoute 2em à droite de chaque entrée : les écarts viennent du gap. */
 .wims_work_legend li { color: var(--nova-texte); margin: 0; float: none; padding: .1em .55em .1em .45em; }
+/* Légende des cartes d'activités (fieldset de WIMS : Documents, Feuilles, Examens…) : comme celle
+ * des zones, une ligne sans cadre ni fond, « Légende » en petit puis les pastilles. La legend
+ * flottante n'est plus dessinée dans le trait du cadre : elle devient un élément de la ligne. */
+fieldset.wims_work_legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--nova-e2);
+  min-width: 0;
+  margin: var(--nova-e3) 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+/* La liste s'efface : « Légende » et les pastilles forment une seule ligne, alignée à droite. */
+fieldset.wims_work_legend > ul { display: contents; }
+fieldset.wims_work_legend > ul > li { margin: 0; }   /* pas la marge des cartes (contenu.css) */
+fieldset.wims_work_legend > legend {
+  float: left;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--nova-petit);
+  color: var(--nova-texte-2);
+}

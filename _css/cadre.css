@@ -69,8 +69,8 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a { padding-right: 32px; position: relative; }
 #wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent > a::after { border-top-color: var(--nova-sur-accent); right: 12px; }
 
-/* Sous-menu du compte (menu déroulant Foundation : le JS de Foundation reste chargé) */
-#wimstopbox .is-dropdown-submenu {
+/* Sous-menu du compte et des langues (ouvert par js/nova.js, menusDeroulants) */
+#wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) {
   min-width: 220px;
   padding: var(--nova-e2);
   background: var(--nova-surface);
@@ -78,16 +78,16 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   border-radius: var(--nova-rayon-carte);
   box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
 }
-#wimstopbox .is-dropdown-submenu .menuitem { display: block; }
-#wimstopbox .is-dropdown-submenu a,
-#wimstopbox .is-dropdown-submenu .menuitem > a {
+#wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) .menuitem { display: block; }
+#wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) a,
+#wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) .menuitem > a {
   display: flex;
   width: 100%;
   box-sizing: border-box;
   color: var(--nova-texte);
   min-height: 40px;
 }
-#wimstopbox .is-dropdown-submenu a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+#wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
 
 /* ---------- Fil d'Ariane ---------- */
 .breadcrumbs {

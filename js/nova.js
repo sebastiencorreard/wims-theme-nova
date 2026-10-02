@@ -265,6 +265,97 @@
   }
   function chronoExercice() { if (!fenetreVerification()) chronoMiroir(document.getElementById('clockoef'), false); }
 
+  /* Menus déroulants de la barre (compte, langues ; _widgets/user_links.phtml), sans Foundation
+   * (2026-10-03). Clic ou toucher : ouvre et ferme ; survol avec une souris : ouvre, et referme en
+   * sortant s'il n'a pas été ouvert d'un clic. Échap referme et rend le focus au déclencheur ;
+   * flèche bas l'ouvre sur sa première entrée ; flèches, Début, Fin dans le menu ; un clic ou le
+   * focus ailleurs le referme. Ouvert vers la gauche s'il sortirait de l'écran. Les classes sont
+   * celles de Foundation, que le CSS suit déjà (foundation-min.css, cadre.css). */
+  function menusDeroulants() {
+    var survol = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)');
+    var menus = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .dropdown.menu > li.is-dropdown-submenu-parent'), function (li) {
+      var lien = li.querySelector(':scope > a'), liste = li.querySelector(':scope > ul');
+      if (!lien || !liste) return;
+      liste.classList.add('vertical', 'submenu', 'is-dropdown-submenu');
+      Array.prototype.forEach.call(liste.children, function (e) { e.classList.add('is-submenu-item', 'is-dropdown-submenu-item'); });
+      if (!liste.id) liste.id = 'nova-sousmenu-' + menus.length;
+      lien.setAttribute('role', 'button');
+      lien.setAttribute('aria-controls', liste.id);
+      lien.setAttribute('aria-expanded', 'false');
+      var m = { li: li, lien: lien, liste: liste, epingle: false, minuterie: 0 };
+      menus.push(m);
+      function entrees() {
+        return Array.prototype.filter.call(liste.querySelectorAll('a[href]'), function (a) { return a.getClientRects().length; });
+      }
+      m.entrees = entrees;
+      lien.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (estOuvert(m) && m.epingle) fermer(m); else { ouvrir(m); m.epingle = true; }
+      });
+      lien.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === ' ') {
+          e.preventDefault();
+          ouvrir(m); m.epingle = true;
+          var a = entrees()[0]; if (a) a.focus();
+        }
+      });
+      liste.addEventListener('keydown', function (e) {
+        var a = entrees(), i = a.indexOf(document.activeElement), j = -1;
+        if (e.key === 'ArrowDown') j = (i + 1) % a.length;
+        else if (e.key === 'ArrowUp') j = (i - 1 + a.length) % a.length;
+        else if (e.key === 'Home') j = 0;
+        else if (e.key === 'End') j = a.length - 1;
+        if (j >= 0 && a.length) { e.preventDefault(); a[j].focus(); }
+      });
+      li.addEventListener('mouseenter', function () {
+        if (!survol || !survol.matches) return;
+        clearTimeout(m.minuterie);
+        if (!estOuvert(m)) ouvrir(m);
+      });
+      li.addEventListener('mouseleave', function () {
+        if (!survol || !survol.matches || m.epingle) return;
+        clearTimeout(m.minuterie);
+        m.minuterie = setTimeout(function () { fermer(m); }, 300);
+      });
+      li.addEventListener('focusout', function (e) {
+        if (e.relatedTarget && !li.contains(e.relatedTarget)) fermer(m);
+      });
+    });
+    if (!menus.length) return;
+    document.documentElement.classList.add('nova-menus');   // le repli au survol du CSS s'efface
+    function estOuvert(m) { return m.liste.classList.contains('js-dropdown-active'); }
+    function ouvrir(m) {
+      menus.forEach(function (n) { if (n !== m) fermer(n); });
+      m.li.classList.remove('opens-left'); m.liste.classList.remove('opens-left');
+      m.li.classList.add('is-active');
+      m.liste.classList.add('js-dropdown-active');
+      m.lien.setAttribute('aria-expanded', 'true');
+      if (m.liste.getBoundingClientRect().right > document.documentElement.clientWidth - 4) {
+        m.li.classList.add('opens-left'); m.liste.classList.add('opens-left');
+      }
+    }
+    function fermer(m) {
+      clearTimeout(m.minuterie);
+      m.epingle = false;
+      m.li.classList.remove('is-active');
+      m.liste.classList.remove('js-dropdown-active');
+      m.lien.setAttribute('aria-expanded', 'false');
+    }
+    document.addEventListener('click', function (e) {
+      menus.forEach(function (m) { if (estOuvert(m) && !m.li.contains(e.target)) fermer(m); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      menus.forEach(function (m) {
+        if (!estOuvert(m)) return;
+        var dedans = m.li.contains(document.activeElement);
+        fermer(m);
+        if (dedans) m.lien.focus();
+      });
+    });
+  }
+
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -942,7 +1033,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

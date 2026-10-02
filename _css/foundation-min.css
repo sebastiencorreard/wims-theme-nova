@@ -2,8 +2,8 @@
  * Remplace foundation_flex, foundation_menu, foundation_dropdown_menu, foundation_visibility et
  * foundation_xygrid (64 Ko, dont 46 de grille). Sous-ensemble relevé le 2026-10-01 : classes
  * présentes dans modules/adm, modules/home, html, themes/_widgets, themes/_procs, scripts.
- * Le JavaScript de Foundation reste chargé (_widgets/footer_foundation.phtml) : il pose
- * is-dropdown-submenu, js-dropdown-active, opens-left/right… que les règles ci-dessous suivent. */
+ * Menus déroulants de la barre : is-dropdown-submenu, js-dropdown-active, opens-left sont posés
+ * par js/nova.js (menusDeroulants, 2026-10-03), plus par Foundation. */
 
 /* ---------- Menus ---------- */
 .menu {
@@ -37,7 +37,8 @@
   border-top-color: currentColor;
 }
 .dropdown .is-dropdown-submenu,
-.is-dropdown-submenu {
+.is-dropdown-submenu,
+.dropdown [id="lang_list"] {
   display: none;
   position: absolute;
   top: 100%;
@@ -54,6 +55,9 @@
 .dropdown.menu.vertical > li.opens-left > .is-dropdown-submenu { left: auto; right: 100%; }
 .is-dropdown-submenu .is-dropdown-submenu { top: 0; left: 100%; }
 .is-dropdown-submenu > li { width: 100%; }
+/* Tant que nova.js n'a pas pris les menus en main (html.nova-menus) : ouverts au survol ou au
+ * focus. La liste des langues (widget de WIMS) n'a pas la classe avant son passage : son id. */
+html:not(.nova-menus) .dropdown.menu > li.is-dropdown-submenu-parent:is(:hover, :focus-within) > ul { display: block; }
 
 /* ---------- Visibilité ---------- */
 .hide { display: none !important; }

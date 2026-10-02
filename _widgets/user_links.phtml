@@ -5,7 +5,9 @@
 
 !set div1=li
 <!-- widget user_links -->
-<ul class="wimsmenu dropdown menu" data-dropdown-menu data-options="data-autoclose:true;">
+!! Nova (2026-10-03) : plus de data-dropdown-menu ; les sous-menus sont ouverts par js/nova.js
+!! (menusDeroulants), sans Foundation. Sans JavaScript, ils s'ouvrent au survol ou au focus (CSS).
+<ul class="wimsmenu dropdown menu">
 
   !if _help isin $wims_session or _test isin $wims_session
     !read themes/Nova/_widgets/headmenu.phtml
@@ -26,13 +28,13 @@
       !read themes/_procs/userlinks.proc
       !default wims_which_user=[no_name]
       <li class="menuitem is-dropdown-submenu-parent">
-        <a href="#user_links" class="account">
+        <a href="#user_links" class="account" aria-controls="user_links" aria-expanded="false">
           <span>$wims_which_user</span>
           !if $wims_developer!=$empty
             <span class="user_type">[modtool]</span>
           !endif
         </a>
-        <ul id="user_links" class="menu">
+        <ul id="user_links" class="menu vertical submenu is-dropdown-submenu">
           !! Nova (2026-10-01) : pour un ÉLÈVE, le menu ne montre que son nom et la déconnexion
           !! (ou « Terminer la session d'examen ») ; compte, mot de passe, préférences et CGU sont
           !! cachés pour le moment. Les enseignants (y compris ceux d'un établissement ou d'un
@@ -62,7 +64,7 @@
       !! Language selector (displayed only if you're not connected)
       !if $wims_language_cnt>1
         <li id="language_selector" class="language_selector menuitem is-dropdown-submenu-parent">
-          <a href="#lang_list" class="lang">
+          <a href="#lang_list" class="lang" aria-controls="lang_list" aria-expanded="false">
             <span><img src="gifs/$lang.gif" alt="$(Lang_name_$lang)"> $wims_name_Language</span>
           </a>
           !read themes/_widgets/language_selector.phtml

@@ -104,6 +104,10 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   border-bottom: 1px solid var(--nova-bord);
 }
 .breadcrumbs::before, .breadcrumbs::after { content: none; }
+/* L'icône de maison du jeu d'icônes de WIMS (Font_Awesome : .menuitem .class_home:before) ne reste
+ * que sur la racine du fil d'Ariane ; les zones qui suivent n'affichent que leur nom (2026-10-02). */
+.breadcrumbs > li:not(:first-child) .class_home::before,
+.breadcrumbs > li:not(:first-child) > .home::before { content: none; display: none; }
 .breadcrumbs li {
   float: none;
   font-size: var(--nova-petit);

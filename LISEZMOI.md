@@ -41,7 +41,8 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 - **Fil d'Ariane (2026-10-02)** : « Accueil » pour la racine, et plus de « Page d'accueil » devant
   les zones (Portail test › 6e5 › 6e5-Pgm 6e) ; dans un module d'une classe, le lien vers l'accueil
   de la classe porte le nom de la classe. Copie adaptée du widget de WIMS (`_widgets/ariane.phtml`,
-  listée dans ORIGINES) ; la barre du haut garde « Page d'accueil ».
+  listée dans ORIGINES) ; la barre du haut garde « Page d'accueil ». L'icône de maison du jeu d'icônes
+  (Font_Awesome) ne reste que sur la racine (`cadre.css`).
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;

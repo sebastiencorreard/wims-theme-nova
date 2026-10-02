@@ -235,6 +235,18 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
     z-index: 100;
   }
   body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: calc(264px + var(--nova-e5)); }
+  /* Le menu remonte jusqu'à la barre du haut et recouvre le début du fil d'Ariane, dont le texte
+   * commence déjà après lui (demande de l'utilisateur, 2026-10-03). Le fil d'Ariane prend pour cela
+   * une hauteur fixe, sur une ligne ; le menu remonte d'autant. Élèves : pas de fil d'Ariane. */
+  body:has(#wimsbodybox > #wimsmenumodubox):not(:has(#nova-eleve)) .breadcrumbs {
+    box-sizing: border-box;
+    height: 48px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  body:has(nav > .breadcrumbs):not(:has(#nova-eleve)) #wimsbodybox > #wimsmenumodubox { margin-top: -48px; }
+  #wimsbodybox > #wimsmenumodubox { border-radius: 0; }
   #wimstopbox .nova-menu-bouton { display: none; }
 }
 

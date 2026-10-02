@@ -17,8 +17,9 @@
 }
 .wimsbody .ui-tabs .ui-tabs-nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;   /* une seule ligne : les libellés se coupent (« … ») plutôt que de passer à la ligne */
   gap: 0 var(--nova-e1);
+  min-width: 0;
   margin: 0 0 var(--nova-e4);
   padding: 0;
   background: none;
@@ -36,8 +37,19 @@
   border-radius: 0;
   background: none;
   white-space: nowrap;
+  /* Place partagée à égalité, chaque onglet plafonné à la largeur de son libellé : les courts
+   * restent entiers, seuls les longs se coupent. */
+  flex: 1 1 0;
+  max-width: max-content;
+  min-width: 3.5em;
 }
+/* L'onglet actif garde son libellé entier (dans la limite de la moitié de la rangée). */
+.wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active { flex: 0 0 auto; max-width: 50%; }
 .wimsbody .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  box-sizing: border-box;
   float: none;
   display: block;
   position: relative;
@@ -79,8 +91,6 @@
     padding: 0 var(--nova-e3);
     font-weight: 700;
   }
-  /* Peu d'onglets : une rangée qui défile au besoin. */
-  .wimsbody .ui-tabs .ui-tabs-nav { flex-wrap: nowrap; overflow-x: auto; }
 }
 
 /* Séquences : chapitres et leurs feuilles / examens en cartes (sequence.css de WIMS conservé). */

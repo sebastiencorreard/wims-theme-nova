@@ -627,6 +627,8 @@
       var nav = bloc.querySelector(':scope > .ui-tabs-nav');
       if (!nav || bloc.querySelector(':scope > .nova-onglets-liste')) return;
       var ancres = nav.querySelectorAll('.ui-tabs-anchor');
+      // Libellés coupés (« … », contenu.css : une seule ligne) : le texte entier en info-bulle.
+      Array.prototype.forEach.call(ancres, function (a) { if (!a.title) a.title = a.textContent.trim(); });
       if (ancres.length <= 3) return;
       var liste = document.createElement('select');
       liste.className = 'nova-onglets-liste';

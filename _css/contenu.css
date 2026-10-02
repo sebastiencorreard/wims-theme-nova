@@ -311,10 +311,10 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 }
 .wims_score_bar.nova-score:not(.nova-score-examen) ol > li a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
 .wims_score_bar.nova-score:not(.nova-score-examen) ol > li:hover { box-shadow: 0 0 0 2px var(--nova-accent); }
-.wims_score_bar.nova-score ol > li.wims_exo_undone { background: #F0A830 !important; }
-.wims_score_bar.nova-score ol > li.wims_exo_unwork { background: #E06A4E !important; }
-.wims_score_bar.nova-score ol > li.wims_exo_done { background: #2E9E5B !important; }
-.wims_score_bar.nova-score ol > li.wims_exo_done.wims_congratulation { background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_undone { background: #F0A830 !important; }
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_unwork { background: #E06A4E !important; }
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done { background: #2E9E5B !important; }
+.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation { background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
 .nova-score-compte {
   flex: 0 0 auto;
   color: var(--nova-texte-2);
@@ -322,33 +322,67 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-/* Examen : pastille de note. */
+/* Examen : historique des sessions (js/nova.js, historique) — petites tuiles colorées, la plus
+ * récente en grand avec sa note ; les plus anciennes résumées en « +k ». */
 .wims_score_bar.nova-score-examen { justify-content: flex-end; }
-.wims_score_bar.nova-score-examen ol { flex: 0 0 auto; }
+.wims_score_bar.nova-score-examen ol { flex: 0 1 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
 .wims_score_bar.nova-score-examen ol > li.nova-note {
-  width: auto;
-  height: auto;
+  width: 14px;
+  height: 14px;
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 999px;
+  border-radius: 4px;
   box-shadow: none;
+  overflow: hidden;
+}
+.wims_score_bar.nova-score-examen ol > li.nova-note a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
+.wims_score_bar.nova-score-examen ol > li.nova-ancienne { display: none; }
+.wims_score_bar ol > li.nova-note[data-niveau="faible"] { background: #E06A4E !important; }
+.wims_score_bar ol > li.nova-note[data-niveau="moyen"]  { background: #F0A830 !important; }
+.wims_score_bar ol > li.nova-note[data-niveau="bon"]    { background: #2E9E5B !important; }
+.wims_score_bar ol > li.nova-note.wims_congratulation   { background: #17734A !important; }
+/* La plus récente : pastille avec sa note, fond doux et texte foncé (lisible). */
+.wims_score_bar.nova-score-examen ol > li.nova-derniere {
+  width: auto;
+  height: auto;
+  margin-left: 4px;
+  border-radius: 999px;
   overflow: visible;
 }
-.wims_score_bar.nova-score-examen ol > li.nova-note a {
+.wims_score_bar.nova-score-examen ol > li.nova-derniere a {
   display: inline-block;
+  width: auto;
+  height: auto;
   padding: 2px 10px;
-  color: inherit;
   font-size: .8125rem;
   font-weight: 700;
-  text-decoration: none;
   font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  color: inherit;
 }
-.wims_score_bar ol > li.nova-note[data-niveau="faible"] { background: #FBE3DD !important; color: #A3361F; }
-.wims_score_bar ol > li.nova-note[data-niveau="moyen"]  { background: #FCEFD3 !important; color: #845400; }
-.wims_score_bar ol > li.nova-note[data-niveau="bon"]    { background: #DDF2E5 !important; color: #17734A; }
+.wims_score_bar ol > li.nova-derniere[data-niveau="faible"] { background: #FBE3DD !important; color: #A3361F; box-shadow: inset 0 0 0 2px #E06A4E; }
+.wims_score_bar ol > li.nova-derniere[data-niveau="moyen"]  { background: #FCEFD3 !important; color: #845400; box-shadow: inset 0 0 0 2px #F0A830; }
+.wims_score_bar ol > li.nova-derniere[data-niveau="bon"]    { background: #DDF2E5 !important; color: #17734A; box-shadow: inset 0 0 0 2px #2E9E5B; }
+.wims_score_bar ol > li.nova-derniere a { color: inherit; }
+.wims_score_bar.nova-score-examen ol > li.nova-plus-anciennes {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  border: 0;
+  list-style: none;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #E3E6EB !important;
+  color: var(--nova-texte-2);
+  font-size: .75rem;
+  font-weight: 700;
+  line-height: 14px;
+}
+.wims_score_bar ol > li.nova-derniere.wims_congratulation { background: #DDF2E5 !important; color: #17734A; box-shadow: inset 0 0 0 2px #17734A; }
 
-/* Liseré coloré hérité de sheet.css (border-left-color par type) : retiré. */
-.wimsbody li.wims_sheet_item, .wimsbody li.wims_exam_item, .wimsbody li.wims_doc_item, .wimsbody li.wims_vote_item, .wimsbody li.wims_tool_item, .wimsbody li.wims_glossary_item, .wimsbody li.wims_freework_item { border-left-color: var(--nova-bord); }
-.wimsbody li.wims_sheet_item:hover, .wimsbody li.wims_exam_item:hover, .wimsbody li.wims_doc_item:hover, .wimsbody li.wims_vote_item:hover, .wimsbody li.wims_tool_item:hover, .wimsbody li.wims_glossary_item:hover, .wimsbody li.wims_freework_item:hover { border-color: var(--nova-accent); }
-.wimsbody li.wims_sheet_item:not(:has(> a)), .wimsbody li.wims_exam_item:not(:has(> a)), .wimsbody li.wims_doc_item:not(:has(> a)), .wimsbody li.wims_vote_item:not(:has(> a)), .wimsbody li.wims_tool_item:not(:has(> a)), .wimsbody li.wims_glossary_item:not(:has(> a)), .wimsbody li.wims_freework_item:not(:has(> a)) { border-color: transparent; }
+/* Liseré coloré hérité de sheet.css (border-left-color par type, plus une règle bleue #9CF) :
+ * retiré. « html body » : ces cartes ne sont pas toujours dans .wimsbody. */
+html body li.wims_sheet_item, html body li.wims_exam_item, html body li.wims_doc_item, html body li.wims_vote_item, html body li.wims_tool_item, html body li.wims_glossary_item, html body li.wims_freework_item { border-left-color: var(--nova-bord); }
+html body li.wims_sheet_item:hover, html body li.wims_exam_item:hover, html body li.wims_doc_item:hover, html body li.wims_vote_item:hover, html body li.wims_tool_item:hover, html body li.wims_glossary_item:hover, html body li.wims_freework_item:hover { border-color: var(--nova-accent); }
+html body li.wims_sheet_item:not(:has(> a)), html body li.wims_exam_item:not(:has(> a)), html body li.wims_doc_item:not(:has(> a)), html body li.wims_vote_item:not(:has(> a)), html body li.wims_tool_item:not(:has(> a)), html body li.wims_glossary_item:not(:has(> a)), html body li.wims_freework_item:not(:has(> a)) { border-color: transparent; }

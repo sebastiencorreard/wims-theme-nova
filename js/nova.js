@@ -482,6 +482,28 @@
    *  - examen : une case colorée en ligne par WIMS, note dans le titre (« Note:4/20 ») → pastille
    *    « 4/20 », niveau faible / moyen / bon.
    * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
+  /* Examen : la barre est l'HISTORIQUE des sessions passées (themes/_widgets/userexambar.phtml,
+   * de la plus ancienne à la plus récente, nombre illimité). Les 6 dernières restent visibles —
+   * la plus récente en grand, avec sa note —, les plus anciennes se résument en « +k ». */
+  function historique(barre, cases) {
+    var VISIBLES = 6;
+    barre.classList.add('nova-score-examen');
+    var n = cases.length;
+    Array.prototype.forEach.call(cases, function (li, i) {
+      if (i < n - VISIBLES) li.classList.add('nova-ancienne');
+      if (i === n - 1) li.classList.add('nova-derniere');
+    });
+    if (n > VISIBLES) {
+      var plus = document.createElement('li');
+      plus.className = 'nova-plus-anciennes';
+      plus.textContent = '+' + (n - VISIBLES);
+      plus.title = Array.prototype.slice.call(cases, 0, n - VISIBLES).map(function (li) {
+        var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
+      }).join(' \u00B7 ');
+      cases[0].parentNode.insertBefore(plus, cases[0]);
+    }
+  }
+
   function scores() {
     Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
       if (barre.classList.contains('nova-score')) return;
@@ -501,7 +523,7 @@
           notes++;
         }
       });
-      if (notes) { barre.classList.add('nova-score-examen'); return; }
+      if (notes) { historique(barre, cases); return; }
       var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
       var compte = document.createElement('span');
       compte.className = 'nova-score-compte';

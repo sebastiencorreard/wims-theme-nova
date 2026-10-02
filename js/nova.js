@@ -645,7 +645,10 @@
     if (!nav) return;
     var liens = nav.querySelectorAll('a[href*="checkstep="]');
     var modele = liens.length ? liens[0].getAttribute('href') : '';
-    if (modele.indexOf('job=examcheck') < 0) return;
+    // Autre vérification (exercice de feuille, devoir libre) : la barre de WIMS, rendue visible
+    // (cadre.css la cache jusqu'à ce que ce script passe, contre le clignotement).
+    var garderWims = function () { nav.classList.add('nova-nav-wims'); };
+    if (modele.indexOf('job=examcheck') < 0) { garderWims(); return; }
     var courant = 0, maxi = 0;
     Array.prototype.forEach.call(nav.childNodes, function (n) {
       if (n.nodeType === 3) (n.textContent.match(/\d+/g) || []).forEach(function (x) { courant = +x; });
@@ -654,7 +657,7 @@
     var info = document.querySelector('#wimstopbox li.menuitem.score');
     var m = info && info.textContent.match(/(\d+)\s*steps?/);
     var total = Math.max(m ? +m[1] : 0, maxi, courant);
-    if (!total) return;
+    if (!total) { garderWims(); return; }
     var langue = (document.documentElement.lang || 'fr').slice(0, 2);
     var mots = { fr: ['Question', 'R\u00e9ponse', 'Pages'], en: ['Question', 'Answer', 'Pages'], nl: ['Vraag', 'Antwoord', "Pagina's"] }[langue] ||
       ['Question', 'Answer', 'Pages'];

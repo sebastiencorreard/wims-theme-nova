@@ -814,12 +814,16 @@ body:has(#nova-eleve) > nav:has(.breadcrumbs) { display: none; }
 /* ---------- Vérification d'un exercice d'examen : pages Q1 R1 Q2 R2… (js/nova.js, pagesExamen) ----------
  * La liste des pages prend toute la place libre de la barre, « Fermer » part tout à droite ; le nom
  * de la classe s'efface dans cette fenêtre (2026-10-02). */
-#wimstopbox:has(.nova-pages) .nova-classe { display: none; }
-#wimstopbox:has(.nova-pages) > ul.wimsmenu { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: nowrap; align-items: center; }
-#wimstopbox .menuitem.nova-pages { order: 1; flex: 1 1 auto; min-width: 0; padding: 0 var(--nova-e2); }
+#wimstopbox:has(li.menuitem.nav) .nova-classe { display: none; }
+/* Pas de clignotement : la navigation et l'information de WIMS restent invisibles jusqu'à ce que
+ * js/nova.js les remplace (seulement si JavaScript tourne : html.nova-js, posé dans l'en-tête). */
+.nova-js #wimstopbox li.menuitem.nav:not(.nova-pages, .nova-nav-wims) { visibility: hidden; }
+.nova-js #wimstopbox:has(li.menuitem.nav:not(.nova-nav-wims)) li.menuitem.score { display: none; }
+#wimstopbox:has(li.menuitem.nav) > ul.wimsmenu { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: nowrap; align-items: center; }
+#wimstopbox .menuitem:is(.nav, .nova-pages) { order: 1; flex: 1 1 auto; min-width: 0; padding: 0 var(--nova-e2); }
 /* La liste ne prend que la largeur de son élément : c'est là que js/nova.js mesure le débordement. */
 #wimstopbox .menuitem.nova-pages > nav { display: block; width: 100%; min-width: 0; }
-#wimstopbox:has(.nova-pages) .menuitem.back { order: 2; margin-left: auto; flex-shrink: 0; }
+#wimstopbox:has(li.menuitem.nav) .menuitem.back { order: 2; margin-left: auto; flex-shrink: 0; }
 .nova-pages-liste {
   display: flex;
   width: 100%;

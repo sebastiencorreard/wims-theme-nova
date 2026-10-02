@@ -94,6 +94,97 @@
 .wims_seq .wims_desc_item { color: var(--nova-texte-2); }
 .wims_sheet_item, .wims_exam_item { max-width: 100%; box-sizing: border-box; }
 
+/* ---------- Cartes des activités (séquences, accueil de classe, feuilles) ----------
+ * Remplacent celles de sheet.css (cadre gris, bordure gauche épaisse, emoji) : surface blanche
+ * arrondie, pastille d'icône de la couleur du type, carte cliquable EN ENTIER — le lien principal
+ * (premier lien direct) s'étend à toute la carte ; la barre de score, qui a ses propres liens vers
+ * les exercices, reste au-dessus. */
+li.wims_sheet_item, li.wims_exam_item, li.wims_doc_item, li.wims_vote_item, li.wims_tool_item, li.wims_glossary_item, li.wims_freework_item {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px var(--nova-e2);
+  margin: 0 var(--nova-e2) var(--nova-e3) 0;
+  padding: var(--nova-e3) var(--nova-e4) var(--nova-e3) var(--nova-e3);
+  min-height: 64px;
+  border: 1px solid var(--nova-bord);
+  border-radius: 12px;
+  background: var(--nova-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  vertical-align: top;
+  transition: box-shadow .15s, border-color .15s, transform .15s;
+}
+li.wims_sheet_item:hover, li.wims_exam_item:hover, li.wims_doc_item:hover, li.wims_vote_item:hover, li.wims_tool_item:hover, li.wims_glossary_item:hover, li.wims_freework_item:hover {
+  border-color: var(--nova-accent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  transform: translateY(-1px);
+}
+li.wims_sheet_item:has(> a:first-of-type:focus-visible), li.wims_exam_item:has(> a:first-of-type:focus-visible), li.wims_doc_item:has(> a:first-of-type:focus-visible), li.wims_vote_item:has(> a:first-of-type:focus-visible), li.wims_tool_item:has(> a:first-of-type:focus-visible), li.wims_glossary_item:has(> a:first-of-type:focus-visible), li.wims_freework_item:has(> a:first-of-type:focus-visible) {
+  outline: 3px solid var(--nova-accent);
+  outline-offset: 2px;
+}
+/* Pastille d'icône (à la place de l'emoji). */
+li.wims_sheet_item::before, li.wims_exam_item::before, li.wims_doc_item::before, li.wims_vote_item::before, li.wims_tool_item::before, li.wims_glossary_item::before, li.wims_freework_item::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  border-radius: 10px;
+  background: var(--nova-type-fond) var(--nova-type-icone) center / 20px no-repeat;
+}
+li.wims_sheet_item { --nova-type-fond: #E6F0FA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6FB0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E"); }
+li.wims_exam_item { --nova-type-fond: #FBEAE7; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5473A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2.5 2.5M9 2h6'/%3E%3C/svg%3E"); }
+li.wims_doc_item { --nova-type-fond: #EEECFA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B4FB5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l4 4v14H6z'/%3E%3Cpath d='M14 3v5h5M9 13h7M9 17h7'/%3E%3C/svg%3E"); }
+li.wims_vote_item { --nova-type-fond: #E5F4EC; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232E8A57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M8 12l3 3 5-6'/%3E%3C/svg%3E"); }
+li.wims_tool_item { --nova-type-fond: #ECEEF1; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356606E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E"); }
+li.wims_glossary_item { --nova-type-fond: #F3F3DD; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7A12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z'/%3E%3Cpath d='M5 17a3 3 0 0 1 3-3h11'/%3E%3C/svg%3E"); }
+li.wims_freework_item { --nova-type-fond: #FAEDE6; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B0603F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-5a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h5z'/%3E%3C/svg%3E"); }
+/* Lien principal : titre de la carte, et zone cliquable étendue à toute la carte. */
+li.wims_sheet_item > a:first-of-type, li.wims_exam_item > a:first-of-type, li.wims_doc_item > a:first-of-type, li.wims_vote_item > a:first-of-type, li.wims_tool_item > a:first-of-type, li.wims_glossary_item > a:first-of-type, li.wims_freework_item > a:first-of-type {
+  flex: 1 1 12rem;
+  min-width: 0;
+  color: var(--nova-texte);
+  font-weight: 600;
+  text-decoration: none;
+  outline: none;
+}
+li.wims_sheet_item > a:first-of-type::after, li.wims_exam_item > a:first-of-type::after, li.wims_doc_item > a:first-of-type::after, li.wims_vote_item > a:first-of-type::after, li.wims_tool_item > a:first-of-type::after, li.wims_glossary_item > a:first-of-type::after, li.wims_freework_item > a:first-of-type::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+/* Numéro d'ordre : petite pastille discrète. */
+.wims_seq_item_n {
+  order: -1;
+  padding: 1px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--nova-fond, #F4F5F7);
+  color: var(--nova-texte-2);
+  font-size: .8125rem;
+  font-weight: 700;
+}
+li[class*="_item"]::before { order: -2; }
+/* Ce qui reste interactif au-dessus de la zone cliquable : barre de score, autres liens. */
+li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_doc_item .wims_score_bar, li.wims_vote_item .wims_score_bar, li.wims_tool_item .wims_score_bar, li.wims_glossary_item .wims_score_bar, li.wims_freework_item .wims_score_bar,
+li.wims_sheet_item > :not(a:first-of-type) a, li.wims_exam_item > :not(a:first-of-type) a, li.wims_doc_item > :not(a:first-of-type) a, li.wims_vote_item > :not(a:first-of-type) a, li.wims_tool_item > :not(a:first-of-type) a, li.wims_glossary_item > :not(a:first-of-type) a, li.wims_freework_item > :not(a:first-of-type) a {
+  position: relative;
+  z-index: 2;
+}
+li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_doc_item .wims_score_bar, li.wims_vote_item .wims_score_bar, li.wims_tool_item .wims_score_bar, li.wims_glossary_item .wims_score_bar, li.wims_freework_item .wims_score_bar {
+  flex: 1 0 100%;
+  max-width: none;
+  margin: 0;
+  float: none;
+  text-align: right;
+}
+li.wims_sheet_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_exam_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_doc_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_vote_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_tool_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_glossary_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_freework_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty { display: none; }
+
+
 /* ---------- Rien de plus large que la place disponible ---------- */
 .wimsbody input, .wimsbody select, .wimsbody textarea,
 .wimsbody .field.box, .wimsbody fieldset {
@@ -153,3 +244,31 @@ tt.e { color: color-mix(in oklab, #48D1CC 45%, black); }
 .wims_status_0, .wims_doc_status_0 { color: var(--nova-texte-2); }
 .wims_status_1, .wims_doc_status_1 { color: var(--nova-succes); }
 .wims_status_2, .wims_doc_status_2, .wims_status_3 { color: var(--nova-attention-texte); }
+
+/* Légende (étiquettes sans lien, ul.inline) : pastilles compactes, pas des cartes. */
+li.wims_sheet_item:not(:has(> a)), li.wims_exam_item:not(:has(> a)), li.wims_doc_item:not(:has(> a)), li.wims_vote_item:not(:has(> a)), li.wims_tool_item:not(:has(> a)), li.wims_glossary_item:not(:has(> a)), li.wims_freework_item:not(:has(> a)) {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  min-height: 0;
+  margin: 0 var(--nova-e2) var(--nova-e2) 0;
+  padding: 4px var(--nova-e2) 4px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--nova-type-fond);
+  box-shadow: none;
+  font-size: .875rem;
+  transform: none;
+}
+li.wims_sheet_item:not(:has(> a))::before, li.wims_exam_item:not(:has(> a))::before, li.wims_doc_item:not(:has(> a))::before, li.wims_vote_item:not(:has(> a))::before, li.wims_tool_item:not(:has(> a))::before, li.wims_glossary_item:not(:has(> a))::before, li.wims_freework_item:not(:has(> a))::before {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background-size: 16px;
+}
+li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover, li.wims_doc_item:not(:has(> a)):hover, li.wims_vote_item:not(:has(> a)):hover, li.wims_tool_item:not(:has(> a)):hover, li.wims_glossary_item:not(:has(> a)):hover, li.wims_freework_item:not(:has(> a)):hover {
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}

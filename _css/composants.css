@@ -333,3 +333,58 @@ fieldset.wims_work_legend > legend {
   font-size: var(--nova-petit);
   color: var(--nova-texte-2);
 }
+
+/* Accordéons de WIMS (data-accordion : Notation à l'insertion d'un exercice, zones d'un devoir libre ;
+ * ouverts par js/nova.js) — maquette A choisie par l'utilisateur le 2026-10-03 : une carte comme les
+ * fieldset, titres en gras, l'ouvert en accent, chevron à droite qui pivote. Remplace l'habillage de
+ * foundation_accordion.css (titres bleus en petit, + / −). */
+.accordion {
+  margin: var(--nova-e3) 0;
+  padding: 0;
+  background: var(--nova-surface);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  overflow: hidden;
+}
+.accordion-item + .accordion-item { border-top: 1px solid var(--nova-bord); }
+.accordion-title,
+:last-child:not(.is-active) > .accordion-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nova-e2);
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--nova-texte);
+  text-decoration: none;
+}
+.accordion-title:hover, .accordion-title:focus-visible { background: var(--nova-accent-doux); color: var(--nova-texte); }
+.accordion-title:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+.is-active > .accordion-title { color: var(--nova-accent); }
+.accordion-title::before,
+.is-active > .accordion-title::before {
+  content: "";
+  position: static;
+  order: 2;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform .2s;
+}
+.is-active > .accordion-title::before { transform: rotate(180deg); }
+.accordion-content,
+:last-child > .accordion-content:last-child {
+  padding: 0 18px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--nova-texte);
+}
+@media (prefers-reduced-motion: reduce) { .accordion-title::before { transition: none; } }

@@ -351,7 +351,7 @@
       Array.prototype.forEach.call(ancres, function (a, i) {
         var o = document.createElement('option');
         o.value = i;
-        o.textContent = (i + 1) + ' · ' + a.textContent.trim();
+        o.textContent = (i + 1) + ' \u00B7 ' + a.textContent.trim();
         liste.appendChild(o);
       });
       var synchroniser = function () {

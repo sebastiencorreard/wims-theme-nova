@@ -41,7 +41,7 @@ Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossier
 - **Pour tout le site** : maintenance du site (`module=adm/manage`) → Configuration → thème par
   défaut : `Nova`. Vaut pour les visiteurs et pour les classes qui n'ont pas choisi de thème.
 
-L'accent de Nova suit la « couleur des barres » du site ou de la classe ; si elle est restée au gris
+L'accent de Nova suit la « couleur de fond des menus » du site ou de la classe ; si elle est restée au gris
 par défaut de WIMS, Nova prend sa prune.
 
 ## 4. Vérifier

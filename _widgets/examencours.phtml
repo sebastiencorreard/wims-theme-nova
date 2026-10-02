@@ -5,10 +5,14 @@
 !! ($registered ne convient pas : WIMS ne le définit que dans le module d'examen.)
 !! Champs du verrou : IP, session, fin (epoch), numéro d'examen (comme html/examclock.proc).
 !! Pas sur la page de l'examen : elle a son chronomètre.
+!! Lien comme « Continuer cet examen » de WIMS (themes/_widgets/examsession.phtml) : la SESSION où
+!! l'examen a été commencé (2e champ du verrou) et job=student. Avec la session courante, après une
+!! reconnexion, WIMS montre la présentation (« plus de sessions possibles ») : élève bloqué (2026-10-03).
 !if $wims_user!=supervisor and $wims_user!=$empty and $wims_class!=$empty and $module!=adm/class/exam and _exam notin $wims_session
   !set nova_examreg=!record 0 of wimshome/log/classes/$wims_class/.parmreg/$wims_user.exam
   !set nova_examnum=!word 4 of $nova_examreg
   !set nova_examfin=!word 3 of $nova_examreg
+  !set nova_examses=!word 2 of $nova_examreg
   !default nova_examencours=Exam in progress
   !default nova_examen_court=Exam
   !default nova_examen_a_terminer=Exam to finish
@@ -24,9 +28,13 @@
   !if $nova_examnum!=$empty
     <span class="menuitem $nova_examclasse">
     !set wims_ref_class=nova-examencours-lien
-    !href module=adm/class/exam&exam=$nova_examnum <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-long">$nova_examencours</span><span class="nova-court">$nova_examen_court</span>
+    !if $nova_examses!=$empty and $nova_examses notin $wims_session
+      !href session=$nova_examses&module=adm/class/exam&job=student&exam=$nova_examnum <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-long">$nova_examencours</span><span class="nova-court">$nova_examen_court</span>
+    !else
+      !href module=adm/class/exam&job=student&exam=$nova_examnum <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-long">$nova_examencours</span><span class="nova-court">$nova_examen_court</span>
+    !endif
     !reset wims_ref_class
     </span>
   !endif
-  !reset nova_examreg nova_examnum nova_examfin nova_examclasse
+  !reset nova_examreg nova_examnum nova_examfin nova_examses nova_examclasse
 !endif

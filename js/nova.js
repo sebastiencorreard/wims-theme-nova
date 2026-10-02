@@ -356,6 +356,70 @@
     });
   }
 
+  /* Accordéons de Foundation (data-accordion : adm/class/addmodule « Notation », adm/class/freework
+   * « zones »), sans Foundation (2026-10-03). nova.js passe avant l'initialisation de Foundation
+   * (jQuery ready, footer_foundation.phtml) : il retire data-accordion, que Foundation ignore alors.
+   * Mêmes réglages : data-allow-all-closed, data-multi-expand, data-deep-link (l'ancre de l'URL
+   * ouvre l'élément et suit l'élément ouvert). Le titre (lien) ouvre et ferme ; Entrée, Espace,
+   * flèches haut et bas entre les titres. L'élément ouvert porte is-active, comme chez Foundation. */
+  function accordeons() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-accordion]'), function (acc, n) {
+      acc.removeAttribute('data-accordion');
+      acc.setAttribute('data-nova-accordeon', '');
+      var toutFerme = acc.getAttribute('data-allow-all-closed') === 'true';
+      var plusieurs = acc.getAttribute('data-multi-expand') === 'true';
+      var ancre = acc.getAttribute('data-deep-link') === 'true';
+      var elements = [];
+      Array.prototype.forEach.call(acc.children, function (item, i) {
+        if (!item.hasAttribute('data-accordion-item')) return;
+        var titre = item.querySelector(':scope > .accordion-title');
+        var contenu = item.querySelector(':scope > .accordion-content');
+        if (!titre || !contenu) return;
+        if (!contenu.id) contenu.id = 'nova-accordeon-' + n + '-' + i;
+        if (!titre.id) titre.id = contenu.id + '-titre';
+        titre.setAttribute('role', 'button');
+        titre.setAttribute('aria-controls', contenu.id);
+        contenu.setAttribute('role', 'region');
+        contenu.setAttribute('aria-labelledby', titre.id);
+        elements.push({ item: item, titre: titre, contenu: contenu });
+      });
+      if (!elements.length) return;
+      function poser(e, ouvert) {
+        e.item.classList.toggle('is-active', ouvert);
+        e.titre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        e.contenu.setAttribute('aria-hidden', ouvert ? 'false' : 'true');
+      }
+      function ouvrir(e) {
+        if (!plusieurs) elements.forEach(function (f) { if (f !== e) poser(f, false); });
+        poser(e, true);
+        if (ancre && history.replaceState) history.replaceState(history.state, '', '#' + e.contenu.id);
+      }
+      function basculer(e) {
+        if (!e.item.classList.contains('is-active')) { ouvrir(e); return; }
+        var ouverts = elements.filter(function (f) { return f.item.classList.contains('is-active'); });
+        if (toutFerme || ouverts.length > 1) poser(e, false);
+      }
+      var cible = ancre && location.hash.length > 1 ? decodeURIComponent(location.hash.slice(1)) : '';
+      var parAncre = null;
+      elements.forEach(function (e) {
+        if (cible && e.contenu.id === cible) parAncre = e;
+        poser(e, e.item.classList.contains('is-active'));
+      });
+      if (parAncre) ouvrir(parAncre);
+      else if (!toutFerme && !elements.some(function (e) { return e.item.classList.contains('is-active'); })) poser(elements[0], true);
+      elements.forEach(function (e, i) {
+        e.titre.addEventListener('click', function (ev) { ev.preventDefault(); basculer(e); });
+        e.titre.addEventListener('keydown', function (ev) {
+          var j = -1;
+          if (ev.key === ' ') { ev.preventDefault(); basculer(e); }
+          else if (ev.key === 'ArrowDown') j = (i + 1) % elements.length;
+          else if (ev.key === 'ArrowUp') j = (i - 1 + elements.length) % elements.length;
+          if (j >= 0) { ev.preventDefault(); elements[j].titre.focus(); }
+        });
+      });
+    });
+  }
+
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -1033,7 +1097,7 @@
     });
   }
 
-  function demarrer() { menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

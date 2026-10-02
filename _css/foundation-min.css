@@ -59,6 +59,12 @@
  * focus. La liste des langues (widget de WIMS) n'a pas la classe avant son passage : son id. */
 html:not(.nova-menus) .dropdown.menu > li.is-dropdown-submenu-parent:is(:hover, :focus-within) > ul { display: block; }
 
+/* ---------- Accordéons (data-accordion, ouverts par js/nova.js : accordeons) ----------
+ * foundation_accordion.css de WIMS (htmlheader.phtml) cache tous les contenus ; Foundation montrait
+ * l'ouvert par un style en ligne, Nova par is-active. Sans JavaScript, tout reste ouvert. */
+.accordion-item.is-active > .accordion-content { display: block; }
+html:not(.nova-js) .accordion-content { display: block; }
+
 /* ---------- Visibilité ---------- */
 .hide { display: none !important; }
 .invisible { visibility: hidden; }

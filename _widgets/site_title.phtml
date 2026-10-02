@@ -1,0 +1,15 @@
+!! Nova : copie de themes/_widgets/site_title.phtml de WIMS. Seule différence : le logo animé
+!! img/wims-87.webp du thème (WebP animé, 87 px) au lieu de gifs/logo.gif (demande de l'utilisateur,
+!! 2026-10-03).
+<!-- Nova/_widgets/site_title-->
+<div id="wims_title">
+  <div class="wimslogo">
+    !href module=home&special_parm=logo <img src="html/themes/Nova/img/wims-87.webp" width="87" height="87" alt="WIMS logo">
+  </div>
+  <h1 class="wims_title">WIMS
+    <span class="smaller wims_subtitle">
+    $V_title $N_at <a href="/">$httpd_HTTP_HOST</a>
+    </span>
+  </h1>
+</div>
+<!--end Nova/_widgets/site_title-->

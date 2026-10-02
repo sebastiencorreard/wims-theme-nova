@@ -495,3 +495,15 @@ body.main_body .wims_button_help { display: inline-flex; align-items: center; ju
 .ui-dialog .ui-dialog-buttonpane .ui-button:first-child { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
 .ui-dialog .ui-dialog-buttonpane .ui-button:first-child:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); }
 .ui-dialog .ui-button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+/* Boutons d'aide (« Indication », « Aide », « Aide à la recherche »…) : l'accent éclairci, texte dans
+ * l'accent assombri, comme la pastille « Examen en cours » (demande de l'utilisateur, 2026-10-03 ;
+ * remplace le vert --nova-aide). */
+body.main_body .wims_button_help, body.main_body a.wims_button_help {
+  background: color-mix(in oklab, var(--nova-accent) 14%, white);
+  color: var(--nova-lien);
+  border: 0;
+}
+body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover {
+  background: color-mix(in oklab, var(--nova-accent) 24%, white);
+  color: var(--nova-lien);
+}

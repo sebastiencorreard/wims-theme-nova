@@ -177,8 +177,13 @@
     // Plus aucun exercice à ouvrir (tout est fait, course arrêtée, ou temps écoulé) : la session
     // reste ouverte chez WIMS, et bloque les autres examens, tant que l'élève n'a pas cliqué sur
     // « Terminer » — qui le déconnecte. On le lui dit, avec le bouton sous la main.
+    // Seulement sur la liste des exercices de la session : ni sur la page qui confirme « Terminer »
+    // (job=scorereg, qui avertit au contraire que des exercices restent à faire — signalé le
+    // 2026-10-02), ni sur « Mes notes » (job=score), qui n'ont pas de lien d'exercice non plus.
+    var job = (/[?&+]job=([a-z]+)/.exec(location.href) || [])[1] || '';
     var corps = document.querySelector('.wimsbody');
-    if (corps && !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {
+    if (corps && job !== 'scorereg' && job !== 'score' &&
+        !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {
       var encadre = document.createElement('div');
       encadre.className = 'nova-fin-session';
       encadre.setAttribute('role', 'status');

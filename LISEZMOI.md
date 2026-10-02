@@ -34,6 +34,10 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   Apparence, `frontmsg` dans `wims.conf` : un module de `local/data/` avec `data/blocnews` et
   `data/blocexamples`). « Sur ce site » reste `log/front.phtml.<langue>` du gestionnaire s'il existe.
   Au téléphone, une colonne ; le menu du visiteur est dans ☰. Styles : `_css/accueil.css`.
+- **Sections repliables du menu de gauche (2026-10-02)** : un clic (ou Entrée, Espace) sur le titre
+  d'une famille la replie ou la déplie, chevron à droite ; état gardé par navigateur et par nom de
+  section (`localStorage` `nova_menu_replie`). L'accordéon jQuery UI de WIMS reste tenu ouvert ; Nova
+  replie par une classe (`js/nova.js`, `sectionsRepliables`).
 - **Onglets** (jQuery UI) soulignés et compacts ; au téléphone, plus de 3 onglets deviennent une liste
   déroulante (`js/nova.js`, `ongletsCompacts`).
 - **Barre du haut (2026-10-02)** : pictogramme devant chaque entrée (`--nova-picto`, masques SVG ;

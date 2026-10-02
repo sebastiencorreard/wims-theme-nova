@@ -517,6 +517,62 @@
     return [editer, defaut];
   }
 
+  /* Sections repliables du menu de gauche (demandé le 2026-10-02) : un clic (ou Entrée, Espace) sur
+   * le titre d'une famille la replie ou la déplie. WIMS en fait un accordéon jQuery UI que Nova
+   * tient ouvert (cadre.css) ; on garde ses écouteurs à l'écart (capture, stopPropagation) et on
+   * replie par une classe. L'état est gardé par navigateur et par nom de section (localStorage
+   * nova_menu_replie). En édition du menu simplifié, le titre garde son rôle (menuPersonnel). */
+  function sectionsRepliables() {
+    var menu = document.getElementById('wimsmenumodubox');
+    if (!menu) return;
+    var titres = Array.prototype.filter.call(menu.querySelectorAll('.menu_title'), function (t) {
+      return t.nextElementSibling && t.nextElementSibling.querySelector('.menuitem');
+    });
+    if (!titres.length) return;
+    var lire = function () { try { return JSON.parse(localStorage.getItem('nova_menu_replie') || '[]'); } catch (e) { return []; } };
+    var nom = function (t) { return t.textContent.replace(/\s+/g, ' ').trim(); };
+    var replies = lire();
+    if (!Array.isArray(replies)) replies = [];
+    var appliquer = function (t) {
+      var replie = replies.indexOf(nom(t)) >= 0;
+      t.classList.toggle('nova-replie', replie);
+      t.setAttribute('aria-expanded', replie ? 'false' : 'true');
+    };
+    titres.forEach(function (t) {
+      t.classList.add('nova-repliable');
+      t.setAttribute('role', 'button');
+      t.setAttribute('tabindex', '0');
+      t.removeAttribute('aria-selected');
+      appliquer(t);
+    });
+    var basculer = function (t) {
+      var i = replies.indexOf(nom(t));
+      if (i >= 0) replies.splice(i, 1); else replies.push(nom(t));
+      try { localStorage.setItem('nova_menu_replie', JSON.stringify(replies)); } catch (e) { /* choix non retenu */ }
+      appliquer(t);
+    };
+    var cible = function (ev) {
+      if (document.documentElement.classList.contains('nova-menu-edition')) return null;
+      var t = ev.target.closest('.menu_title');
+      return t && titres.indexOf(t) >= 0 ? t : null;
+    };
+    menu.addEventListener('click', function (ev) {
+      var t = cible(ev);
+      if (!t) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      basculer(t);
+    }, true);
+    menu.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      var t = cible(ev);
+      if (!t) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      basculer(t);
+    }, true);
+  }
+
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
    * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
   function centrerBarre() {
@@ -671,7 +727,7 @@
     });
   }
 
-  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); centrerBarre(); }
+  function demarrer() { infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); barreCompacte(); basculeMenu(); sectionsRepliables(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

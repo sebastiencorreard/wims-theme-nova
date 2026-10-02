@@ -70,39 +70,8 @@
   white-space: nowrap;
 }
 .nova-recherche-ressource .wims_form { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e3) var(--nova-e4); }
-.nova-recherche-ressource .search_field {
-  flex: 1 1 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--nova-e2) var(--nova-e4);
-  margin: 0;
-}
-.nova-recherche-ressource .search_field > input[type="search"] { flex: 1 1 12rem; min-width: 0; width: auto; }
-/* Champ + bouton « Chercher » accolés, pareils dans les deux cartes : 40 px de haut, le champ
- * arrondi à gauche seulement, le bouton à droite (5 px, comme le bouton d'un input-group de
- * Foundation dans « Rechercher une classe »). */
-.nova-recherche-ressource .search_field { gap: 0; }
-.nova-recherche-ressource .search_field > input[type="search"],
-#search_classes .input-group-field {
-  box-sizing: border-box;
-  height: 40px;
-  margin: 0;
-  border-radius: var(--nova-rayon) 0 0 var(--nova-rayon);
-}
-.nova-recherche-ressource .search_field > button,
-#search_classes .input-group-button button {
-  box-sizing: border-box;
-  height: 40px;
-  min-height: 40px;
-  margin: 0;
-  padding: 0 var(--nova-e4);
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: 0 calc(var(--nova-rayon) / 2) calc(var(--nova-rayon) / 2) 0;
-}
-.nova-recherche-ressource .search_field > button .Searching { font-size: inherit; }
-.nova-recherche-ressource .search_field > span { flex-basis: 100%; margin: var(--nova-e3) 0 0 !important; }   /* style en ligne de WIMS */
+.nova-recherche-ressource .search_field { flex: 1 1 100%; margin: 0; }
+/* Champ + bouton « Chercher » : règle commune du moteur de recherche (composants.css). */
 .nova-recherche-ressource #affined_search { order: 1; flex: 1 1 auto; margin: 0; padding: 0; border: 0; }
 .nova-recherche-ressource .wims_button_help { order: 2; float: none; margin-left: auto; }
 /* Filtres ouverts : la carte prend toute la largeur, la recherche de classe passe dessous. */

@@ -170,6 +170,33 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   cursor: default;
 }
 #wimsmenumodubox .menu_title:first-child { margin-top: 0; }
+/* Sections repliables (js/nova.js, sectionsRepliables) : chevron à droite du titre, famille masquée
+ * quand le titre porte .nova-replie (sauf pendant l'édition du menu simplifié). */
+#wimsmenumodubox .menu_title.nova-repliable {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  cursor: pointer;
+  border-radius: var(--nova-rayon);
+}
+#wimsmenumodubox .menu_title.nova-repliable:hover { color: var(--nova-texte); }
+#wimsmenumodubox .menu_title.nova-repliable:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+#wimsmenumodubox .menu_title.nova-repliable::after {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 4px 3px var(--nova-e2);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform .15s;
+}
+#wimsmenumodubox .menu_title.nova-repliable.nova-replie::after { transform: rotate(-45deg); margin-bottom: 0; }
+html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { display: none !important; }
+.nova-menu-edition #wimsmenumodubox .menu_title.nova-repliable::after { content: none; }
+@media (prefers-reduced-motion: reduce) { #wimsmenumodubox .menu_title.nova-repliable::after { transition: none; } }
 #wimsmenumodubox .ui-accordion-header-icon { display: none; }
 #wimsmenumodubox .ui-accordion-content {
   display: block !important;   /* jQuery UI replie les groupes par un style en ligne */

@@ -24,6 +24,45 @@ input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:
   border-radius: var(--nova-rayon);
 }
 .main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+/* Un bouton qui est un lien (<a class="wims_button"> : « Entrer », « Modifier », « Présentation en
+ * séquences »…) : la hauteur minimale ne centre pas son texte, qui restait en haut. */
+a.wims_button, .main_body a.wims_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Moteur de recherche de WIMS (accueil du site, accueil d'une classe…) : champ et bouton
+ * « Chercher » accolés, 40 px de haut, le champ arrondi à gauche seulement, le bouton à droite
+ * (5 px, comme le bouton d'un input-group de Foundation). */
+fieldset.wims_search_engine .search_field { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+fieldset.wims_search_engine .search_field > input[type="search"],
+#search_classes .input-group-field {
+  box-sizing: border-box;
+  flex: 1 1 12rem;
+  min-width: 0;
+  width: auto;
+  height: 40px;
+  margin: 0;
+  border-radius: var(--nova-rayon) 0 0 var(--nova-rayon);
+}
+fieldset.wims_search_engine .search_field > button,
+#search_classes .input-group-button button {
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 var(--nova-e4);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 0 calc(var(--nova-rayon) / 2) calc(var(--nova-rayon) / 2) 0;
+}
+fieldset.wims_search_engine .search_field > button .Searching { font-size: inherit; }
+fieldset.wims_search_engine .wims_button_help.float_right { margin-left: var(--nova-e3); }
+fieldset.wims_search_engine .search_field > span { flex-basis: 100%; margin: var(--nova-e3) 0 0 !important; }   /* style en ligne de WIMS */
 
 /* Champs */
 input[type="text"], input[type="password"], input[type="email"], input[type="number"],

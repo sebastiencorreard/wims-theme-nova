@@ -88,6 +88,14 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   min-height: 40px;
 }
 #wimstopbox :is(.is-dropdown-submenu, [id="lang_list"]) a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+/* Menu des langues (_widgets/language_selector.phtml) : drapeau séparé du nom ; la langue courante (li.disabled,
+ * grisée #ccc par WIMS) sur l'accent doux, en gras, « (actuel) » discret (demande de l'utilisateur, 2026-10-03). */
+#wimstopbox [id="lang_list"] a { display: flex; align-items: center; gap: var(--nova-e2); }
+#wimstopbox [id="lang_list"] a .vignette { flex: 0 0 auto; margin: 0; }
+#wimstopbox [id="lang_list"] .menuitem.disabled { background: none; opacity: 1; }
+#wimstopbox [id="lang_list"] a.current { background: var(--nova-accent-doux); color: var(--nova-texte); font-weight: 700; cursor: default; }
+#wimstopbox [id="lang_list"] a.current .smaller { margin-left: auto; font-weight: 400; color: var(--nova-texte-2); }
+#wimstopbox .nova-ouvre-droite { left: 0 !important; right: auto !important; }   /* js/nova.js : menu qui dépassait à gauche */
 
 /* ---------- Fil d'Ariane ---------- */
 .breadcrumbs {

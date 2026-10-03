@@ -353,13 +353,16 @@
     function estOuvert(m) { return m.liste.classList.contains('js-dropdown-active'); }
     function ouvrir(m) {
       menus.forEach(function (n) { if (n !== m) fermer(n); });
-      m.li.classList.remove('opens-left'); m.liste.classList.remove('opens-left');
+      m.li.classList.remove('opens-left'); m.liste.classList.remove('opens-left', 'nova-ouvre-droite');
       m.li.classList.add('is-active');
       m.liste.classList.add('js-dropdown-active');
       m.lien.setAttribute('aria-expanded', 'true');
       if (m.liste.getBoundingClientRect().right > document.documentElement.clientWidth - 4) {
         m.li.classList.add('opens-left'); m.liste.classList.add('opens-left');
       }
+      // Dépasse à gauche (menu des langues, aligné à droite par le CSS, au téléphone où il est à gauche
+      // de la barre) : on l'aligne sur le bord gauche de son bouton.
+      if (m.liste.getBoundingClientRect().left < 4) m.liste.classList.add('nova-ouvre-droite');
     }
     function fermer(m) {
       clearTimeout(m.minuterie);

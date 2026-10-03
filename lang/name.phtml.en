@@ -49,3 +49,5 @@
 !set nova_car_lecture=Resume scrolling
 !set nova_car_diapo=Example %n of %t
 !set nova_car_titre=Examples
+!! Exercice OEF en serie : bouton Continuer la serie avec l'exercice suivant renomme (js/nova.js, boutonsCollants)
+!set nova_exo_suivant=Next exercise

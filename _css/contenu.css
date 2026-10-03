@@ -731,3 +731,24 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 .nova-mes-notes a.nova-mes-notes-bouton:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); color: var(--nova-sur-accent); }
 .nova-mes-notes a.nova-mes-notes-bouton:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 3px; }
 @media (max-width: 639.98px) { .nova-mes-notes a.nova-mes-notes-bouton { width: 100%; box-sizing: border-box; } }
+
+/* Boutons d'exercice collés en bas de l'écran au téléphone (js/nova.js, boutonsCollants ; demande de
+ * l'utilisateur, 2026-10-03). Le bloc garde ses boutons ; carte claire et ombre pour montrer qu'il flotte. */
+.nova-collant-repere { display: block; height: 0; }
+@media (max-width: 639.98px) {
+  .wimsbody .nova-collant {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    margin: 0;
+    padding: var(--nova-e2);
+    border-radius: var(--nova-rayon-carte);
+    background: color-mix(in oklab, var(--nova-surface) 94%, transparent);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 10%), 0 8px 24px rgb(0 0 0 / 14%);
+    text-align: center;
+  }
+  /* La pastille « retour en haut » passe au-dessus du bloc. */
+  .nova-boutons-collants .wims_topback { bottom: 96px; }
+}

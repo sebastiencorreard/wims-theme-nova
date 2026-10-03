@@ -1626,7 +1626,55 @@
     }
   }
 
-  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Exercice (OEF, scripts/oef : div.send_answer « Envoyer la réponse », div.oef_buttons « Continuer la série
+   * avec l'exercice suivant ») : au téléphone, le bloc de boutons reste en bas de l'écran tant que sa place
+   * dans la page est plus bas ; quand l'élève y arrive, il la reprend et défile avec la page (demande de
+   * l'utilisateur, 2026-10-03). Pas de position: sticky : .wimsbody défile en largeur au téléphone (filet de
+   * sécurité, contenu.css), un élément collant s'y collerait, hors de l'écran. Un repère après le bloc
+   * marque sa place ; une cale garde sa hauteur quand il est fixé. « Continuer la série… » devient
+   * « Exercice suivant ». */
+  function boutonsCollants() {
+    var textes = document.getElementById('nova-textes');
+    var suivant = document.querySelector('#oef_serie_nextexo .oef_serie_nextexo');
+    if (suivant) {
+      var libelle = textes && textes.getAttribute('data-exo-suivant');
+      if (libelle) { suivant.textContent = libelle; suivant.closest('a').title = libelle; }
+    }
+    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
+    if (!blocs.length || !window.IntersectionObserver || !window.matchMedia) return;
+    var telephone = window.matchMedia('(max-width: 639.98px)');
+    blocs.forEach(function (bloc) {
+      var repere = document.createElement('span');
+      repere.className = 'nova-collant-repere';
+      repere.setAttribute('aria-hidden', 'true');
+      bloc.parentNode.insertBefore(repere, bloc.nextSibling);
+      var cale = document.createElement('div');
+      cale.className = 'nova-collant-cale';
+      cale.setAttribute('aria-hidden', 'true');
+      var dessous = false;
+      var appliquer = function () {
+        var fixer = telephone.matches && dessous && bloc.getClientRects().length > 0;
+        if (fixer === bloc.classList.contains('nova-collant')) return;
+        if (fixer) {
+          cale.style.height = bloc.offsetHeight + 'px';
+          bloc.parentNode.insertBefore(cale, bloc);
+          bloc.classList.add('nova-collant');
+        } else {
+          bloc.classList.remove('nova-collant');
+          if (cale.parentNode) cale.parentNode.removeChild(cale);
+        }
+        document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant'));
+      };
+      new IntersectionObserver(function (entrees) {
+        var e = entrees[entrees.length - 1];
+        dessous = !e.isIntersecting && e.boundingClientRect.top > 0;   // place du bloc plus bas que l'écran
+        appliquer();
+      }).observe(repere);
+      if (telephone.addEventListener) telephone.addEventListener('change', appliquer);
+    });
+  }
+
+  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

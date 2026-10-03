@@ -49,3 +49,5 @@
 !set nova_car_lecture=Relancer le défilement
 !set nova_car_diapo=Exemple %n sur %t
 !set nova_car_titre=Exemples
+!! Exercice OEF en serie : bouton Continuer la serie avec l'exercice suivant renomme (js/nova.js, boutonsCollants)
+!set nova_exo_suivant=Exercice suivant

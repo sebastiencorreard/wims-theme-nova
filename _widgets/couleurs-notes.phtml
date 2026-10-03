@@ -37,7 +37,45 @@ td.wims_sheet_score[style*="background-color:$nova_np;"], td.wims_sheet_score[st
       !set nova_l=zero
     !endif
 td.wims_sheet_score[style*="background-color:$nova_c;"], .wims_score_bar_legend li[style$$="background-color:$nova_c"] { background: var(--nova-note-$nova_l) !important; }
+    !! Bordure (verification d'examen) : la note 0 (blanc) serait invisible, contour gris.
+    !set nova_b=note-$nova_l
+    !if $nova_l=zero
+      !set nova_b=note-contour
+    !endif
+td.wims_sheet_score span[style$$="border-color:$nova_c"] { border-color: var(--nova-$nova_b) !important; }
   !endif
 !next
 td.wims_sheet_score[style*="background-color"], .wims_score_bar_legend li[style*="background-color"] { color: var(--nova-texte) !important; font-weight: 600; }
+!if $module=adm/class/livret
+!! Livret de competences (modules/adm/class/livret, var.init) : palette du livret, ou de la classe ;
+!! style="background-color:X;" sur des td sans classe. Indice 1 = aucune note (non evalue) -> gris ;
+!! indice i = note i-1 (ceil, scripts/adm/class/colors :livret).
+  !set nova_lo=!defof livret_scoreoption in wimshome/log/classes/$wims_class/livret/.def
+  !set nova_lc=!defof livret_scorecolor in wimshome/log/classes/$wims_class/livret/.def
+  !set nova_lc=!line 1 of $nova_lc
+  !default nova_lc=#9C9C9C,red,red,red,orange,orange,orange,yellow,yellow,green,green
+  !if class isin $nova_lo
+    !set nova_lc=!defof class_scorecolor in wimshome/log/classes/$wims_class/.def
+  !endif
+  !set nova_lc=!nonempty items $nova_lc
+  !set nova_c=!item 1 of $nova_lc
+.wimsbody td[style*="background-color:$nova_c;"] { background: var(--nova-note-np) !important; color: var(--nova-texte) !important; }
+  !for nova_i=2 to 11
+    !set nova_c=!item $nova_i of $nova_lc
+    !if $nova_c!=$empty
+      !set nova_n=$[$nova_i-1]
+      !set nova_l=vert
+      !ifval $nova_n<=8
+        !set nova_l=jaune
+      !endif
+      !ifval $nova_n<=6
+        !set nova_l=orange
+      !endif
+      !ifval $nova_n<=3
+        !set nova_l=rouge
+      !endif
+.wimsbody td[style*="background-color:$nova_c;"] { background: var(--nova-note-$nova_l) !important; color: var(--nova-texte) !important; font-weight: 600; }
+    !endif
+  !next
+!endif
 </style>

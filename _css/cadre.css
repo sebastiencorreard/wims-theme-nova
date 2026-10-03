@@ -746,7 +746,7 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 .nova-parcours .wims_seed_item.nova-fait { background: var(--nova-accent); }
 .nova-parcours .wims_seed_item.nova-cours { width: 30px; background: var(--nova-accent-doux); box-shadow: inset 0 0 0 2px var(--nova-accent); }
 .nova-parcours .wims_seed_item.nova-cours.nova-fait { background: var(--nova-accent); box-shadow: none; }
-.nova-parcours .wims_seed_item.nova-echec { background: #E06A4E; box-shadow: none; }
+.nova-parcours .wims_seed_item.nova-echec { background: var(--nova-surface); }   /* pilule contourée, sans couleur à part (utilisateur, 2026-10-03) */
 .nova-parcours-compteur {
   margin: 0;
   font-size: var(--nova-petit);

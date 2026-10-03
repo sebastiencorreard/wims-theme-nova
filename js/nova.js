@@ -1352,7 +1352,24 @@
     });
   }
 
-  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Pastille de note d'une carte (« Note: 6.5/10 ») : le libellé isolé dans un span, que le CSS cache
+   * au téléphone (seule la valeur reste visible ; le libellé reste lu par les lecteurs d'écran). */
+  function libellesNotes() {
+    Array.prototype.forEach.call(document.querySelectorAll('li.wims_sheet_item > div.wims_user_info .wims_sheet_score, li.wims_exam_item > div.nova-note-examen .wims_sheet_score'), function (note) {
+      if (note.querySelector('.nova-note-libelle')) return;
+      var m = /^([^:]+:)\s*(\S.*)$/.exec(note.textContent.replace(/\s+/g, ' ').trim());
+      if (!m) return;
+      var libelle = document.createElement('span'), valeur = document.createElement('span');
+      libelle.className = 'nova-note-libelle';
+      libelle.textContent = m[1];
+      valeur.textContent = m[2];
+      note.textContent = '';
+      note.appendChild(libelle);
+      note.appendChild(valeur);
+    });
+  }
+
+  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -572,6 +572,18 @@ ol.wims_sheet_list .wims_user_info { float: none; position: static; margin: var(
 ol.wims_sheet_list .wims_sheet_score { margin: 0; text-align: left; }
 ol.wims_sheet_list .wims_sheet_score .nova-scores { display: flex; justify-content: flex-start; padding: 0; text-align: left; }
 ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding: 2px 8px; }
+/* Téléphone : pastille de note réduite à sa valeur (« 6.5/10 ») ; libellé isolé par js/nova.js
+ * (libellesNotes), gardé pour les lecteurs d'écran (demande de l'utilisateur, 2026-10-03). */
+@media (max-width: 639.98px) {
+  li.wims_sheet_item .nova-note-libelle, li.wims_exam_item .nova-note-libelle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 /* Historique des essais (scripts/adm/class/seedscore.phtml : .wims_score_bar > .wims_seed_item) :
  * pilules comme celles de l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : 20 x 10,
  * mêmes couleurs et mêmes seuils (rouge < 5/10, ambre < 8, vert, vert foncé > 9). WIMS met la note de

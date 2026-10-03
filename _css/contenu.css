@@ -708,3 +708,24 @@ ol.wims_exam > li.nova-exo-ferme { box-shadow: none; }
  * la liste, parfois précédée d'un avertissement d'IP) — demande de l'utilisateur, 2026-10-03. En CSS : le
  * module relit ses textes en vue élève, une surcharge de traduction n'y tiendrait pas. */
 body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
+
+/* Accueil de l'élève : bouton « 🏆 Mes notes 🏆 » tout en haut (user.phtml, demande de l'utilisateur, 2026-10-03). */
+.nova-mes-notes { margin: 0 0 var(--nova-e4); text-align: center; }
+.nova-mes-notes a.nova-mes-notes-bouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5em;
+  min-height: 48px;
+  padding: 0 var(--nova-e5);
+  border-radius: 999px;
+  background: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--nova-accent) 30%, transparent);
+}
+.nova-mes-notes a.nova-mes-notes-bouton:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); color: var(--nova-sur-accent); }
+.nova-mes-notes a.nova-mes-notes-bouton:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 3px; }
+@media (max-width: 639.98px) { .nova-mes-notes a.nova-mes-notes-bouton { width: 100%; box-sizing: border-box; } }

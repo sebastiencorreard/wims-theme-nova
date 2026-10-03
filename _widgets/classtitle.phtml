@@ -1,0 +1,52 @@
+!! Copie Nova de themes/_widgets/classtitle.phtml (WIMS 4.32), lue par user.phtml : titre d'une zone (portail,
+!! groupement) reduit pour un eleve. Original : ORIGINES.sha256.
+!if $wims_superclass=$empty or $wims_superclass=$wims_class
+  !set tmp_desc=$wims_institutionname\
+$wims_classname
+!else
+  !set tmp_cl=!replace internal / by , in $wims_class
+  !set tmp_cl_cnt=!itemcnt $tmp_cl
+  !reset C_
+  !for j=1 to $tmp_cl_cnt
+    !set c_=!item 1 to $j of $tmp_cl
+    !set c_=!replace internal , by / in $c_
+    !set c_=!nospace $c_
+    !set pname=!defof class_description in wimshome/log/classes/$c_/.def
+    !set C_=!append item $pname to $C_
+    !reset pname
+  !next
+  !set CC=!replace internal , by $ /$ in $(C_[2..-2])
+  !if /0// isin $wims_class//
+    !set tmp=$CL_Test
+    !set tmp_=testclass
+  !else
+    !set tmp=$(wims_name_$class_typename)
+    !set tmp_=$class_typename
+  !endif
+  !if $CC!=$empty
+    !set CC = / $CC
+  !endif
+  !set tmp_desc=!append line $(C_[1]) ($wims_institutionname) $CC\
+<span class="wims_classes_direct_$tmp_">$tmp $wims_classname</span>\
+to $tmp_desc
+  !! Nova (2026-10-03, demande de l'utilisateur) : pour un eleve, seulement Etablissement - classe ;
+  !! dans un cours, la classe est la zone parente (avant-dernier element du chemin).
+  !if $wims_user!=supervisor and $wims_user!=$empty
+    !set nova_cl=$wims_classname
+    !if $class_typename=course and $tmp_cl_cnt>2
+      !set nova_cl=$(C_[-2])
+    !endif
+    !set nova_titre=$wims_institutionname - $nova_cl
+  !endif
+  !reset tmp_ tmp
+!endif
+
+!if $nova_titre!=$empty
+  !read $(w_path)title.phtml 2\
+<span class="nova-titre-classe">$nova_titre</span>
+!else
+  !read $(w_path)title.phtml 1\
+$tmp_desc
+!endif
+
+!reset tmp_desc tmp nova_titre nova_cl

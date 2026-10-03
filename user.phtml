@@ -25,13 +25,22 @@
 !endif
 
 :normal
+!! Nova : bouton Mes notes bien visible, tout en haut de l'accueil de l'eleve (demande de l'utilisateur,
+!! 2026-10-03). Lien du menu de WIMS (module adm/class/userscore), libelle de WIMS.
+!if $wims_user!=supervisor and $wims_user!=$empty
+  <div class="nova-mes-notes">
+  !set wims_ref_class=nova-mes-notes-bouton
+  !href module=adm/class/userscore &#127942; $wims_name_myscore &#127942;
+  !reset wims_ref_class
+  </div>
+!endif
 !read classlogo.phtml
 !if $class_logo!=$empty
   <div id="classlogo" class="float_$class_logoside">
     <img src="$class_logo" alt="class logo">
   </div>
 !endif
-!read themes/_widgets/classtitle.phtml
+!read themes/Nova/_widgets/classtitle.phtml
 
 !read adm/class/initclass $wims_superclass, auth
 

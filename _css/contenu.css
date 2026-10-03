@@ -568,8 +568,10 @@ ol.wims_sheet_list .wims_score_bar .wims_score_column { display: contents; }
 ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; border: 0; border-radius: 50%; }
 ol.wims_sheet_list .wims_sheet_score { display: block; padding: 0; border: 0; background: none; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-scores { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e2); }
-.nova-score { display: inline-flex; gap: 4px; align-items: baseline; padding: 2px 8px; border-radius: 999px; background: var(--nova-surface-2); font-size: .8125rem; color: var(--nova-texte-2); white-space: nowrap; }
-.nova-score strong { color: var(--nova-texte); font-weight: 700; }
+/* Étiquettes de score (feuilleExercices) : sous .nova-scores, car la barre de score porte aussi la
+ * classe nova-score (scores) et prenait ce fond gris arrondi. */
+.nova-scores .nova-score { display: inline-flex; gap: 4px; align-items: baseline; padding: 2px 8px; border-radius: 999px; background: var(--nova-surface-2); font-size: .8125rem; color: var(--nova-texte-2); white-space: nowrap; }
+.nova-scores .nova-score strong { color: var(--nova-texte); font-weight: 700; }
 .nova-barre-reussite { height: 6px; margin: var(--nova-e2) 0 0; border-radius: 3px; background: var(--nova-surface-2); overflow: hidden; }
 .nova-barre-reussite > span { display: block; height: 100%; border-radius: inherit; background: var(--nova-accent); }
 .nova-barre-reussite[data-plein] > span { background: #2E9E5B; }

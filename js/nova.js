@@ -1303,7 +1303,9 @@
       Array.prototype.forEach.call(cases, function (li) {
         var a = li.querySelector('a');
         var titre = (a && a.getAttribute('title')) || li.getAttribute('title') || '';
-        var m = /(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)/.exec(titre);
+        // Une session d'examen sans note donne « NaN/20 » (userexambar.phtml) ; WIMS y affiche 0.
+        var m = /(\d+(?:[.,]\d+)?|NaN)\s*\/\s*(\d+(?:[.,]\d+)?)/.exec(titre);
+        if (m && m[1] === 'NaN') m[1] = '0';
         if (li.style.backgroundColor && m) {
           var r = parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.'));
           li.setAttribute('data-niveau', r >= 0.8 ? 'bon' : r >= 0.5 ? 'moyen' : 'faible');
@@ -1313,6 +1315,7 @@
         }
       });
       if (notes) { historique(barre, cases); return; }
+      if (barre.closest('li.wims_exam_item')) return;   // examen : pas de compteur de feuille
       var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
       var compte = document.createElement('span');
       compte.className = 'nova-score-compte';

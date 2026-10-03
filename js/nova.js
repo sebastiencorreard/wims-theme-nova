@@ -1583,7 +1583,50 @@
     });
   }
 
-  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types
+   * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
+   * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
+  function legendeTypes() {
+    var corps = document.querySelector('.wimsbody');
+    if (!corps) return;
+    var legendes = Array.prototype.filter.call(corps.querySelectorAll('ul.inline'), function (ul) {
+      var lis = ul.querySelectorAll(':scope > li');
+      return lis.length > 1 && Array.prototype.every.call(lis, function (li) { return /_item\b/.test(li.className) && !li.querySelector('a'); });
+    });
+    if (!legendes.length) return;
+    var type = function (el) { return (el.className.match(/\bwims_[a-z]+_item\b/) || [])[0]; };
+    var majour = function () {
+      var panneaux = Array.prototype.filter.call(corps.querySelectorAll('[id^="wims_seq_"]:not(#wims_seq_summary)'), function (p) { return p.getClientRects().length; });
+      var zones = panneaux.length ? panneaux : [corps];
+      var presents = {};
+      zones.forEach(function (z) {
+        Array.prototype.forEach.call(z.querySelectorAll('li[class*="_item"]'), function (li) {
+          if (li.querySelector(':scope > a') && !legendes.some(function (l) { return l.contains(li); })) presents[type(li)] = true;
+        });
+      });
+      legendes.forEach(function (ul) {
+        var visibles = 0;
+        Array.prototype.forEach.call(ul.querySelectorAll(':scope > li'), function (li) {
+          var garde = !!presents[type(li)];
+          li.classList.toggle('nova-legende-absente', !garde);
+          if (garde) visibles++;
+        });
+        ul.classList.toggle('nova-legende-absente', !visibles);
+        var bloc = ul.closest('.wims_seq_legend, .legend, fieldset');
+        if (bloc && bloc.querySelectorAll('ul.inline').length === 1) bloc.classList.toggle('nova-legende-absente', !visibles);
+      });
+    };
+    majour();
+    var attente = 0;
+    var relancer = function () { cancelAnimationFrame(attente); attente = requestAnimationFrame(majour); };
+    corps.addEventListener('click', relancer);
+    corps.addEventListener('change', relancer);
+    if (window.MutationObserver) {
+      new MutationObserver(relancer).observe(corps, { subtree: true, attributes: true, attributeFilter: ['style', 'aria-hidden', 'hidden'] });
+    }
+  }
+
+  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -377,6 +377,8 @@ tt.e { color: color-mix(in oklab, #48D1CC 45%, black); }
 .wims_status_1, .wims_doc_status_1 { color: var(--nova-succes); }
 .wims_status_2, .wims_doc_status_2, .wims_status_3 { color: var(--nova-attention-texte); }
 
+/* Types absents de l'onglet affiché : retirés de la légende (js/nova.js, legendeTypes). */
+.wimsbody .nova-legende-absente { display: none !important; }
 /* Légende (étiquettes sans lien, ul.inline) : pastilles compactes, pas des cartes. */
 li.wims_sheet_item:not(:has(> a)), li.wims_exam_item:not(:has(> a)), li.wims_doc_item:not(:has(> a)), li.wims_vote_item:not(:has(> a)), li.wims_tool_item:not(:has(> a)), li.wims_glossary_item:not(:has(> a)), li.wims_freework_item:not(:has(> a)) {
   display: inline-flex !important;

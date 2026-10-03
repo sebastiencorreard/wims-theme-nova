@@ -1375,7 +1375,70 @@
     });
   }
 
-  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Exercices d'un examen (adm/class/exam, student.phtml : ol.wims_exam > li.exo_item) en cartes, comme la
+   * feuille d'exercices (maquette A, utilisateur, 2026-10-03). WIMS écrit selon l'état : lien (.exo_link a),
+   * fait (.exo_name + .exo_done, ou un ❌ dans une course), bloqué par une dépendance (titre nu + lien
+   * « Nécessite… »), fermé (titre nu). Nova range : titre, puis étiquettes (poids, état) ; liens de WIMS gardés.
+   * Numéro, ✓ et flèche en CSS. */
+  function examExercices() {
+    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_exam'), function (ol) {
+      if (ol.classList.contains('nova-exam-liste')) return;
+      ol.classList.add('nova-exam-liste');
+      Array.prototype.forEach.call(ol.querySelectorAll(':scope > li.exo_item'), function (li) {
+        var puce = function (classe, contenu) {
+          var e = document.createElement('span');
+          e.className = 'nova-puce ' + classe;
+          if (typeof contenu === 'string') e.textContent = contenu; else e.appendChild(contenu);
+          return e;
+        };
+        var meta = document.createElement('span');
+        meta.className = 'nova-exo-meta';
+        var poids = li.querySelector('.weight');
+        if (poids) {
+          var m = /^\(?\s*([^:()]+?)\s*:\s*([^()]+?)\s*\)?$/.exec(poids.textContent.replace(/\s+/g, ' ').trim());
+          meta.appendChild(puce('nova-puce-poids', m ? m[1] + ' ' + m[2] : poids.textContent.trim()));
+          poids.remove();
+        }
+        var titre, lien = li.querySelector('.exo_link a'), fait = li.querySelector('.exo_done');
+        var echec = Array.prototype.filter.call(li.querySelectorAll('span'), function (e) { return e.textContent.indexOf('\u274C') >= 0; })[0];
+        var bloque = !lien && li.querySelector('a[href*="job=student"]');
+        if (lien) {
+          li.classList.add('nova-exo-afaire');
+          titre = lien.closest('.exo_link');
+        } else if (fait || echec) {
+          li.classList.add(fait ? 'nova-exo-fait' : 'nova-exo-echec');
+          titre = li.querySelector('.exo_name');
+          meta.appendChild(puce(fait ? 'nova-puce-ok' : 'nova-puce-echec', (fait || echec).textContent.trim()));
+          (fait || echec).remove();
+        } else if (bloque) {
+          li.classList.add('nova-exo-bloque');
+          var conteneur = bloque.parentNode === li ? bloque : bloque.parentNode;
+          meta.appendChild(puce('nova-puce-bloque', bloque));
+          if (conteneur !== bloque) conteneur.remove();
+        } else {
+          li.classList.add('nova-exo-ferme');
+          titre = li.querySelector(':scope > span');
+        }
+        if (!titre) {
+          // Titre écrit en texte nu par WIMS : le recueillir.
+          titre = document.createElement('span');
+          Array.prototype.slice.call(li.childNodes).forEach(function (n) {
+            if (n.nodeType === 3 && n.textContent.trim()) titre.appendChild(document.createTextNode(n.textContent.trim()));
+          });
+        }
+        titre.classList.add('nova-exo-titre');
+        if (!lien && titre.lastChild && titre.lastChild.nodeType === 3) titre.lastChild.textContent = titre.lastChild.textContent.replace(/\s*\.\s*$/, '');
+        var corps = document.createElement('span');
+        corps.className = 'nova-exo-corps';
+        corps.appendChild(titre);
+        if (meta.childNodes.length) corps.appendChild(meta);
+        Array.prototype.slice.call(li.childNodes).forEach(function (n) { if (n.nodeType === 3 || (n !== titre && n.nodeType === 1)) n.remove(); });
+        li.appendChild(corps);
+      });
+    });
+  }
+
+  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

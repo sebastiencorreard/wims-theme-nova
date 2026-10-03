@@ -615,3 +615,92 @@ ol.wims_sheet_list .wims_sheet_score { display: block; padding: 0; border: 0; ba
 .nova-barre-reussite { height: 6px; margin: var(--nova-e2) 0 0; border-radius: 3px; background: var(--nova-surface-2); overflow: hidden; }
 .nova-barre-reussite > span { display: block; height: 100%; border-radius: inherit; background: var(--nova-accent); }
 .nova-barre-reussite[data-plein] > span { background: #2E9E5B; }
+
+/* ---------- Exercices d'un examen (adm/class/exam, page de l'examen) ---------- */
+/* Cartes comme la feuille d'exercices (maquette A, utilisateur, 2026-10-03) ; contenu rangé par js/nova.js
+ * (examExercices). WIMS (_css/exam.css) : boutons flottants de 16em en dégradé gris, sur deux colonnes. */
+ol.wims_exam {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 10px;
+  margin: var(--nova-e3) 0 var(--nova-e4);
+  padding: 0;
+  list-style: none;
+  counter-reset: nova-exo;
+}
+ol.wims_exam > li.exo_item {
+  counter-increment: nova-exo;
+  position: relative;
+  display: block;
+  float: none;
+  box-sizing: border-box;
+  width: auto;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--nova-bord);
+  border-radius: 12px;
+  background: var(--nova-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  color: var(--nova-texte);
+}
+/* Rangé par nova.js : numéro | titre et étiquettes | flèche. Sans lui : carte simple, texte de WIMS. */
+ol.wims_exam.nova-exam-liste > li.exo_item {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+ol.wims_exam > li.exo_item::before {
+  content: counter(nova-exo);
+  display: inline-grid;
+  vertical-align: middle;
+  margin-right: 8px;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--nova-accent-doux);
+  color: var(--nova-accent);
+  font-size: .875rem;
+  font-weight: 700;
+}
+ol.wims_exam.nova-exam-liste > li.exo_item::before { margin: 0; }
+ol.wims_exam .nova-exo-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+ol.wims_exam .nova-exo-titre, ol.wims_exam .nova-exo-titre a { color: var(--nova-texte); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+ol.wims_exam .nova-exo-meta { display: flex; flex-wrap: wrap; gap: 6px; }
+ol.wims_exam .nova-puce {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--nova-fond, #F4F5F7);
+  color: var(--nova-texte-2);
+  font-size: .8125rem;
+  font-weight: 600;
+}
+ol.wims_exam .nova-puce a { color: inherit; text-decoration: none; }
+ol.wims_exam .nova-puce-ok { background: var(--nova-succes-fond); color: var(--nova-succes); }
+ol.wims_exam .nova-puce-ok::first-letter { text-transform: uppercase; }
+ol.wims_exam .nova-puce-ok::before { content: none; }   /* le ✓ de _css/exam.css (.exo_done) n'est plus là */
+ol.wims_exam .nova-puce-echec { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+ol.wims_exam .nova-puce-bloque { background: #ECEEF1; color: #56606E; }
+ol.wims_exam .nova-puce-bloque::before { content: "\1F512"; }
+/* À faire : toute la carte ouvre l'exercice (lien de WIMS, fenêtre d'examen), flèche à droite. */
+ol.wims_exam > li.nova-exo-afaire::after { content: "\2192"; color: var(--nova-accent); font-weight: 700; }
+ol.wims_exam > li.nova-exo-afaire .nova-exo-titre a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+ol.wims_exam > li.nova-exo-afaire:hover { border-color: var(--nova-accent); box-shadow: 0 4px 14px rgb(0 0 0 / 8%); }
+ol.wims_exam > li.nova-exo-afaire:has(a:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+ol.wims_exam > li.nova-exo-afaire a:focus-visible { outline: none; }
+/* Fait : grisé, ✓ dans le rond. */
+ol.wims_exam > li.nova-exo-fait { background: var(--nova-fond, #F4F5F7); box-shadow: none; }
+ol.wims_exam > li.nova-exo-fait::before { content: "\2713"; background: var(--nova-succes-fond); color: var(--nova-succes); }
+ol.wims_exam > li.nova-exo-fait .nova-exo-titre { color: var(--nova-texte-2); }
+ol.wims_exam > li.nova-exo-echec::before { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+/* Bloqué par une dépendance : contour pointillé, atténué. */
+ol.wims_exam > li.nova-exo-bloque { border-style: dashed; background: var(--nova-fond, #F4F5F7); box-shadow: none; }
+ol.wims_exam > li.nova-exo-bloque .nova-exo-titre { color: var(--nova-texte-2); }
+ol.wims_exam > li.nova-exo-ferme { box-shadow: none; }
+/* Rangement par nova.js : la liste attend son passage (au plus 3 s : sinon WIMS tel quel, en cartes). */
+@keyframes nova-revele { to { visibility: visible; } }
+.nova-js ol.wims_exam:not(.nova-exam-liste) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

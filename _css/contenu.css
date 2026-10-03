@@ -208,18 +208,22 @@ li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_d
 }
 /* Note retenue d'une feuille (modules/home/sequence.phtml : .wims_user_info > .wims_sheet_score,
  * « Note: x/10 ») : WIMS la pose en absolu au-dessus de la carte, encadrée de gris foncé
- * (_css/sheet.css). Pastille pleine en accent, en bas à droite, sous la barre, à la place de la
- * pastille d'un examen (maquette C, utilisateur, 2026-10-03). Texte de WIMS gardé tel quel.
+ * (_css/sheet.css). Pastille pleine en accent (maquette C, utilisateur, 2026-10-03), en haut à droite,
+ * dans la ligne du titre (demande de l'utilisateur, 2026-10-03) : le titre lui laisse la place
+ * (base 0) et passe à la ligne. Texte de WIMS gardé tel quel.
  * Hors séquence (_widgets/usersheet.phtml), WIMS y met en ligne la couleur de la note
  * (scripts/adm/class/colors, mode color) : écrasée, la pastille reste lisible ; trophées gardés.
  * Examen : même pastille, posée par js/nova.js (notesExamens) d'après user.phtml (!examscore). */
 li.wims_sheet_item > div.wims_user_info, li.wims_exam_item > div.nova-note-examen {
   position: static;
-  order: 3;
-  flex: 1 0 100%;
-  margin: var(--nova-e2) 0 0;
+  order: 0;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin: 0 0 0 auto;
   text-align: right;
 }
+li.wims_sheet_item:has(> div.wims_user_info .wims_sheet_score) > a:first-of-type,
+li.wims_exam_item:has(> div.nova-note-examen) > a:first-of-type { flex-basis: 0; }
 li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_sheet_score {
   display: inline-flex;
   align-items: baseline;

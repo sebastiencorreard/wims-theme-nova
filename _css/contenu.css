@@ -704,3 +704,7 @@ ol.wims_exam > li.nova-exo-ferme { box-shadow: none; }
 /* Rangement par nova.js : la liste attend son passage (au plus 3 s : sinon WIMS tel quel, en cartes). */
 @keyframes nova-revele { to { visibility: visible; } }
 .nova-js ol.wims_exam:not(.nova-exam-liste) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+/* Élèves : sans les titres « Consigne : » et « Contenu » de WIMS (student.phtml, h2 avant #exam_desc et avant
+ * la liste, parfois précédée d'un avertissement d'IP) — demande de l'utilisateur, 2026-10-03. En CSS : le
+ * module relit ses textes en vue élève, une surcharge de traduction n'y tiendrait pas. */
+body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }

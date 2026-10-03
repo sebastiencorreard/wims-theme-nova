@@ -27,6 +27,7 @@
 !set nova_examen_a_terminer_court=Terminer
 !set nova_fin_session=Vous avez terminé.
 !set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).
+!set nova_terminer_impossible=Répondez à au moins un exercice avant de terminer la session : tant qu'aucune réponse n'est envoyée, WIMS ne peut pas la clore.
 !set nova_retour=Retour
 !set nova_explorer=Explorer
 !set nova_taxonomie=Taxonomie

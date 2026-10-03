@@ -27,6 +27,7 @@
 !set nova_examen_a_terminer_court=Afsluiten
 !set nova_fin_session=Je bent klaar.
 !set nova_fin_session_detail=Klik op Afsluiten om deze sessie te sluiten: daarna kun je een ander proefwerk beginnen. Je wordt afgemeld.
+!set nova_terminer_impossible=Beantwoord minstens één oefening voordat je de sessie afsluit: zolang er geen antwoord is verstuurd, kan WIMS haar niet sluiten.
 !set nova_retour=Terug
 !set nova_explorer=Verkennen
 !set nova_taxonomie=Taxonomie

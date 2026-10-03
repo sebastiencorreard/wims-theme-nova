@@ -1327,7 +1327,32 @@
     });
   }
 
-  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Note retenue d'un examen sur sa carte (accueil de la classe), comme la note d'une feuille : WIMS
+   * ne l'y met pas. Valeurs calculées par user.phtml (!examscore) dans #nova-notes-examens ; seulement
+   * pour un examen déjà commencé (historique non vide). */
+  function notesExamens() {
+    var source = document.getElementById('nova-notes-examens');
+    if (!source) return;
+    var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Note';
+    (source.getAttribute('data-notes') || '').trim().split(/\s+/).forEach(function (paire) {
+      var m = /^(\d+):(.+)$/.exec(paire);
+      if (m) notes[m[1]] = m[2];
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('li.wims_exam_item'), function (li) {
+      if (li.querySelector('.nova-note-examen')) return;
+      var lien = li.querySelector('a[href*="exam="]'), barre = li.querySelector('.wims_score_bar ol > li');
+      var m = lien && /[?&+]exam=(\d+)/.exec(lien.getAttribute('href'));
+      if (!m || !barre || notes[m[1]] === undefined) return;
+      var bloc = document.createElement('div'), note = document.createElement('span');
+      bloc.className = 'wims_user_info nova-note-examen';
+      note.className = 'wims_sheet_score';
+      note.textContent = libelle + ': ' + notes[m[1]] + '/' + max;
+      bloc.appendChild(note);
+      li.appendChild(bloc);
+    });
+  }
+
+  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -211,15 +211,16 @@ li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_d
  * (_css/sheet.css). Pastille pleine en accent, en bas à droite, sous la barre, à la place de la
  * pastille d'un examen (maquette C, utilisateur, 2026-10-03). Texte de WIMS gardé tel quel.
  * Hors séquence (_widgets/usersheet.phtml), WIMS y met en ligne la couleur de la note
- * (scripts/adm/class/colors, mode color) : écrasée, la pastille reste lisible ; trophées gardés. */
-li.wims_sheet_item > div.wims_user_info {
+ * (scripts/adm/class/colors, mode color) : écrasée, la pastille reste lisible ; trophées gardés.
+ * Examen : même pastille, posée par js/nova.js (notesExamens) d'après user.phtml (!examscore). */
+li.wims_sheet_item > div.wims_user_info, li.wims_exam_item > div.nova-note-examen {
   position: static;
   order: 3;
   flex: 1 0 100%;
   margin: var(--nova-e2) 0 0;
   text-align: right;
 }
-li.wims_sheet_item .wims_sheet_score {
+li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_sheet_score {
   display: inline-flex;
   align-items: baseline;
   margin: 0;

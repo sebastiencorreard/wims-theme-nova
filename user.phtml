@@ -156,6 +156,20 @@
 !endif
 
 :endbar
+!! Note retenue de chaque examen (meilleure session valide, calculee par WIMS), posee sur les
+!! cartes d'examen par js/nova.js (notesExamens), comme la note d'une feuille.
+!set nova_es=!examscore user=$wims_user
+!set nova_es=!line 1 of $nova_es
+!set nova_sm=!record 0 of wimshome/log/classes/$wims_class/sheets/.severity
+!set nova_sm=!line 1 of $nova_sm
+!default nova_sm=10
+!set nova_en=
+!set nova_k=!wordcnt $nova_es
+!for nova_i=1 to $nova_k
+  !set nova_v=!word $nova_i of $nova_es
+  !set nova_en=$nova_en $nova_i:$[rint(100*$nova_sm*$nova_v/10)/100]
+!next
+<div id="nova-notes-examens" hidden data-notes="$nova_en" data-max="$nova_sm" data-libelle="$(wims_name_thsheet[9])"></div>
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
 

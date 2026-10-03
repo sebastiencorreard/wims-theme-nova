@@ -1226,7 +1226,12 @@
     var barre = document.getElementById('wimstopbox');
     var fil = document.querySelector('.breadcrumbs');
     if (!barre || !fil || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
-    var liens = fil.querySelectorAll('a[href]');
+    // Le lien « Chapitre » qu'ajoute WIMS sur la page d'une feuille (module=home&seq=N) mène à la page
+    // d'une seule séquence, sans onglets : on remonte à l'accueil de la classe, où WIMS rouvre l'onglet
+    // d'origine (adm/tabscript, sessionStorage) — comme le retour depuis un examen.
+    var liens = Array.prototype.filter.call(fil.querySelectorAll('a[href]'), function (a) {
+      return !/[?&+]module=home(&|$)/.test(a.getAttribute('href')) || !/[?&+]seq=/.test(a.getAttribute('href'));
+    });
     if (!liens.length) return;
     var precedent = liens[liens.length - 1];
     var textes = document.getElementById('nova-textes');

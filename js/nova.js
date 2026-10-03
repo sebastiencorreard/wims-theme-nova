@@ -1572,7 +1572,18 @@
     lancer();
   }
 
-  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* « NaN » que WIMS écrit dans une case de note qu'il ne peut pas calculer (session d'examen sans réponse :
+   * adm/class/userscore, examcheck.phtml, « Détail des examens ») : un « - » sobre (choix de l'utilisateur,
+   * 2026-10-03). Seul le texte « NaN » change ; ce qui suit (astérisque et info-bulle de WIMS) reste. */
+  function notesNaN() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td'), function (td) {
+      var n = td.firstChild;
+      while (n && n.nodeType === 3 && !n.textContent.trim()) n = n.nextSibling;
+      if (n && n.nodeType === 3 && n.textContent.trim() === 'NaN') n.textContent = n.textContent.replace('NaN', '-');
+    });
+  }
+
+  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

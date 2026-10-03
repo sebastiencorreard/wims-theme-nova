@@ -1,0 +1,43 @@
+!! Couleurs des notes dans les tableaux de notes (td.wims_sheet_score, legende .wims_score_bar_legend) :
+!! WIMS y met en ligne la couleur de la classe (scripts/adm/class/colors, mode background). On ecrit ici,
+!! d'apres la palette de la classe, une regle par couleur qui la remplace par le niveau Nova de la note
+!! (jetons --nova-note-*, palette A) : 0 blanc, 1-3 rouge, 4-6 orange, 7-8 jaune, 9-10 vert, non passe gris.
+!! Une couleur partagee par plusieurs notes prend le niveau de la plus haute (regle ecrite en dernier).
+!! Sans JavaScript, donc sans changement de couleur au chargement. Pages adm/ seulement (droits de lecture).
+!if $wims_class=$empty or adm/ notin $module
+  !exit
+!endif
+!set nova_sc=!defof class_scorecolor in wimshome/log/classes/$wims_class/.def
+!set nova_sc=!nonempty items $nova_sc
+!default nova_sc=#FF0000,#FF0000,#FF0000,#FF9922,#FF9922,#FF9922,#FFE338,#FFE338,#00B000,#008F00,#008F00,#FFFFFF
+!set nova_sc=!replace internal white  by #FF0000 in $nova_sc
+!set nova_sc=!replace internal red    by #FF0000 in $nova_sc
+!set nova_sc=!replace internal orange by #FF9922 in $nova_sc
+!set nova_sc=!replace internal yellow by #FFE338 in $nova_sc
+!set nova_sc=!replace internal green  by #008F00 in $nova_sc
+!set nova_np=!item 12 of $nova_sc
+!default nova_np=#D3D3D3
+<style id="nova-couleurs-notes">
+td.wims_sheet_score[style*="background-color:$nova_np;"], td.wims_sheet_score[style*="background-color:;"], .wims_score_bar_legend li[style$$="background-color:$nova_np"] { background: var(--nova-note-np) !important; }
+!for nova_i=1 to 11
+  !set nova_c=!item $nova_i of $nova_sc
+  !if $nova_c!=$empty
+    !set nova_n=$[$nova_i-1]
+    !set nova_l=vert
+    !ifval $nova_n<=8
+      !set nova_l=jaune
+    !endif
+    !ifval $nova_n<=6
+      !set nova_l=orange
+    !endif
+    !ifval $nova_n<=3
+      !set nova_l=rouge
+    !endif
+    !ifval $nova_n=0
+      !set nova_l=zero
+    !endif
+td.wims_sheet_score[style*="background-color:$nova_c;"], .wims_score_bar_legend li[style$$="background-color:$nova_c"] { background: var(--nova-note-$nova_l) !important; }
+  !endif
+!next
+td.wims_sheet_score[style*="background-color"], .wims_score_bar_legend li[style*="background-color"] { color: var(--nova-texte) !important; font-weight: 600; }
+</style>

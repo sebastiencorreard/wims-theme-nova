@@ -554,3 +554,9 @@ body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover 
  * 40 px) est posée en haut d'un calque de la hauteur d'une case ; centrée verticalement (signalé par
  * l'utilisateur, 2026-10-03, H2/geometry/solide6-5). Le calque a une hauteur fixée en ligne. */
 img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; transform: translateY(-50%); }
+
+/* Page de connexion d'une classe, d'un groupement, d'un portail (adm/class/classes, authparticipant) : les
+ * textes « Vous avez un compte… », « Pour entrer dans… », « Vous n'avez pas de compte… » sont vidés par
+ * lang/adm_class_classes_lang_names.phtml.* (demande de l'utilisateur, 2026-10-03) ; leurs balises vides
+ * ne prennent pas de place. */
+.wimsbody:has(input[name="auth_password"]) > :is(h3, p):empty { display: none; }

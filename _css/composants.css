@@ -25,8 +25,9 @@ input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:
 }
 .main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
 /* Un bouton qui est un lien (<a class="wims_button"> : « Entrer », « Modifier », « Présentation en
- * séquences »…) : la hauteur minimale ne centre pas son texte, qui restait en haut. */
-a.wims_button, .main_body a.wims_button {
+ * séquences »…) ou un bloc (<div class="wims_button"> autour d'un lien, feuilles programmées : « Niveau 1 »,
+ * signalé le 2026-10-03) : la hauteur minimale ne centre pas son texte, qui restait en haut. */
+:is(a, div, span).wims_button, .main_body :is(a, div, span).wims_button {
   display: inline-flex;
   align-items: center;
   justify-content: center;

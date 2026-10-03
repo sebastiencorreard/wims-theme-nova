@@ -560,3 +560,8 @@ img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; tra
  * lang/adm_class_classes_lang_names.phtml.* (demande de l'utilisateur, 2026-10-03) ; leurs balises vides
  * ne prennent pas de place. */
 .wimsbody:has(input[name="auth_password"]) > :is(h3, p):empty { display: none; }
+
+/* Changement de mot de passe (adm/class/passwd) : les trois champs l'un sous l'autre, même sur un très
+ * grand écran (property_fields est en ligne, avec retour) — demande de l'utilisateur, 2026-10-03. */
+.wimsbody fieldset.property_fields:has(#pw1) { flex-direction: column; flex-wrap: nowrap; width: auto; max-width: 36rem; margin-inline: auto; }
+.wimsbody fieldset.property_fields:has(#pw1) > .field { flex: 0 0 auto; width: auto; }

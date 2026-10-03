@@ -1,0 +1,4 @@
+!! Nova : intitules du changement de mot de passe (adm/class/passwd), demande de l'utilisateur, 2026-10-03.
+!set name_actualpasswd=Mot de passe actuel
+!set name_newpasswd=Nouveau mot de passe
+!set name_newpasswd2=Nouveau mot de passe, encore une fois

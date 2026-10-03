@@ -572,10 +572,18 @@ ol.wims_sheet_list .wims_user_info { float: none; position: static; margin: var(
 ol.wims_sheet_list .wims_sheet_score { margin: 0; text-align: left; }
 ol.wims_sheet_list .wims_sheet_score .nova-scores { display: flex; justify-content: flex-start; padding: 0; text-align: left; }
 ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding: 2px 8px; }
-/* Historique des essais (themes/_widgets : .wims_score_bar > .wims_seed_item) : pastilles rondes. */
+/* Historique des essais (scripts/adm/class/seedscore.phtml : .wims_score_bar > .wims_seed_item) :
+ * pilules comme celles de l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : 20 x 10,
+ * mêmes couleurs et mêmes seuils (rouge < 5/10, ambre < 8, vert, vert foncé > 9). WIMS met la note de
+ * l'essai (sur 10) dans title et sa propre couleur en ligne : le CSS lit le title (aucun JS, pas de
+ * changement de couleur au chargement) ; un essai inachevé a un title en lettres, il reste gris. */
 ol.wims_sheet_list .wims_score_bar { display: flex; flex-wrap: wrap; gap: 4px; margin: var(--nova-e2) 0 0; text-align: left; }
 ol.wims_sheet_list .wims_score_bar .wims_score_column { display: contents; }
-ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; border: 0; border-radius: 50%; }
+ol.wims_sheet_list .wims_seed_item { width: 20px; height: 10px; margin: 0; border: 0; border-radius: 5px; background: #E3E6EB !important; }
+ol.wims_sheet_list .wims_seed_item:is([title^="0"], [title^="1"], [title^="2"], [title^="3"], [title^="4"]) { background: #E06A4E !important; }
+ol.wims_sheet_list .wims_seed_item:is([title^="5"], [title^="6"], [title^="7"]) { background: #F0A830 !important; }
+ol.wims_sheet_list .wims_seed_item:is([title^="8"], [title^="9"]) { background: #2E9E5B !important; }
+ol.wims_sheet_list .wims_seed_item:is([title^="10"], [title^="9."]:not([title="9.0"], [title="9.00"])) { background: #17734A !important; }
 ol.wims_sheet_list .wims_sheet_score { display: block; padding: 0; border: 0; background: none; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-scores { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e2); }
 /* Étiquettes de score (feuilleExercices) : sous .nova-scores, car la barre de score porte aussi la

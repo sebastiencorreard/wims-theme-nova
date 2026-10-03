@@ -471,10 +471,12 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 }
 .wims_score_bar.nova-score-examen ol > li.nova-note a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
 .wims_score_bar.nova-score-examen ol > li.nova-ancienne { display: none; }
-.wims_score_bar ol > li.nova-note[data-niveau="faible"] { background: #E06A4E !important; }
-.wims_score_bar ol > li.nova-note[data-niveau="moyen"]  { background: #F0A830 !important; }
-.wims_score_bar ol > li.nova-note[data-niveau="bon"]    { background: #2E9E5B !important; }
-.wims_score_bar ol > li.nova-note.wims_congratulation   { background: #17734A !important; }
+/* Couleurs des notes (jetons --nova-note-*, palette A) : niveau posé par js/nova.js (scores). */
+.wims_score_bar ol > li.nova-note[data-niveau="zero"]   { background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+.wims_score_bar ol > li.nova-note[data-niveau="rouge"]  { background: var(--nova-note-rouge) !important; }
+.wims_score_bar ol > li.nova-note[data-niveau="orange"] { background: var(--nova-note-orange) !important; }
+.wims_score_bar ol > li.nova-note[data-niveau="jaune"]  { background: var(--nova-note-jaune) !important; }
+.wims_score_bar ol > li.nova-note[data-niveau="vert"]   { background: var(--nova-note-vert) !important; }
 /* La plus récente : identique aux autres (demande de l'utilisateur, 2026-10-03) ; la note reste
  * dans l'info-bulle. */
 .wims_score_bar.nova-score-examen ol > li.nova-plus-anciennes {
@@ -585,17 +587,25 @@ ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding
   }
 }
 /* Historique des essais (scripts/adm/class/seedscore.phtml : .wims_score_bar > .wims_seed_item) :
- * comme l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : alignées à droite, mêmes couleurs et mêmes seuils (rouge < 5/10, ambre < 8, vert, vert foncé > 9). WIMS met la note de
+ * comme l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : alignées à droite, mêmes couleurs
+ * (jetons --nova-note-*, niveaux de WIMS sur la note /10 arrondie). WIMS met la note de
  * l'essai (sur 10) dans title et sa propre couleur en ligne : le CSS lit le title (aucun JS, pas de
  * changement de couleur au chargement) ; un essai inachevé a un title en lettres, il reste gris.
  * Forme : petits carrés arrondis de 10 px (demande de l'utilisateur), moins larges que les pilules d'examen. */
 ol.wims_sheet_list .wims_score_bar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; margin: var(--nova-e2) 0 0; text-align: right; }
 ol.wims_sheet_list .wims_score_bar .wims_score_column { display: contents; }
-ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; margin: 0; border: 0; border-radius: 3px; background: #E3E6EB !important; }
-ol.wims_sheet_list .wims_seed_item:is([title^="0"], [title^="1"], [title^="2"], [title^="3"], [title^="4"]) { background: #E06A4E !important; }
-ol.wims_sheet_list .wims_seed_item:is([title^="5"], [title^="6"], [title^="7"]) { background: #F0A830 !important; }
-ol.wims_sheet_list .wims_seed_item:is([title^="8"], [title^="9"]) { background: #2E9E5B !important; }
-ol.wims_sheet_list .wims_seed_item:is([title^="10"], [title^="9."]:not([title="9.0"], [title="9.00"])) { background: #17734A !important; }
+ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; margin: 0; border: 0; border-radius: 3px; background: var(--nova-note-np) !important; }
+/* Note /10 arrondie comme WIMS (round) : d'abord la partie entière, puis k.5 à k.9 montent d'un cran, 10 en dernier. */
+ol.wims_sheet_list .wims_seed_item:is([title="0"], [title^="0."]) { background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+ol.wims_sheet_list .wims_seed_item:is([title="1"], [title^="1."], [title="2"], [title^="2."], [title="3"], [title^="3."]) { background: var(--nova-note-rouge) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title="4"], [title^="4."], [title="5"], [title^="5."], [title="6"], [title^="6."]) { background: var(--nova-note-orange) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title="7"], [title^="7."], [title="8"], [title^="8."]) { background: var(--nova-note-jaune) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title="9"], [title^="9."]) { background: var(--nova-note-vert) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title^="0.5"], [title^="0.6"], [title^="0.7"], [title^="0.8"], [title^="0.9"], [title^="1.5"], [title^="1.6"], [title^="1.7"], [title^="1.8"], [title^="1.9"], [title^="2.5"], [title^="2.6"], [title^="2.7"], [title^="2.8"], [title^="2.9"]) { background: var(--nova-note-rouge) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title^="3.5"], [title^="3.6"], [title^="3.7"], [title^="3.8"], [title^="3.9"], [title^="4.5"], [title^="4.6"], [title^="4.7"], [title^="4.8"], [title^="4.9"], [title^="5.5"], [title^="5.6"], [title^="5.7"], [title^="5.8"], [title^="5.9"]) { background: var(--nova-note-orange) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title^="6.5"], [title^="6.6"], [title^="6.7"], [title^="6.8"], [title^="6.9"], [title^="7.5"], [title^="7.6"], [title^="7.7"], [title^="7.8"], [title^="7.9"]) { background: var(--nova-note-jaune) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title^="8.5"], [title^="8.6"], [title^="8.7"], [title^="8.8"], [title^="8.9"], [title^="9.5"], [title^="9.6"], [title^="9.7"], [title^="9.8"], [title^="9.9"]) { background: var(--nova-note-vert) !important; box-shadow: none; }
+ol.wims_sheet_list .wims_seed_item:is([title^="10"]) { background: var(--nova-note-vert) !important; box-shadow: none; }
 ol.wims_sheet_list .wims_sheet_score { display: block; padding: 0; border: 0; background: none; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-scores { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e2); }
 /* Étiquettes de score (feuilleExercices) : sous .nova-scores, car la barre de score porte aussi la

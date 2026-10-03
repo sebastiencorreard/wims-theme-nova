@@ -1308,7 +1308,8 @@
         if (m && m[1] === 'NaN') m[1] = '0';
         if (li.style.backgroundColor && m) {
           var r = parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.'));
-          li.setAttribute('data-niveau', r >= 0.8 ? 'bon' : r >= 0.5 ? 'moyen' : 'faible');
+          var n = Math.round(10 * r);   // note /10 arrondie, comme les couleurs de WIMS (scripts/adm/class/colors)
+          li.setAttribute('data-niveau', n <= 0 ? 'zero' : n <= 3 ? 'rouge' : n <= 6 ? 'orange' : n <= 8 ? 'jaune' : 'vert');
           li.classList.add('nova-note');
           if (a) a.textContent = m[1] + '/' + m[2];
           notes++;

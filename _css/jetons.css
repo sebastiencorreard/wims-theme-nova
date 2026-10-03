@@ -26,6 +26,10 @@
   --nova-succes: #17663B;       --nova-succes-fond: #E3F3EA;
   --nova-attention: #9A5200;    --nova-attention-fond: #FFF1DC;  --nova-attention-texte: #7A4100;
   --nova-erreur: #A3221B;       --nova-erreur-fond: #FBE6E4;
+  /* Couleurs des notes (palette A, utilisateur, 2026-10-03) : niveaux de WIMS sur la note /10 arrondie,
+   * 0 blanc contouré, 1-3 rouge, 4-6 orange, 7-8 jaune, 9-10 vert, non passé gris. */
+  --nova-note-np: #E3E6EB; --nova-note-zero: #FFFFFF; --nova-note-contour: #C9CED6;
+  --nova-note-rouge: #E5604F; --nova-note-orange: #F08A3C; --nova-note-jaune: #F2C12E; --nova-note-vert: #2E9E5B;
   --nova-neutre-fort: #2B2F36;
 
   /* Typographie */

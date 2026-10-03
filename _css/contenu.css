@@ -422,18 +422,18 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-/* Examen : historique des sessions (js/nova.js, historique) — petites tuiles colorées, la plus
- * récente en grand avec sa note ; les plus anciennes résumées en « +k ». */
+/* Examen : historique des sessions (js/nova.js, historique) — une pilule colorée par session, toutes
+ * identiques (note dans l'info-bulle) ; les plus anciennes résumées en « +k ». */
 .wims_score_bar.nova-score-examen { justify-content: flex-end; min-width: 0; overflow: hidden; }
 .wims_score_bar.nova-score-examen ol { flex: 0 0 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
 .wims_score_bar.nova-score-examen ol > li { flex-shrink: 0; }
 .wims_score_bar.nova-score-examen ol > li.nova-note {
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 10px;
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 4px;
+  border-radius: 5px;
   box-shadow: none;
   overflow: hidden;
 }
@@ -443,29 +443,8 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 .wims_score_bar ol > li.nova-note[data-niveau="moyen"]  { background: #F0A830 !important; }
 .wims_score_bar ol > li.nova-note[data-niveau="bon"]    { background: #2E9E5B !important; }
 .wims_score_bar ol > li.nova-note.wims_congratulation   { background: #17734A !important; }
-/* La plus récente : pastille avec sa note, fond doux et texte foncé (lisible). */
-.wims_score_bar.nova-score-examen ol > li.nova-derniere {
-  width: auto;
-  height: auto;
-  margin-left: 4px;
-  border-radius: 999px;
-  overflow: visible;
-}
-.wims_score_bar.nova-score-examen ol > li.nova-derniere a {
-  display: inline-block;
-  width: auto;
-  height: auto;
-  padding: 2px 10px;
-  font-size: .8125rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  text-decoration: none;
-  color: inherit;
-}
-.wims_score_bar ol > li.nova-derniere[data-niveau="faible"] { background: #FBE3DD !important; color: #A3361F; box-shadow: inset 0 0 0 2px #E06A4E; }
-.wims_score_bar ol > li.nova-derniere[data-niveau="moyen"]  { background: #FCEFD3 !important; color: #845400; box-shadow: inset 0 0 0 2px #F0A830; }
-.wims_score_bar ol > li.nova-derniere[data-niveau="bon"]    { background: #DDF2E5 !important; color: #17734A; box-shadow: inset 0 0 0 2px #2E9E5B; }
-.wims_score_bar ol > li.nova-derniere a { color: inherit; }
+/* La plus récente : identique aux autres (demande de l'utilisateur, 2026-10-03) ; la note reste
+ * dans l'info-bulle. */
 .wims_score_bar.nova-score-examen ol > li.nova-plus-anciennes {
   width: auto;
   height: auto;
@@ -480,7 +459,6 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   font-weight: 700;
   line-height: 14px;
 }
-.wims_score_bar ol > li.nova-derniere.wims_congratulation { background: #DDF2E5 !important; color: #17734A; box-shadow: inset 0 0 0 2px #17734A; }
 
 /* Liseré coloré hérité de sheet.css (border-left-color par type, plus une règle bleue #9CF) :
  * retiré. « html body » : ces cartes ne sont pas toujours dans .wimsbody. */

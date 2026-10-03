@@ -549,3 +549,8 @@ body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover 
 .wimsbody details:has(.wims_subclasses) > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
 .wimsbody details:has(.wims_subclasses) > .wims_subclasses { margin: 0; padding: 0 18px 16px; }
 @media (prefers-reduced-motion: reduce) { .wimsbody details:has(.wims_subclasses) > summary::after { transition: none; } }
+
+/* Exercices d'association (OEF type=correspond, calques Dynapi) : la flèche (gifs/arrows/corr*.gif,
+ * 40 px) est posée en haut d'un calque de la hauteur d'une case ; centrée verticalement (signalé par
+ * l'utilisateur, 2026-10-03, H2/geometry/solide6-5). Le calque a une hauteur fixée en ligne. */
+img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; transform: translateY(-50%); }

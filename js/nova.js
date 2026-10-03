@@ -1640,7 +1640,21 @@
       var libelle = textes && textes.getAttribute('data-exo-suivant');
       if (libelle) { suivant.textContent = libelle; suivant.closest('a').title = libelle; }
     }
-    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
+    // Série terminée (scripts/oef/answer.phtml : .oef_modulescore ; il ne reste que « Recommencer » dans
+    // #oef_actions) : « Revenir à la liste », le lien de retour de la barre du haut (« ← Retour » d'une
+    // feuille, retour de la fenêtre d'examen), devant « Recommencer » (demande de l'utilisateur, 2026-10-03).
+    var actions = document.getElementById('oef_actions');
+    var retour = document.querySelector('#wimstopbox .nova-retour-lien, #wimstopbox .menuitem.back > a');
+    if (actions && retour && document.querySelector('.oef_modulescore') && !actions.querySelector('.nova-revenir-liste')) {
+      var lien = retour.cloneNode(true);
+      lien.removeAttribute('id'); lien.removeAttribute('title'); lien.removeAttribute('aria-label');
+      lien.className = 'wims_button nova-revenir-liste';
+      lien.textContent = (textes && textes.getAttribute('data-revenir-liste')) || 'Back to the list';
+      var recommencer = actions.querySelector('#oef_serie_renew, #oef_renew');
+      var place = recommencer ? recommencer.parentNode : actions;
+      place.insertBefore(lien, recommencer || place.firstChild);
+    }
+    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons, #oef_actions:has(.nova-revenir-liste)'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
     if (!blocs.length || !window.IntersectionObserver || !window.matchMedia) return;
     var telephone = window.matchMedia('(max-width: 639.98px)');
     blocs.forEach(function (bloc) {

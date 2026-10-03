@@ -51,3 +51,5 @@
 !set nova_car_titre=Exemples
 !! Exercice OEF en serie : bouton Continuer la serie avec l'exercice suivant renomme (js/nova.js, boutonsCollants)
 !set nova_exo_suivant=Exercice suivant
+!! Fin d'une serie d'exercices : bouton vers la liste (js/nova.js, boutonsCollants)
+!set nova_revenir_liste=Revenir à la liste

@@ -106,6 +106,18 @@ input[type="date"], input[type="url"], input[type="search"], input:not([type]), 
 .wimstable tr:nth-child(even), table.wimsborder tr:nth-child(even) { background-color: var(--nova-fond); }
 .wimstable tr:hover:has(> td), table.wimsborder tr:hover:has(> td) { background-color: color-mix(in oklab, var(--nova-accent) 6%, var(--nova-surface)); }
 .wimstable th a { color: inherit; }
+/* Élèves : ni tableau ni cellule à coins arrondis (demande de l'utilisateur, 2026-10-03) — les coins de la
+ * carte rognaient les cellules d'angle, et WIMS arrondit les cellules de note (_css/sheet.css,
+ * .wims_sheet_score : 2 px et un filet #666). */
+body:has(#nova-eleve) .wimsbody :is(.wimstable, table.wimsborder) { border-radius: 0; }
+body:has(#nova-eleve) .wimsbody :is(td, th) { border-radius: 0; }
+body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-right: 0; border-bottom: 0; margin: 0; }
+/* Tableaux dans un exercice (OEF : énoncé, réponses, correction — pages de feuille, d'examen, de course) :
+ * quadrillage complet et filet plus marqué, pour lire les cases (demande de l'utilisateur, 2026-10-03). */
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) { border-color: var(--nova-bord-fort); }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) :is(td, th) { border-top: 1px solid var(--nova-bord-fort); border-left: 1px solid var(--nova-bord-fort); }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) tr > :first-child { border-left: 0; }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) tr:first-child > * { border-top: 0; }
 .wims_title_seq, .wims_widget_box .title_box {
   background-color: var(--nova-accent-doux);
   color: var(--nova-texte);

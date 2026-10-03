@@ -720,6 +720,52 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   }
 }
 
+/* Parcours : js/nova.js (parcours) sort la barre de progression de la barre du haut et la pose au-dessus
+ * de l'exercice, avec un compteur « Exercice 5 sur 13 » (maquette A, choix de l'utilisateur,
+ * 2026-10-03). Sans JavaScript, les règles précédentes la laissent dans la barre. */
+.nova-js #wimstopbox .menuitem.progress:not(.nova-garde) { display: none; }
+.nova-parcours {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nova-e2) var(--nova-e3);
+  margin: 0 auto var(--nova-e3);
+  max-width: 100%;
+}
+.nova-parcours .wims_score_bar { display: flex; align-items: center; gap: 4px; min-width: 0; font-size: 0; }
+.nova-parcours .wims_seed_item {
+  flex: 0 1 auto;
+  width: 18px;             /* WIMS : .4em, nul ici (font-size: 0) */
+  min-width: 3px;
+  height: 8px;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--nova-accent) 22%, white);
+}
+.nova-parcours .wims_seed_item.nova-fait { background: var(--nova-accent); }
+.nova-parcours .wims_seed_item.nova-cours { width: 30px; background: var(--nova-accent-doux); box-shadow: inset 0 0 0 2px var(--nova-accent); }
+.nova-parcours .wims_seed_item.nova-cours.nova-fait { background: var(--nova-accent); box-shadow: none; }
+.nova-parcours .wims_seed_item.nova-echec { background: #E06A4E; box-shadow: none; }
+.nova-parcours-compteur {
+  margin: 0;
+  font-size: var(--nova-petit);
+  font-weight: 600;
+  color: var(--nova-texte);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.nova-parcours-compteur strong { font-weight: 700; color: var(--nova-accent); }
+.nova-parcours-etat { font-weight: 400; color: var(--nova-texte-2); }
+.nova-parcours-etat::before { content: "\00A0\00B7\00A0"; }
+@media (max-width: 639.98px) {
+  /* La barre passe sur sa propre ligne plutôt que de descendre sous 180 px (compteur avec mention). */
+  .nova-parcours { flex-wrap: wrap; justify-content: flex-start; }
+  .nova-parcours .wims_score_bar { flex: 1 1 180px; }
+  .nova-parcours .wims_seed_item { flex: 1 1 0; width: auto; height: 6px; }
+  .nova-parcours .wims_seed_item.nova-cours { flex-grow: 2; }
+}
+
 /* Entre 640 et 1024 px, « Retour » et « Outils » en pictogrammes seuls (avec infobulle), comme
  * dans la barre serrée : leurs libellés faisaient passer la barre sur deux lignes. */
 @media (min-width: 640px) and (max-width: 1023.98px) {

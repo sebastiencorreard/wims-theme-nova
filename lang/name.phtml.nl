@@ -33,3 +33,10 @@
 !set nova_glossaires=Woordenlijsten
 !set nova_parcourir=Site doorbladeren
 !set nova_accueil=Start
+!set nova_parcours=Oefening %n van %t
+!set nova_parcours_reussi=geslaagd
+!set nova_parcours_a_faire=te doen
+!set nova_parcours_en_cours=bezig
+!set nova_parcours_note=score
+!set nova_parcours_termine=klaar
+!set nova_parcours_titre=Voortgang

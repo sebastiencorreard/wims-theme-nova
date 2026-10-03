@@ -33,3 +33,10 @@
 !set nova_glossaires=Glossaires
 !set nova_parcourir=Parcourir le site
 !set nova_accueil=Accueil
+!set nova_parcours=Exercice %n sur %t
+!set nova_parcours_reussi=réussi
+!set nova_parcours_a_faire=à faire
+!set nova_parcours_en_cours=en cours
+!set nova_parcours_note=noté
+!set nova_parcours_termine=terminé
+!set nova_parcours_titre=Progression du parcours

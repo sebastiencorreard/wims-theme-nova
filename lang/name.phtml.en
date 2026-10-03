@@ -33,3 +33,10 @@
 !set nova_glossaires=Glossaries
 !set nova_parcourir=Browse the site
 !set nova_accueil=Home
+!set nova_parcours=Exercise %n of %t
+!set nova_parcours_reussi=passed
+!set nova_parcours_a_faire=to do
+!set nova_parcours_en_cours=in progress
+!set nova_parcours_note=scored
+!set nova_parcours_termine=finished
+!set nova_parcours_titre=Course progress

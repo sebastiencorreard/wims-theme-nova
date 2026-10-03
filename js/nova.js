@@ -525,6 +525,63 @@
   /* Feuille d'exercices (adm/sheet, contenu.css) : le score de WIMS est un texte « Qualité: 0/10
    * Réussite: 0% Points requis:10 » ; il devient des étiquettes (libellé + valeur), et la valeur en %
    * une barre de réussite (verte à 100 %). Libellés repris tels quels : toutes les langues. */
+  /* Parcours (examen en mode « course ») : WIMS met dans la barre du haut un segment par exercice
+   * (scripts/examprogressbar.proc ; title = 10 pour les précédents, la note de l'exercice en cours,
+   * « todo » pour la suite). Choix de l'utilisateur (2026-10-03, maquette A) : segments + compteur,
+   * posés sur la page au-dessus de l'exercice. Une note à -1 (pas encore de réponse) s'écrit aussi
+   * « todo » : après un 10 à l'exercice en cours, c'est le bouton « série suivante »
+   * (#wims_nextinexam, themes/_widgets/nextinsheet.phtml) qui dit que le dernier 10 est le sien. */
+  function parcours() {
+    var li = document.querySelector('#wimstopbox .menuitem.progress');
+    var page = document.querySelector('.wimsbody');
+    var barre = li && li.querySelector('.wims_score_bar');
+    var segments = barre ? Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item')) : [];
+    var n = segments.length;
+    if (!page || !n) { if (li) li.classList.add('nova-garde'); return; }   // laissée dans la barre
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var faits = 0;
+    while (faits < n && segments[faits].title === '10') faits++;
+    var cours, etat, note = '';
+    if (faits < n && segments[faits].title !== 'todo') { cours = faits + 1; etat = 'note'; note = segments[faits].title; }
+    else if (faits === n) { cours = n; etat = 'termine'; }
+    else if (faits > 0 && document.getElementById('wims_nextinexam')) { cours = faits; etat = 'reussi'; }
+    else { cours = faits + 1; etat = 'en-cours'; }
+    var modele = t('parcours', 'Exercise %n of %t');
+    segments.forEach(function (s, i) {
+      var k = i + 1, quoi;
+      s.removeAttribute('style');   // bleu, rouge, blanc de WIMS
+      if (k === cours) s.classList.add('nova-cours');
+      if (k < cours || (k === cours && (etat === 'reussi' || etat === 'termine'))) { s.classList.add('nova-fait'); quoi = t('parcours-reussi', 'passed'); }
+      else if (k === cours && etat === 'note') { s.classList.add('nova-echec'); quoi = t('parcours-note', 'scored') + ' ' + note + '/10'; }
+      else if (k === cours) quoi = t('parcours-en-cours', 'in progress');
+      else quoi = t('parcours-a-faire', 'to do');
+      s.title = modele.replace('%n', k).replace('%t', n) + ' : ' + quoi;
+    });
+    var bloc = document.createElement('div');
+    bloc.className = 'nova-parcours';
+    bloc.setAttribute('role', 'group');
+    bloc.setAttribute('aria-label', t('parcours-titre', 'Course progress'));
+    barre.classList.remove('inline');
+    barre.setAttribute('aria-hidden', 'true');
+    var compteur = document.createElement('p');
+    compteur.className = 'nova-parcours-compteur';
+    compteur.innerHTML = modele.replace(/[&<>]/g, '')
+      .replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
+    var suite = etat === 'note' ? t('parcours-note', 'scored') + ' ' + note + '/10'
+      : etat === 'termine' ? t('parcours-termine', 'finished') : etat === 'reussi' ? t('parcours-reussi', 'passed') : '';
+    if (suite) {
+      var s = document.createElement('span');
+      s.className = 'nova-parcours-etat';
+      s.textContent = suite;
+      compteur.appendChild(s);
+    }
+    bloc.appendChild(barre);
+    bloc.appendChild(compteur);
+    page.insertBefore(bloc, page.firstChild);
+    li.parentNode.removeChild(li);
+  }
+
   function feuilleExercices() {
     Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
       if (bloc.querySelector('.nova-scores')) return;
@@ -1237,7 +1294,7 @@
     });
   }
 
-  function demarrer() { feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { parcours(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

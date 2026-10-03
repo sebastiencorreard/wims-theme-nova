@@ -585,13 +585,13 @@ ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding
   }
 }
 /* Historique des essais (scripts/adm/class/seedscore.phtml : .wims_score_bar > .wims_seed_item) :
- * pilules comme celles de l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : 20 x 10,
- * mêmes couleurs et mêmes seuils (rouge < 5/10, ambre < 8, vert, vert foncé > 9). WIMS met la note de
+ * comme l'historique d'un examen (demande de l'utilisateur, 2026-10-03) : alignées à droite, mêmes couleurs et mêmes seuils (rouge < 5/10, ambre < 8, vert, vert foncé > 9). WIMS met la note de
  * l'essai (sur 10) dans title et sa propre couleur en ligne : le CSS lit le title (aucun JS, pas de
- * changement de couleur au chargement) ; un essai inachevé a un title en lettres, il reste gris. */
-ol.wims_sheet_list .wims_score_bar { display: flex; flex-wrap: wrap; gap: 4px; margin: var(--nova-e2) 0 0; text-align: left; }
+ * changement de couleur au chargement) ; un essai inachevé a un title en lettres, il reste gris.
+ * Forme : petits carrés arrondis de 10 px (demande de l'utilisateur), moins larges que les pilules d'examen. */
+ol.wims_sheet_list .wims_score_bar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; margin: var(--nova-e2) 0 0; text-align: right; }
 ol.wims_sheet_list .wims_score_bar .wims_score_column { display: contents; }
-ol.wims_sheet_list .wims_seed_item { width: 20px; height: 10px; margin: 0; border: 0; border-radius: 5px; background: #E3E6EB !important; }
+ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; margin: 0; border: 0; border-radius: 3px; background: #E3E6EB !important; }
 ol.wims_sheet_list .wims_seed_item:is([title^="0"], [title^="1"], [title^="2"], [title^="3"], [title^="4"]) { background: #E06A4E !important; }
 ol.wims_sheet_list .wims_seed_item:is([title^="5"], [title^="6"], [title^="7"]) { background: #F0A830 !important; }
 ol.wims_sheet_list .wims_seed_item:is([title^="8"], [title^="9"]) { background: #2E9E5B !important; }

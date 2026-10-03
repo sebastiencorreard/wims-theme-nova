@@ -42,3 +42,10 @@
 !set nova_parcours_termine=finished
 !set nova_parcours_question=Question %n of %t
 !set nova_parcours_titre=Course progress
+!! Carrousel des exemples de l'accueil (js/nova.js, carrousel)
+!set nova_car_prec=Previous example
+!set nova_car_suiv=Next example
+!set nova_car_pause=Stop scrolling
+!set nova_car_lecture=Resume scrolling
+!set nova_car_diapo=Example %n of %t
+!set nova_car_titre=Examples

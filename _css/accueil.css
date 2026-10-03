@@ -1,7 +1,7 @@
 /* Nova — accueil du site (visitor.phtml, _widgets/front.phtml, _widgets/search_classe.phtml).
  * Disposition B, choisie par l'utilisateur le 2026-10-02 : les deux recherches côte à côte, puis
  * l'actualité et les exemples côte à côte (widgets de WIMS : _widgets/news.phtml, examples.phtml,
- * carrousel Slick), puis « Sur ce site » et une ligne Explorer. Une colonne au téléphone. */
+ * carrousel Nova), puis « Sur ce site » et une ligne Explorer. Une colonne au téléphone. */
 
 #wimsfrontpage #wims_title .wims_title { font-size: clamp(1.375rem, 4vw, 2rem); line-height: 1.2; }
 
@@ -99,16 +99,20 @@
 #actualites .actu_content { margin-top: var(--nova-e1); font-size: var(--nova-petit); }
 #actualites > .box_content > a.float_right { float: none; display: inline-block; margin-top: var(--nova-e2); font-size: var(--nova-petit); }
 
-/* Exemples (carrousel Slick) : texte et image côte à côte dans la diapositive. */
-#exemples .slick-slide .grid-x {
+/* Exemples : carrousel Nova (js/nova.js, carrousel), à la place de Slick (2026-10-03). Texte et image côte
+ * à côte dans la diapositive ; flèches de chaque côté, points dessous, pause en haut à droite. Avant le
+ * passage du script (ou sans lui) : la 1re diapositive seule, sans saut de mise en page. */
+#exemples .carousel { position: relative; }
+.nova-js #exemples .carousel:not(.nova-carrousel) > div:not(:first-child) { display: none; }
+#exemples .carousel .grid-x {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
   gap: var(--nova-e3);
   align-items: start;
   margin: 0;
 }
-#exemples .slick-slide .grid-x > .cell { width: auto; max-width: none; margin: 0; }
-#exemples .slick-slide img {
+#exemples .carousel .grid-x > .cell { width: auto; max-width: none; margin: 0; }
+#exemples .carousel img {
   display: block;
   width: 100%;
   max-height: 160px;
@@ -126,37 +130,72 @@
   color: var(--nova-texte-2);
 }
 #exemples .carousel_desc p { margin: 0; }
-#exemples .carousel { position: relative; padding: 0 var(--nova-e6); }
-#exemples .slick-autoplay-toggle-button {
+#exemples .nova-carrousel:has(.nova-car-piste) { padding: 0 var(--nova-e6); }
+#exemples .nova-car-piste {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+#exemples .nova-car-piste::-webkit-scrollbar { display: none; }
+#exemples .nova-car-diapo { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; }
+#exemples :is(.nova-car-prec, .nova-car-suiv, .nova-car-pause) {
   position: absolute;
-  top: -40px;
-  right: 0;
+  display: grid;
+  place-items: center;
   width: 32px;
   height: 32px;
   padding: 0;
   border: 1px solid var(--nova-bord);
   border-radius: 50%;
   background: var(--nova-surface);
-  color: var(--nova-texte-2);
+  color: var(--nova-accent);
   cursor: pointer;
 }
-#exemples .slick-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+#exemples :is(.nova-car-prec, .nova-car-suiv) { top: 50%; transform: translateY(-50%); }
+#exemples .nova-car-prec { left: 0; }
+#exemples .nova-car-suiv { right: 0; }
+#exemples :is(.nova-car-prec, .nova-car-suiv)::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
 }
-#exemples .slick-autoplay-toggle-button { display: grid; place-items: center; }
-#exemples .slick-pause-icon { display: inline-block; width: 10px; height: 12px; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
-#exemples .slick-play-icon { display: inline-block; width: 0; height: 0; margin-left: 3px; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent currentColor; }
-#exemples .slick-prev, #exemples .slick-next { color: var(--nova-accent); }
-#exemples .slick-dots li button::before, #exemples .slick-dots .slick-dot-icon { color: var(--nova-accent); }
+#exemples .nova-car-prec::before { transform: translateX(2px) rotate(-135deg); }
+#exemples .nova-car-suiv::before { transform: translateX(-2px) rotate(45deg); }
+#exemples :is(.nova-car-prec, .nova-car-suiv, .nova-car-pause):hover { border-color: var(--nova-accent); background: var(--nova-accent-doux); }
+#exemples :is(.nova-car-prec, .nova-car-suiv, .nova-car-pause, .nova-car-point):focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+#exemples .nova-car-pause { top: -40px; right: 0; color: var(--nova-texte-2); }
+#exemples .nova-car-pause[hidden] { display: none; }
+#exemples .nova-car-pause::before { content: ""; width: 10px; height: 12px; border-left: 3px solid currentColor; border-right: 3px solid currentColor; box-sizing: border-box; }
+#exemples .nova-car-pause.nova-car-arrete::before { width: 0; height: 0; margin-left: 3px; border-style: solid; border-width: 6px 0 6px 10px; border-color: transparent transparent transparent currentColor; }
+#exemples .nova-car-points { display: flex; justify-content: center; gap: 2px; margin-top: var(--nova-e2); }
+#exemples .nova-car-point {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+#exemples .nova-car-point::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--nova-accent) 28%, white);
+  transition: width .2s;
+}
+#exemples .nova-car-point[aria-current="true"]::before { width: 20px; background: var(--nova-accent); }
+@media (prefers-reduced-motion: no-preference) { #exemples .nova-car-piste { scroll-behavior: smooth; } }
 @media (max-width: 479.98px) {
-  #exemples .slick-slide .grid-x { grid-template-columns: 1fr; }
-  #exemples .slick-slide .grid-x > .cell:last-child { order: -1; }
-  #exemples .carousel { padding: 0 var(--nova-e5); }
+  #exemples .carousel .grid-x { grid-template-columns: 1fr; }
+  #exemples .carousel .grid-x > .cell:last-child { order: -1; }
+  #exemples .nova-carrousel:has(.nova-car-piste) { padding: 0 40px; }   /* flèches de 32 px + marge */
 }
 
 /* Sur ce site : sans les bandes grises ; Explorer en ligne de liens. */

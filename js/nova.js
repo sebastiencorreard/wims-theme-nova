@@ -1476,7 +1476,100 @@
     });
   }
 
-  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Carrousel des exemples de l'accueil du site (themes/_widgets/examples.phtml : #exemples .carousel, une
+   * diapositive par div enfant), à la place de Slick (2026-10-03) : même aspect (flèches, points, pause en
+   * haut à droite, défilement automatique qui reboucle). Défilement natif (scroll-snap), au doigt aussi ;
+   * pas de défilement automatique si l'appareil demande moins d'animations ; pause au survol, au focus,
+   * onglet caché. */
+  function carrousel() {
+    var c = document.querySelector('#exemples .carousel');
+    if (!c || c.classList.contains('nova-carrousel')) return;
+    var diapos = Array.prototype.filter.call(c.children, function (e) { return e.tagName === 'DIV'; });
+    c.classList.add('nova-carrousel');
+    if (diapos.length < 2) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var n = diapos.length, courant = 0, arrete = false, suspendu = false, minuterie = 0;
+    var calme = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var piste = document.createElement('div');
+    piste.className = 'nova-car-piste';
+    piste.setAttribute('aria-live', 'off');
+    c.setAttribute('role', 'region');
+    c.setAttribute('aria-roledescription', 'carrousel');
+    c.setAttribute('aria-label', t('car-titre', 'Examples'));
+    diapos.forEach(function (d, i) {
+      d.classList.add('nova-car-diapo');
+      d.setAttribute('role', 'group');
+      d.setAttribute('aria-roledescription', 'diapositive');
+      d.setAttribute('aria-label', t('car-diapo', 'Example %n of %t').replace('%n', i + 1).replace('%t', n));
+      piste.appendChild(d);
+    });
+    var bouton = function (classe, libelle) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = classe;
+      b.setAttribute('aria-label', libelle);
+      b.title = libelle;
+      return b;
+    };
+    var prec = bouton('nova-car-prec', t('car-prec', 'Previous example'));
+    var suiv = bouton('nova-car-suiv', t('car-suiv', 'Next example'));
+    var pause = bouton('nova-car-pause', t('car-pause', 'Stop scrolling'));
+    var points = document.createElement('div');
+    points.className = 'nova-car-points';
+    var boutons = diapos.map(function (d, i) {
+      var b = bouton('nova-car-point', d.getAttribute('aria-label'));
+      b.addEventListener('click', function () { aller(i); });
+      points.appendChild(b);
+      return b;
+    });
+    c.appendChild(pause);
+    c.appendChild(prec);
+    c.appendChild(piste);
+    c.appendChild(suiv);
+    c.appendChild(points);
+    var marquer = function () {
+      boutons.forEach(function (b, i) { if (i === courant) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+      diapos.forEach(function (d, i) { d.toggleAttribute('inert', i !== courant); });
+    };
+    function aller(i) {
+      courant = (i + n) % n;
+      piste.scrollTo({ left: courant * piste.clientWidth, behavior: calme ? 'auto' : 'smooth' });
+      marquer();
+    }
+    prec.addEventListener('click', function () { aller(courant - 1); });
+    suiv.addEventListener('click', function () { aller(courant + 1); });
+    var attente = 0;
+    piste.addEventListener('scroll', function () {   // glissement au doigt : la diapositive se cale (scroll-snap)
+      clearTimeout(attente);
+      attente = setTimeout(function () {
+        var i = Math.round(piste.scrollLeft / Math.max(1, piste.clientWidth));
+        if (i !== courant) { courant = i; marquer(); }
+      }, 120);
+    });
+    var lancer = function () {
+      clearInterval(minuterie);
+      if (!arrete && !suspendu && !calme) minuterie = setInterval(function () { aller(courant + 1); }, 5000);
+    };
+    var majPause = function () {
+      var libelle = arrete ? t('car-lecture', 'Resume scrolling') : t('car-pause', 'Stop scrolling');
+      pause.setAttribute('aria-label', libelle);
+      pause.title = libelle;
+      pause.classList.toggle('nova-car-arrete', arrete);
+    };
+    pause.addEventListener('click', function () { arrete = !arrete; majPause(); lancer(); });
+    c.addEventListener('mouseenter', function () { suspendu = true; lancer(); });
+    c.addEventListener('mouseleave', function () { suspendu = false; lancer(); });
+    c.addEventListener('focusin', function () { suspendu = true; lancer(); });
+    c.addEventListener('focusout', function (e) { if (!c.contains(e.relatedTarget)) { suspendu = false; lancer(); } });
+    document.addEventListener('visibilitychange', function () { suspendu = document.hidden; lancer(); });
+    if (calme) { arrete = true; pause.hidden = true; }
+    majPause();
+    marquer();
+    lancer();
+  }
+
+  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

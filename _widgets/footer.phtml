@@ -2,20 +2,8 @@
 !! Ce que Foundation faisait est repris par js/nova.js : menus déroulants (menusDeroulants),
 !! accordéons (accordeons), fenêtres reveal et appel foundation('open') (revelations), boutons à
 !! liste déroulante de scripts/js/dropdownbutton.phtml (panneaux). Restent : basic_triggers.js
-!! (data-closable, wims-closer, natif) et Slick pour le carrousel d'exemples de l'accueil.
+!! (data-closable, wims-closer, natif). Slick n'est plus chargé (carrousel Nova, js/nova.js, 2026-10-03) ;
+!! ses feuilles restent ajoutées par modules/home/main.phtml, sans effet.
 !if $jquery_defined=yes
   <script src="html/themes/_inc/basic_triggers.js"></script>
-  !if $module=home and $wims_user=$empty
-    !if $wims_frontmsg!=$empty and $front_nbslide>0
-      <script src="scripts/js/external/slick/slick.min.js"></script>
-      <script>
-        jQuery(function($$) {
-          $$('.carousel').slick({
-            autoplay: true,
-            dots: true,
-          });
-        });
-      </script>
-    !endif
-  !endif
 !endif

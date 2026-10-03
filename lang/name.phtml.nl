@@ -42,3 +42,10 @@
 !set nova_parcours_termine=klaar
 !set nova_parcours_question=Vraag %n van %t
 !set nova_parcours_titre=Voortgang
+!! Carrousel des exemples de l'accueil (js/nova.js, carrousel)
+!set nova_car_prec=Vorig voorbeeld
+!set nova_car_suiv=Volgend voorbeeld
+!set nova_car_pause=Stop het scrollen
+!set nova_car_lecture=Hervat het scrollen
+!set nova_car_diapo=Voorbeeld %n van %t
+!set nova_car_titre=Voorbeelden

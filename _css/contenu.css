@@ -736,6 +736,10 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
  * l'utilisateur, 2026-10-03). Le bloc garde ses boutons. */
 .nova-collant-repere { display: block; height: 0; }
 #oef_actions .nova-revenir-liste { margin: 0 var(--nova-e2) var(--nova-e2) 0; }   /* « Revenir à la liste », devant « Recommencer » */
+/* « Recommencer l'exercice » non cliquable (WIMS l'écrit <span class="disabled_link"> au lieu d'un lien : fenêtre
+ * d'examen, vérification ; scripts/oef/Main.phtml, exec.c) : masqué (demande de l'utilisateur, 2026-10-03). */
+#oef_actions .disabled_link:is(:has(> .oef_serie_renew, > .oef_exo_renew), .oef_exo_renew > *),
+#oef_actions .oef_exo_renew:has(> .disabled_link):not(:has(a)) { display: none; }
 @media (max-width: 639.98px) {
   /* Sans fond (demande de l'utilisateur, 2026-10-03) : seuls les boutons flottent, avec leur ombre ; le
    * texte entre eux (« ou ») est masqué, illisible sur le contenu. */

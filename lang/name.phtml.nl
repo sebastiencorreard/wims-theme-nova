@@ -39,4 +39,5 @@
 !set nova_parcours_en_cours=bezig
 !set nova_parcours_note=score
 !set nova_parcours_termine=klaar
+!set nova_parcours_question=Vraag %n van %t
 !set nova_parcours_titre=Voortgang

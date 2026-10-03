@@ -39,4 +39,5 @@
 !set nova_parcours_en_cours=en cours
 !set nova_parcours_note=noté
 !set nova_parcours_termine=terminé
+!set nova_parcours_question=Question %n sur %t
 !set nova_parcours_titre=Progression du parcours

@@ -582,6 +582,36 @@
     li.parentNode.removeChild(li);
   }
 
+  /* Exercice « course » (OEF à étapes, ex. E6/number/oeftabmul coursemult) : l'énoncé écrit sa propre
+   * barre, une question par segment, title « done » ou « todo ». Même habillage que le parcours
+   * (segments + « Question 4 sur 10 ») ; le CSS colore déjà les segments d'après leur title. */
+  function courseExercice() {
+    var textes = document.getElementById('nova-textes');
+    var modele = (textes && textes.getAttribute('data-parcours-question')) || 'Question %n of %t';
+    Array.prototype.forEach.call(document.querySelectorAll('.oefstatement .wims_score_bar'), function (barre) {
+      if (barre.closest('.nova-parcours')) return;
+      var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item[title="done"], .wims_seed_item[title="todo"]'));
+      var n = segments.length;
+      if (!n) return;
+      var faits = segments.filter(function (s) { return s.title === 'done'; }).length;
+      var cours = Math.min(faits + 1, n);
+      segments.forEach(function (s, i) {
+        s.removeAttribute('style');
+        if (i < faits) s.classList.add('nova-fait');
+        else if (i === faits) s.classList.add('nova-cours');
+      });
+      var bloc = document.createElement('div');
+      bloc.className = 'nova-parcours nova-parcours-questions';
+      barre.parentNode.insertBefore(bloc, barre);
+      barre.setAttribute('aria-hidden', 'true');
+      bloc.appendChild(barre);
+      var compteur = document.createElement('p');
+      compteur.className = 'nova-parcours-compteur';
+      compteur.innerHTML = modele.replace(/[&<>]/g, '').replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
+      bloc.appendChild(compteur);
+    });
+  }
+
   function feuilleExercices() {
     Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
       if (bloc.querySelector('.nova-scores')) return;
@@ -1294,7 +1324,7 @@
     });
   }
 
-  function demarrer() { parcours(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -747,6 +747,14 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 .nova-parcours .wims_seed_item.nova-cours { width: 30px; background: var(--nova-accent-doux); box-shadow: inset 0 0 0 2px var(--nova-accent); }
 .nova-parcours .wims_seed_item.nova-cours.nova-fait { background: var(--nova-accent); box-shadow: none; }
 .nova-parcours .wims_seed_item.nova-echec { background: var(--nova-surface); }   /* pilule contourée, sans couleur à part (utilisateur, 2026-10-03) */
+/* Exercice « course » (js/nova.js, courseExercice) : barre écrite dans l'énoncé, segments dans un
+ * div.inline ; couleurs posées d'après le title, aussi sans JavaScript (le style en ligne de l'exercice
+ * met du bleu et du blanc : !important). */
+.nova-parcours .wims_score_bar > .inline { display: contents; }
+.oefstatement .wims_score_bar .wims_seed_item[title="done"] { background: var(--nova-accent) !important; }
+.oefstatement .wims_score_bar .wims_seed_item[title="todo"] { background: color-mix(in oklab, var(--nova-accent) 22%, white) !important; }
+.oefstatement .wims_score_bar .wims_seed_item.nova-cours { background: var(--nova-accent-doux) !important; }
+.nova-parcours-questions { margin-bottom: var(--nova-e4); }
 .nova-parcours-compteur {
   margin: 0;
   font-size: var(--nova-petit);

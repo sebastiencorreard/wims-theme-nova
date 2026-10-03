@@ -136,7 +136,9 @@
     barre.appendChild(place);
     if (liFin) liFin.remove();
 
-    // Profil : le contenu du menu du compte et les autres entrées de la barre, dans le menu latéral.
+    // Profil : le contenu du menu du compte et les autres entrées de la barre, recopiés dans le menu
+    // latéral ; sous 1024 px seulement (CSS) ils y passent et quittent la barre ; au-delà, ils restent
+    // dans la barre, où il y a la place (demande de l'utilisateur, 2026-10-03).
     var menu = document.getElementById('wimsmenumodubox');
     var compte = barre.querySelector('a.account');
     var liCompte = compte && compte.closest('li');
@@ -151,7 +153,9 @@
         if (!lien || !lien.getAttribute('href') || lien.getAttribute('href') === '#user_links') return;
         var d = document.createElement('div');
         d.className = 'menuitem';
-        d.appendChild(lien);
+        var copie = lien.cloneNode(true);
+        copie.removeAttribute('id');
+        d.appendChild(copie);
         groupe.appendChild(d);
       };
       // Le nom de l'élève en tête, en texte (le lien « #user_links » n'ouvrait que le menu).
@@ -164,9 +168,11 @@
         if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
             item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item.classList.contains('nova-examencours') || item === liCompte) return;
         Array.prototype.forEach.call(item.querySelectorAll('a[href]'), ajouter);
-        item.remove();
+        item.classList.add('nova-examen-large');
       });
-      liCompte.remove();
+      liCompte.classList.add('nova-examen-large');
+      // Menu du compte vide en session (la déconnexion est devenue « Terminer ») : le nom seul, sans menu.
+      if (!Array.prototype.some.call(liCompte.querySelectorAll('#user_links a[href]'), function (a) { return a.getAttribute('href') !== '#user_links'; })) liCompte.classList.add('nova-compte-seul');
       cible.insertBefore(groupe, cible.firstChild);
       cible.insertBefore(titre, groupe);
     } else if (liCompte) {

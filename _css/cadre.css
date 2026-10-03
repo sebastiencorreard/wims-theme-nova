@@ -431,6 +431,14 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 }
 #wimstopbox .nova-terminer a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
 #wimsmenumodubox .nova-profil-nom { padding: var(--nova-e1) var(--nova-e3) var(--nova-e2); font-weight: 700; color: var(--nova-texte); }
+/* Examen en session : nom et Aide dans la barre à partir de 1024 px (menu latéral déployé, place dans la
+ * barre) ; en dessous, dans le groupe « Profil » du menu latéral (js/nova.js, modeExamen). */
+@media (max-width: 1023.98px) { body.nova-examen-session #wimstopbox .nova-examen-large { display: none !important; } }
+@media (min-width: 1024px) { body.nova-examen-session #wimsmenumodubox :is(.nova-profil, .nova-profil-titre) { display: none; } }
+body.nova-examen-session #wimstopbox .nova-compte-seul > ul { display: none !important; }
+body.nova-examen-session #wimstopbox .nova-compte-seul > a { pointer-events: none; }
+body.nova-examen-session #wimstopbox .nova-compte-seul > a::after { content: none !important; }
+body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-examen-session #wimstopbox .nova-compte-seul > a { max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 639.98px) {
   /* Compte compact : une icône de personne et la flèche, sur une largeur fixe — le nom, quelle

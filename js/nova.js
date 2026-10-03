@@ -535,9 +535,18 @@
     var li = document.querySelector('#wimstopbox .menuitem.progress');
     var page = document.querySelector('.wimsbody');
     var barre = li && li.querySelector('.wims_score_bar');
-    var segments = barre ? Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item')) : [];
-    var n = segments.length;
+    var n = barre ? barre.querySelectorAll('.wims_seed_item').length : 0;
     if (!page || !n) { if (li) li.classList.add('nova-garde'); return; }   // laissée dans la barre
+    page.insertBefore(habillerParcours(barre, !!document.getElementById('wims_nextinexam')), page.firstChild);
+    li.parentNode.removeChild(li);
+  }
+
+  /* Barre de progression d'une course (examprogressbar.proc de WIMS : segments title="10" réussi, "todo",
+   * ou la note) → segments Nova + « Exercice n sur N ». reussi : l'exercice en cours est réussi (bouton
+   * « série suivante » présent). Rend le bloc .nova-parcours qui contient la barre. */
+  function habillerParcours(barre, reussi) {
+    var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item'));
+    var n = segments.length;
     var textes = document.getElementById('nova-textes');
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
     var faits = 0;
@@ -545,7 +554,7 @@
     var cours, etat, note = '';
     if (faits < n && segments[faits].title !== 'todo') { cours = faits + 1; etat = 'note'; note = segments[faits].title; }
     else if (faits === n) { cours = n; etat = 'termine'; }
-    else if (faits > 0 && document.getElementById('wims_nextinexam')) { cours = faits; etat = 'reussi'; }
+    else if (faits > 0 && reussi) { cours = faits; etat = 'reussi'; }
     else { cours = faits + 1; etat = 'en-cours'; }
     var modele = t('parcours', 'Exercise %n of %t');
     segments.forEach(function (s, i) {
@@ -578,9 +587,22 @@
     }
     bloc.appendChild(barre);
     bloc.appendChild(compteur);
-    page.insertBefore(bloc, page.firstChild);
-    li.parentNode.removeChild(li);
+    return bloc;
   }
+
+  /* Page d'un examen « course » (adm/class/exam, student.phtml) : « Progression de la session de la
+   * course » (h2, masqué par le CSS) puis la barre de WIMS → mêmes segments que pendant le parcours
+   * (demande de l'utilisateur, 2026-10-03). */
+  function parcoursExamen() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody > div.wims_score_bar'), function (barre) {
+      if (!barre.querySelector(':scope > .wims_seed_item')) return;
+      var place = barre.nextSibling, parent = barre.parentNode;
+      var bloc = habillerParcours(barre, false);
+      bloc.classList.add('nova-parcours-examen');
+      parent.insertBefore(bloc, place);
+    });
+  }
+
 
   /* Exercice « course » (OEF à étapes, ex. E6/number/oeftabmul coursemult) : l'énoncé écrit sa propre
    * barre, une question par segment, title « done » ou « todo ». Même habillage que le parcours
@@ -1438,7 +1460,7 @@
     });
   }
 
-  function demarrer() { parcours(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

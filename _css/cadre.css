@@ -750,11 +750,19 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
 /* Exercice « course » (js/nova.js, courseExercice) : barre écrite dans l'énoncé, segments dans un
  * div.inline ; couleurs posées d'après le title, aussi sans JavaScript (le style en ligne de l'exercice
  * met du bleu et du blanc : !important). */
-.nova-parcours .wims_score_bar > .inline { display: contents; }
+.nova-parcours .wims_score_bar > .inline:not(.wims_seed_item) { display: contents; }   /* les segments de WIMS sont aussi .inline */
 .oefstatement .wims_score_bar .wims_seed_item[title="done"] { background: var(--nova-accent) !important; }
 .oefstatement .wims_score_bar .wims_seed_item[title="todo"] { background: color-mix(in oklab, var(--nova-accent) 22%, white) !important; }
 .oefstatement .wims_score_bar .wims_seed_item.nova-cours { background: var(--nova-accent-doux) !important; }
 .nova-parcours-questions { margin-bottom: var(--nova-e4); }
+/* Page d'un examen « course » : titre « Progression de la session de la course » masqué ; la barre de
+ * WIMS (bleu, blanc, rouge en ligne) prend d'emblée les couleurs Nova d'après son title, puis js/nova.js
+ * (parcoursExamen) la range avec le compteur (demande de l'utilisateur, 2026-10-03). */
+.wimsbody > h2:is(:has(+ div.wims_score_bar > .wims_seed_item), :has(+ .nova-parcours-examen)) { display: none; }
+.wimsbody > div.wims_score_bar:has(> .wims_seed_item) { display: flex; justify-content: center; gap: 4px; margin: 0 auto var(--nova-e3); font-size: 0; }
+.wimsbody > div.wims_score_bar > .wims_seed_item { width: 18px; height: 8px; margin: 0; border: 0; border-radius: 4px; background: color-mix(in oklab, var(--nova-accent) 22%, white) !important; }
+.wimsbody > div.wims_score_bar > .wims_seed_item[title="10"] { background: var(--nova-accent) !important; }
+.nova-parcours-examen { margin: var(--nova-e2) auto var(--nova-e4); }
 .nova-parcours-compteur {
   margin: 0;
   font-size: var(--nova-petit);

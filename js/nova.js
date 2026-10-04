@@ -1688,7 +1688,20 @@
     });
   }
 
-  function demarrer() { parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
+   * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
+   * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
+   */
+  function focusConnexion() {
+    var actif = document.activeElement;
+    if (actif && actif !== document.body && actif !== document.documentElement) return;
+    var login = document.querySelector('input#login[name="auth_user"]');
+    var motDePasse = document.querySelector('input#password[name="auth_password"]');
+    var cible = login && !login.value ? login : motDePasse;
+    if (cible && cible.form) cible.focus();
+  }
+
+  function demarrer() { focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

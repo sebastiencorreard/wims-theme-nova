@@ -75,6 +75,10 @@ input[type="date"], input[type="url"], input[type="search"], input:not([type]), 
   border: 1px solid var(--nova-bord-fort);
   border-radius: var(--nova-rayon);
 }
+/* Champs d'un exercice : 36 px de haut dans des lignes de 26 px, sans marge, deux champs sur des lignes
+ * successives se touchaient (ex. H5/stat/OEFevalwimsstat.fr diagboite2) : 4 px au-dessus et au-dessous,
+ * soit 8 px entre eux (demande de l'utilisateur, 2026-10-05). */
+.wimsbody :is(.oefstatement, .oefform) :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) { margin-block: 4px; }
 
 /* Tableaux WIMS */
 /* ---------- Tableaux de WIMS (wimstable, wimsborder) — 2026-10-02 ----------

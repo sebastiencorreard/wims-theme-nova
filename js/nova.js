@@ -1693,7 +1693,7 @@
    * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
    * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
    * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
-   * <sup><small>[k]</small></sup>, k = nom de la ligne) : rouge si fausse ; étoiles si tout est juste, la page vibre si tout est faux ;
+   * <sup><small>[k]</small></sup>, k = nom de la ligne) : rouge si fausse ; étoiles (depuis la place du bouton « Valider ») si tout est juste, la page vibre si tout est faux ;
    * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
    * l'analyse ») : rien ne change. */
   function retourReponse() {
@@ -1702,22 +1702,35 @@
     document.querySelectorAll('.wimsbody .send_answer input[type="submit"]').forEach(function (b) {
       b.value = texte('valider', 'Submit');
       b.classList.add('nova-valider');
+      // Place du bouton à l'envoi, à l'écran : les étoiles de la page de réponse en partiront.
+      if (b.form) b.form.addEventListener('submit', function () {
+        var r = b.getBoundingClientRect();
+        try { sessionStorage.setItem('nova-valider', JSON.stringify({ l: r.left, t: r.top, w: r.width, h: r.height, quand: Date.now() })); } catch (e) { /* sans stockage : étoiles sur le verdict */ }
+      });
     });
     var reponse = document.querySelector('.wimsbody .oefanswer');
     if (!reponse) return;
     var tableau = reponse.querySelector('table.answeranalysis');
-    var lignes = [], inconnu = !tableau;
+    var lignes = [], inconnues = 0, conditions = 0;
     if (tableau) tableau.querySelectorAll('tr').forEach(function (tr) {
-      var etat = tr.querySelector('.oef_indgood') ? 'bonne' : tr.querySelector('.oef_indbad') ? 'mauvaise'
-        : tr.querySelector('.oef_indpartial') ? 'partielle' : tr.querySelector('.oef_indprec') ? 'precision' : null;
-      if (!etat || tr.children.length < 3) { inconnu = true; return; }
+      // L'état est le span en tête de la dernière cellule : oef_ind… pour une réponse, oef_cond… pour une
+      // condition (OUI/NON). La bonne réponse montrée à côté peut porter elle-même oef_indgood (étiquettes
+      // clickfill, E3/measurement/oefdatagestion.fr, vécu 2026-10-05) : ne pas chercher ailleurs.
+      var derniere = tr.lastElementChild;
+      var marque = derniere && derniere.querySelector(':scope > span[class^="oef_ind"], :scope > span[class^="oef_cond"]');
+      var m = marque && /^oef_(ind|cond)(good|bad|partial|prec)\b/.exec(marque.className);
+      var etat = m ? { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[2]] : null;
+      if (!etat) { if (tr.textContent.trim()) inconnues++; return; }
+      var reponseEleve = m[1] === 'ind' && tr.children.length >= 3;
+      if (m[1] === 'cond') conditions++;
       lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
-        eleve: tr.children[1], juste: tr.children[2].querySelector('div.inline.tt'), champs: [] });
+        eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
     });
-    if (inconnu || !lignes.length) { reponse.classList.add('nova-retour-pret'); return; }
+    // Lignes sans état (« voir l'analyse », renvois) : sans conséquence s'il y a des conditions, qui donnent
+    // alors le verdict ; sinon, WIMS tel quel, et l'animation suit la note (noteSeule).
+    if (!lignes.length || (inconnues && !conditions)) { reponse.classList.add('nova-retour-pret'); noteSeule(reponse); return; }
 
     // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
-    var justes = [];
     document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
       var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
       if (!m) return;
@@ -1726,8 +1739,7 @@
       var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
       var etat = ligne ? ligne.etat : { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[1]];
       if (ligne) ligne.champs.push(champ);
-      if (etat === 'bonne') justes.push(champ);
-      else if (etat === 'mauvaise') champ.classList.add('nova-faux');
+      if (etat === 'mauvaise') champ.classList.add('nova-faux');
     });
 
     var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
@@ -1757,7 +1769,7 @@
     };
     // Réponse hors énoncé, fausse : copie de la réponse de l'élève, en rouge.
     var eleve = function (ligne) {
-      if (ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
+      if (!ligne.eleve || ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
       var p = document.createElement('p');
       p.className = 'nova-verdict-eleve';
       p.appendChild(document.createTextNode(texte('votre-reponse', 'Your answer:') + ' '));
@@ -1769,7 +1781,7 @@
     };
     if (toutes) {
       titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
-      if (justes.length) justes.forEach(etoiles); else etoiles(boite);
+      etoiles(boite);
     } else if (lignes.length === 1) {
       titre.textContent = libelle(lignes[0].etat);
       completer(titre, lignes[0]);
@@ -1800,24 +1812,52 @@
     if (toutesFausses) vibrer();
   }
 
-  // Petites étoiles qui montent de l'élément (CSS : .nova-etoiles, sans animation si l'élève la refuse).
+  // Verdict que Nova ne sait pas lire (tableau vide : le verdict est dans les commentaires de l'auteur, ex.
+  // H4/algebra/factorcom.fr) : WIMS tel quel ; étoiles si la note de l'exercice est 10/10, vibration si 0/10
+  // (span.oef_modulescore : « … une note de N sur 10 », chiffres lus quelle que soit la langue).
+  function noteSeule(reponse) {
+    var note = reponse.querySelector('.oef_modulescore');
+    var m = note && /(\d+(?:[.,]\d+)?)\D+10(?:\D|$)/.exec(note.textContent);
+    if (!m) return;
+    var n = parseFloat(m[1].replace(',', '.'));
+    if (n >= 10) etoiles(reponse);
+    else if (n === 0) vibrer();
+  }
+
+  // Petites étoiles (CSS : .nova-etoiles, sans animation si l'élève la refuse), centrées sur la place du
+  // bouton « Valider » à l'envoi (demande de l'utilisateur, 2026-10-05) : position fixe, toujours à l'écran ;
+  // à défaut (envoi ancien ou inconnu), sur l'élément donné.
   function etoiles(el) {
     var nuee = document.createElement('span');
     nuee.className = 'nova-etoiles';
     nuee.setAttribute('aria-hidden', 'true');
+    var place = null;
+    try {
+      place = JSON.parse(sessionStorage.getItem('nova-valider') || 'null');
+      sessionStorage.removeItem('nova-valider');
+    } catch (e) { place = null; }
+    if (place && Date.now() - place.quand < 120000 && place.w > 0) {
+      nuee.classList.add('nova-etoiles-valider');
+      nuee.style.left = Math.max(0, Math.min(place.l, innerWidth - place.w)) + 'px';
+      nuee.style.top = Math.max(60, Math.min(place.t, innerHeight - place.h)) + 'px';
+      nuee.style.width = place.w + 'px';
+      nuee.style.height = place.h + 'px';
+      el = document.body;
+    }
     var couleurs = ['var(--nova-note-jaune)', 'var(--nova-accent)', 'var(--nova-note-jaune)', 'var(--nova-note-vert)'];
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < 12; i++) {
       var s = document.createElement('span');
       s.textContent = '\u2605';
-      s.style.setProperty('--x', (8 + i * 84 / 8) + '%');
-      s.style.setProperty('--dx', (Math.random() * 24 - 12).toFixed(0) + 'px');
+      s.style.setProperty('--x', (20 + i * 60 / 11) + '%');
+      s.style.setProperty('--dx', ((i - 5.5) * 9 + Math.random() * 16 - 8).toFixed(0) + 'px');
+      s.style.setProperty('--h', (-70 - Math.random() * 50).toFixed(0) + 'px');
       s.style.setProperty('--d', (Math.random() * 0.35).toFixed(2) + 's');
       s.style.setProperty('--t', (11 + Math.random() * 9).toFixed(0) + 'px');
       s.style.setProperty('--r', (Math.random() * 120 - 60).toFixed(0) + 'deg');
       s.style.setProperty('--c', couleurs[i % couleurs.length]);
       nuee.appendChild(s);
     }
-    el.classList.add('nova-etoile-source');
+    if (el !== document.body) el.classList.add('nova-etoile-source');
     el.appendChild(nuee);
     setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
   }

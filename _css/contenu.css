@@ -821,10 +821,11 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 .nova-verdict-eleve { margin: 0; color: var(--nova-texte-2); }
 .nova-etoile-source { position: relative; }
 .nova-etoiles { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.nova-etoiles.nova-etoiles-valider { position: fixed; inset: auto; z-index: 60; }
 .nova-etoiles > span {
   position: absolute;
   left: var(--x, 50%);
-  bottom: 40%;
+  bottom: 50%;
   font-size: var(--t, 16px);
   line-height: 1;
   color: var(--c, var(--nova-note-jaune));
@@ -839,7 +840,7 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 @keyframes nova-etoile {
   0% { opacity: 0; transform: translate(-50%, 0) scale(.4) rotate(0); }
   20% { opacity: 1; }
-  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), -64px) scale(1.1) rotate(var(--r, 40deg)); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), var(--h, -64px)) scale(1.1) rotate(var(--r, 40deg)); }
 }
 @keyframes nova-vibre {
   0%, 100% { transform: translateX(0); }

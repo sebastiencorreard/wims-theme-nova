@@ -5,13 +5,13 @@
  */
 (function () {
   'use strict';
-  /* Animations coupées : réglage « réduire les animations » de l'appareil, ou variable CSS
-   * --nova-animations à « non » (jetons.css ; un enseignant ou un administrateur la surcharge :
-   * :root { --nova-animations: non; }). Demande de l'utilisateur, 2026-10-05. */
+  /* Animations : COUPÉES par défaut (--nova-animations: non, jetons.css) ; un enseignant ou un
+   * administrateur les active par une surcharge CSS : :root { --nova-animations: oui; }. Le réglage
+   * « réduire les animations » de l'appareil les coupe toujours. Demandes de l'utilisateur, 2026-10-05. */
   function animationsCoupees() {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
     var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-animations').trim().toLowerCase();
-    return /^["']?(non|no|none|aucune|off|0)["']?$/.test(v);
+    return !/^["']?(oui|yes|on|1)["']?$/.test(v);
   }
   function initialiser() {
     var barre = document.getElementById('wimstopbox');

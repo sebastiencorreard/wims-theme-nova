@@ -215,6 +215,13 @@
     // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
     // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
     // (demande de l'utilisateur, 2026-10-03).
+    // Avertissement de « Terminer » (scorereg.phtml : « Oui » confirm_end=yes, « Non » job=score) : « Non »
+    // ramène à la liste des exercices (job=student) pour continuer l'examen, au lieu de « Mes notes »
+    // (demande de l'utilisateur, 2026-10-05).
+    var oui = document.querySelector('.wimsbody a[href*="confirm_end=yes"]');
+    if (oui) Array.prototype.forEach.call(oui.parentNode.querySelectorAll('a[href*="job=score"]:not([href*="job=scorereg"])'), function (non) {
+      non.setAttribute('href', non.getAttribute('href').replace(/job=score(?=&|$)/, 'job=student'));
+    });
     if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]') && !document.querySelector('.nova-terminer-impossible')) {
       var avis = document.createElement('div');
       avis.className = 'wims_msg warning nova-terminer-impossible';

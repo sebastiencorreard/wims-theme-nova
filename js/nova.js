@@ -1693,7 +1693,7 @@
    * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
    * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
    * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
-   * <sup><small>[k]</small></sup>, k = nom de la ligne) : étoiles si juste, rouge si fausse (et la page vibre) ;
+   * <sup><small>[k]</small></sup>, k = nom de la ligne) : rouge si fausse ; étoiles si tout est juste, la page vibre si tout est faux ;
    * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
    * l'analyse ») : rien ne change. */
   function retourReponse() {
@@ -1717,6 +1717,7 @@
     if (inconnu || !lignes.length) { reponse.classList.add('nova-retour-pret'); return; }
 
     // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
+    var justes = [];
     document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
       var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
       if (!m) return;
@@ -1725,12 +1726,15 @@
       var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
       var etat = ligne ? ligne.etat : { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[1]];
       if (ligne) ligne.champs.push(champ);
-      if (etat === 'bonne') etoiles(champ);
+      if (etat === 'bonne') justes.push(champ);
       else if (etat === 'mauvaise') champ.classList.add('nova-faux');
     });
 
     var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
     var fausse = lignes.some(function (l) { return l.etat === 'mauvaise'; });
+    // Animations seulement si le verdict est entier (demande de l'utilisateur, 2026-10-05) : étoiles quand
+    // tout est juste, vibration quand tout est faux ; rien dans les cas intermédiaires.
+    var toutesFausses = lignes.every(function (l) { return l.etat === 'mauvaise'; });
     var boite = document.createElement('div');
     boite.className = 'nova-verdict nova-verdict-' + (toutes ? 'bonne' : fausse ? 'mauvaise' : 'partielle');
     boite.setAttribute('role', 'status');
@@ -1765,7 +1769,7 @@
     };
     if (toutes) {
       titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
-      if (!document.querySelector('.nova-etoiles')) etoiles(boite);
+      if (justes.length) justes.forEach(etoiles); else etoiles(boite);
     } else if (lignes.length === 1) {
       titre.textContent = libelle(lignes[0].etat);
       completer(titre, lignes[0]);
@@ -1793,7 +1797,7 @@
     }
     reponse.insertBefore(boite, reponse.firstChild);
     reponse.classList.add('nova-retour', 'nova-retour-pret');
-    if (fausse) vibrer();
+    if (toutesFausses) vibrer();
   }
 
   // Petites étoiles qui montent de l'élément (CSS : .nova-etoiles, sans animation si l'élève la refuse).

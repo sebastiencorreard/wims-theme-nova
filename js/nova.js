@@ -2012,6 +2012,19 @@
     });
   }
 
+  /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
+   * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
+   * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
+   * ailleurs. */
+  function focusSuite() {
+    if (!document.querySelector('.wimsbody .oefanswer')) return;
+    var actif = document.activeElement;
+    if (actif && actif !== document.body && actif !== document.documentElement) return;
+    var bouton = document.querySelector('a#oef_serie_nextexo[href], #oef_serie_nextexo a[href]') || document.querySelector('#oef_actions a.nova-revenir-liste[href]');
+    if (!bouton) return;
+    try { bouton.focus({ preventScroll: true }); } catch (e) { bouton.focus(); }
+  }
+
   /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
    * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
    * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
@@ -2025,7 +2038,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

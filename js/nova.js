@@ -1263,7 +1263,8 @@
    * l'utilisateur, 2026-10-06) : exactement au centre si rien ne le touche ; sinon à la position la plus
    * proche du centre où il ne touche rien (12 px d'écart) ; s'il ne tient nulle part, à sa place dans la
    * barre. Avant d'y renoncer : sur un écran large, « Retour » et « Outils » en pictogrammes (nova-serree) ;
-   * partout, barre compacte (nova-compacte : accueil sans marge, libellé court de la pastille). La
+   * partout, barre compacte (nova-compacte : accueil sans marge, libellé court de la pastille), puis sans
+   * l'heure de fin du chronomètre (nova-sans-fin). La
    * position est posée par --nova-centre-x (CSS : .nova-centre, hors du flux). */
   function centrerBarre() {
     var barre = document.getElementById('wimstopbox');
@@ -1292,7 +1293,7 @@
     };
     var placer = function () {
       centre.style.removeProperty('--nova-centre-x');
-      barre.classList.remove('nova-serree', 'nova-compacte');
+      barre.classList.remove('nova-serree', 'nova-compacte', 'nova-sans-fin');
       centre.classList.add('nova-centre');       // hors du flux : les voisins prennent leur place
       if (positionner()) return;
       if (large.matches) {
@@ -1303,6 +1304,12 @@
       // Barre compacte : moins de marge autour de l'accueil, « Examen » au lieu de « Examen en cours ».
       barre.classList.add('nova-compacte');
       if (positionner()) return;
+      // Puis sans l'heure de fin du chronomètre (« Fin à … ») : le décompte reste.
+      if (centre.querySelector('.nova-chrono-fin')) {
+        barre.classList.add('nova-sans-fin');
+        if (positionner()) return;
+        barre.classList.remove('nova-sans-fin');
+      }
       barre.classList.remove('nova-compacte');
       centre.classList.remove('nova-centre');
       centre.style.removeProperty('--nova-centre-x');

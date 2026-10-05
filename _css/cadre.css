@@ -686,7 +686,12 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
   top: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
+  /* Largeur propre : sinon, positionné depuis le milieu, il ne dispose que de la moitié droite de la barre et
+   * son contenu (heure de fin) déborde de la pilule (vécu, 2026-10-06). */
+  width: max-content;
 }
+/* Dernier recours avant la place naturelle (centrerBarre) : sans l'heure de fin, le décompte reste. */
+#wimstopbox.nova-sans-fin .nova-chrono-fin { display: none; }
 @media (min-width: 768px) {
   /* Pas la place de centrer avec les libellés : « Retour » et « Outils » en pictogrammes seuls. */
   #wimstopbox.nova-serree .menuitem:is(.back, .tools) .text_item {

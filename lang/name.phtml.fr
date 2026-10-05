@@ -70,7 +70,7 @@
 !! Clavier mathematique tactile (js/nova.js, clavierMaths)
 !set nova_clavier=Clavier mathématique
 !set nova_clavier_suivant=Suivant
-!set nova_clavier_ok=OK
+!set nova_clavier_ok=Valider
 !set nova_clavier_abc=Clavier du téléphone
 !set nova_clavier_123=Clavier mathématique
 !set nova_clavier_effacer=Effacer

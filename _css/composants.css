@@ -673,20 +673,29 @@ img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; tra
 html.nova-clavier-ouvert body { padding-bottom: var(--nova-clavier-h, 0px); }
 /* Les boutons collés en bas (« Valider »…) et le retour en haut cèdent la place au clavier (sa touche Entrée valide). */
 html.nova-clavier-ouvert :is(.nova-collant, .wims_topback) { display: none !important; }
-/* « 123 » à côté d'un champ rendu au clavier du téléphone : retour au clavier mathématique. */
-.nova-clavier-retour { display: none; }
-.nova-champ-natif + .nova-clavier-retour {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
+/* Pastille flottante (icône de clavier, en bas à droite) quand le clavier Nova est rangé : le rouvre
+ * (js/nova.js, clavierMaths ; demande de l'utilisateur, 2026-10-06). Au-dessus du clavier du téléphone s'il
+ * est ouvert (--nova-vv-bas), et des boutons collés en bas ; la pastille « retour en haut » passe au-dessus. */
+.nova-pastille-clavier { display: none; }
+html.nova-clavier-permis:not(.nova-clavier-ouvert) .nova-pastille-clavier {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + var(--nova-vv-bas, 0px));
+  z-index: 290;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
   min-height: 0;
-  margin: 0 0 0 6px;
-  padding: 0 10px;
+  margin: 0;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
-  background: var(--nova-accent-doux);
-  color: var(--nova-lien);
-  font: 700 .875rem var(--nova-police-chiffres);
-  vertical-align: middle;
+  border-radius: 50%;
+  background: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 18%), 0 8px 20px rgb(0 0 0 / 18%);
+  -webkit-tap-highlight-color: transparent;
 }
+html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .nova-pastille-clavier { bottom: calc(76px + var(--nova-vv-bas, 0px)); }
+html.nova-clavier-permis:not(.nova-clavier-ouvert) .wims_topback { bottom: 76px; }
+html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .wims_topback { bottom: 136px; }

@@ -2174,18 +2174,21 @@
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
     };
     var exp = function (b, e) { return b + '<sup>' + e + '</sup>'; };
-    // Disposition A : 4 rangées de 7 colonnes ; c = classe, v = texte écrit ou action, a = nom accessible.
+    // Disposition A, colonnes permutées (demande de l'utilisateur, 2026-10-06) : chiffres et opérations à
+    // gauche, fonctions et navigation à droite, « Suivant » en bas à droite. c = classe, v = texte écrit ou
+    // action, a = nom accessible.
     var touches = [
+      { l: '7' }, { l: '8' }, { l: '9' }, { l: '\u00F7', c: 'f', v: '/' },
       { l: exp('x', '2'), c: 'f', v: '^2', a: t('carre', 'Squared') }, { l: exp('x', '3'), c: 'f', v: '^3', a: t('cube', 'Cubed') },
-      { l: '\u221A', c: 'f', v: 'racine', a: t('racine', 'Square root') }, { l: '7' }, { l: '8' }, { l: '9' }, { l: '\u00F7', c: 'f', v: '/' },
-      { l: '(' }, { l: ')' }, { l: '\u00D710' + '<sup>x</sup>', c: 'f', v: '*10^', a: t('puissance10', 'Times ten to the power') },
+      { l: '\u221A', c: 'f', v: 'racine', a: t('racine', 'Square root') },
       { l: '4' }, { l: '5' }, { l: '6' }, { l: '\u00D7', c: 'f', v: '*' },
+      { l: '(' }, { l: ')' }, { l: '\u00D710' + '<sup>x</sup>', c: 'f', v: '*10^', a: t('puissance10', 'Times ten to the power') },
+      { l: '1' }, { l: '2' }, { l: '3' }, { l: '\u2212', c: 'f', v: '-' },
       { l: svg('<path d="M15 6l-6 6 6 6"/>'), c: 'nav', v: 'gauche', a: t('gauche', 'Move left') },
       { l: svg('<path d="M9 6l6 6-6 6"/>'), c: 'nav', v: 'droite', a: t('droite', 'Move right') },
       { l: svg('<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>'), c: 'nav', v: 'effacer', a: t('effacer', 'Delete') },
-      { l: '1' }, { l: '2' }, { l: '3' }, { l: '\u2212', c: 'f', v: '-' },
-      { l: 'ABC', c: 'abc', v: 'abc', a: t('abc', 'Phone keyboard') }, { l: '', c: 'ok s2', v: 'entree' },
-      { l: '0', c: 's2' }, { l: '.' }, { l: '+', c: 'f' }
+      { l: '0', c: 's2' }, { l: '.' }, { l: '+', c: 'f' },
+      { l: 'ABC', c: 'abc', v: 'abc', a: t('abc', 'Phone keyboard') }, { l: '', c: 'ok s2', v: 'entree' }
     ];
     var clavier = document.createElement('div');
     clavier.className = 'nova-clavier';
@@ -2282,25 +2285,51 @@
       // Liste de suggestions vide de WIMS (list="emptylist", contre la saisie automatique) : une flèche ▼
       // apparaît sur le champ au téléphone ; inutile ici (autocomplete déjà coupé par claviersReponse).
       c.removeAttribute('list');
-      var retour = document.createElement('button');
-      retour.type = 'button';
-      retour.className = 'nova-clavier-retour';
-      retour.textContent = '123';
-      retour.setAttribute('aria-label', t('123', 'Math keyboard'));
-      retour.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
-      retour.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-      retour.addEventListener('click', function () {
-        natifs.splice(natifs.indexOf(c), 1);
-        c.classList.remove('nova-champ-natif');
-        c.setAttribute('inputmode', 'none');
-        c.blur();
-        c.focus();
-        afficher(c);
-      });
-      c.parentNode.insertBefore(retour, c.nextSibling);
       c.addEventListener('input', majEntree);
     });
+    // Pastille flottante en bas à droite, quand le clavier Nova est rangé : le rouvre sur le dernier champ
+    // utilisé (demande de l'utilisateur, 2026-10-06). Elle suit le haut du clavier du téléphone s'il est
+    // ouvert (visualViewport).
+    var dernier = champs[0];
+    var pastille = document.createElement('button');
+    pastille.type = 'button';
+    pastille.className = 'nova-pastille-clavier';
+    pastille.setAttribute('aria-label', t('123', 'Math keyboard'));
+    pastille.title = t('123', 'Math keyboard');
+    pastille.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/>' +
+      '<path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 16h8"/></svg>';
+    pastille.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
+    pastille.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    pastille.addEventListener('click', function () {
+      var c = dernier;
+      var n = natifs.indexOf(c);
+      if (n >= 0) natifs.splice(n, 1);
+      c.classList.remove('nova-champ-natif');
+      c.setAttribute('inputmode', 'none');
+      c.blur();
+      c.focus();
+      afficher(c);
+    });
+    document.body.appendChild(pastille);
+    document.documentElement.classList.add('nova-clavier-permis');
+    if (window.visualViewport) {
+      var suivreClavier = function () {
+        var vv = window.visualViewport;
+        var bas = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        document.documentElement.style.setProperty('--nova-vv-bas', bas + 'px');
+      };
+      window.visualViewport.addEventListener('resize', suivreClavier);
+      window.visualViewport.addEventListener('scroll', suivreClavier);
+    }
+    // Toucher ailleurs (énoncé, figure…) range le clavier Nova et rend la page entière ; la pastille le rouvre.
+    document.addEventListener('pointerdown', function (ev) {
+      if (clavier.hidden || clavier.contains(ev.target) || pastille.contains(ev.target) || champs.indexOf(ev.target) >= 0) return;
+      cacher();
+      if (champs.indexOf(document.activeElement) >= 0) document.activeElement.blur();
+    }, true);
     document.addEventListener('focusin', function (ev) {
+      if (champs.indexOf(ev.target) >= 0) dernier = ev.target;
       if (champs.indexOf(ev.target) >= 0 && natifs.indexOf(ev.target) < 0) afficher(ev.target);
       else if (!clavier.contains(ev.target)) cacher();
     });

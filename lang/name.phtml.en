@@ -53,3 +53,12 @@
 !set nova_exo_suivant=Next exercise
 !! Fin d'une serie d'exercices : bouton vers la liste (js/nova.js, boutonsCollants)
 !set nova_revenir_liste=Back to the list
+!! Exercice OEF : bouton Envoyer la reponse renomme, verdict de la reponse (js/nova.js, retourReponse)
+!set nova_valider=Submit
+!set nova_bonne=Correct answer
+!set nova_bonnes=Correct answers
+!set nova_mauvaise=Wrong answer
+!set nova_bonne_etait=the correct answer was
+!set nova_partielle=Partly correct answer
+!set nova_precision=Not precise enough
+!set nova_votre_reponse=Your answer:

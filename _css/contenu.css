@@ -764,3 +764,86 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
   /* La pastille « retour en haut » passe au-dessus du bloc. */
   .nova-boutons-collants .wims_topback { bottom: 96px; }
 }
+
+/* Page de choix des exercices d'un examen (adm/class/exam/student.phtml) : sans « Votre score pour cet examen
+ * est … » (p.exam_score, demande de l'utilisateur, 2026-10-05). */
+.wimsbody p.exam_score { display: none; }
+
+/* Réponse à un exercice OEF (js/nova.js, retourReponse ; demande de l'utilisateur, 2026-10-05) : le bloc
+ * « Analyse de votre réponse » (scripts/oef/answer.phtml) laisse la place à un verdict ; seuls les commentaires
+ * de l'auteur (.oef_feedbacks) en restent. Sans JavaScript ou si nova.js ne reconnaît pas le tableau (conditions,
+ * « voir l'analyse »), WIMS tel quel ; le bloc attend nova.js au plus 3 s. */
+.nova-js .oefanswer:not(.nova-retour-pret) .answer_analysis { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.oefanswer.nova-retour .answer_analysis:not(:has(.oef_feedbacks)),
+.oefanswer.nova-retour .answer_analysis > .oefanswername,
+.oefanswer.nova-retour .answer_analysis > .content > :not(.oef_feedbacks) { display: none; }
+.nova-verdict {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--nova-e3);
+  align-items: start;
+  margin: var(--nova-e4) 0;
+  padding: var(--nova-e3) var(--nova-e4);
+  border: 1px solid;
+  border-radius: 12px;
+  position: relative;
+}
+.nova-verdict::before {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+.nova-verdict-bonne { background: var(--nova-succes-fond); border-color: color-mix(in oklab, var(--nova-succes) 35%, white); color: var(--nova-succes); }
+.nova-verdict-bonne::before { content: "\2713"; background: var(--nova-succes); }
+.nova-verdict-mauvaise { background: var(--nova-erreur-fond); border-color: color-mix(in oklab, var(--nova-erreur) 35%, white); color: var(--nova-erreur); }
+.nova-verdict-mauvaise::before { content: "\2715"; background: var(--nova-erreur); }
+.nova-verdict-partielle { background: var(--nova-attention-fond); border-color: color-mix(in oklab, var(--nova-attention) 35%, white); color: var(--nova-attention-texte); }
+.nova-verdict-partielle::before { content: "!"; background: var(--nova-attention); }
+.nova-verdict-titre { margin: 0; padding-top: 1px; font-weight: 700; }
+.nova-verdict ul { margin: 0; padding-left: 1.1em; color: var(--nova-texte); }
+.nova-verdict ul:empty { display: none; }
+.nova-verdict .nova-verdict-juste { display: inline-block; color: var(--nova-texte); font-weight: 600; }
+.nova-verdict-corps { display: grid; gap: var(--nova-e1); min-width: 0; }
+/* Réponse de l'élève : rouge si fausse (champ réaffiché dans l'énoncé par scripts/oef/embed.phtml, ou copie
+ * dans le verdict pour une réponse hors énoncé). */
+.nova-faux {
+  display: inline-block;
+  padding: 0 .4em;
+  border: 2px solid var(--nova-erreur);
+  border-radius: 8px;
+  background: var(--nova-erreur-fond);
+  color: var(--nova-erreur);
+}
+.nova-verdict-eleve { margin: 0; color: var(--nova-texte-2); }
+.nova-etoile-source { position: relative; }
+.nova-etoiles { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.nova-etoiles > span {
+  position: absolute;
+  left: var(--x, 50%);
+  bottom: 40%;
+  font-size: var(--t, 16px);
+  line-height: 1;
+  color: var(--c, var(--nova-note-jaune));
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nova-etoiles > span { animation: nova-etoile 1.3s var(--d, 0s) ease-out forwards; }
+  .nova-vibre { animation: nova-vibre .5s ease-in-out 1; }
+}
+@keyframes nova-etoile {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(.4) rotate(0); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), -64px) scale(1.1) rotate(var(--r, 40deg)); }
+}
+@keyframes nova-vibre {
+  0%, 100% { transform: translateX(0); }
+  15%, 55% { transform: translateX(-7px); }
+  35%, 75% { transform: translateX(7px); }
+  90% { transform: translateX(-3px); }
+}
+/* Bouton « Envoyer la réponse » renommé « Valider » par nova.js (retourReponse) : caché jusque-là, 3 s au plus. */
+.nova-js .send_answer input[type="submit"]:not(.nova-valider) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

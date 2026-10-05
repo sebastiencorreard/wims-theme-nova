@@ -1688,6 +1688,141 @@
     });
   }
 
+  /* Exercice OEF (demande de l'utilisateur, 2026-10-05). « Envoyer la réponse » (div.send_answer) devient
+   * « Valider ». Page de réponse (scripts/oef/answer.phtml) : le tableau « Analyse de votre réponse » (une
+   * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
+   * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
+   * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
+   * <sup><small>[k]</small></sup>, k = nom de la ligne) : étoiles si juste, rouge et vibration si fausse ;
+   * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
+   * l'analyse ») : rien ne change. */
+  function retourReponse() {
+    var textes = document.getElementById('nova-textes');
+    var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-' + cle)) || defaut; };
+    document.querySelectorAll('.wimsbody .send_answer input[type="submit"]').forEach(function (b) {
+      b.value = texte('valider', 'Submit');
+      b.classList.add('nova-valider');
+    });
+    var reponse = document.querySelector('.wimsbody .oefanswer');
+    if (!reponse) return;
+    var tableau = reponse.querySelector('table.answeranalysis');
+    var lignes = [], inconnu = !tableau;
+    if (tableau) tableau.querySelectorAll('tr').forEach(function (tr) {
+      var etat = tr.querySelector('.oef_indgood') ? 'bonne' : tr.querySelector('.oef_indbad') ? 'mauvaise'
+        : tr.querySelector('.oef_indpartial') ? 'partielle' : tr.querySelector('.oef_indprec') ? 'precision' : null;
+      if (!etat || tr.children.length < 3) { inconnu = true; return; }
+      lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
+        eleve: tr.children[1], juste: tr.children[2].querySelector('div.inline.tt'), champs: [] });
+    });
+    if (inconnu || !lignes.length) { reponse.classList.add('nova-retour-pret'); return; }
+
+    // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
+    document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
+      var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
+      if (!m) return;
+      var renvoi = champ.nextElementSibling;
+      var nom = renvoi && renvoi.tagName === 'SUP' ? renvoi.textContent.trim() : '';
+      var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
+      var etat = ligne ? ligne.etat : { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[1]];
+      if (ligne) ligne.champs.push(champ);
+      if (etat === 'bonne') etoiles(champ);
+      else if (etat === 'mauvaise') { champ.classList.add('nova-faux'); vibrer(champ); }
+    });
+
+    var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
+    var fausse = lignes.some(function (l) { return l.etat === 'mauvaise'; });
+    var boite = document.createElement('div');
+    boite.className = 'nova-verdict nova-verdict-' + (toutes ? 'bonne' : fausse ? 'mauvaise' : 'partielle');
+    boite.setAttribute('role', 'status');
+    var corps = document.createElement('div');
+    corps.className = 'nova-verdict-corps';
+    boite.appendChild(corps);
+    var titre = document.createElement('p');
+    titre.className = 'nova-verdict-titre';
+    corps.appendChild(titre);
+    var libelle = function (etat) {
+      return etat === 'mauvaise' ? texte('mauvaise', 'Wrong answer') : etat === 'partielle' ? texte('partielle', 'Partly correct answer')
+        : etat === 'precision' ? texte('precision', 'Not precise enough') : texte('bonne', 'Correct answer');
+    };
+    // « …, la bonne réponse était X » : la bonne réponse de WIMS est déplacée (MathJax compris).
+    var completer = function (el, ligne) {
+      if (!ligne.juste) return;
+      el.appendChild(document.createTextNode(', ' + texte('bonne-etait', 'the correct answer was') + ' '));
+      ligne.juste.classList.add('nova-verdict-juste');
+      el.appendChild(ligne.juste);
+    };
+    // Réponse hors énoncé, fausse : copie de la réponse de l'élève, en rouge.
+    var eleve = function (ligne) {
+      if (ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
+      var p = document.createElement('p');
+      p.className = 'nova-verdict-eleve';
+      p.appendChild(document.createTextNode(texte('votre-reponse', 'Your answer:') + ' '));
+      var copie = document.createElement('span');
+      copie.className = ligne.etat === 'mauvaise' ? 'nova-faux' : '';
+      while (ligne.eleve.firstChild) copie.appendChild(ligne.eleve.firstChild);
+      p.appendChild(copie);
+      corps.appendChild(p);
+      if (ligne.etat === 'mauvaise') vibrer(copie);
+    };
+    if (toutes) {
+      titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
+      if (!document.querySelector('.nova-etoiles')) etoiles(boite);
+    } else if (lignes.length === 1) {
+      titre.textContent = libelle(lignes[0].etat);
+      completer(titre, lignes[0]);
+      eleve(lignes[0]);
+    } else {
+      titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
+      var liste = document.createElement('ul');
+      lignes.forEach(function (ligne) {
+        if (ligne.etat === 'bonne') return;
+        var li = document.createElement('li');
+        // Le titre dit déjà « Mauvaise réponse » : « [k] : la bonne réponse était X » suffit.
+        li.textContent = ligne.nom ? ligne.nom + ' : ' : '';
+        if (ligne.etat === 'mauvaise' && ligne.juste) {
+          li.appendChild(document.createTextNode(texte('bonne-etait', 'the correct answer was') + ' '));
+          ligne.juste.classList.add('nova-verdict-juste');
+          li.appendChild(ligne.juste);
+        } else {
+          li.appendChild(document.createTextNode(libelle(ligne.etat)));
+          completer(li, ligne);
+        }
+        liste.appendChild(li);
+      });
+      corps.appendChild(liste);
+      lignes.forEach(eleve);
+    }
+    reponse.insertBefore(boite, reponse.firstChild);
+    reponse.classList.add('nova-retour', 'nova-retour-pret');
+  }
+
+  // Petites étoiles qui montent de l'élément (CSS : .nova-etoiles, sans animation si l'élève la refuse).
+  function etoiles(el) {
+    var nuee = document.createElement('span');
+    nuee.className = 'nova-etoiles';
+    nuee.setAttribute('aria-hidden', 'true');
+    var couleurs = ['var(--nova-note-jaune)', 'var(--nova-accent)', 'var(--nova-note-jaune)', 'var(--nova-note-vert)'];
+    for (var i = 0; i < 9; i++) {
+      var s = document.createElement('span');
+      s.textContent = '\u2605';
+      s.style.setProperty('--x', (8 + i * 84 / 8) + '%');
+      s.style.setProperty('--dx', (Math.random() * 24 - 12).toFixed(0) + 'px');
+      s.style.setProperty('--d', (Math.random() * 0.35).toFixed(2) + 's');
+      s.style.setProperty('--t', (11 + Math.random() * 9).toFixed(0) + 'px');
+      s.style.setProperty('--r', (Math.random() * 120 - 60).toFixed(0) + 'deg');
+      s.style.setProperty('--c', couleurs[i % couleurs.length]);
+      nuee.appendChild(s);
+    }
+    el.classList.add('nova-etoile-source');
+    el.appendChild(nuee);
+    setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
+  }
+
+  function vibrer(el) {
+    el.classList.add('nova-vibre');
+    el.addEventListener('animationend', function () { el.classList.remove('nova-vibre'); }, { once: true });
+  }
+
   /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
    * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
    * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
@@ -1701,7 +1836,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

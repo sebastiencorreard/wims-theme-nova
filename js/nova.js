@@ -2012,6 +2012,48 @@
     });
   }
 
+  /* Champs de réponse d'un exercice (scripts/anstype/*.input : le type n'est pas visible dans le HTML) :
+   * - ni correction automatique, ni vérification d'orthographe (qui trahirait une faute dans une réponse en
+   *   mots), ni majuscule automatique (WIMS n'en protège pas « units » et « sigunits ») ;
+   * - pas de pavé numérique : un champ « numeric » accepte le signe moins et les fractions (2/3), absents
+   *   des pavés décimal ou téléphone (iPhone surtout) ; le clavier texte reste le seul complet ;
+   * - Entrée dans un champ alors qu'un autre est vide : passe au champ vide suivant au lieu d'envoyer
+   *   (WIMS refuserait l'envoi) ; touche Entrée du téléphone « Suivant », puis « OK » sur le dernier.
+   * Demande de l'utilisateur, 2026-10-06. */
+  function claviersReponse() {
+    var form = document.forms.replyform;
+    if (!form) return;
+    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"], textarea[name^="reply"]'), function (c) {
+      return c.tagName === 'TEXTAREA' || !c.type || c.type === 'text';
+    });
+    champs.forEach(function (c) {
+      c.setAttribute('autocapitalize', 'off');
+      c.setAttribute('autocorrect', 'off');
+      c.setAttribute('spellcheck', 'false');
+      c.setAttribute('autocomplete', 'off');
+    });
+    var lignes = champs.filter(function (c) { return c.tagName === 'INPUT' && !c.readOnly; });
+    var vide = function (c) { return !c.value.trim(); };
+    var majour = function () {
+      lignes.forEach(function (c) {
+        var autreVide = lignes.some(function (d) { return d !== c && vide(d); });
+        c.setAttribute('enterkeyhint', autreVide ? 'next' : 'go');
+      });
+    };
+    lignes.forEach(function (c, i) {
+      c.addEventListener('input', majour);
+      c.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Enter' || ev.isComposing || ev.shiftKey || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+        var suivants = lignes.slice(i + 1).concat(lignes.slice(0, i));
+        var cible = suivants.filter(vide)[0];
+        if (!cible) return;                       // tout est rempli : envoi normal
+        ev.preventDefault();
+        cible.focus();
+      });
+    });
+    majour();
+  }
+
   /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
    * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
    * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
@@ -2038,7 +2080,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); claviersReponse(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

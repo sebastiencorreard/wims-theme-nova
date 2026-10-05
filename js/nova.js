@@ -2095,6 +2095,60 @@
     }
   }
 
+  /* Tuiles à déplacer des exercices (dragfill, correspond… : bibliothèque Dynapi de WIMS, DragEvent, qui
+   * n'écoute que la souris) : au doigt, le téléphone faisait défiler la page au lieu de déplacer la tuile.
+   * Pont tactile (demande de l'utilisateur, 2026-10-06) : un toucher qui commence sur une couche Dynapi
+   * déplaçable (écouteur DragEvent.lyrListener) ne fait plus défiler ; dès que le doigt bouge, il devient
+   * mousedown / mousemove / mouseup pour Dynapi. Un simple toucher reste un « clic » (tuile puis
+   * destination). */
+  function glisserTactile() {
+    var dyn = window.DynObject, drag = window.DragEvent;
+    if (!dyn || !dyn.all || !drag || !drag.lyrListener || !('ontouchstart' in window)) return;
+    var deplacable = function (el) {
+      for (; el && el !== document.body; el = el.parentElement) {
+        var obj = el.id && dyn.all[el.id];
+        if (obj && obj._listeners && obj._listeners.indexOf(drag.lyrListener) >= 0) return el;
+      }
+      return null;
+    };
+    // Dynapi remplace window.MouseEvent par sa propre classe : évènement natif par document.createEvent.
+    var souris = function (type, cible, x, y) {
+      var e = document.createEvent('MouseEvents');
+      e.initMouseEvent(type, true, true, window, 1, x, y, x, y, false, false, false, false, 0, null);
+      (cible || document.body).dispatchEvent(e);
+    };
+    // Hors de l'écran, elementFromPoint ne renvoie rien : le body (Dynapi ne sait pas traiter le document).
+    var sous = function (x, y) { return document.elementFromPoint(x, y) || document.body; };
+    var etat = null;
+    document.addEventListener('touchstart', function (ev) {
+      etat = null;
+      if (ev.touches.length !== 1 || !deplacable(ev.target)) return;
+      var t = ev.touches[0];
+      etat = { cible: ev.target, x: t.clientX, y: t.clientY, glisse: false };
+    }, { capture: true, passive: true });
+    document.addEventListener('touchmove', function (ev) {
+      if (!etat) return;
+      ev.preventDefault();                       // dès le premier mouvement : la page ne défile pas
+      var t = ev.touches[0];
+      if (!etat.glisse) {
+        if (Math.abs(t.clientX - etat.x) + Math.abs(t.clientY - etat.y) < 6) return;
+        etat.glisse = true;
+        souris('mousedown', etat.cible, etat.x, etat.y);
+      }
+      souris('mousemove', sous(t.clientX, t.clientY), t.clientX, t.clientY);
+    }, { capture: true, passive: false });
+    var finir = function (ev) {
+      if (!etat) return;
+      var e = etat; etat = null;
+      if (!e.glisse) return;                     // simple toucher : le navigateur fait son « clic »
+      if (ev.cancelable) ev.preventDefault();    // pas de clic en plus après un glissement
+      var t = ev.changedTouches[0];
+      souris('mouseup', sous(t.clientX, t.clientY), t.clientX, t.clientY);
+    };
+    document.addEventListener('touchend', finir, { capture: true, passive: false });
+    document.addEventListener('touchcancel', finir, { capture: true, passive: false });
+  }
+
   /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
    * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
    * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
@@ -2121,7 +2175,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); claviersReponse(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

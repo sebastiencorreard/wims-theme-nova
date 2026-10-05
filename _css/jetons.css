@@ -52,6 +52,10 @@
    * :root { --nova-animations: oui; }  Lue par nova.js (html.nova-sans-animation quand elles sont coupées).
    * Le réglage « réduire les animations » de l'appareil les coupe toujours. */
   --nova-animations: non;
+  /* Entrée directe dans le seul cours (portail) ou la seule classe (groupement) d'un élève : « oui ». Une
+   * feuille de la classe ou du site la coupe : :root { --nova-entree-directe: non; }  Lue par nova.js
+   * (coursUnique). Demande de l'utilisateur, 2026-10-06. */
+  --nova-entree-directe: oui;
   --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
 }
 

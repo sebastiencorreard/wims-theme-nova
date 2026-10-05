@@ -1950,6 +1950,10 @@
   function coursUnique() {
     if (!document.getElementById('nova-eleve')) return;
     var corps = document.querySelector('.wimsbody');
+    // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
+    // accueil (demande de l'utilisateur, 2026-10-06).
+    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
+    if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
     var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
     if (!liste) return;
     var liens = liste.querySelectorAll('a[href*="type=authparticipant"]');

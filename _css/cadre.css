@@ -438,6 +438,25 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   font-weight: 700;
 }
 #wimstopbox .nova-terminer a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+/* « Terminer » devenu « Examen en cours » (js/nova.js, modeExamen) : la même pilule que le bouton « Examen en
+ * cours » (chronomètre, libellé court « Examen » sous 480 px ; demande de l'utilisateur, 2026-10-05). */
+#wimstopbox .nova-terminer.nova-terminer-examen a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--nova-accent) 12%, white);
+  color: var(--nova-lien);
+  white-space: nowrap;
+}
+#wimstopbox .nova-terminer.nova-terminer-examen a:hover { background: var(--nova-surface); color: var(--nova-lien); }
+#wimstopbox .menuitem.nova-terminer.nova-terminer-examen > a::before { content: none; }
+#wimstopbox .nova-terminer-examen .nova-court { display: none; }
+/* Avec le chronomètre au centre de la barre, le libellé long le touchait à 390 px : court sous 480 px. */
+@media (max-width: 479.98px) {
+  #wimstopbox .nova-terminer-examen .nova-long { display: none; }
+  #wimstopbox .nova-terminer-examen .nova-court { display: inline; }
+}
 #wimsmenumodubox .nova-profil-nom { padding: var(--nova-e1) var(--nova-e3) var(--nova-e2); font-weight: 700; color: var(--nova-texte); }
 /* Examen en session : nom et Aide dans la barre à partir de 1024 px (menu latéral déployé, place dans la
  * barre) ; en dessous, dans le groupe « Profil » du menu latéral (js/nova.js, modeExamen). */

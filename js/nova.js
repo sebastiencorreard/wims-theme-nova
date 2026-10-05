@@ -221,17 +221,26 @@
     });
     // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
     // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
-    // (demande de l'utilisateur, 2026-10-03), et « Terminer » devient « Examen », vers la liste des
+    // (demande de l'utilisateur, 2026-10-03), et « Terminer » devient « Examen en cours », vers la liste des
     // exercices (job=student), pour y retourner sans passer par le menu (demande de l'utilisateur, 2026-10-05).
+    // Pilule à pictogramme de chronomètre, comme « Examen en cours » (_widgets/examencours.phtml), et le même
+    // lien sous le message (demande de l'utilisateur, 2026-10-05).
+    var chronoSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
+      '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>';
+    var versExamen = null;
     if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]')) {
-      var versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
+      versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
       if (versExamen !== fin.getAttribute('href')) {
         fin.setAttribute('href', versExamen);
-        fin.textContent = t('texte-examen', 'Exam');
-        fin.setAttribute('aria-label', fin.textContent);
-        fin.setAttribute('title', fin.textContent);
+        // Libellé long « Examen en cours », court « Examen » sur un écran très étroit (CSS, comme la pastille).
+        fin.innerHTML = chronoSvg + '<span class="nova-long"></span><span class="nova-court"></span>';
+        fin.querySelector('.nova-long').textContent = t('texte-examen-encours', 'Exam in progress');
+        fin.querySelector('.nova-court').textContent = t('texte-examen', 'Exam');
+        fin.setAttribute('aria-label', t('texte-examen-encours', 'Exam in progress'));
+        fin.setAttribute('title', t('texte-examen-encours', 'Exam in progress'));
         place.classList.add('nova-terminer-examen');
-      }
+      } else versExamen = null;
     }
     if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]') && !document.querySelector('.nova-terminer-impossible')) {
       var avis = document.createElement('div');
@@ -239,6 +248,17 @@
       avis.setAttribute('role', 'status');
       avis.textContent = t('terminer-impossible', 'Answer at least one exercise before ending the session.');
       corps.insertBefore(avis, corps.firstChild);
+      if (versExamen) {
+        var retourExamen = document.createElement('p');
+        retourExamen.className = 'nova-autre-examen';
+        var lienExamen = document.createElement('a');
+        lienExamen.className = 'nova-autre-examen-bouton';
+        lienExamen.href = versExamen;
+        lienExamen.innerHTML = chronoSvg;
+        lienExamen.appendChild(document.createTextNode(t('texte-examen-encours', 'Exam in progress')));
+        retourExamen.appendChild(lienExamen);
+        corps.insertBefore(retourExamen, avis.nextSibling);
+      }
     }
     if (corps && job !== 'scorereg' && job !== 'score' &&
         !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {

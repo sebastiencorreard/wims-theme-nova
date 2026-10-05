@@ -1829,6 +1829,45 @@
     setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
   }
 
+  /* Élève d'un portail ou d'un groupement dont l'accueil ne propose qu'un seul cours (ou une seule classe) :
+   * il y entre directement, juste après la connexion comme à chaque retour à cet accueil, qui devient ainsi
+   * le cours (demande de l'utilisateur, 2026-10-05). Seulement si cet accueil n'a rien d'autre à montrer : ni
+   * travail (#widget_user_list), ni message de la classe (themes/_widgets/motd.phtml). location.replace :
+   * pas d'étape de plus dans l'historique. Un retour depuis le cours passe par le portail (ou le groupement) :
+   * sa page de classe renvoie d'abord à la classe, il faut un second saut (vécu au banc). Garde-fou : au plus
+   * 3 sauts vers le même cours en 10 s. */
+  function coursUnique() {
+    if (!document.getElementById('nova-eleve')) return;
+    var corps = document.querySelector('.wimsbody');
+    var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
+    if (!liste) return;
+    var liens = liste.querySelectorAll('a[href*="type=authparticipant"]');
+    var travail = document.getElementById('widget_user_list');
+    var seul = liens.length === 1 && !(travail && travail.textContent.trim()) &&
+      !document.querySelector('#wims_class_motd, #wims_class_pmotd');
+    if (seul) {
+      var cible = (/[?&+]class=([^&]*)/.exec(liens[0].getAttribute('href')) || [])[1] || liens[0].href;
+      var recent = false;
+      try {
+        var dernier = JSON.parse(sessionStorage.getItem('nova-cours-unique') || 'null');
+        var suite = !!dernier && dernier.cible === cible && Date.now() - dernier.t < 10000;
+        var essais = suite ? dernier.n + 1 : 1;
+        recent = essais > 3;
+        if (!recent) sessionStorage.setItem('nova-cours-unique', JSON.stringify({ cible: cible, t: suite ? dernier.t : Date.now(), n: essais }));
+      } catch (e) { /* stockage refusé : on entre quand même */ }
+      // Après « load » et un délai : une requête partie moins d'une seconde après la précédente est traitée
+      // avec l'état précédent de la session et ramène ici (mesuré au banc : 300 ms échoue, 1 s passe de
+      // justesse, 1,5 s passe). Juste après la connexion (session=new.…), 300 ms suffisent.
+      if (!recent) {
+        var delai = /[?&]session=new\./.test(location.href) ? 300 : 1500;
+        var partir = function () { setTimeout(function () { location.replace(liens[0].href); }, delai); };
+        if (document.readyState === 'complete') partir(); else window.addEventListener('load', partir);
+        return;
+      }
+    }
+    corps.classList.add('nova-sans-saut');
+  }
+
   /* Mot de passe : un œil dans le champ pour vérifier ce qu'on a tapé (demande de l'utilisateur,
    * 2026-10-05). Tous les champs de mot de passe de la page (connexion, changement de mot de passe…). Le
    * champ redevient masqué à l'envoi du formulaire. */
@@ -1875,7 +1914,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

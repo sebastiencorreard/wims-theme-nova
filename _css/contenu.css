@@ -850,3 +850,7 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 
 /* Bouton « Envoyer la réponse » renommé « Valider » par nova.js (retourReponse) : caché jusque-là, 3 s au plus. */
 .nova-js .send_answer input[type="submit"]:not(.nova-valider) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+
+/* Accueil d'un élève qui n'a qu'un cours (js/nova.js, coursUnique ; demande de l'utilisateur, 2026-10-05) :
+ * caché pendant que nova.js l'emmène dans le cours ; s'il ne le fait pas (.nova-sans-saut), ou au plus 3 s. */
+.nova-js body:has(#nova-eleve) .wimsbody:has(> ul.wims_subclasses > li:only-child):not(.nova-sans-saut) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

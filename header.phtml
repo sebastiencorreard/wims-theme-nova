@@ -31,6 +31,16 @@
 !set current_module=!replace / by , in $module
 !set module_path= !item 1 of $current_module
 
+!! Nova : la deconnexion d'un eleve (lien de html/headmenu_user.phtml) ramene a la page de connexion de sa
+!! classe, ou de son portail ou groupement ($wims_superclass), au lieu de la liste des classes (demande de
+!! l'utilisateur, 2026-10-05). WIMS ferme la session (cmd=close) et ouvre cette page dans la meme requete.
+!! Pas pour une classe a authentification CAS (lien different, laisse tel quel).
+!if $wims_class!=$empty and $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and $class_cas_auth=$empty
+  !set nova_entree=$wims_superclass
+  !default nova_entree=$wims_class
+  !set wims_link_close=!replace internal cmd=close&module=adm/class/classes&type=participant by cmd=close&module=adm/class/classes&type=authparticipant&class=$nova_entree in $wims_link_close
+!endif
+
 !if $[$wims_home_items_cnt + $wims_hm_cnt + $wims_link_close_cnt]!=0 or ($module_path notitemof home,adm,classes and _exam notin $session and $module_init_parm == $empty)
   !if $module!=home or $wims_user!=
     <div id="wimstopbox">

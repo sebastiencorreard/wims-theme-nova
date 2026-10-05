@@ -622,3 +622,71 @@ img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; tra
 .nova-mdp-oeil:hover { background: var(--nova-accent-doux); }
 .nova-mdp-oeil:hover::before, .nova-mdp-oeil[aria-pressed="true"]::before { background-color: var(--nova-accent); }
 .nova-mdp-oeil:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+
+/* Clavier mathématique tactile (js/nova.js, clavierMaths ; disposition A choisie par l'utilisateur,
+ * 2026-10-06) : 4 rangées de 7 touches, collé en bas de l'écran ; la page garde de la place en dessous. */
+.nova-clavier {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in oklab, var(--nova-texte) 14%, var(--nova-fond));
+  box-shadow: 0 -2px 12px rgb(0 0 0 / 12%);
+}
+.nova-clavier[hidden] { display: none; }
+.nova-clavier .nova-touche {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 46px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 25%);
+  font: 600 1.25rem var(--nova-police);
+  text-transform: none;
+  letter-spacing: 0;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.nova-clavier .nova-touche > span { display: inline-block; line-height: 1; white-space: nowrap; }
+.nova-clavier .nova-touche sup { font-size: .62em; line-height: 0; vertical-align: .6em; }
+.nova-clavier .nova-touche:is(.f, .nav, .abc) { background: color-mix(in oklab, var(--nova-texte) 9%, var(--nova-surface)); }
+.nova-clavier .nova-touche.f { font-size: 1.125rem; }
+.nova-clavier .nova-touche.abc { font-size: .875rem; font-weight: 700; letter-spacing: .03em; }
+.nova-clavier .nova-touche.ok { background: var(--nova-accent); color: var(--nova-sur-accent); font-size: 1rem; font-weight: 700; }
+.nova-clavier .nova-touche.s2 { grid-column: span 2; }
+.nova-clavier .nova-touche:active { background: var(--nova-accent-doux); }
+.nova-clavier .nova-touche.ok:active { background: color-mix(in oklab, var(--nova-accent) 80%, black); }
+html.nova-clavier-ouvert body { padding-bottom: var(--nova-clavier-h, 0px); }
+/* Les boutons collés en bas (« Valider »…) et le retour en haut cèdent la place au clavier (sa touche Entrée valide). */
+html.nova-clavier-ouvert :is(.nova-collant, .wims_topback) { display: none !important; }
+/* « 123 » à côté d'un champ rendu au clavier du téléphone : retour au clavier mathématique. */
+.nova-clavier-retour { display: none; }
+.nova-champ-natif + .nova-clavier-retour {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-height: 0;
+  margin: 0 0 0 6px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--nova-accent-doux);
+  color: var(--nova-lien);
+  font: 700 .875rem var(--nova-police-chiffres);
+  vertical-align: middle;
+}

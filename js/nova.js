@@ -2149,6 +2149,170 @@
     document.addEventListener('touchcancel', finir, { capture: true, passive: false });
   }
 
+  /* Clavier mathématique tactile (disposition A choisie par l'utilisateur, 2026-10-06), activé par une
+   * surcharge CSS (:root { --nova-clavier-maths: oui; }, jetons.css), sur un écran tactile seulement. Il
+   * remplace le clavier du téléphone (inputmode="none") dans tous les champs texte de réponse ; « ABC » rend
+   * le clavier du téléphone pour le champ, un petit bouton « 123 » à côté du champ ramène au clavier Nova.
+   * x² → ^2, x³ → ^3, √ → sqrt() (curseur entre les parenthèses), ×10ˣ → *10^, × → *, ÷ → /. Entrée :
+   * « Suivant » vers le champ vide suivant, sinon « OK » (bouton d'envoi de WIMS, sa vérification comprise).
+   * Les touches ne prennent pas le focus (pointerdown sans action par défaut) : le curseur reste dans le
+   * champ. */
+  function clavierMaths() {
+    var form = document.forms.replyform;
+    if (!form || !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
+    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
+    if (!/^["']?(oui|yes|on|1)["']?$/.test(reglage)) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (n, d) { return (textes && textes.getAttribute('data-texte-clavier' + (n ? '-' + n : ''))) || d; };
+    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"]'), function (c) {
+      return (!c.type || c.type === 'text') && !c.readOnly && !c.disabled;
+    });
+    if (!champs.length) return;
+    var natifs = [];
+    var svg = function (d) {
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+    };
+    var exp = function (b, e) { return b + '<sup>' + e + '</sup>'; };
+    // Disposition A : 4 rangées de 7 colonnes ; c = classe, v = texte écrit ou action, a = nom accessible.
+    var touches = [
+      { l: exp('x', '2'), c: 'f', v: '^2', a: t('carre', 'Squared') }, { l: exp('x', '3'), c: 'f', v: '^3', a: t('cube', 'Cubed') },
+      { l: '\u221A', c: 'f', v: 'racine', a: t('racine', 'Square root') }, { l: '7' }, { l: '8' }, { l: '9' }, { l: '\u00F7', c: 'f', v: '/' },
+      { l: '(' }, { l: ')' }, { l: '\u00D710' + '<sup>x</sup>', c: 'f', v: '*10^', a: t('puissance10', 'Times ten to the power') },
+      { l: '4' }, { l: '5' }, { l: '6' }, { l: '\u00D7', c: 'f', v: '*' },
+      { l: svg('<path d="M15 6l-6 6 6 6"/>'), c: 'nav', v: 'gauche', a: t('gauche', 'Move left') },
+      { l: svg('<path d="M9 6l6 6-6 6"/>'), c: 'nav', v: 'droite', a: t('droite', 'Move right') },
+      { l: svg('<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>'), c: 'nav', v: 'effacer', a: t('effacer', 'Delete') },
+      { l: '1' }, { l: '2' }, { l: '3' }, { l: '\u2212', c: 'f', v: '-' },
+      { l: 'ABC', c: 'abc', v: 'abc', a: t('abc', 'Phone keyboard') }, { l: '', c: 'ok s2', v: 'entree' },
+      { l: '0', c: 's2' }, { l: '.' }, { l: '+', c: 'f' }
+    ];
+    var clavier = document.createElement('div');
+    clavier.className = 'nova-clavier';
+    clavier.setAttribute('role', 'group');
+    clavier.setAttribute('aria-label', t('', 'Math keyboard'));
+    clavier.hidden = true;
+    var entree = null;
+    touches.forEach(function (k) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.tabIndex = -1;
+      b.className = 'nova-touche' + (k.c ? ' ' + k.c : '');
+      b.innerHTML = '<span>' + k.l + '</span>';
+      b.setAttribute('data-v', k.v || k.l);
+      if (k.a) b.setAttribute('aria-label', k.a);
+      if (k.v === 'entree') entree = b;
+      clavier.appendChild(b);
+    });
+    document.body.appendChild(clavier);
+
+    var champ = null;
+    var evenement = function (c) { var e = document.createEvent('Event'); e.initEvent('input', true, true); c.dispatchEvent(e); };
+    var vide = function (c) { return !c.value.trim(); };
+    var suivantVide = function () {
+      var i = champs.indexOf(champ);
+      return champs.slice(i + 1).concat(champs.slice(0, i)).filter(vide)[0] || null;
+    };
+    var majEntree = function () {
+      if (!entree || !champ) return;
+      var suite = suivantVide();
+      entree.querySelector('span').textContent = suite ? t('suivant', 'Next') : t('ok', 'OK');
+    };
+    var inserer = function (txt, recul) {
+      var a = champ.selectionStart, b = champ.selectionEnd;
+      champ.setRangeText(txt, a, b, 'end');
+      if (recul) { var q = champ.selectionStart - recul; champ.setSelectionRange(q, q); }
+      evenement(champ);
+    };
+    var agir = function (v) {
+      if (!champ) return;
+      var a = champ.selectionStart, b = champ.selectionEnd;
+      if (v === 'gauche') { var g = a === b ? Math.max(0, a - 1) : a; champ.setSelectionRange(g, g); }
+      else if (v === 'droite') { var d = a === b ? Math.min(champ.value.length, b + 1) : b; champ.setSelectionRange(d, d); }
+      else if (v === 'effacer') {
+        if (a !== b) champ.setRangeText('', a, b, 'end');
+        else if (a > 0) champ.setRangeText('', a - 1, a, 'end');
+        evenement(champ);
+      }
+      else if (v === 'racine') inserer('sqrt()', 1);
+      else if (v === 'abc') natif(champ);
+      else if (v === 'entree') {
+        var suite = suivantVide();
+        if (suite) { suite.focus(); return; }
+        var envoi = form.querySelector('.send_answer input[type="submit"], input[type="submit"]');
+        if (envoi) envoi.click(); else form.submit();
+      }
+      else inserer(v);
+      majEntree();
+    };
+    // Les touches ne prennent pas le focus : le curseur reste dans le champ.
+    clavier.addEventListener('pointerdown', function (ev) { if (ev.target.closest('.nova-touche')) ev.preventDefault(); });
+    clavier.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    clavier.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.nova-touche');
+      if (b) agir(b.getAttribute('data-v'));
+    });
+
+    var afficher = function (c) {
+      champ = c;
+      clavier.hidden = false;
+      document.documentElement.classList.add('nova-clavier-ouvert');
+      document.documentElement.style.setProperty('--nova-clavier-h', clavier.offsetHeight + 'px');
+      majEntree();
+      // Le champ reste visible au-dessus du clavier.
+      var r = c.getBoundingClientRect(), bas = window.innerHeight - clavier.offsetHeight - 12;
+      if (r.bottom > bas) window.scrollBy(0, r.bottom - bas);
+      else if (r.top < 72) window.scrollBy(0, r.top - 72);
+    };
+    var cacher = function () {
+      clavier.hidden = true;
+      document.documentElement.classList.remove('nova-clavier-ouvert');
+    };
+    // « ABC » : clavier du téléphone pour ce champ ; « 123 » à côté du champ pour revenir.
+    var natif = function (c) {
+      if (natifs.indexOf(c) < 0) natifs.push(c);
+      c.setAttribute('inputmode', 'text');
+      c.classList.add('nova-champ-natif');
+      cacher();
+      c.blur();
+      c.focus();
+    };
+    champs.forEach(function (c) {
+      c.setAttribute('inputmode', 'none');
+      // Liste de suggestions vide de WIMS (list="emptylist", contre la saisie automatique) : une flèche ▼
+      // apparaît sur le champ au téléphone ; inutile ici (autocomplete déjà coupé par claviersReponse).
+      c.removeAttribute('list');
+      var retour = document.createElement('button');
+      retour.type = 'button';
+      retour.className = 'nova-clavier-retour';
+      retour.textContent = '123';
+      retour.setAttribute('aria-label', t('123', 'Math keyboard'));
+      retour.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
+      retour.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      retour.addEventListener('click', function () {
+        natifs.splice(natifs.indexOf(c), 1);
+        c.classList.remove('nova-champ-natif');
+        c.setAttribute('inputmode', 'none');
+        c.blur();
+        c.focus();
+        afficher(c);
+      });
+      c.parentNode.insertBefore(retour, c.nextSibling);
+      c.addEventListener('input', majEntree);
+    });
+    document.addEventListener('focusin', function (ev) {
+      if (champs.indexOf(ev.target) >= 0 && natifs.indexOf(ev.target) < 0) afficher(ev.target);
+      else if (!clavier.contains(ev.target)) cacher();
+    });
+    document.addEventListener('focusout', function () {
+      setTimeout(function () {
+        var actif = document.activeElement;
+        if (champs.indexOf(actif) < 0 || natifs.indexOf(actif) >= 0) cacher();
+      }, 0);
+    });
+    if (champs.indexOf(document.activeElement) >= 0) afficher(document.activeElement);
+  }
+
   /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
    * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
    * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
@@ -2175,7 +2339,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

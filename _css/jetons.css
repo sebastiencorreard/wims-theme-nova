@@ -56,6 +56,10 @@
    * feuille de la classe ou du site la coupe : :root { --nova-entree-directe: non; }  Lue par nova.js
    * (coursUnique). Demande de l'utilisateur, 2026-10-06. */
   --nova-entree-directe: oui;
+  /* Clavier mathématique tactile dans les champs de réponse : « non ». Une feuille de la classe ou du site
+   * l'active : :root { --nova-clavier-maths: oui; }  Lue par nova.js (clavierMaths). Demande de
+   * l'utilisateur, 2026-10-06. */
+  --nova-clavier-maths: non;
   --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
 }
 

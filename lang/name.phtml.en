@@ -67,3 +67,16 @@
 !set nova_mdp_masquer=Hide password
 !! Examen deja commence : message remplace (js/nova.js, autreExamen)
 !set nova_autre_examen=You must finish the exam in progress before starting another one. Click the button below.
+!! Clavier mathematique tactile (js/nova.js, clavierMaths)
+!set nova_clavier=Math keyboard
+!set nova_clavier_suivant=Next
+!set nova_clavier_ok=OK
+!set nova_clavier_abc=Phone keyboard
+!set nova_clavier_123=Math keyboard
+!set nova_clavier_effacer=Delete
+!set nova_clavier_gauche=Move left
+!set nova_clavier_droite=Move right
+!set nova_clavier_carre=Squared
+!set nova_clavier_cube=Cubed
+!set nova_clavier_racine=Square root
+!set nova_clavier_puissance10=Times ten to the power

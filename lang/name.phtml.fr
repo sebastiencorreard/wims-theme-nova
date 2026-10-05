@@ -62,3 +62,6 @@
 !set nova_partielle=Réponse partiellement juste
 !set nova_precision=Précision insuffisante
 !set nova_votre_reponse=Votre réponse :
+!! Champ de mot de passe : bouton oeil (js/nova.js, oeilMotDePasse)
+!set nova_mdp_afficher=Afficher le mot de passe
+!set nova_mdp_masquer=Masquer le mot de passe

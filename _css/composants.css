@@ -578,3 +578,43 @@ img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; tra
  * grand écran (property_fields est en ligne, avec retour) — demande de l'utilisateur, 2026-10-03. */
 .wimsbody fieldset.property_fields:has(#pw1) { flex-direction: column; flex-wrap: nowrap; width: auto; max-width: 36rem; margin-inline: auto; }
 .wimsbody fieldset.property_fields:has(#pw1) > .field { flex: 0 0 auto; width: auto; }
+
+/* Œil du mot de passe (js/nova.js, oeilMotDePasse ; demande de l'utilisateur, 2026-10-05) : bouton dans le
+ * champ, à droite ; œil barré quand le mot de passe est en clair. */
+.nova-mdp { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
+.nova-mdp.nova-mdp-plein { display: block; }
+.nova-mdp.nova-mdp-plein > input { width: 100%; box-sizing: border-box; }
+.nova-mdp > input { padding-right: 44px; }
+.nova-mdp-oeil {
+  --nova-oeil-mdp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
+  width: 40px;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+.nova-mdp-oeil::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  background-color: var(--nova-texte-2);
+  -webkit-mask: var(--nova-oeil-mdp) center / contain no-repeat;
+          mask: var(--nova-oeil-mdp) center / contain no-repeat;
+}
+.nova-mdp-oeil[aria-pressed="true"] {
+  --nova-oeil-mdp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.6 5.1A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.6 3.5M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18'/%3E%3C/svg%3E");
+}
+.nova-mdp-oeil:hover { background: var(--nova-accent-doux); }
+.nova-mdp-oeil:hover::before, .nova-mdp-oeil[aria-pressed="true"]::before { background-color: var(--nova-accent); }
+.nova-mdp-oeil:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }

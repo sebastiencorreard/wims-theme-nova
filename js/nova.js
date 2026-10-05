@@ -1829,6 +1829,39 @@
     setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
   }
 
+  /* Mot de passe : un œil dans le champ pour vérifier ce qu'on a tapé (demande de l'utilisateur,
+   * 2026-10-05). Tous les champs de mot de passe de la page (connexion, changement de mot de passe…). Le
+   * champ redevient masqué à l'envoi du formulaire. */
+  function oeilMotDePasse() {
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    document.querySelectorAll('.wimsbody input[type="password"]').forEach(function (champ) {
+      if (champ.closest('.nova-mdp')) return;
+      var parent = champ.parentNode;
+      var plein = champ.offsetWidth > 0 && champ.offsetWidth >= parent.clientWidth - 2;
+      var boite = document.createElement('span');
+      boite.className = 'nova-mdp' + (plein ? ' nova-mdp-plein' : '');
+      parent.insertBefore(boite, champ);
+      boite.appendChild(champ);
+      var bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'nova-mdp-oeil';
+      var majour = function () {
+        var visible = champ.type === 'text';
+        bouton.setAttribute('aria-pressed', visible ? 'true' : 'false');
+        bouton.setAttribute('aria-label', visible ? t('mdp-masquer', 'Hide password') : t('mdp-afficher', 'Show password'));
+        bouton.title = bouton.getAttribute('aria-label');
+      };
+      bouton.addEventListener('click', function () {
+        champ.type = champ.type === 'password' ? 'text' : 'password';
+        majour();
+      });
+      if (champ.form) champ.form.addEventListener('submit', function () { champ.type = 'password'; majour(); });
+      majour();
+      boite.appendChild(bouton);
+    });
+  }
+
   /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
    * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
    * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
@@ -1842,7 +1875,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

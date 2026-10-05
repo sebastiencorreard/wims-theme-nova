@@ -981,7 +981,7 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 
 /* Le même bouton, sous le message « Vous avez déjà commencé un autre examen » (js/nova.js, autreExamen ;
  * demande de l'utilisateur, 2026-10-05). */
-.nova-autre-examen { margin: var(--nova-e4) 0; }
+.nova-autre-examen { margin: var(--nova-e4) 0; text-align: center; }
 .nova-autre-examen a.nova-autre-examen-bouton {
   display: inline-flex;
   align-items: center;

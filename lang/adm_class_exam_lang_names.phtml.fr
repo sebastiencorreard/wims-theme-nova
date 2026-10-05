@@ -1,0 +1,6 @@
+!! Nova : textes de adm/class/exam (lang/names.phtml.fr) surchargés par le thème, lus par
+!! scripts/adm/class/classlang après ceux du module. Pas pris en compte sur la page de l'examen
+!! (job=student : le module y relit ses textes), mais bien sur « Mes notes » (job=score).
+!! Note retenue d'un examen (demande de l'utilisateur, 2026-10-05).
+!set name_bestscore=!nosubst La meilleure note obtenue pour $(name_examenlist[5]) est $[$lastscore*$scoremax/10]/$scoremax.
+!set name_bestscore2=C'est cette note qui sera retenue.

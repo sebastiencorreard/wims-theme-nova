@@ -978,3 +978,22 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
  * devant « Terminer » (js/nova.js, modeExamen). */
 #wimstopbox > .nova-avant-terminer { display: flex; align-items: center; margin-left: auto; }
 #wimstopbox > .nova-avant-terminer + .nova-terminer { margin-left: var(--nova-e2); }
+
+/* Le même bouton, sous le message « Vous avez déjà commencé un autre examen » (js/nova.js, autreExamen ;
+ * demande de l'utilisateur, 2026-10-05). */
+.nova-autre-examen { margin: var(--nova-e4) 0; }
+.nova-autre-examen a.nova-autre-examen-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--nova-cible);
+  padding: 0 var(--nova-e4);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--nova-accent) 12%, white);
+  color: var(--nova-lien);
+  font-weight: 700;
+  text-decoration: none;
+}
+.nova-autre-examen a.nova-autre-examen-bouton:hover { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.nova-autre-examen a.nova-autre-examen-bouton:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-autre-examen .nova-court { display: none; }

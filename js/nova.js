@@ -1869,6 +1869,23 @@
     setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
   }
 
+  /* Page d'un examen alors qu'un autre est en cours (adm/class/exam/student.phtml : div.wims_msg.alert
+   * « Vous avez déjà commencé un autre examen… ») : le bouton « Examen en cours » de la barre, posé par
+   * _widgets/examencours.phtml avec data-autre-examen, passe sous le message (demande de l'utilisateur,
+   * 2026-10-05). Son lien est celui de la barre (la session où l'examen a été commencé). */
+  function autreExamen() {
+    var pastille = document.querySelector('#wimstopbox .nova-examencours[data-autre-examen]');
+    var message = document.querySelector('.wimsbody .wims_msg.alert');
+    var lien = pastille && pastille.querySelector('a');
+    if (!message || !lien) return;
+    var bloc = document.createElement('p');
+    bloc.className = 'nova-autre-examen';
+    lien.classList.add('nova-autre-examen-bouton');
+    bloc.appendChild(lien);
+    message.parentNode.insertBefore(bloc, message.nextSibling);
+    pastille.remove();
+  }
+
   /* Élève d'un portail ou d'un groupement dont l'accueil ne propose qu'un seul cours (ou une seule classe) :
    * il y entre directement, juste après la connexion comme à chaque retour à cet accueil, qui devient ainsi
    * le cours (demande de l'utilisateur, 2026-10-05). Seulement si cet accueil n'a rien d'autre à montrer : ni
@@ -1954,7 +1971,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

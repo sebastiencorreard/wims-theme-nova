@@ -1259,43 +1259,65 @@
 
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
    * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
+  /* Chronomètre ou « Examen en cours » au centre de la barre, à toutes les largeurs (demande de
+   * l'utilisateur, 2026-10-06) : exactement au centre si rien ne le touche ; sinon à la position la plus
+   * proche du centre où il ne touche rien (12 px d'écart) ; s'il ne tient nulle part, à sa place dans la
+   * barre. Avant d'y renoncer : sur un écran large, « Retour » et « Outils » en pictogrammes (nova-serree) ;
+   * partout, barre compacte (nova-compacte : accueil sans marge, libellé court de la pastille). La
+   * position est posée par --nova-centre-x (CSS : .nova-centre, hors du flux). */
   function centrerBarre() {
     var barre = document.getElementById('wimstopbox');
     var centre = barre && barre.querySelector('.menuitem.chrono, .nova-examencours');
     if (!centre || !window.matchMedia) return;
     var large = window.matchMedia('(min-width: 768px)');
-    var choc = function () {
-      var r = centre.getBoundingClientRect();
-      return Array.prototype.some.call(
-        barre.querySelectorAll('.menuitem, .nova-classe, .nova-menu-bouton, .nova-plus'),
-        function (e) {
-          if (e === centre || centre.contains(e) || e.contains(centre) ||
-              e.closest('.is-dropdown-submenu, .nova-plus-panneau') || !e.getClientRects().length) return false;
-          var q = e.getBoundingClientRect();
-          return q.right > r.left - 12 && q.left < r.right + 12;
-        });
+    var ECART = 12;
+    var positionner = function () {
+      var b = barre.getBoundingClientRect();
+      var w = centre.getBoundingClientRect().width;
+      var milieu = b.width / 2;
+      var style = getComputedStyle(barre);
+      var gauche = parseFloat(style.paddingLeft) || 0, droite = b.width - (parseFloat(style.paddingRight) || 0);
+      Array.prototype.forEach.call(barre.querySelectorAll('.menuitem, .nova-classe, .nova-menu-bouton, .nova-plus'), function (e) {
+        if (e === centre || centre.contains(e) || e.contains(centre) ||
+            e.closest('.is-dropdown-submenu, .nova-plus-panneau') || !e.getClientRects().length) return;
+        var q = e.getBoundingClientRect();
+        if (!q.width) return;
+        var g = q.left - b.left, d = q.right - b.left;
+        if ((g + d) / 2 < milieu) gauche = Math.max(gauche, d + ECART); else droite = Math.min(droite, g - ECART);
+      });
+      if (droite - gauche < w) return false;
+      var x = Math.min(Math.max(milieu, gauche + w / 2), droite - w / 2);
+      centre.style.setProperty('--nova-centre-x', x + 'px');
+      return true;
     };
     var placer = function () {
+      centre.style.removeProperty('--nova-centre-x');
+      barre.classList.remove('nova-serree', 'nova-compacte');
+      centre.classList.add('nova-centre');       // hors du flux : les voisins prennent leur place
+      if (positionner()) return;
+      if (large.matches) {
+        barre.classList.add('nova-serree');      // « Retour », « Outils » : pictogrammes seuls
+        if (positionner()) return;
+        barre.classList.remove('nova-serree');
+      }
+      // Barre compacte : moins de marge autour de l'accueil, « Examen » au lieu de « Examen en cours ».
+      barre.classList.add('nova-compacte');
+      if (positionner()) return;
+      barre.classList.remove('nova-compacte');
       centre.classList.remove('nova-centre');
-      barre.classList.remove('nova-serree');
-      if (!large.matches) return;
-      centre.classList.add('nova-centre');
-      if (!choc()) return;
-      barre.classList.add('nova-serree');        // « Retour », « Outils » : pictogrammes seuls
-      if (!choc()) return;
-      barre.classList.remove('nova-serree');
-      centre.classList.remove('nova-centre');
+      centre.style.removeProperty('--nova-centre-x');
     };
     var verifier = function () {
       placer();
       // Barre sur deux lignes malgré tout : libellés de « Retour » et « Outils » retirés.
-      if (large.matches && barre.getBoundingClientRect().height > 72) barre.classList.add('nova-serree');
+      if (large.matches && barre.getBoundingClientRect().height > 72) { barre.classList.add('nova-serree'); placer(); }
     };
     verifier();
     var attente;
     window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(verifier, 100); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(verifier);
   }
+
 
   // Infobulles pour les entrées qui peuvent passer en pictogramme seul (cadre.css).
   function infobulles() {

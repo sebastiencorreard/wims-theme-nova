@@ -676,17 +676,18 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
           mask: none;
 }
 
-/* ---------- Chronomètre ou « Examen en cours » centré dans la barre (écrans larges) ----------
- * js/nova.js (centrerBarre) pose .nova-centre seulement si rien ne chevauche ; sinon il reste
- * à sa place. La barre de progression d'un parcours passe alors à gauche. */
+/* ---------- Chronomètre ou « Examen en cours » au centre de la barre (toutes largeurs) ----------
+ * js/nova.js (centrerBarre) pose .nova-centre et --nova-centre-x : le centre de la barre si rien ne
+ * chevauche, sinon la position libre la plus proche ; s'il ne tient nulle part, il reste à sa place.
+ * La barre de progression d'un parcours passe alors à gauche (écrans larges). */
+#wimstopbox .nova-centre {
+  position: absolute;
+  left: var(--nova-centre-x, 50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+}
 @media (min-width: 768px) {
-  #wimstopbox .nova-centre {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-  }
   /* Pas la place de centrer avec les libellés : « Retour » et « Outils » en pictogrammes seuls. */
   #wimstopbox.nova-serree .menuitem:is(.back, .tools) .text_item {
     position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
@@ -992,6 +993,15 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 @media (min-width: 768px) {
   #wimstopbox:has(.nova-centre) .menuitem.progress { position: static; transform: none; }
 }
+/* Barre compacte (js/nova.js, centrerBarre), pour garder le chronomètre ou la pastille au centre : accueil sans
+ * marge autour de sa cible de 44 px, pastille au libellé court. */
+#wimstopbox.nova-compacte .menuitem.class_home,
+#wimstopbox.nova-compacte .menuitem.class_home > :is(a, .text_item) { padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0; }
+/* Mesure juste après l'ajout de .nova-compacte (centrerBarre) : pas de transition sur ces marges, sinon la
+ * largeur mesurée est encore l'ancienne. */
+#wimstopbox .menuitem.class_home, #wimstopbox .menuitem.class_home > :is(a, .text_item) { transition-property: background-color, color, box-shadow, opacity; }
+#wimstopbox.nova-compacte .nova-examencours .nova-long { display: none; }
+#wimstopbox.nova-compacte .nova-examencours .nova-court { display: inline; }
 
 /* Page qui confirme « Terminer » (pas de menu latéral) : Aide et les autres entrées, à droite,
  * devant « Terminer » (js/nova.js, modeExamen). */

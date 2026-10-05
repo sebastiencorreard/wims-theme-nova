@@ -855,3 +855,14 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 /* Accueil d'un élève qui n'a qu'un cours (js/nova.js, coursUnique ; demande de l'utilisateur, 2026-10-05) :
  * caché pendant que nova.js l'emmène dans le cours ; s'il ne le fait pas (.nova-sans-saut), ou au plus 3 s. */
 .nova-js body:has(#nova-eleve) .wimsbody:has(> ul.wims_subclasses > li:only-child):not(.nova-sans-saut) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+
+/* Animations coupées (js/nova.js, animationsCoupees : --nova-animations: non, ou réglage « réduire les
+ * animations » de l'appareil ; demande de l'utilisateur, 2026-10-05). Durées ramenées à presque rien : l'état
+ * final s'affiche d'emblée. Les délais sont gardés : nova-revele (« au plus 3 s ») reste un délai de secours. */
+html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *::before, html.nova-sans-animation *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}

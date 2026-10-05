@@ -5,6 +5,14 @@
  */
 (function () {
   'use strict';
+  /* Animations coupées : réglage « réduire les animations » de l'appareil, ou variable CSS
+   * --nova-animations à « non » (jetons.css ; un enseignant ou un administrateur la surcharge :
+   * :root { --nova-animations: non; }). Demande de l'utilisateur, 2026-10-05. */
+  function animationsCoupees() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-animations').trim().toLowerCase();
+    return /^["']?(non|no|none|aucune|off|0)["']?$/.test(v);
+  }
   function initialiser() {
     var barre = document.getElementById('wimstopbox');
     var menu = document.getElementById('wimsmenumodubox');
@@ -1040,7 +1048,7 @@
       lien.title = noms[langue] || noms.en;
       lien.addEventListener('click', function (ev) {
         ev.preventDefault();
-        var doux = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        var doux = !animationsCoupees();
         window.scrollTo({ top: 0, behavior: doux ? 'smooth' : 'auto' });
       });
       bloc.appendChild(lien);
@@ -1493,7 +1501,7 @@
     var textes = document.getElementById('nova-textes');
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
     var n = diapos.length, courant = 0, arrete = false, suspendu = false, minuterie = 0;
-    var calme = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var calme = animationsCoupees();
     var piste = document.createElement('div');
     piste.className = 'nova-car-piste';
     piste.setAttribute('aria-live', 'off');
@@ -1828,6 +1836,7 @@
   // bouton « Valider » à l'envoi (demande de l'utilisateur, 2026-10-05) : position fixe, toujours à l'écran ;
   // à défaut (envoi ancien ou inconnu), sur l'élément donné.
   function etoiles(el) {
+    if (animationsCoupees()) return;
     var nuee = document.createElement('span');
     nuee.className = 'nova-etoiles';
     nuee.setAttribute('aria-hidden', 'true');
@@ -1864,6 +1873,7 @@
 
   // Réponse fausse : toute la page vibre, brièvement (demande de l'utilisateur, 2026-10-05).
   function vibrer() {
+    if (animationsCoupees()) return;
     var racine = document.documentElement;
     racine.classList.add('nova-vibre');
     setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
@@ -1977,7 +1987,7 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); retourReponse(); boutonsCollants(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

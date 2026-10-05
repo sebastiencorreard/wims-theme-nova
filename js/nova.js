@@ -212,9 +212,6 @@
     // 2026-10-02), ni sur « Mes notes » (job=score), qui n'ont pas de lien d'exercice non plus.
     var job = (/[?&+]job=([a-z]+)/.exec(location.href) || [])[1] || '';
     var corps = document.querySelector('.wimsbody');
-    // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
-    // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
-    // (demande de l'utilisateur, 2026-10-03).
     // Avertissement de « Terminer » (scorereg.phtml : « Oui » confirm_end=yes, « Non » job=score) : « Non »
     // ramène à la liste des exercices (job=student) pour continuer l'examen, au lieu de « Mes notes »
     // (demande de l'utilisateur, 2026-10-05).
@@ -222,6 +219,20 @@
     if (oui) Array.prototype.forEach.call(oui.parentNode.querySelectorAll('a[href*="job=score"]:not([href*="job=scorereg"])'), function (non) {
       non.setAttribute('href', non.getAttribute('href').replace(/job=score(?=&|$)/, 'job=student'));
     });
+    // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
+    // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
+    // (demande de l'utilisateur, 2026-10-03), et « Terminer » devient « Examen », vers la liste des
+    // exercices (job=student), pour y retourner sans passer par le menu (demande de l'utilisateur, 2026-10-05).
+    if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]')) {
+      var versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
+      if (versExamen !== fin.getAttribute('href')) {
+        fin.setAttribute('href', versExamen);
+        fin.textContent = t('texte-examen', 'Exam');
+        fin.setAttribute('aria-label', fin.textContent);
+        fin.setAttribute('title', fin.textContent);
+        place.classList.add('nova-terminer-examen');
+      }
+    }
     if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]') && !document.querySelector('.nova-terminer-impossible')) {
       var avis = document.createElement('div');
       avis.className = 'wims_msg warning nova-terminer-impossible';

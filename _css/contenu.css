@@ -832,7 +832,9 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 }
 @media (prefers-reduced-motion: no-preference) {
   .nova-etoiles > span { animation: nova-etoile 1.3s var(--d, 0s) ease-out forwards; }
-  .nova-vibre { animation: nova-vibre .5s ease-in-out 1; }
+  /* Toute la page, vite et peu : « vibré » plutôt que « secoué » ; pas de barre de défilement le temps de l'effet. */
+  html.nova-vibre { overflow-x: clip; }
+  html.nova-vibre body { animation: nova-vibre .32s linear 1; }
 }
 @keyframes nova-etoile {
   0% { opacity: 0; transform: translate(-50%, 0) scale(.4) rotate(0); }
@@ -841,9 +843,10 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 }
 @keyframes nova-vibre {
   0%, 100% { transform: translateX(0); }
-  15%, 55% { transform: translateX(-7px); }
-  35%, 75% { transform: translateX(7px); }
-  90% { transform: translateX(-3px); }
+  10%, 30%, 50%, 70% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+  90% { transform: translateX(-2px); }
 }
+
 /* Bouton « Envoyer la réponse » renommé « Valider » par nova.js (retourReponse) : caché jusque-là, 3 s au plus. */
 .nova-js .send_answer input[type="submit"]:not(.nova-valider) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

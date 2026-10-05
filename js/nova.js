@@ -1693,7 +1693,7 @@
    * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
    * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
    * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
-   * <sup><small>[k]</small></sup>, k = nom de la ligne) : étoiles si juste, rouge et vibration si fausse ;
+   * <sup><small>[k]</small></sup>, k = nom de la ligne) : étoiles si juste, rouge si fausse (et la page vibre) ;
    * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
    * l'analyse ») : rien ne change. */
   function retourReponse() {
@@ -1726,7 +1726,7 @@
       var etat = ligne ? ligne.etat : { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[1]];
       if (ligne) ligne.champs.push(champ);
       if (etat === 'bonne') etoiles(champ);
-      else if (etat === 'mauvaise') { champ.classList.add('nova-faux'); vibrer(champ); }
+      else if (etat === 'mauvaise') champ.classList.add('nova-faux');
     });
 
     var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
@@ -1762,7 +1762,6 @@
       while (ligne.eleve.firstChild) copie.appendChild(ligne.eleve.firstChild);
       p.appendChild(copie);
       corps.appendChild(p);
-      if (ligne.etat === 'mauvaise') vibrer(copie);
     };
     if (toutes) {
       titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
@@ -1794,6 +1793,7 @@
     }
     reponse.insertBefore(boite, reponse.firstChild);
     reponse.classList.add('nova-retour', 'nova-retour-pret');
+    if (fausse) vibrer();
   }
 
   // Petites étoiles qui montent de l'élément (CSS : .nova-etoiles, sans animation si l'élève la refuse).
@@ -1818,9 +1818,11 @@
     setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
   }
 
-  function vibrer(el) {
-    el.classList.add('nova-vibre');
-    el.addEventListener('animationend', function () { el.classList.remove('nova-vibre'); }, { once: true });
+  // Réponse fausse : toute la page vibre, brièvement (demande de l'utilisateur, 2026-10-05).
+  function vibrer() {
+    var racine = document.documentElement;
+    racine.classList.add('nova-vibre');
+    setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
   }
 
   /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur

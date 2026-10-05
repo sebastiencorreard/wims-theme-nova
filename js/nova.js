@@ -2051,7 +2051,8 @@
    * - pas de pavé numérique : un champ « numeric » accepte le signe moins et les fractions (2/3), absents
    *   des pavés décimal ou téléphone (iPhone surtout) ; le clavier texte reste le seul complet ;
    * - Entrée dans un champ alors qu'un autre est vide : passe au champ vide suivant au lieu d'envoyer
-   *   (WIMS refuserait l'envoi) ; touche Entrée du téléphone « Suivant », puis « OK » sur le dernier.
+   *   (WIMS refuserait l'envoi) ; touche Entrée du téléphone « Suivant », puis « OK » sur le dernier ;
+   * - focus sur le premier champ à l'ouverture.
    * Demande de l'utilisateur, 2026-10-06. */
   function claviersReponse() {
     var form = document.forms.replyform;
@@ -2085,6 +2086,13 @@
       });
     });
     majour();
+    // Focus sur le premier champ de réponse (demande de l'utilisateur, 2026-10-06) : champ texte ou zone de
+    // texte, sans défilement (l'énoncé reste en vue), seulement si rien d'autre n'a le focus.
+    var premier = champs.filter(function (c) { return !c.readOnly && !c.disabled && c.getClientRects().length; })[0];
+    var actif = document.activeElement;
+    if (premier && (!actif || actif === document.body || actif === document.documentElement)) {
+      try { premier.focus({ preventScroll: true }); } catch (e) { premier.focus(); }
+    }
   }
 
   /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »

@@ -65,3 +65,5 @@
 !! Champ de mot de passe : bouton oeil (js/nova.js, oeilMotDePasse)
 !set nova_mdp_afficher=Afficher le mot de passe
 !set nova_mdp_masquer=Masquer le mot de passe
+!! Examen deja commence : message remplace (js/nova.js, autreExamen)
+!set nova_autre_examen=Vous devez terminer l'examen en cours avant d'en commencer un autre. Cliquez sur le bouton ci-dessous.

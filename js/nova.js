@@ -1878,6 +1878,12 @@
     var message = document.querySelector('.wimsbody .wims_msg.alert');
     var lien = pastille && pastille.querySelector('a');
     if (!message || !lien) return;
+    // Le message de WIMS (lang/msg.phtml du module, que le thème ne peut pas surcharger) est remplacé
+    // (demande de l'utilisateur, 2026-10-05) ; le CSS le cache jusque-là (3 s au plus).
+    var textes = document.getElementById('nova-textes');
+    var nouveau = textes && textes.getAttribute('data-autre-examen');
+    if (nouveau) message.textContent = nouveau;
+    message.classList.add('nova-autre-examen-message');
     var bloc = document.createElement('p');
     bloc.className = 'nova-autre-examen';
     lien.classList.add('nova-autre-examen-bouton');

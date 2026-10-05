@@ -997,3 +997,5 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 .nova-autre-examen a.nova-autre-examen-bouton:hover { background: var(--nova-accent); color: var(--nova-sur-accent); }
 .nova-autre-examen a.nova-autre-examen-bouton:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-autre-examen .nova-court { display: none; }
+/* Le message de WIMS attend son remplacement par nova.js (3 s au plus). */
+.nova-js body:has(#wimstopbox [data-autre-examen]) .wimsbody .wims_msg.alert:not(.nova-autre-examen-message) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

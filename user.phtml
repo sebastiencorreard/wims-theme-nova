@@ -8,6 +8,16 @@
 !endif
 !!initialisation
 !set home_theme=yes
+!! Nova : feuille de surcharge du portail ou du groupement (WIMS ne la charge que dans la structure elle-meme) :
+!! transmise a nova.js (reglagesStructure), qui en applique les reglages --nova-... dans toutes ses zones.
+!if $wims_superclass!=$empty
+  !! Lu par !sh comme scripts/adm/css.phtml : !record couperait au premier « :root » (separateur WIMS).
+  !set nova_css_structure=!sh if test -r $wims_home/log/classes/$wims_superclass/css; then cat $wims_home/log/classes/$wims_superclass/css; fi
+  !if $nova_css_structure!=$empty
+<script type="text/plain" id="nova-css-structure">$nova_css_structure</script>
+  !endif
+  !reset nova_css_structure
+!endif
 
 !set percents=!getscorepercent
 !set class_homepage=!getdef class_homepage in wimshome/log/classes/$wims_class/.def

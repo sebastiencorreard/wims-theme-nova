@@ -2368,7 +2368,31 @@
     if (cible && cible.form) cible.focus();
   }
 
-  function demarrer() { if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Réglages de Nova posés dans la feuille de surcharge du portail ou du groupement (demande de
+   * l'utilisateur, 2026-10-06) : WIMS ne charge que la feuille de la classe courante. user.phtml (accueil)
+   * transmet la feuille de la structure (#nova-css-structure) ; ses déclarations --nova-… sont gardées pour
+   * la structure (meta nova-structure, sessionStorage) et posées sur toutes ses pages par html { … } :
+   * plus fortes que les défauts de Nova (:where(:root)), plus faibles que la feuille de la classe (:root). */
+  function reglagesStructure() {
+    var meta = document.querySelector('meta[name="nova-structure"]');
+    var structure = meta && meta.getAttribute('content');
+    if (!structure) return;
+    var cle = 'nova-reglages-' + structure, decl = null;
+    var source = document.getElementById('nova-css-structure');
+    if (source) {
+      decl = (source.textContent.match(/--nova-[a-z0-9-]+\s*:\s*[^;}\n]+/g) || []).join(';');
+      try { sessionStorage.setItem(cle, decl); } catch (e) { /* sans stockage : cette page seulement */ }
+    } else {
+      try { decl = sessionStorage.getItem(cle); } catch (e) { decl = null; }
+    }
+    if (!decl) return;
+    var style = document.createElement('style');
+    style.id = 'nova-reglages-structure';
+    style.textContent = 'html { ' + decl + '; }';
+    document.head.appendChild(style);
+  }
+
+  function demarrer() { reglagesStructure(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

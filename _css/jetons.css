@@ -47,6 +47,13 @@
   --nova-rayon: 10px;
   --nova-rayon-carte: 12px;
   --nova-cible: 44px;
+  --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
+}
+
+/* Réglages de Nova par surcharge CSS. Spécificité nulle (:where) : du plus faible au plus fort, ces valeurs
+ * par défaut, puis la feuille du portail ou du groupement (js/nova.js, reglagesStructure : html { … },
+ * 2026-10-06), puis la feuille de la classe ou du cours (:root { … }). */
+:where(:root) {
   /* Animations de Nova (étoiles, vibration, menus, carrousel, défilements…) : coupées par défaut
    * (« non », demande de l'utilisateur, 2026-10-05). Une feuille de la classe ou du site les active :
    * :root { --nova-animations: oui; }  Lue par nova.js (html.nova-sans-animation quand elles sont coupées).
@@ -60,7 +67,6 @@
    * l'active : :root { --nova-clavier-maths: oui; }  Lue par nova.js (clavierMaths). Demande de
    * l'utilisateur, 2026-10-06. */
   --nova-clavier-maths: non;
-  --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
 }
 
 /* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand htmlheader.phtml pose

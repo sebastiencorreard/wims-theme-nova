@@ -127,6 +127,18 @@
   function modeExamen() {
     var barre = document.getElementById('wimstopbox');
     var fin = barre && barre.querySelector('#user_links a.endexam');
+    // Élève authentifié par CAS (ou autre authentification externe) : html/headmenu_user.phtml met alors le
+    // lien de déconnexion du CAS dans le menu du compte, sans « Terminer cette session d'examen ». Il ne reste
+    // que celui du module d'examen, dans le menu latéral : il sert de « Terminer » (vécu sur un site
+    // CAS, 2026-10-06 : ni « Terminer » ni chronomètre dans la barre).
+    if (!fin && barre) {
+      var lateral = document.querySelector('#wimsmenumodubox a[href*="job=scorereg"]');
+      if (lateral) {
+        fin = lateral.cloneNode(true);
+        fin.removeAttribute('id');
+        fin.classList.add('endexam');
+      }
+    }
     if (!fin) return;
     var textes = document.getElementById('nova-textes');
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };

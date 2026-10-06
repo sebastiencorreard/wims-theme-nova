@@ -44,6 +44,11 @@
 !if $module=adm/manage and $wims_ismanager=2 and $job=conf and $confcat=1
   !read themes/Nova/_widgets/apparence.phtml
 !endif
+!! Page Apparence de la configuration d'une classe, d'un groupement ou d'un portail : meme carte, ecrite dans
+!! la feuille de style de la classe (js/nova.js, apparenceClasse). WIMS ne montre cette page qu'a qui en a le droit.
+!if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
+  !read themes/Nova/_widgets/apparence-classe.phtml
+!endif
 !reset nova_m nova_site
 !! Header menu bar definition.
 !nocache

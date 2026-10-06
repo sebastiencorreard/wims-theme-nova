@@ -97,3 +97,4 @@
 !set nova_app_masques=réglages sans effet avec le thème Nova sont masqués.
 !set nova_app_afficher=Les afficher
 !set nova_app_masquer=Les masquer
+!set nova_app_note_classe=Ces réglages valent pour ce portail, ce groupement ou cette classe (et leurs zones), et l'emportent sur ceux du site. Ils sont écrits dans la feuille de style ci-dessous.

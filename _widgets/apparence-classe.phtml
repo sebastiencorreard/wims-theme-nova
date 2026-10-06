@@ -1,0 +1,38 @@
+!! Nova : carte « Reglages de Nova » de la page Apparence de la configuration d'une classe, d'un groupement ou
+!! d'un portail (adm/class/config). Les choix sont ecrits par js/nova.js (apparenceClasse) dans la zone de texte
+!! de la feuille de style de la classe (pr_cssfile), enregistree par WIMS (scripts/setdefr.proc).
+!! La feuille complete est aussi transmise : WIMS remplit cette zone par !record 0, qui coupe au premier « : »
+!! en debut de ligne (une feuille commencant par « :root » y apparaissait vide, et l'enregistrer l'effacait).
+!set nova_cf=!sh if test -r $wims_home/log/classes/$wims_class/css; then cat $wims_home/log/classes/$wims_class/css; fi
+<script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
+<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+  <div class="nova-app">
+    <fieldset class="property_fields blockcenter nova-app-carte">
+      <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-c1">$nova_app_animations<span class="nova-app-aide">$nova_app_animations_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c1">
+          <label><input type="radio" name="nova_c_animations" value="oui"> $nova_app_oui</label>
+          <label><input type="radio" name="nova_c_animations" value="non"> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-c2">$nova_app_entree<span class="nova-app-aide">$nova_app_entree_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c2">
+          <label><input type="radio" name="nova_c_entree-directe" value="oui"> $nova_app_oui</label>
+          <label><input type="radio" name="nova_c_entree-directe" value="non"> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-c3">$nova_app_clavier<span class="nova-app-aide">$nova_app_clavier_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c3">
+          <label><input type="radio" name="nova_c_clavier-maths" value="oui"> $nova_app_oui</label>
+          <label><input type="radio" name="nova_c_clavier-maths" value="non"> $nova_app_non</label>
+        </span>
+      </div>
+      <p class="nova-app-note">$nova_app_note_classe</p>
+      <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_app_enregistrer</button></div>
+    </fieldset>
+  </div>
+</template>
+!reset nova_cf

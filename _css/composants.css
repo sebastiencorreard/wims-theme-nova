@@ -722,9 +722,7 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
 .nova-app-repli { flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 8px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
 .nova-app-repli-bouton { min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 @media (max-width: 639.98px) { .nova-app-ligne { grid-template-columns: 1fr; } .nova-app-choix { justify-self: start; } }
-/* Pages Apparence (site, classe) : largeur limitée sur un grand écran ; bouton d'aide juste après son libellé,
- * plutôt que flottant à droite contre le réglage suivant (demande de l'utilisateur, 2026-10-06). */
+/* Pages Apparence (site, classe) : largeur limitée sur un grand écran ; bouton d'aide à droite de son réglage,
+ * avec une marge qui le sépare du réglage voisin (demandes de l'utilisateur, 2026-10-06). */
 body.nova-page-apparence .wimsbody { max-width: 60rem; margin-left: auto; margin-right: auto; }
-body.nova-page-apparence .wimsbody :is(.field, li.field) > label { display: inline-block; margin-right: var(--nova-e2); vertical-align: middle; }
-body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.float_right { float: none; display: inline-flex; margin: 0 0 var(--nova-e1) 0; vertical-align: middle; }
-body.nova-page-apparence .wimsbody :is(.field, li.field) { padding-right: var(--nova-e4); }
+body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.float_right { margin-right: var(--nova-e6); }

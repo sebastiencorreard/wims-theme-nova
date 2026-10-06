@@ -144,6 +144,14 @@
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
     document.body.classList.add('nova-examen', 'nova-examen-session');
 
+    // Élève CAS : le menu du compte garde « Déconnexion » et « Déconnexion CAS » pendant l'examen (sans CAS,
+    // WIMS remplace la déconnexion par « Terminer ») ; retirés, pour ne pas quitter l'examen sans le terminer
+    // (demande de l'utilisateur, 2026-10-06). Avant la copie du menu du compte dans le menu latéral.
+    Array.prototype.forEach.call(barre.querySelectorAll('#user_links a.visitor'), function (a) {
+      var li = a.closest('li');
+      if (li && li.parentNode && li.parentNode.id === 'user_links') li.remove(); else a.remove();
+    });
+
     // « Terminer » : le lien lui-même, dans la barre, libellé court ; le long reste pour l'accessibilité.
     var liFin = fin.closest('li');
     var long = fin.textContent.trim();

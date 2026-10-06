@@ -719,6 +719,8 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
 .nova-app-choix label:has(input:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
 .nova-app-note { margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-app-actions { display: flex; justify-content: flex-end; margin-top: var(--nova-e3); }
+/* Réglages repliés : l'attribut hidden seul perdait contre « li.field { display: block } » de WIMS (vécu, 2026-10-06). */
+.nova-sans-effet[hidden] { display: none !important; }
 .nova-app-repli { flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 8px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
 .nova-app-repli-bouton { min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 @media (max-width: 639.98px) { .nova-app-ligne { grid-template-columns: 1fr; } .nova-app-choix { justify-self: start; } }
@@ -726,3 +728,7 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
  * avec une marge qui le sépare du réglage voisin (demandes de l'utilisateur, 2026-10-06). */
 body.nova-page-apparence .wimsbody { max-width: 60rem; margin-left: auto; margin-right: auto; }
 body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.float_right { margin-right: var(--nova-e6); }
+/* Menus déroulants juste à droite de leur étiquette, comme dans les thèmes de WIMS (demande de l'utilisateur,
+ * 2026-10-06) ; les champs texte restent sous leur libellé. */
+body.nova-page-apparence .wimsbody :is(.field, li.field):has(> select) > label { display: inline-block; margin-right: var(--nova-e3); vertical-align: middle; }
+body.nova-page-apparence .wimsbody :is(.field, li.field) > select { display: inline-block; width: auto; max-width: 100%; vertical-align: middle; }

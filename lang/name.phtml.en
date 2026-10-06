@@ -84,7 +84,7 @@
 !set nova_app_titre=Nova settings
 !set nova_app_pastille=theme
 !set nova_app_animations=Animations
-!set nova_app_animations_aide=Stars, shake, menus, smooth scrolling. The student's device can always refuse them.
+!set nova_app_animations_aide=Stars and shake after an answer, sliding menus, automatic scrolling of the home page examples. The student's device can always refuse them.
 !set nova_app_entree=Go straight into the only course
 !set nova_app_entree_aide=Portal or group: a student with a single course or class goes straight into it.
 !set nova_app_clavier=Touch math keyboard

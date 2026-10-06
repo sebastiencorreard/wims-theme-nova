@@ -699,3 +699,26 @@ html.nova-clavier-permis:not(.nova-clavier-ouvert) .nova-pastille-clavier {
 html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .nova-pastille-clavier { bottom: calc(76px + var(--nova-vv-bas, 0px)); }
 html.nova-clavier-permis:not(.nova-clavier-ouvert) .wims_topback { bottom: 76px; }
 html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .wims_topback { bottom: 136px; }
+
+/* Page Apparence de la maintenance du site : carte « Réglages de Nova » et repli des réglages sans effet
+ * (js/nova.js, apparenceNova ; header.phtml, _widgets/apparence.phtml ; maquette A, 2026-10-06). */
+.nova-app { margin: 0 0 var(--nova-e5); }
+/* Le cadre property_fields de WIMS dispose ses enfants en flex : la carte reste en bloc, lignes pleine largeur. */
+fieldset.nova-app-carte { display: block; }
+fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
+.nova-app-fait { margin: 0 0 var(--nova-e4); }
+.nova-app-pastille { margin-left: .4em; padding: 1px 8px; border-radius: 999px; background: var(--nova-accent-doux); color: var(--nova-lien); font-size: .75rem; font-weight: 700; vertical-align: middle; }
+.nova-app-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--nova-e3); align-items: center; padding: var(--nova-e2) 0; border-top: 1px solid var(--nova-bord); }
+.nova-app-ligne:first-of-type { border-top: 0; }
+.nova-app-nom { font-weight: 600; }
+.nova-app-aide { display: block; font-weight: 400; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-app-choix { display: inline-flex; border: 1px solid var(--nova-bord-fort); border-radius: 999px; overflow: hidden; }
+.nova-app-choix label { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--nova-e4); margin: 0; font-weight: 700; color: var(--nova-texte-2); cursor: pointer; }
+.nova-app-choix input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.nova-app-choix label:has(input:checked) { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.nova-app-choix label:has(input:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+.nova-app-note { margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-app-actions { display: flex; justify-content: flex-end; margin-top: var(--nova-e3); }
+.nova-app-repli { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 8px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.nova-app-repli-bouton { min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+@media (max-width: 639.98px) { .nova-app-ligne { grid-template-columns: 1fr; } .nova-app-choix { justify-self: start; } }

@@ -2388,17 +2388,62 @@
     if (cible && cible.form) cible.focus();
   }
 
+  /* Page Apparence de la maintenance du site (gestionnaire ; demande de l'utilisateur, 2026-10-06,
+   * maquette A) : carte « Réglages de Nova » (template#nova-apparence, header.phtml) au-dessus du formulaire
+   * de WIMS, avec les champs cachés de celui-ci (session, module…) ; les réglages de WIMS sans effet avec Nova
+   * (data-sans-effet : conf_N) repliés derrière « Les afficher ». */
+  function apparenceNova() {
+    var modele = document.getElementById('nova-apparence');
+    var formWims = document.querySelector('.wimsbody form input[name="save"]');
+    formWims = formWims && formWims.form;
+    if (!modele || !formWims || !modele.content) return;
+    var bloc = modele.content.cloneNode(true);
+    var form = bloc.querySelector('form.nova-app');
+    Array.prototype.forEach.call(formWims.querySelectorAll('input[type="hidden"]'), function (h) { form.appendChild(h.cloneNode(true)); });
+    formWims.parentNode.insertBefore(bloc, formWims);
+    var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
+    var lignes = sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('li'); }).filter(Boolean);
+    if (!lignes.length) return;
+    lignes.forEach(function (li) { li.hidden = true; li.classList.add('nova-sans-effet'); });
+    var repli = document.createElement('p');
+    repli.className = 'nova-app-repli';
+    var texte = document.createElement('span');
+    texte.textContent = lignes.length + ' ' + modele.getAttribute('data-masques') + ' ';
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'nova-app-repli-bouton';
+    bouton.textContent = modele.getAttribute('data-afficher');
+    bouton.setAttribute('aria-expanded', 'false');
+    bouton.addEventListener('click', function () {
+      var ouvrir = bouton.getAttribute('aria-expanded') !== 'true';
+      lignes.forEach(function (li) { li.hidden = !ouvrir; });
+      bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+      bouton.textContent = modele.getAttribute(ouvrir ? 'data-masquer' : 'data-afficher');
+    });
+    repli.appendChild(texte);
+    repli.appendChild(bouton);
+    var liste = lignes[0].parentNode;
+    liste.parentNode.insertBefore(repli, liste.nextSibling);
+  }
+
   /* Réglages de Nova posés dans la feuille de surcharge du portail ou du groupement (demande de
    * l'utilisateur, 2026-10-06) : WIMS ne charge que la feuille de la classe courante. user.phtml (accueil)
    * transmet la feuille de la structure (#nova-css-structure) ; ses déclarations --nova-… sont gardées pour
    * la structure (meta nova-structure, sessionStorage) et posées sur toutes ses pages par html { … } :
    * plus fortes que les défauts de Nova (:where(:root)), plus faibles que la feuille de la classe (:root). */
   function reglagesStructure() {
+    // Réglages du site (log/nova.conf, page Apparence de la maintenance ; header.phtml les transmet sur les
+    // pages où ils sont lisibles) : posés d'abord, la structure puis la classe l'emportent.
+    poserReglages(document.getElementById('nova-css-site'), 'nova-reglages-site', 'nova-reglages-site');
     var meta = document.querySelector('meta[name="nova-structure"]');
     var structure = meta && meta.getAttribute('content');
     if (!structure) return;
-    var cle = 'nova-reglages-' + structure, decl = null;
-    var source = document.getElementById('nova-css-structure');
+    poserReglages(document.getElementById('nova-css-structure'), 'nova-reglages-' + structure, 'nova-reglages-structure');
+  }
+  // Déclarations --nova-… d'une feuille transmise (source), gardées sous « cle » pour les pages qui ne la
+  // reçoivent pas, posées par html { … } (après les précédentes : la dernière posée l'emporte).
+  function poserReglages(source, cle, id) {
+    var decl = null;
     if (source) {
       decl = (source.textContent.match(/--nova-[a-z0-9-]+\s*:\s*[^;}\n]+/g) || []).join(';');
       try { sessionStorage.setItem(cle, decl); } catch (e) { /* sans stockage : cette page seulement */ }
@@ -2407,7 +2452,7 @@
     }
     if (!decl) return;
     var style = document.createElement('style');
-    style.id = 'nova-reglages-structure';
+    style.id = id;
     style.textContent = 'html { ' + decl + '; }';
     document.head.appendChild(style);
   }
@@ -2430,7 +2475,7 @@
     }
   }
 
-  function demarrer() { reconnexionCas(); reglagesStructure(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { reconnexionCas(); reglagesStructure(); apparenceNova(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

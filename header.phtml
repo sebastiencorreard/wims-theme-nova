@@ -6,6 +6,45 @@
 <!-- begin of standard/header.phtml -->
 !read themes/Nova/_widgets/accent.phtml
 !read themes/Nova/_widgets/couleurs-notes.phtml
+
+!! Nova : reglages du thème pour tout le site (2026-10-06, demande de l'utilisateur), dans log/nova.conf
+!! (declarations CSS --nova-...). Enregistres depuis la page Apparence de la maintenance, par le gestionnaire
+!! seulement ($wims_ismanager=2, calcule par WIMS).
+!! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
+!! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
+!if $module=adm/manage and $wims_ismanager=2
+  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_reglages=!getopt nova_reglages in $nova_q
+  !set nova_animations=!getopt nova_animations in $nova_q
+  !set nova_entree_directe=!getopt nova_entree_directe in $nova_q
+  !set nova_clavier_maths=!getopt nova_clavier_maths in $nova_q
+  !reset nova_q
+!endif
+!if $module=adm/manage and $wims_ismanager=2 and $nova_reglages=enregistrer
+  !bound nova_animations within oui,non default non
+  !bound nova_entree_directe within oui,non default oui
+  !bound nova_clavier_maths within oui,non default non
+  !writefile wimshome/log/nova.conf --nova-animations: $nova_animations;
+  !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
+  !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
+  !set nova_app_fait=yes
+!endif
+!! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
+!! derniere valeur lue (sessionStorage).
+!set nova_m=!char 1 to 4 of $module
+!if $module=home or $nova_m=adm/
+  !set nova_site=!sh if test -r $wims_home/log/nova.conf; then cat $wims_home/log/nova.conf; fi
+  !if $nova_site!=$empty
+<script type="text/plain" id="nova-css-site">$nova_site</script>
+  !endif
+!endif
+!! Page Apparence (configuration du site, rubrique 1) : carte « Reglages de Nova » et reglages de WIMS sans effet
+!! avec Nova (repères par leur nom dans lang/confdata, leur rang donne le champ conf_N). Placees par nova.js.
+!if $module=adm/manage and $wims_ismanager=2 and $job=conf and $confcat=1
+  !read themes/Nova/_widgets/apparence.phtml
+!endif
+!reset nova_m nova_site
 !! Header menu bar definition.
 !nocache
 !set wims_theme_header=yes

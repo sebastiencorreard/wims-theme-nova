@@ -80,3 +80,20 @@
 !set nova_clavier_cube=Au cube
 !set nova_clavier_racine=Racine carrée
 !set nova_clavier_puissance10=Fois dix puissance
+!! Page Apparence de la maintenance du site (header.phtml, js/nova.js apparenceNova)
+!set nova_app_titre=Réglages de Nova
+!set nova_app_pastille=thème
+!set nova_app_animations=Animations
+!set nova_app_animations_aide=Étoiles, vibration, menus, défilements. L'appareil de l'élève peut toujours les refuser.
+!set nova_app_entree=Entrée directe dans le seul cours
+!set nova_app_entree_aide=Portail ou groupement : un élève qui n'a qu'un cours ou une classe y entre directement.
+!set nova_app_clavier=Clavier mathématique tactile
+!set nova_app_clavier_aide=Dans les champs de réponse des exercices, sur téléphone et tablette.
+!set nova_app_note=Une classe, un portail ou un groupement peuvent faire autrement par leur feuille de surcharge CSS.
+!set nova_app_enregistrer=Enregistrer les réglages de Nova
+!set nova_app_enregistre=Réglages de Nova enregistrés.
+!set nova_app_oui=Oui
+!set nova_app_non=Non
+!set nova_app_masques=réglages sans effet avec le thème Nova sont masqués.
+!set nova_app_afficher=Les afficher
+!set nova_app_masquer=Les masquer

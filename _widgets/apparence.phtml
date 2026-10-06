@@ -1,0 +1,70 @@
+!! Nova : carte « Reglages de Nova » de la page Apparence (maintenance du site), lue par header.phtml pour le
+!! gestionnaire ; placee par js/nova.js (apparenceNova). Valeurs actuelles lues dans log/nova.conf.
+!! Valeurs par défaut de Nova (jetons.css) : animations non, entree directe oui, clavier non.
+!set nova_a=non
+!set nova_e=oui
+!set nova_k=non
+!set nova_f=!sh if test -r $wims_home/log/nova.conf; then cat $wims_home/log/nova.conf; fi
+!if --nova-animations: oui isin $nova_f
+  !set nova_a=oui
+!endif
+!if --nova-entree-directe: non isin $nova_f
+  !set nova_e=non
+!endif
+!if --nova-clavier-maths: oui isin $nova_f
+  !set nova_k=oui
+!endif
+!set nova_checked_a_$nova_a=checked
+!set nova_checked_e_$nova_e=checked
+!set nova_checked_k_$nova_k=checked
+!! Reglages de WIMS sans effet avec Nova : rangs dans lang/confdata (2e mot de la 1re ligne = nom).
+!set nova_noms=page_bgcolor,page_bgimg,ref_menucolor,ref_button_bgcolor,ref_button_color,ref_button_help_bgcolor,ref_button_help_color
+!set nova_lg=$modu_lang
+!default nova_lg=$lang
+!set nova_conf=wimshome/public_html/modules/adm/manage/lang/confdata.$nova_lg
+!set nova_n=!recordcnt $nova_conf
+!reset nova_sans
+!for nova_i=1 to $nova_n
+  !set nova_l=!record $nova_i of $nova_conf
+  !set nova_l=!line 1 of $nova_l
+  !set nova_l=!word 2 of $nova_l
+  !if $nova_l isitemof $nova_noms
+    !set nova_sans=!append item conf_$nova_i to $nova_sans
+  !endif
+!next nova_i
+<template id="nova-apparence" data-sans-effet="$nova_sans" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+  !if $nova_app_fait=yes
+  <div class="wims_msg success nova-app-fait" role="status">$nova_app_enregistre</div>
+  !endif
+  <form class="nova-app" method="get" action="$wims_ref_name">
+    <fieldset class="property_fields blockcenter nova-app-carte">
+      <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>
+      <input type="hidden" name="nova_reglages" value="enregistrer">
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l1">$nova_app_animations<span class="nova-app-aide">$nova_app_animations_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l1">
+          <label><input type="radio" name="nova_animations" value="oui" $(nova_checked_a_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_animations" value="non" $(nova_checked_a_non)> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l2">$nova_app_entree<span class="nova-app-aide">$nova_app_entree_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l2">
+          <label><input type="radio" name="nova_entree_directe" value="oui" $(nova_checked_e_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_entree_directe" value="non" $(nova_checked_e_non)> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l3">$nova_app_clavier<span class="nova-app-aide">$nova_app_clavier_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l3">
+          <label><input type="radio" name="nova_clavier_maths" value="oui" $(nova_checked_k_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_clavier_maths" value="non" $(nova_checked_k_non)> $nova_app_non</label>
+        </span>
+      </div>
+      <p class="nova-app-note">$nova_app_note</p>
+      <div class="nova-app-actions"><input type="submit" value="$nova_app_enregistrer"></div>
+    </fieldset>
+  </form>
+</template>
+!reset nova_a nova_e nova_k nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans
+!reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non

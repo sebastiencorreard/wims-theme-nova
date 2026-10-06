@@ -2392,7 +2392,25 @@
     document.head.appendChild(style);
   }
 
-  function demarrer() { reglagesStructure(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Fin d'une session d'examen dans une classe CAS (demande de l'utilisateur, 2026-10-06) : WIMS efface la
+   * session (scorereg.proc) et montre la connexion de la classe, sans bouton CAS. Un clic sur « Terminer »
+   * ou sur le « Oui » qui le confirme est noté (sessionStorage, 2 min) ; si la page suivante porte l'adresse
+   * de connexion CAS de la classe (#nova-cas, header.phtml), l'élève y est renvoyé : le CAS, qui le connaît
+   * encore, le ramène dans la classe, prêt pour un autre examen. Toute autre page efface la marque. */
+  function reconnexionCas() {
+    var cle = 'nova-fin-examen', quand = 0;
+    try { quand = +sessionStorage.getItem(cle) || 0; sessionStorage.removeItem(cle); } catch (e) { quand = 0; }
+    document.addEventListener('click', function (ev) {
+      var a = ev.target.closest && ev.target.closest('a[href*="job=scorereg"], a[href*="confirm_end=yes"]');
+      if (a) { try { sessionStorage.setItem(cle, String(Date.now())); } catch (e) { /* sans stockage : rien */ } }
+    }, true);
+    var cas = document.getElementById('nova-cas');
+    if (cas && quand && Date.now() - quand < 120000) {
+      location.replace(cas.getAttribute('data-cas') + '/login?service=' + encodeURIComponent(cas.getAttribute('data-service')));
+    }
+  }
+
+  function demarrer() { reconnexionCas(); reglagesStructure(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

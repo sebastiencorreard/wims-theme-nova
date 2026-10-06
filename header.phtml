@@ -42,6 +42,26 @@
   !set wims_link_close=!replace internal cmd=close&module=adm/class/classes&type=participant by cmd=close&module=adm/class/classes&type=authparticipant&class=$nova_entree&auth_user=$wims_user in $wims_link_close
 !endif
 
+!! Nova : classe (ou portail, groupement) en authentification CAS, page de connexion sans session : adresse de
+!! connexion CAS de la classe (comme le bouton « Entrer » de la liste des classes, participant2.phtml), pour que
+!! nova.js (reconnexionCas) y renvoie l'eleve qui vient de terminer une session d'examen ; le CAS, qui le
+!! connait encore, le ramene dans la classe (demande de l'utilisateur, 2026-10-06).
+!if $module=adm/class/classes and $type=authparticipant and $wims_user=$empty and $class!=$empty
+  !set nova_ss=!replace internal / by , in $class
+  !set nova_ss=$(nova_ss[1])
+  !set nova_idp=!defof class_authidp in wimshome/log/classes/$nova_ss/.def
+  !set nova_idp=$(nova_idp[1;])
+  !if $nova_idp=cas
+    !set nova_cas=!defof class_cas_auth in wimshome/log/classes/$nova_ss/.def
+    !default nova_cas=!defof cas_auth in wimshome/log/wims.conf
+    !if $nova_cas!=$empty
+      !! Adresse de retour encodee par nova.js : adm/codeurl de WIMS depend de liburi-perl (absent ici, adresse vide).
+      <span id="nova-cas" hidden data-cas="$nova_cas" data-service="$wims_ref_name?module=adm/class/classes&amp;type=authparticipant&amp;class=$class"></span>
+    !endif
+  !endif
+  !reset nova_ss nova_idp nova_cas
+!endif
+
 !if $[$wims_home_items_cnt + $wims_hm_cnt + $wims_link_close_cnt]!=0 or ($module_path notitemof home,adm,classes and _exam notin $session and $module_init_parm == $empty)
   !if $module!=home or $wims_user!=
     <div id="wimstopbox">

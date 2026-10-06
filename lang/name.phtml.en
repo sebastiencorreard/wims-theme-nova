@@ -98,3 +98,4 @@
 !set nova_app_afficher=Show them
 !set nova_app_masquer=Hide them
 !set nova_app_note_classe=These settings apply to this portal, group or class (and their zones) and override the site settings. They are written into the style sheet below.
+!set nova_app_couleur_theme=Theme colour

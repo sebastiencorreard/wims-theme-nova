@@ -5,7 +5,9 @@
 !! en debut de ligne (une feuille commencant par « :root » y apparaissait vide, et l'enregistrer l'effacait).
 !set nova_cf=!sh if test -r $wims_home/log/classes/$wims_class/css; then cat $wims_home/log/classes/$wims_class/css; fi
 <script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
-<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+!! Repliés aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
+!! par Nova), feuille de style (css). « Couleur de fond des menus » (couleur d'accent de Nova) : « Couleur du theme ».
+<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
   <div class="nova-app">
     <fieldset class="property_fields blockcenter nova-app-carte">
       <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>

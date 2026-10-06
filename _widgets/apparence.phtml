@@ -18,7 +18,7 @@
 !set nova_checked_e_$nova_e=checked
 !set nova_checked_k_$nova_k=checked
 !! Reglages de WIMS sans effet avec Nova : rangs dans lang/confdata (2e mot de la 1re ligne = nom).
-!set nova_noms=page_bgcolor,page_bgimg,ref_menucolor,ref_button_bgcolor,ref_button_color,ref_button_help_bgcolor,ref_button_help_color
+!set nova_noms=page_bgcolor,page_bgimg,ref_menucolor,ref_button_bgcolor,ref_button_color,ref_button_help_bgcolor,ref_button_help_color,css
 !set nova_lg=$modu_lang
 !default nova_lg=$lang
 !set nova_conf=wimshome/public_html/modules/adm/manage/lang/confdata.$nova_lg
@@ -31,8 +31,11 @@
   !if $nova_l isitemof $nova_noms
     !set nova_sans=!append item conf_$nova_i to $nova_sans
   !endif
+  !if $nova_l=ref_bgcolor
+    !set nova_theme=conf_$nova_i
+  !endif
 !next nova_i
-<template id="nova-apparence" data-sans-effet="$nova_sans" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+<template id="nova-apparence" data-sans-effet="$nova_sans" data-champ-theme="$nova_theme" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
   !if $nova_app_fait=yes
   <div class="wims_msg success nova-app-fait" role="status">$nova_app_enregistre</div>
   !endif
@@ -66,5 +69,5 @@
     </fieldset>
   </form>
 </template>
-!reset nova_a nova_e nova_k nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans
+!reset nova_a nova_e nova_k nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme
 !reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non

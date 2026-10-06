@@ -2401,8 +2401,23 @@
     var form = bloc.querySelector('form.nova-app');
     Array.prototype.forEach.call(formWims.querySelectorAll('input[type="hidden"]'), function (h) { form.appendChild(h.cloneNode(true)); });
     formWims.parentNode.insertBefore(bloc, formWims);
+    pageApparence(formWims, modele);
     var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
     replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('li'); }), modele);
+  }
+
+  // Page Apparence (site ou classe) : largeur limitée et aide près de son libellé (CSS, .nova-page-apparence) ;
+  // « Couleur de fond des menus », couleur d'accent de Nova, devient « Couleur du thème » (demandes de
+  // l'utilisateur, 2026-10-06).
+  function pageApparence(form, modele) {
+    document.body.classList.add('nova-page-apparence');
+    var champ = form.querySelector('[name="' + modele.getAttribute('data-champ-theme') + '"]');
+    var label = champ && document.querySelector('label[for="' + champ.id + '"]');
+    var texte = modele.getAttribute('data-couleur-theme');
+    if (label && texte) {
+      var noeud = Array.prototype.filter.call(label.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); })[0];
+      if (noeud) noeud.nodeValue = texte + ' '; else label.insertBefore(document.createTextNode(texte + ' '), label.firstChild);
+    }
   }
 
   // Réglages de WIMS sans effet avec Nova : repliés derrière « Les afficher » (maquette A, 2026-10-06).
@@ -2427,10 +2442,15 @@
     });
     repli.appendChild(texte);
     repli.appendChild(bouton);
-    // Après la liste (ul) qui les contient, ou après le dernier replié s'ils ne sont pas dans une liste.
+    // En bas du cadre, avant ses boutons (Enregistrer…), sur toute la largeur ; sinon après la liste (ul).
     var dernier = lignes[lignes.length - 1];
-    var apres = dernier.parentNode.tagName === 'UL' ? dernier.parentNode : dernier;
-    apres.parentNode.insertBefore(repli, apres.nextSibling);
+    var cadre = dernier.closest('fieldset');
+    var actions = cadre && cadre.querySelector(':scope > .wimsform, :scope > .actions, :scope > .wimscenter');
+    if (actions) cadre.insertBefore(repli, actions);
+    else {
+      var apres = dernier.parentNode.tagName === 'UL' ? dernier.parentNode : dernier;
+      apres.parentNode.insertBefore(repli, apres.nextSibling);
+    }
   }
 
   /* Page Apparence de la configuration d'une classe, d'un groupement ou d'un portail (adm/class/config ;
@@ -2473,6 +2493,7 @@
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () { ecrire(); envoi.click(); });
+    pageApparence(formWims, modele);
     var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
     replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); }), modele);
   }

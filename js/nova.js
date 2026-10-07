@@ -2833,6 +2833,47 @@
     fini();
   }
 
+  /* Images cliquables des exercices (<input type="image">, réponses « coord », droites graduées…) : le
+   * navigateur envoie la position du clic en pixels AFFICHÉS, que WIMS lit comme des pixels de l'image. Nova
+   * réduit les champs à la largeur de la page (max-width: 100 %) : sur un écran étroit ou zoomé, le point partait
+   * ailleurs (signalé par un collègue de l'utilisateur, 2026-10-07, H2/number/OEFevalwimsnbrel.fr ; pas avec Pion3,
+   * qui laisse l'image déborder). La position est ramenée à l'image d'origine avant l'envoi. Clavier (Entrée) :
+   * envoi ordinaire. */
+  function imagesCliquables() {
+    if (!document.querySelector('.wimsbody input[type="image"]')) return;
+    var tailles = {};
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody input[type="image"]'), function (i) {
+      var im = new Image();
+      im.onload = function () { tailles[i.src] = [im.naturalWidth, im.naturalHeight]; };
+      im.src = i.src;
+    });
+    document.addEventListener('click', function (e) {
+      var i = e.target;
+      if (!i || i.tagName !== 'INPUT' || i.type !== 'image' || !i.form || !i.closest('.wimsbody') || e.detail === 0) return;
+      var t = tailles[i.src];
+      var r = i.getBoundingClientRect();
+      var c = getComputedStyle(i);
+      var gauche = r.left + parseFloat(c.borderLeftWidth) + parseFloat(c.paddingLeft);
+      var haut = r.top + parseFloat(c.borderTopWidth) + parseFloat(c.paddingTop);
+      var largeur = r.width - parseFloat(c.borderLeftWidth) - parseFloat(c.borderRightWidth) - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight);
+      var hauteur = r.height - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth) - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom);
+      if (!t || !largeur || !hauteur || (Math.abs(largeur - t[0]) < 0.5 && Math.abs(hauteur - t[1]) < 0.5 && Math.abs(gauche - r.left) < 0.5 && Math.abs(haut - r.top) < 0.5)) return;   // taille réelle : rien à corriger
+      e.preventDefault();
+      var x = Math.round((e.clientX - gauche) * t[0] / largeur);
+      var y = Math.round((e.clientY - haut) * t[1] / hauteur);
+      x = Math.max(0, Math.min(t[0] - 1, x));
+      y = Math.max(0, Math.min(t[1] - 1, y));
+      var nom = i.name ? i.name + '.' : '';
+      Array.prototype.forEach.call(i.form.querySelectorAll('input.nova-clic-image'), function (h) { h.remove(); });
+      [['x', x], ['y', y]].forEach(function (v) {
+        var h = document.createElement('input');
+        h.type = 'hidden'; h.className = 'nova-clic-image'; h.name = nom + v[0]; h.value = v[1];
+        i.form.appendChild(h);
+      });
+      if (typeof i.form.requestSubmit === 'function') i.form.requestSubmit(); else i.form.submit();
+    }, true);
+  }
+
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
    *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
    *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
@@ -2977,7 +3018,7 @@
     }
   }
 
-  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

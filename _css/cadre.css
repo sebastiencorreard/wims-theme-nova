@@ -1036,3 +1036,29 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
  * un attribut data-autre-examen ailleurs dans la barre masquait toutes les alertes 3 s (vécu le 2026-10-05,
  * avertissement de « Terminer »). */
 .nova-js body:has(#wimstopbox .nova-examencours[data-autre-examen]) .wimsbody .wims_msg.alert:not(.nova-autre-examen-message) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+
+/* ---------- Rubrique Profil et tiroir de l'élève (demandes de l'utilisateur, 2026-10-07) ---------- */
+/* Profil : rubrique en tête du menu latéral (js/nova.js, profilLateral) ; le nom, en texte, comme une entrée. */
+#wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; }
+/* Le menu du compte de la barre, qui va passer dans le menu latéral : masqué en attendant nova.js (3 s au plus),
+ * pour qu'il n'apparaisse pas un instant. */
+html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+/* Élève : plus de colonne à gauche, le menu latéral est le tiroir ☰ à toutes les largeurs (sans JavaScript, la
+ * colonne reste). */
+@media (min-width: 1024px) {
+  html.nova-js body:has(#nova-eleve) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
+  html.nova-js body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: min(320px, 86vw); max-height: none; min-height: 0; margin: 0;
+    overflow-y: auto; z-index: 300; padding-top: var(--nova-e5);
+    transform: translateX(-102%); transition: transform .2s ease;
+    box-shadow: 0 0 32px rgb(0 0 0 / 25%); visibility: hidden;
+  }
+  html.nova-js body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  html.nova-js body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
+  html.nova-js body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
+  html.nova-js body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
+  /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
+  body:has(#nova-eleve).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox { transition: none; } }

@@ -989,7 +989,7 @@
     };
     var nom = function (e) { return (e.querySelector('a') || e).textContent.replace(/\s+/g, ' ').trim(); };
     var familles = [];  // [titre, [entrées]]
-    Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (titre) {
+    Array.prototype.forEach.call(menu.querySelectorAll('.menu_title:not(.nova-profil-titre)'), function (titre) {
       var bloc = titre.nextElementSibling;
       var items = bloc ? Array.prototype.filter.call(bloc.querySelectorAll('.menuitem'), cle) : [];
       if (items.length) familles.push([titre, items]);
@@ -2739,6 +2739,74 @@
     document.head.appendChild(style);
   }
 
+  /* Rubrique « Profil » en tête du menu latéral (demande de l'utilisateur, 2026-10-07, maquette A ; même style
+   * qu'une rubrique ordinaire) : le menu du compte de la barre (nom, préférences, conditions, déconnexion), le
+   * choix de la langue s'il y en a un, quittent la barre ; « Aide » de la barre passe dans la rubrique « Aide et
+   * outils » si elle existe, sinon dans « Profil ». Élève et enseignant ; chez l'élève, le menu latéral est un
+   * tiroir ☰ à toutes les largeurs (CSS). Pages sans menu latéral : la barre garde son menu du compte. Pendant
+   * une session d'examen, modeExamen a déjà sa section « Profil ». */
+  function profilLateral() {
+    var barre = document.getElementById('wimstopbox');
+    var menu = document.getElementById('wimsmenumodubox');
+    var racine = document.documentElement;
+    var fini = function () { racine.classList.add('nova-profil-pret'); };
+    if (!barre || !menu || menu.querySelector('.nova-profil')) { fini(); return; }
+    var compte = barre.querySelector('a.account');
+    var liCompte = compte && compte.closest('li');
+    if (!liCompte) { fini(); return; }
+    var textes = document.getElementById('nova-textes');
+    var cible = menu.querySelector('.modubox_content') || menu;
+    var titre = document.createElement('h2');
+    titre.className = 'menu_title nova-profil-titre';
+    titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profil';
+    var groupe = document.createElement('div');
+    groupe.className = 'wimsmenu menu nova-profil';
+    var ajouter = function (lien, ou) {
+      if (!lien || !lien.getAttribute('href') || /^#/.test(lien.getAttribute('href'))) return;
+      var d = document.createElement('div');
+      d.className = 'menuitem';
+      var copie = lien.cloneNode(true);
+      copie.removeAttribute('id');
+      copie.removeAttribute('aria-controls');
+      copie.removeAttribute('aria-expanded');
+      d.appendChild(copie);
+      (ou || groupe).appendChild(d);
+    };
+    var nom = document.createElement('div');
+    nom.className = 'menuitem nova-profil-nom';
+    nom.textContent = compte.textContent.replace(/\s+/g, ' ').trim();
+    groupe.appendChild(nom);
+    // Langues (sélecteur de la barre, quand WIMS en met un) avant le reste du compte.
+    var langues = barre.querySelector('#language_selector');
+    if (langues) Array.prototype.forEach.call(langues.querySelectorAll('ul a[href]'), function (a) { ajouter(a); });
+    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li a[href]'), function (a) { ajouter(a); });
+    // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
+    var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
+    if (aides.length) {
+      var rubriqueAide = null;
+      Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (t) {
+        if (!rubriqueAide && /aide|help/i.test(t.textContent) && t.nextElementSibling) rubriqueAide = t.nextElementSibling;
+      });
+      Array.prototype.forEach.call(aides, function (item) {
+        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), function (a) {
+          var avant = rubriqueAide && rubriqueAide.firstChild;
+          var d = document.createElement('div');
+          d.className = 'menuitem ' + (item.classList.contains('whelp') ? 'whelp' : 'help');
+          var copie = a.cloneNode(true);
+          copie.removeAttribute('id');
+          d.appendChild(copie);
+          if (rubriqueAide) rubriqueAide.insertBefore(d, avant); else groupe.appendChild(d);
+        });
+        item.remove();
+      });
+    }
+    cible.insertBefore(groupe, cible.firstChild);
+    cible.insertBefore(titre, groupe);
+    liCompte.remove();
+    if (langues) langues.remove();
+    fini();
+  }
+
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
    *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
    *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
@@ -2883,7 +2951,7 @@
     }
   }
 
-  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

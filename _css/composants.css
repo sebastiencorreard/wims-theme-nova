@@ -941,8 +941,8 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
  * que Dynapi ne place ses calques sur les repères : les places réservées dans la page (images transparentes devant
  * fillobj<n> et dans fill<nom>) grandissent d'autant, rien ne déborde sur la suite. */
 html.nova-dominos:not(.nova-std-dominos){ --nova-domino-h: 80px; --nova-domino-w: 205px; }
-/* Téléphone : 150 px de large (nova.js réduit aussi les calques de Dynapi et les places réservées). */
-@media (max-width: 639.98px) { html.nova-dominos:not(.nova-std-dominos) { --nova-domino-w: 150px; } }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
+/* Téléphone : 175 px de large (nova.js réduit aussi les calques de Dynapi et les places réservées). */
+@media (max-width: 639.98px) { html.nova-dominos:not(.nova-std-dominos) { --nova-domino-w: 175px; } }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
 html.nova-dominos:not(.nova-std-dominos) .wims_grabbable:has(.fill_content > table.wimsborder),
 html.nova-dominos:not(.nova-std-dominos) .wims_droppable{ height: var(--nova-domino-h) !important; }
 html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .wims_fill_object{ height: 100% !important; display: flex; align-items: center; justify-content: center; }
@@ -1003,3 +1003,7 @@ html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wims
 /* Exercice à dominos, page de correction : « Analyse de votre réponse » masquée (titre et tableau) ; l'énoncé corrigé
  * (cadres rouges ou verts) et la solution suffisent ; la phrase de la note reste (demande de l'utilisateur, 2026-10-08). */
 :where(html:not(.nova-std-dominos)) body:has(.drag_content > table.wimsborder) .oefanswer .answer_analysis :is(.oefanswername, table.answeranalysis){ display: none; }
+/* Repères des cases et des dominos (<a id="fill<n>"> <img></a>, <a id="fillobj<n>">) : en bloc en ligne, pour que leur
+ * position soit celle de leur image. En ligne simple, l'espace qui précède l'image restait en fin de ligne quand l'image
+ * passait à la ligne, et Dynapi plaçait la case là (vécu au téléphone, 2026-10-08). */
+html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }

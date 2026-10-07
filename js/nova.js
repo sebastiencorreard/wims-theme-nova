@@ -2945,26 +2945,38 @@
       t.parentNode.insertBefore(cadre, t);
       cadre.appendChild(t);
     });
-    // Téléphone : dominos moins larges (demande de l'utilisateur, 2026-10-08). WIMS fixe la largeur (205 px) des places
-    // réservées dans la page et des calques de Dynapi (setAnchor : stretchH, et un décalage left de -205 px vers le
-    // repère fillobj<n>) : les places sont réduites dans la même proportion, et setAnchor, enveloppé avant que Dynapi
-    // ne crée ses calques (après « load »), reçoit la largeur et le décalage réduits.
-    if (exercice && window.matchMedia && matchMedia('(max-width: 639.98px)').matches && window.DynLayer && DynLayer.prototype.setAnchor) {
-      var etroit = 150, origine = null;
+    // Placement des calques par Dynapi (fill.after) : les cases d'un même groupe sont rangées en grille à partir du
+    // repère du groupe, f_cut cases par ligne, pas de 205 px (stretchH) en largeur et de 50 px (stretchV) en hauteur ;
+    // les dominos, sur leur repère fillobj<n> (décalage left de -205 px). Nova les fait plus hauts (80 px, CSS) : le
+    // pas vertical est agrandi d'autant, sinon des cases sur plusieurs lignes se chevaucheraient. Au téléphone
+    // (demande de l'utilisateur, 2026-10-08), ils sont moins larges (175 px ; 150 px d'abord : texte trop petit) :
+    // places réservées, largeur, décalages et nombre de cases par ligne (f_cut) réduits avant « load », quand Dynapi
+    // place ses calques.
+    if (exercice && window.DynLayer && DynLayer.prototype.setAnchor) {
+      var telephone = !!(window.matchMedia && matchMedia('(max-width: 639.98px)').matches);
+      var etroit = 175, haut = 80 + 8, origine = null, origineV = null;
       Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, div:has(> a[id^="fillobj"]) > img'), function (im) {
         var w = parseFloat(im.style.width);
         if (!(w > 1)) return;
         if (!origine) origine = w;
-        im.style.width = Math.round(w * etroit / origine) + 'px';
+        if (telephone) im.style.width = Math.round(w * etroit / origine) + 'px';
       });
+      if (!telephone) etroit = origine;
+      if (telephone && origine && window.f_cut) {
+        var place = (document.querySelector('.wims_question') || repere.parentNode).clientWidth || 0;
+        var parLigne = Math.max(1, Math.floor(place / etroit));
+        for (var ic = 0; ic < f_cut.length; ic++) if (f_cut[ic] > parLigne) f_cut[ic] = parLigne;
+      }
       if (origine) {
         var ancrer = DynLayer.prototype.setAnchor;
         DynLayer.prototype.setAnchor = function (a) {
           if (a && a.stretchH === origine) {
             var b = {};
             for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
+            if (origineV === null && typeof a.stretchV === 'number') origineV = a.stretchV;
             b.stretchH = etroit;
             if (typeof b.left === 'number') b.left = Math.round(b.left * etroit / origine);
+            if (typeof b.top === 'number' && origineV) b.top = Math.round(b.top * haut / origineV);
             a = b;
           }
           return ancrer.call(this, a);

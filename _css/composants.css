@@ -851,3 +851,15 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { background: none; padding-left: 0; padding-right: 0; }
 .wimsbody details.nova-app-std { margin-left: 0; margin-right: 0; }
 .wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { margin-left: 0; margin-right: 0; }
+
+/* Étiquettes faites d'un tableau, dans les exercices à cases (clickfill : .fill_content > table.wimsborder, comme les
+ * dominos de E6/number/dominos.fr) : coins droits, fond transparent (la couleur de la case se voit), séparation
+ * franche entre les cases (demande de l'utilisateur, 2026-10-08). Dynapi pose ces étiquettes directement dans
+ * <body> (div.wims_grabbable), hors de .wimsbody ; la variante .wimsbody:has(.oefstatement) couvre celles restées
+ * dans l'énoncé, où le quadrillage des exercices s'applique. */
+.fill_content table.wimsborder,
+.wimsbody:has(.oefstatement) .fill_content table.wimsborder { border-radius: 0; background: transparent; box-shadow: none; }
+.fill_content table.wimsborder :is(tr, th, td),
+.fill_content table.wimsborder tr:is(:nth-child(odd), :nth-child(even), :hover) { background: transparent; border-radius: 0; }
+.fill_content table.wimsborder :is(th, td) + :is(th, td),
+.wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left: 2px solid var(--nova-texte-2); }

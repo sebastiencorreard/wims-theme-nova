@@ -950,3 +950,45 @@ html.nova-dominos .wims_droppable { clip: auto !important; overflow: visible !im
 /* Trait du milieu plus haut (demande de l'utilisateur, 2026-10-08) : le tableau occupe la hauteur du domino, moins
  * une petite marge en haut et en bas ; le texte reste centré. */
 html.nova-dominos .wims_grabbable .fill_content > table.wimsborder { height: calc(var(--nova-domino-h) - 20px); margin-top: 0; margin-bottom: 0; }
+
+/* Dominos de la page de correction (demande de l'utilisateur, 2026-10-08) : réaffichés par WIMS (.drag_label >
+ * .drag_content > table, dans l'énoncé et l'analyse) et ceux de la solution (table.nova-domino-solution, nova.js) :
+ * même habillage que dans l'exercice, sans ombre (ils ne se déplacent pas). Le cadre de WIMS autour d'une réponse
+ * (juste, fausse) reste. */
+html.nova-dominos .drag_label:has(> .drag_content > table.wimsborder) {
+  box-sizing: border-box; width: 205px !important; height: var(--nova-domino-h) !important; min-height: 0;
+  display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+  background: #FFFFFF !important; border: 2px solid #1A1D22 !important; border-radius: 8px; padding: 0 !important; color: #1A1D22;
+}
+html.nova-dominos .drag_content:has(> table.wimsborder) { width: 100%; }
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) {
+  width: 100%; table-layout: fixed; height: calc(var(--nova-domino-h) - 20px);
+  margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+html.nova-dominos table.nova-domino-solution.nova-domino-solution.nova-domino-solution {
+  box-sizing: border-box; width: 205px; min-width: 205px; height: var(--nova-domino-h); display: inline-table; vertical-align: middle;
+  background: #FFFFFF; border: 2px solid #1A1D22 !important; border-radius: 8px; border-collapse: separate;
+}
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(tr, th, td) { background: transparent !important; border: 0 !important; border-radius: 0; }
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) {
+  width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; font-size: 80%; color: #1A1D22;
+}
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) + :is(th, td) { border-left: 2px solid #1A1D22 !important; }
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td),
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) * { transition: none !important; }
+html.nova-dominos table.nova-domino-solution > tbody > tr > :is(th, td) + :is(th, td) { border-left: 2px solid #1A1D22 !important; }
+/* Même police de départ pour tous les dominos (exercice, énoncé corrigé, analyse, solution) : le zoom commun de
+ * nova.js donne alors la même taille partout (le texte de l'analyse, td.tt, partait plus petit). Liseré orange de
+ * WIMS autour des dominos réaffichés retiré. */
+.fill_content table.wimsborder :is(th, td) { font-family: var(--nova-police); }
+.fill_content table.wimsborder :is(th, td),
+html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) { font-size: 16px; font-family: var(--nova-police); }
+/* (Famille fixée aussi : MathJax règle ses formules sur la hauteur de la police qui les entoure, et l'analyse est en
+ * police à chasse fixe, td.tt : ses dominos partaient plus petits.) */
+html.nova-dominos :is(.fill_container, .drag_label):has(.drag_content > table.wimsborder) { outline: 0 !important; box-shadow: none !important; }
+html.nova-dominos .fill_container:has(.drag_content > table.wimsborder) { border: 0 !important; background: transparent !important; padding: 0 !important; }
+.nova-defile-x { max-width: 100%; overflow-x: auto; }
+/* Réponse juste ou fausse dans l'énoncé corrigé : contour vert ou rouge autour du domino (le cadre de WIMS, retiré
+ * avec le liseré orange, portait cette information). */
+html.nova-dominos .oef_indbad .drag_label:has(> .drag_content > table.wimsborder) { box-shadow: 0 0 0 3px var(--nova-erreur) !important; }
+html.nova-dominos .oef_indgood .drag_label:has(> .drag_content > table.wimsborder) { box-shadow: 0 0 0 3px var(--nova-succes) !important; }

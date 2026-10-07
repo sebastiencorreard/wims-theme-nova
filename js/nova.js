@@ -2925,14 +2925,32 @@
    *    domino à moins des 2/3 de la case), ou la case sous le pointeur quand un domino est choisi d'un clic. */
   function dominos() {
     var repere = document.getElementById('fillobj1');
-    if (!repere || !Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); })) return;
+    var exercice = !!repere && Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); });
+    // Page de correction (demande de l'utilisateur, 2026-10-08) : dominos réaffichés par WIMS (.drag_label >
+    // .drag_content > table, dans l'énoncé et l'analyse) et ceux de la solution de l'auteur (tableaux à une ligne de
+    // deux cases, marqués ici nova-domino-solution) : même habillage, même taille commune.
+    var correction = !exercice && !!document.querySelector('.drag_content > table.wimsborder');
+    if (!exercice && !correction) return;
+    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table.wimsborder'), function (t) {
+      var lignes = t.rows;
+      if (t.closest('.drag_content') || t.querySelector('table') || lignes.length !== 1 || lignes[0].cells.length !== 2) return;
+      t.classList.add('nova-domino-solution');
+    });
+    // Ligne de solution trop large (dominos à 205 px et « = 6 = ») : elle défile dans son cadre, la page ne s'élargit pas.
+    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table:has(table.nova-domino-solution)'), function (t) {
+      if (t.querySelector('table:has(table.nova-domino-solution)') || t.parentElement.classList.contains('nova-defile-x')) return;
+      var cadre = document.createElement('div');
+      cadre.className = 'nova-defile-x';
+      t.parentNode.insertBefore(cadre, t);
+      cadre.appendChild(t);
+    });
     // Page à dominos : marquée avant « load » (le CSS agrandit dominos, cases et places réservées avant que Dynapi ne
     // calcule ses positions).
     document.documentElement.classList.add('nova-dominos');
     var textes = document.getElementById('nova-textes');
     var consigne = textes && textes.getAttribute('data-texte-consigne-dominos');
-    var bloc = repere.parentElement;
-    if (consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
+    var bloc = repere && repere.parentElement;
+    if (exercice && consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
       var pc = document.createElement('p');
       pc.className = 'nova-consigne-glisser';
       pc.textContent = consigne;
@@ -2942,7 +2960,7 @@
     // haute (bornée à 26 px).
     var essais = 0;
     var taille = function () {
-      var faces = Array.prototype.slice.call(document.querySelectorAll('.wims_grabbable .fill_content > table.wimsborder :is(th, td)'));
+      var faces = Array.prototype.slice.call(document.querySelectorAll('.wims_grabbable .fill_content > table.wimsborder :is(th, td), .drag_content > table.wimsborder :is(th, td), table.nova-domino-solution :is(th, td)'));
       var pretes = faces.length && faces.every(function (c) { return !c.querySelector('math') || c.querySelector('mjx-container'); });
       if (!pretes) { if (++essais < 40) setTimeout(taille, 200); return; }
       // Même taille pour tous les dominos affichés ensemble (cette page) ; elle peut changer d'un exercice à l'autre
@@ -2965,7 +2983,7 @@
       faces.forEach(function (c) {
         var b = mesure(c), cs = getComputedStyle(c);
         var largeur = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;   // 2 px d'air de plus de chaque côté
-        var hauteur = c.closest('.wims_grabbable').clientHeight - 12;                                    // marges du tableau (2 × 4 px) et air
+        var hauteur = c.closest('.wims_grabbable, .drag_label, .nova-domino-solution').clientHeight - 12;  // marges et air
         if (b.width > 0) z = Math.min(z, largeur / b.width);
         if (b.height > 0) z = Math.min(z, hauteur / b.height);
       });
@@ -2983,6 +3001,7 @@
       var tic = setInterval(function () { relancer(); if (++n >= 16) clearInterval(tic); }, 500);
       if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(function () { setTimeout(relancer, 150); });
     });
+    if (!exercice) return;
     // Case visée.
     var glisse = null, rafId = 0, derniere = null;
     var marquer = function (z) {

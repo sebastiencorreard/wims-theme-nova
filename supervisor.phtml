@@ -10,7 +10,7 @@
 !if $nova_suivi_page=1
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
-  !goto end
+  !goto nova_menu
 !endif
 
 !set table_spacer=no
@@ -296,6 +296,8 @@
 
 </div><!--/wimsbody-->
 </div><!--/wimspagebox-->
+:nova_menu
+!distribute items div,div into div0,div1
 !if $class_type isin 24
   !read themes/_procs/menumodubox2.proc
 !else

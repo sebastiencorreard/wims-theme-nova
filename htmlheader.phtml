@@ -49,7 +49,7 @@ $wims_CSS
   /* Page Badges Nova (rubrique de la configuration de la classe, js/nova.js badgesClasse) : la page Apparence
      de WIMS, masquee jusqu'au passage du script. */
   if (location.hash === '#nova-badges-reglages' && /job=present/.test(location.search)) d.classList.add('nova-page-badges');
-  var defaut = ['add_sheet', 'add_exam', 'participantview', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
+  var defaut = ['add_sheet', 'add_exam', 'participantview', 'nova_suivi', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
   var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), style: function (liste) {
     var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
       .map(function (c) { return '.' + c; }).join(', ') || '.nova-aucune';
@@ -97,7 +97,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/Nova/js/nova.js?v=181dabfa10" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=16e2abe279" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

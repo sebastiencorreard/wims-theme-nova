@@ -81,7 +81,8 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 
 ## Suivi en direct (salle informatique)
 
-Le bouton **Suivi en direct** de l'accueil enseignant ou administrateur ouvre une page de suivi en
+L’entrée **Suivi en direct**, dans la rubrique **Participants** du menu latéral professeur/admin,
+ouvre une page de suivi en
 lecture seule. Un enseignant de portail connecté avec son identifiant n'y voit que ses zones
 supervisées ; un administrateur voit sa structure et ses descendants. Aucun identifiant de session
 élève, adresse IP, mot de passe ni réponse saisie n'est envoyé au navigateur de l'enseignant.
@@ -107,7 +108,10 @@ Les élèves sans action récente restent dans la vue de séance pour permettre 
 les voir. L'historique concerne la zone de travail actuellement retenue, pas toutes les anciennes
 classes de l'élève. Il ne s'agit pas d'un historique annuel ni d'un tableau de notes retenues.
 
-Implémentation : `_widgets/suivi*.phtml`, `_procs/suivi.pl` (Perl et ses modules standard, déjà
+Le menu reste présent sur la page de suivi. L’entrée est visible par défaut dans le menu simplifié,
+y compris après une ancienne personnalisation, puis peut être masquée comme les autres entrées.
+
+Implémentation : `local.phtml` (point d’accroche natif des menus WIMS), `_widgets/suivi*.phtml`, `_procs/suivi.pl` (Perl et ses modules standard, déjà
 présents dans WIMS), `js/suivi.js`, `_css/suivi.css`. Le serveur vérifie les droits depuis la session
 WIMS authentifiée, sans accepter de classe cible fournie par le navigateur. Il lit les sessions et
 les journaux `score/` et `noscore/`, dédoublonne leurs événements et ignore les sessions expirées et

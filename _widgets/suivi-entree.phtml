@@ -9,11 +9,6 @@
     !reset nova_sq
     !if $nova_suivi_page=1
       !read themes/Nova/_widgets/suivi.phtml
-    !else
-      <p class="nova-suivi-entree">
-      !set wims_ref_class=wims_button
-      !href module=home&nova_suivi=1 Suivi en direct
-      </p>
     !endif
   !endif
 !endif

@@ -1,0 +1,47 @@
+!! Hook natif des menus WIMS : suivi dans Participants, pour les profs/admins seulement.
+!if $wims_class!=$empty and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session
+  !if $wims_user=supervisor or yes isin $supervisable $user_supervisable or $wims_supervise!=$empty
+    !if nova_suivi notin $wims_rm_0
+      !default nova_menu_participants=Participants
+      !set wims_name_nova_suivi=Suivi en direct
+      !set nova_sp=0
+      !set nova_sg=0
+      !set nova_sc=!linecnt $wims_rm_0
+      !for nova_si=1 to $nova_sc
+        !set nova_sl=!line $nova_si of $wims_rm_0
+        !if $(nova_sl[1])=itemsep
+          !set nova_sg=$nova_si
+          !if $(nova_sl[3])=$nova_menu_participants
+            !set nova_sp=$nova_si
+          !endif
+        !else
+          !if $(nova_sl[1]) isitemof usermanage,participantview and $nova_sp=0
+            !set nova_sp=$nova_sg
+          !endif
+        !endif
+      !next nova_si
+      !reset nova_sr
+      !if $nova_sp=0
+        !set nova_sr=itemsep,0,$nova_menu_participants\
+nova_suivi,1,module=home&nova_suivi=1
+        !if $nova_sc>0
+          !set nova_sl=!line 1 of $wims_rm_0
+          !if $(nova_sl[1])!=itemsep
+            !set nova_sr=!append line itemsep,0,$module_title to $nova_sr
+          !endif
+        !endif
+      !endif
+      !for nova_si=1 to $nova_sc
+        !set nova_sl=!line $nova_si of $wims_rm_0
+        !if $nova_si=$nova_sp
+          !set nova_sr=!append line itemsep,0,$nova_menu_participants\
+nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
+        !else
+          !set nova_sr=!append line $nova_sl to $nova_sr
+        !endif
+      !next nova_si
+      !set wims_rm_0=$nova_sr
+      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr
+    !endif
+  !endif
+!endif

@@ -13,8 +13,7 @@
 !if $nova_suivi_page=1
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
-</div><!--wimsbodybox-->
-  !goto end
+  !goto nova_menu
 !endif
 !! Nova : feuille de surcharge du portail ou du groupement (WIMS ne la charge que dans la structure elle-meme) :
 !! transmise a nova.js (reglagesStructure), qui en applique les reglages --nova-... dans toutes ses zones.
@@ -255,6 +254,7 @@
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
 
+:nova_menu
 !!must have read user*.phtml,  with *=sheet, exam must be read before
 !distribute items div,div into div0,div1
 

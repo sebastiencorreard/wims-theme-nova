@@ -48,7 +48,7 @@ par défaut de WIMS, Nova prend sa prune.
 
 - Une page de classe charge `html/themes/Nova/css.css` (outils de développement du navigateur).
 - Le menu de la classe est à gauche sur ordinateur, replié derrière ☰ sur téléphone.
-- Depuis un accueil enseignant ou administrateur, le bouton « Suivi en direct » ouvre le relevé ;
+- Dans le menu enseignant ou administrateur, Participants → Suivi en direct ouvre le relevé ;
   il n'apparaît pas chez un élève.
 - Un examen montre le chronomètre Nova (libellé « Temps restant », heure de fin).
 - Les navigateurs gardent l'ancien `css.css` en cache (son adresse porte `?ver=<version de WIMS>`,

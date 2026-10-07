@@ -919,6 +919,15 @@
         if (regle) regle.textContent = nm.style(nm.garde);
       }
     }
+    // Nouvelle entree Participants : gardee une fois, puis personnalisable comme les autres.
+    if (nm && document.querySelector('#wimsmenumodubox .nova_suivi') && nm.garde.indexOf('suivi_v1') < 0) {
+      if (nm.garde.indexOf('nova_suivi') < 0) nm.garde.push('nova_suivi');
+      nm.garde.push('suivi_v1');
+      ecrire('nova_menu_garde', JSON.stringify(nm.garde));
+      ecrire('nova_menu_envoi', valeurMenu());
+      var styleSuivi = document.getElementById('nova-menu-style');
+      if (styleSuivi) styleSuivi.textContent = nm.style(nm.garde);
+    }
     // Envoi d'un changement en attente avec le prochain lien de WIMS (même session).
     document.addEventListener('click', function (e) {
       var v = lire('nova_menu_envoi');

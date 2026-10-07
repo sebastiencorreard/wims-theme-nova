@@ -79,6 +79,46 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   commentaire en tête de `htmlheader.phtml`.
 - **Téléphone** : la barre du haut tient sur une ligne ; ce qui ne tient pas passe dans le menu « ⋯ ».
 
+## Suivi en direct (salle informatique)
+
+Le bouton **Suivi en direct** de l'accueil enseignant ou administrateur ouvre une page de suivi en
+lecture seule. Un enseignant de portail connecté avec son identifiant n'y voit que ses zones
+supervisées ; un administrateur voit sa structure et ses descendants. Aucun identifiant de session
+élève, adresse IP, mot de passe ni réponse saisie n'est envoyé au navigateur de l'enseignant.
+
+- Vue par défaut : élèves ayant fait une action dans les **60 dernières minutes**. Fenêtre réglable
+  à 30, 60 ou 120 minutes ; filtre par classe/cours, nom et situation.
+- **Difficulté possible** : au moins 3 résultats < 5/10 parmi les 5 derniers sur l'exercice ouvert.
+- **Répétition après réussite** : au moins 4 nouveaux essais après 3 résultats >= 9/10 sur cet exercice.
+- **Temps long, à vérifier** : exercice ouvert depuis 8 minutes sans résultat enregistré sur ce
+  dernier essai. Ce signal ne distingue pas réflexion, difficulté et absence du poste.
+- Seuils réglables et conservés dans le navigateur. Les signaux sont limités à la fenêtre récente ;
+  ils ne sont pas des diagnostics et n'ont aucun effet sur les notes.
+- Chronologie par élève (40 derniers événements visibles), notes sur 10, feuilles et examens.
+  Les réponses non comptabilisées sont incluses si WIMS les journalise. Les activités hors feuille
+  ou examen restent visibles mais ne reçoivent pas de signal fondé sur leurs résultats.
+- Actualisation toutes les 30 secondes, sans recharger la page. Suspendue dans un onglet caché,
+  pendant la lecture d'une chronologie ou la saisie d'un filtre. En cas d'échec, le dernier relevé
+  reste visible avec un message et son heure ; il n'est pas présenté comme un relevé neuf.
+
+Une action récente correspond à une requête WIMS, pas à un mouvement de souris. Une session ouverte
+peut appartenir à un élève absent ; **sans action depuis 5 minutes ne signifie pas déconnecté**.
+Les élèves sans action récente restent dans la vue de séance pour permettre au professeur d'aller
+les voir. L'historique concerne la zone de travail actuellement retenue, pas toutes les anciennes
+classes de l'élève. Il ne s'agit pas d'un historique annuel ni d'un tableau de notes retenues.
+
+Implémentation : `_widgets/suivi*.phtml`, `_procs/suivi.pl` (Perl et ses modules standard, déjà
+présents dans WIMS), `js/suivi.js`, `_css/suivi.css`. Le serveur vérifie les droits depuis la session
+WIMS authentifiée, sans accepter de classe cible fournie par le navigateur. Il lit les sessions et
+les journaux `score/` et `noscore/`, dédoublonne leurs événements et ignore les sessions expirées et
+les enseignants. Un relevé temporaire est écrit uniquement dans la session du professeur, puis
+remplacé à chaque actualisation : aucune donnée de classe ou d'élève n'est modifiée. L'historique
+est borné pour garder un relevé compatible avec WIMS ; un historique raccourci est signalé.
+
+Vérification locale : `python3 suivi-fixtures.py`, `node suivi-test.mjs`,
+`node suivi-signaux-test.mjs` depuis `../../banc-nova`. Le premier teste les droits et une charge de
+30 élèves sur des fichiers isolés ; les autres vérifient les accès réels et les signaux simulés.
+
 ## Organisation
 
 | Fichier | Rôle |

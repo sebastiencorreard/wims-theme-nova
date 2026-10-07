@@ -1,0 +1,19 @@
+!! Suivi en salle informatique : uniquement les sessions autorisees par WIMS.
+!reset nova_suivi_page
+!if $wims_user=supervisor or yes isin $supervisable $user_supervisable
+  !if _tool notin $wims_session and _exam notin $wims_session
+    !set nova_sq=!sh printf '%s' "$$QUERY_STRING"
+    !set nova_sq=!replace internal & by $ $ in $nova_sq
+    !set nova_sq=!replace internal + by $ $ in $nova_sq
+    !set nova_suivi_page=!getopt nova_suivi in $nova_sq
+    !reset nova_sq
+    !if $nova_suivi_page=1
+      !read themes/Nova/_widgets/suivi.phtml
+    !else
+      <p class="nova-suivi-entree">
+      !set wims_ref_class=wims_button
+      !href module=home&nova_suivi=1 Suivi en direct
+      </p>
+    !endif
+  !endif
+!endif

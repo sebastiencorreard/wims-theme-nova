@@ -6,6 +6,13 @@
 !endif
 !set home_theme=yes
 
+!read themes/Nova/_widgets/suivi-entree.phtml
+!if $nova_suivi_page=1
+</div><!--wimsbody-->
+</div><!--wimspagebox-->
+  !goto end
+!endif
+
 !set table_spacer=no
 !readproc tabletheme
 

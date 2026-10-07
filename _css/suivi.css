@@ -1,0 +1,40 @@
+/* Suivi des sessions en salle informatique : espace propre a cette nouvelle page. */
+#nova-suivi { max-width: 90rem; margin: 0 auto; }
+.nova-suivi-entree { text-align: right; }
+.nova-suivi-haut { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.nova-suivi-haut h1 { margin-bottom: .3rem; }
+.nova-suivi-haut p, .nova-suivi-aide, #nova-suivi-etat { color: var(--nova-texte-2); }
+.nova-suivi-haut > div:last-child { display: flex; gap: .6rem; flex-wrap: wrap; }
+.nova-suivi-filtres { display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin: 1rem 0; }
+.nova-suivi-filtres label { display: flex; gap: .4rem; flex-direction: column; font-size: .9rem; }
+.nova-suivi-filtres label:has(input[type=checkbox]) { flex-direction: row; align-items: center; }
+.nova-suivi-filtres input[type=number] { width: 5rem; }
+.nova-suivi-reglages { padding: .8rem 1rem; border: 1px solid var(--nova-bord); border-radius: .8rem; }
+.nova-suivi-reglages summary { cursor: pointer; }
+.nova-suivi-compteurs { display: flex; gap: .8rem; flex-wrap: wrap; margin: 1.2rem 0; }
+.nova-suivi-compteurs > div { display: flex; align-items: baseline; gap: .6rem; padding: .8rem 1rem; background: var(--nova-surface-2); border-radius: .8rem; }
+.nova-suivi-compteurs strong { font-size: 1.8rem; }
+.nova-suivi-tableau { overflow-x: auto; }
+#nova-suivi-table { width: 100%; border-collapse: collapse; text-align: left; }
+#nova-suivi-table th { background: var(--nova-surface-2); }
+#nova-suivi-table td, #nova-suivi-table th { padding: 1rem; border-bottom: 1px solid var(--nova-bord); vertical-align: top; }
+#nova-suivi-table small { display: block; color: var(--nova-texte-2); margin-top: .35rem; }
+#nova-suivi-table td:first-child { min-width: 10rem; }
+#nova-suivi-table tr.nova-suivi-difficulte td:first-child { border-left: 4px solid #ad3a2b; }
+#nova-suivi-table tr.nova-suivi-attente td:first-child { border-left: 4px solid #9b6500; }
+#nova-suivi-table tr.nova-suivi-repetition td:first-child { border-left: 4px solid var(--nova-accent); }
+.nova-suivi-notes { display: flex; gap: .3rem; flex-wrap: wrap; }
+.nova-suivi-notes span { padding: .2rem .4rem; border-radius: .4rem; background: var(--nova-surface-2); white-space: nowrap; }
+.nova-suivi-notes .faible { background: #fce8e5; color: #852b20; }
+.nova-suivi-detail { margin-top: .6rem; min-width: 12rem; }
+.nova-suivi-detail summary { cursor: pointer; color: var(--nova-lien); }
+.nova-suivi-detail ol { padding-left: 1.1rem; font-size: .85rem; max-height: 20rem; overflow: auto; }
+.nova-suivi-detail li { margin: .5rem 0; }
+.nova-suivi-aide { margin-top: 1rem; font-size: .85rem; }
+@media (max-width: 640px) { #nova-suivi-table td, #nova-suivi-table th { padding: .6rem; } .nova-suivi-compteurs > div { flex: 1 1 9rem; } }
+
+#nova-suivi .nova-suivi-detail { background: transparent; border: 0; box-shadow: none; padding: 0; border-radius: 0; }
+#nova-suivi .nova-suivi-detail summary { padding: 0; background: transparent; }
+#nova-suivi-table td, #nova-suivi-table th { padding: .7rem 1rem; }
+#nova-suivi .nova-suivi-haut h1 { margin-top: 0; }
+#nova-suivi-actualiser { padding: .65rem 1rem; border-radius: .6rem; border: 1px solid var(--nova-accent); background: var(--nova-accent); color: white; cursor: pointer; font: inherit; font-weight: 600; }

@@ -2945,6 +2945,32 @@
       t.parentNode.insertBefore(cadre, t);
       cadre.appendChild(t);
     });
+    // Téléphone : dominos moins larges (demande de l'utilisateur, 2026-10-08). WIMS fixe la largeur (205 px) des places
+    // réservées dans la page et des calques de Dynapi (setAnchor : stretchH, et un décalage left de -205 px vers le
+    // repère fillobj<n>) : les places sont réduites dans la même proportion, et setAnchor, enveloppé avant que Dynapi
+    // ne crée ses calques (après « load »), reçoit la largeur et le décalage réduits.
+    if (exercice && window.matchMedia && matchMedia('(max-width: 639.98px)').matches && window.DynLayer && DynLayer.prototype.setAnchor) {
+      var etroit = 150, origine = null;
+      Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, div:has(> a[id^="fillobj"]) > img'), function (im) {
+        var w = parseFloat(im.style.width);
+        if (!(w > 1)) return;
+        if (!origine) origine = w;
+        im.style.width = Math.round(w * etroit / origine) + 'px';
+      });
+      if (origine) {
+        var ancrer = DynLayer.prototype.setAnchor;
+        DynLayer.prototype.setAnchor = function (a) {
+          if (a && a.stretchH === origine) {
+            var b = {};
+            for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
+            b.stretchH = etroit;
+            if (typeof b.left === 'number') b.left = Math.round(b.left * etroit / origine);
+            a = b;
+          }
+          return ancrer.call(this, a);
+        };
+      }
+    }
     // Page à dominos : marquée avant « load » (le CSS agrandit dominos, cases et places réservées avant que Dynapi ne
     // calcule ses positions).
     document.documentElement.classList.add('nova-dominos');

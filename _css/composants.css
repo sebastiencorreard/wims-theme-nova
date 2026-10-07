@@ -940,7 +940,9 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
  * 205 × 50 px (taille posée en ligne par Dynapi) ; html.nova-dominos est posée par nova.js avant « load », donc avant
  * que Dynapi ne place ses calques sur les repères : les places réservées dans la page (images transparentes devant
  * fillobj<n> et dans fill<nom>) grandissent d'autant, rien ne déborde sur la suite. */
-html.nova-dominos:not(.nova-std-dominos){ --nova-domino-h: 80px; }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
+html.nova-dominos:not(.nova-std-dominos){ --nova-domino-h: 80px; --nova-domino-w: 205px; }
+/* Téléphone : 150 px de large (nova.js réduit aussi les calques de Dynapi et les places réservées). */
+@media (max-width: 639.98px) { html.nova-dominos:not(.nova-std-dominos) { --nova-domino-w: 150px; } }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
 html.nova-dominos:not(.nova-std-dominos) .wims_grabbable:has(.fill_content > table.wimsborder),
 html.nova-dominos:not(.nova-std-dominos) .wims_droppable{ height: var(--nova-domino-h) !important; }
 html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .wims_fill_object{ height: 100% !important; display: flex; align-items: center; justify-content: center; }
@@ -959,7 +961,7 @@ html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .fill_content > table.w
  * même habillage que dans l'exercice, sans ombre (ils ne se déplacent pas). Le cadre de WIMS autour d'une réponse
  * (juste, fausse) reste. */
 html.nova-dominos:not(.nova-std-dominos) .drag_label:has(> .drag_content > table.wimsborder){
-  box-sizing: border-box; width: 205px !important; height: var(--nova-domino-h) !important; min-height: 0;
+  box-sizing: border-box; width: var(--nova-domino-w) !important; height: var(--nova-domino-h) !important; min-height: 0;
   display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
   background: #FFFFFF !important; border: 2px solid #1A1D22 !important; border-radius: 8px; padding: 0 !important; color: #1A1D22;
 }
@@ -969,7 +971,7 @@ html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, t
   margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
 }
 html.nova-dominos:not(.nova-std-dominos) table.nova-domino-solution.nova-domino-solution.nova-domino-solution{
-  box-sizing: border-box; width: 205px; min-width: 205px; height: var(--nova-domino-h); display: inline-table; vertical-align: middle;
+  box-sizing: border-box; width: var(--nova-domino-w); min-width: var(--nova-domino-w); height: var(--nova-domino-h); display: inline-table; vertical-align: middle;
   background: #FFFFFF; border: 2px solid #1A1D22 !important; border-radius: 8px; border-collapse: separate;
 }
 html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(tr, th, td){ background: transparent !important; border: 0 !important; border-radius: 0; }

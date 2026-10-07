@@ -88,22 +88,28 @@ supervisées ; un administrateur voit sa structure et ses descendants. Aucun ide
 élève, adresse IP, mot de passe ni réponse saisie n'est envoyé au navigateur de l'enseignant.
 
 - Vue par défaut : élèves ayant fait une action dans les **60 dernières minutes**. Fenêtre réglable
-  à 30, 60 ou 120 minutes ; filtre par classe/cours, nom et situation.
+  de 1 à 120 minutes ; filtre par classe/cours, nom et situation.
 - **Difficulté possible** : au moins 3 résultats < 5/10 parmi les 5 derniers sur l'exercice ouvert.
 - **Répétition après réussite** : au moins 4 nouveaux essais après 3 résultats >= 9/10 sur cet exercice.
 - **Temps long, à vérifier** : exercice ouvert depuis 8 minutes sans résultat enregistré sur ce
   dernier essai. Ce signal ne distingue pas réflexion, difficulté et absence du poste.
-- Seuils réglables et conservés dans le navigateur. Les signaux sont limités à la fenêtre récente ;
+- Tous ces critères sont réglables dans **Seuils de repérage** : nombre de résultats examinés,
+  nombre de résultats faibles, note de difficulté, nombre de réussites, note de réussite, nombre
+  de reprises, délais sans résultat et sans action récente, fenêtre récente et fréquence d'actualisation.
+  Les notes acceptent les décimales ; le nombre de résultats faibles reste au plus égal au nombre
+  de résultats examinés. Les réglages sont conservés dans le navigateur et un bouton rétablit les
+  seuils par défaut. Les signaux sont limités à la fenêtre récente ;
   ils ne sont pas des diagnostics et n'ont aucun effet sur les notes.
 - Chronologie par élève (40 derniers événements visibles), notes sur 10, feuilles et examens.
   Les réponses non comptabilisées sont incluses si WIMS les journalise. Les activités hors feuille
   ou examen restent visibles mais ne reçoivent pas de signal fondé sur leurs résultats.
-- Actualisation toutes les 30 secondes, sans recharger la page. Suspendue dans un onglet caché,
+- Actualisation toutes les 30 secondes par défaut (réglable de 10 à 300 secondes), sans recharger la page. Suspendue dans un onglet caché,
   pendant la lecture d'une chronologie ou la saisie d'un filtre. En cas d'échec, le dernier relevé
   reste visible avec un message et son heure ; il n'est pas présenté comme un relevé neuf.
 
 Une action récente correspond à une requête WIMS, pas à un mouvement de souris. Une session ouverte
-peut appartenir à un élève absent ; **sans action depuis 5 minutes ne signifie pas déconnecté**.
+peut appartenir à un élève absent ; **sans action récente ne signifie pas déconnecté** (délai de
+5 minutes par défaut, réglable).
 Les élèves sans action récente restent dans la vue de séance pour permettre au professeur d'aller
 les voir. L'historique concerne la zone de travail actuellement retenue, pas toutes les anciennes
 classes de l'élève. Il ne s'agit pas d'un historique annuel ni d'un tableau de notes retenues.
@@ -122,6 +128,8 @@ est borné pour garder un relevé compatible avec WIMS ; un historique raccourci
 Vérification locale : `python3 suivi-fixtures.py`, `node suivi-test.mjs`,
 `node suivi-signaux-test.mjs` depuis `../../banc-nova`. Le premier teste les droits et une charge de
 30 élèves sur des fichiers isolés ; les autres vérifient les accès réels et les signaux simulés.
+`node suivi-seuils-test.mjs` vérifie les seuils, leurs limites, la mémorisation, la remise aux valeurs
+par défaut et la cadence d'actualisation avec un DOM en mémoire, sans navigateur ni accès à WIMS.
 
 ## Organisation
 

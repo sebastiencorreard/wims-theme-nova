@@ -898,9 +898,11 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wims_grabbable:has(.fill_content > table.wimsborder):hover { box-shadow: 0 5px 12px rgb(0 0 0 / 28%); }
 /* Choisi (clic) ou en cours de glissement : soulevé, contour de l'accent. */
 .wims_grabbable:has(.fill_content > table.wimsborder)[style*="rgb(96, 96, 255)"] {
-  box-shadow: 0 10px 22px rgb(0 0 0 / 30%), 0 0 0 3px var(--nova-accent);
+  border-color: var(--nova-accent) !important;      /* le cadre noir prend la couleur d'accent (demande de l'utilisateur) */
+  box-shadow: 0 10px 22px rgb(0 0 0 / 30%);
   cursor: grabbing;
 }
+.wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-accent) !important; }
 .fill_content table.wimsborder :is(th, td) + :is(th, td),
 .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left-color: #1A1D22; }
 
@@ -990,5 +992,8 @@ html.nova-dominos .fill_container:has(.drag_content > table.wimsborder) { border
 .nova-defile-x { max-width: 100%; overflow-x: auto; }
 /* Réponse juste ou fausse dans l'énoncé corrigé : contour vert ou rouge autour du domino (le cadre de WIMS, retiré
  * avec le liseré orange, portait cette information). */
-html.nova-dominos .oef_indbad .drag_label:has(> .drag_content > table.wimsborder) { box-shadow: 0 0 0 3px var(--nova-erreur) !important; }
-html.nova-dominos .oef_indgood .drag_label:has(> .drag_content > table.wimsborder) { box-shadow: 0 0 0 3px var(--nova-succes) !important; }
+/* (Couleur du cadre lui-même et fond teinté, au lieu d'un contour ajouté : demande de l'utilisateur, 2026-10-08.) */
+html.nova-dominos .oef_indbad .drag_label:has(> .drag_content > table.wimsborder) { border-color: var(--nova-erreur) !important; background: color-mix(in oklab, var(--nova-erreur) 9%, white) !important; }
+html.nova-dominos .oef_indgood .drag_label:has(> .drag_content > table.wimsborder) { border-color: var(--nova-succes) !important; background: color-mix(in oklab, var(--nova-succes) 9%, white) !important; }
+html.nova-dominos .oef_indbad .drag_content > table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-erreur) !important; }
+html.nova-dominos .oef_indgood .drag_content > table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-succes) !important; }

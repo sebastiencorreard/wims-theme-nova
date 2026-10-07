@@ -54,8 +54,9 @@ $wims_CSS
     var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
       .map(function (c) { return '.' + c; }).join(', ') || '.nova-aucune';
     var p = '.nova-menu-simple:not(.nova-menu-edition) body:has(#nova-menu-bascule) #wimsmenumodubox ';
-    var titre = p + '.menu_title:not(.nova-profil-titre):not(:has(+ * :is(' + k + ')))';
-    return p + '.menuitem:not(:is(' + k + '), .nova-profil *), ' + titre + ', ' + titre + ' + * { display: none !important; }';
+    var titre = p + '.menu_title:not(:has(+ * :is(' + k + ')))';
+    /* Deconnexion (rubrique Profil) : jamais masquee, meme avec toute sa rubrique. */
+    return p + '.menuitem:not(:is(' + k + '), .nova-deconnexion), ' + titre + ', ' + titre + ' + :not(:has(.nova-deconnexion)) { display: none !important; }';
   } };
   try {
     if (localStorage.getItem('nova_menu') !== 'complet') d.classList.add('nova-menu-simple');
@@ -70,7 +71,7 @@ $wims_CSS
 </script>
 <meta name="nova-structure" content="$wims_superclass">
 <meta name="nova-classe" content="$wims_class">
-<script src="html/themes/Nova/js/nova.js?v=ed3df15cc6" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=6c2db951ee" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

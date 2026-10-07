@@ -1039,7 +1039,7 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 
 /* ---------- Rubrique Profil et tiroir de l'élève (demandes de l'utilisateur, 2026-10-07) ---------- */
 /* Profil : rubrique en tête du menu latéral (js/nova.js, profilLateral) ; le nom, en texte, comme une entrée. */
-#wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; }
+#wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; box-sizing: border-box; width: 100%; min-width: 0; overflow-wrap: anywhere; }
 /* Le menu du compte de la barre, qui va passer dans le menu latéral : masqué en attendant nova.js (3 s au plus),
  * pour qu'il n'apparaisse pas un instant. */
 html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

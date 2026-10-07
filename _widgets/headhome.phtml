@@ -15,7 +15,13 @@
    !set wims_name_$(nova_cle)=WIMS
  !endif
  <$div1 class="menuitem $wims_ref_class">
-  !read $(w_path)oneitem.phtml $1_
+  !! Sur l'accueil, WIMS ecrit l'entree en texte (page courante) : Nova en fait un lien vers l'accueil, comme
+  !! sur les autres pages (demande de l'utilisateur, 2026-10-07).
+  !if $module=home and $nova_nom_sauve!=$empty
+    !href module=home $(wims_name_$(nova_cle))
+  !else
+    !read $(w_path)oneitem.phtml $1_
+  !endif
  </$div1>
  !if $nova_nom_sauve!=$empty
    !set wims_name_$(nova_cle)=$nova_nom_sauve

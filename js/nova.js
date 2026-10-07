@@ -989,7 +989,7 @@
     };
     var nom = function (e) { return (e.querySelector('a') || e).textContent.replace(/\s+/g, ' ').trim(); };
     var familles = [];  // [titre, [entrées]]
-    Array.prototype.forEach.call(menu.querySelectorAll('.menu_title:not(.nova-profil-titre)'), function (titre) {
+    Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (titre) {
       var bloc = titre.nextElementSibling;
       var items = bloc ? Array.prototype.filter.call(bloc.querySelectorAll('.menuitem'), cle) : [];
       if (items.length) familles.push([titre, items]);
@@ -2761,10 +2761,19 @@
     titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profil';
     var groupe = document.createElement('div');
     groupe.className = 'wimsmenu menu nova-profil';
+    // Chaque entrée porte une clé « profil_<classe du lien> » : le menu simplifié peut la masquer, comme les
+    // autres (demande de l'utilisateur, 2026-10-07) ; la déconnexion (cmd=close, ou classe visitor des
+    // déconnexions CAS) n'en a pas : toujours visible (htmlheader.phtml).
+    var cleProfil = function (a) {
+      var c = ((a.getAttribute('class') || '').split(/\s+/).filter(function (x) { return /^[A-Za-z0-9_-]+$/.test(x); })[0]) || 'lien';
+      return 'profil_' + c;
+    };
     var ajouter = function (lien, ou) {
       if (!lien || !lien.getAttribute('href') || /^#/.test(lien.getAttribute('href'))) return;
       var d = document.createElement('div');
       d.className = 'menuitem';
+      if (/[?&+]cmd=close/.test(lien.getAttribute('href')) || lien.classList.contains('visitor')) d.classList.add('nova-deconnexion');
+      else d.classList.add(cleProfil(lien));
       var copie = lien.cloneNode(true);
       copie.removeAttribute('id');
       copie.removeAttribute('aria-controls');
@@ -2773,7 +2782,7 @@
       (ou || groupe).appendChild(d);
     };
     var nom = document.createElement('div');
-    nom.className = 'menuitem nova-profil-nom';
+    nom.className = 'menuitem profil_nom nova-profil-nom';
     nom.textContent = compte.textContent.replace(/\s+/g, ' ').trim();
     groupe.appendChild(nom);
     // Langues (sélecteur de la barre, quand WIMS en met un) avant le reste du compte.
@@ -2804,6 +2813,23 @@
     cible.insertBefore(titre, groupe);
     liCompte.remove();
     if (langues) langues.remove();
+    // Menu simplifié de l'enseignant : les entrées de Profil et l'Aide déplacée, nouvelles, sont gardées une
+    // première fois (repère profil_v1 dans la liste), pour qu'aucune ne disparaisse d'elle-même.
+    var nm = window.novaMenu;
+    if (nm && document.getElementById('nova-menu-bascule') && nm.garde.indexOf('profil_v1') < 0) {
+      Array.prototype.forEach.call(menu.querySelectorAll('.nova-profil .menuitem, .menuitem.help, .menuitem.whelp'), function (item) {
+        Array.prototype.forEach.call(item.classList, function (c) {
+          if ((/^profil_/.test(c) || c === 'help' || c === 'whelp') && nm.garde.indexOf(c) < 0) nm.garde.push(c);
+        });
+      });
+      nm.garde.push('profil_v1');
+      try {
+        localStorage.setItem('nova_menu_garde', JSON.stringify(nm.garde));
+        localStorage.setItem('nova_menu_envoi', valeurMenu());
+      } catch (e) { /* cette page seulement */ }
+      var regle = document.getElementById('nova-menu-style');
+      if (regle) regle.textContent = nm.style(nm.garde);
+    }
     fini();
   }
 

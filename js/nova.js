@@ -2926,6 +2926,9 @@
   function dominos() {
     var repere = document.getElementById('fillobj1');
     if (!repere || !Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); })) return;
+    // Page à dominos : marquée avant « load » (le CSS agrandit dominos, cases et places réservées avant que Dynapi ne
+    // calcule ses positions).
+    document.documentElement.classList.add('nova-dominos');
     var textes = document.getElementById('nova-textes');
     var consigne = textes && textes.getAttribute('data-texte-consigne-dominos');
     var bloc = repere.parentElement;

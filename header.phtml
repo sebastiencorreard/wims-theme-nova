@@ -51,6 +51,35 @@
 !if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
   !read themes/Nova/_widgets/apparence-classe.phtml
 !endif
+!! Nova : menu enseignant personnalise (js/nova.js, basculeMenu), garde sur le serveur pour suivre l'enseignant
+!! d'un poste a l'autre (demande de l'utilisateur, 2026-10-07) : log/classes/<structure ou classe>/.nova_menu_<login>
+!! (supervisor pour l'enseignant d'une classe). Ecrit seulement sur l'accueil (module home : WIMS refuse wimshome/
+!! aux modules adm/class/..., is_class_module, src/files.c), quand un lien porte nova_menu (ajoute par nova.js au lien suivant apres un changement) ; relu et transmis sur
+!! ces memes pages (#nova-menu-serveur). Valeur : simple ou complet, puis les entrees gardees, separees par des points.
+!if ($module=home or $nova_m=adm/) and $wims_user!=$empty and $wims_class!=$empty and $wims_developer=$empty
+  !read themes/Nova/_procs/eleve.proc
+  !if $nova_est_eleve!=yes
+    !set nova_mk=$wims_superclass
+    !default nova_mk=!word 1 of $wims_class
+    !set nova_mk=!replace internal / by , in $nova_mk
+    !set nova_mk=$(nova_mk[1])
+    !set nova_mf=wimshome/log/classes/$nova_mk/.nova_menu_$wims_user
+    !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+    !if nova_menu isin $nova_q
+      !set nova_q=!replace internal & by $ $ in $nova_q
+      !set nova_mv=!getopt nova_menu in $nova_q
+      !set nova_mt=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.- in $nova_mv
+      !set nova_m1=!replace internal . by , in $nova_mv
+      !set nova_m1=$(nova_m1[1])
+      !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof simple,complet
+        !writefile $nova_mf $nova_mv
+      !endif
+    !endif
+    !set nova_mv=!sh if test -r $wims_home/log/classes/$nova_mk/.nova_menu_$wims_user; then cat $wims_home/log/classes/$nova_mk/.nova_menu_$wims_user; fi
+<script type="text/plain" id="nova-menu-serveur">$nova_mv</script>
+    !reset nova_mk nova_mf nova_q nova_mv nova_mt nova_m1
+  !endif
+!endif
 !reset nova_m nova_site
 !! Header menu bar definition.
 !nocache

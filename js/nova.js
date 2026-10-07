@@ -882,6 +882,48 @@
     });
   }
 
+  /* Menu enseignant personnalisé, gardé sur le serveur (demande de l'utilisateur, 2026-10-07 ; header.phtml) :
+   * valeur « simple|complet.entrée.entrée… » dans log/classes/<structure ou classe>/.nova_menu_<login>.
+   * Le navigateur en garde une copie (localStorage, lue par le script de tête avant l'affichage). Sur une page où le
+   * serveur la transmet (#nova-menu-serveur), elle remplace la copie, sauf changement pas encore envoyé
+   * (nova_menu_envoi) ; un changement est envoyé avec le lien WIMS suivant (paramètre nova_menu, ignoré des
+   * modules), écrit par le serveur si ce lien mène à un module de confiance, sinon renvoyé au lien d'après. */
+  function valeurMenu() {
+    var nm = window.novaMenu;
+    var etat = document.documentElement.classList.contains('nova-menu-simple') ? 'simple' : 'complet';
+    return [etat].concat(nm ? nm.garde : []).join('.');
+  }
+  function menuServeur() {
+    var nm = window.novaMenu;
+    var racine = document.documentElement;
+    var lire = function (cle) { try { return localStorage.getItem(cle); } catch (e) { return null; } };
+    var ecrire = function (cle, v) { try { if (v === null) localStorage.removeItem(cle); else localStorage.setItem(cle, v); } catch (e) { /* sans stockage */ } };
+    var source = document.getElementById('nova-menu-serveur');
+    var attente = lire('nova_menu_envoi');
+    if (source && nm) {
+      var serveur = source.textContent.trim();
+      if (attente && attente === serveur) { ecrire('nova_menu_envoi', null); attente = null; }
+      if (!attente && /^(simple|complet)(\.[A-Za-z0-9_-]+)*$/.test(serveur)) {
+        var morceaux = serveur.split('.');
+        var simple = morceaux[0] === 'simple';
+        nm.garde = morceaux.slice(1);
+        ecrire('nova_menu', simple ? 'simple' : 'complet');
+        ecrire('nova_menu_garde', JSON.stringify(nm.garde));
+        racine.classList.toggle('nova-menu-simple', simple);
+        var regle = document.getElementById('nova-menu-style');
+        if (regle) regle.textContent = nm.style(nm.garde);
+      }
+    }
+    // Envoi d'un changement en attente avec le prochain lien de WIMS (même session).
+    document.addEventListener('click', function (e) {
+      var v = lire('nova_menu_envoi');
+      var a = v && e.target.closest && e.target.closest('a[href*="wims.cgi"]');
+      if (!a || a.target === '_blank' || !/[?&+]session=/.test(a.href) || /wims_window=new/.test(a.href) || /[?&]nova_menu=/.test(a.href)) return;
+      var parts = a.href.split('#');
+      a.href = parts[0] + '&nova_menu=' + v + (parts.length > 1 ? '#' + parts.slice(1).join('#') : '');
+    }, true);
+  }
+
   /* Menu enseignant simplifié / complet (accueil de la classe) : le serveur envoie le menu complet,
    * la classe html.nova-menu-simple (posée dans htmlheader.phtml) en masque une partie, d'après la
    * règle écrite par ce même script (<style id="nova-menu-style">, window.novaMenu). Les choix sont
@@ -893,7 +935,13 @@
     if (!marque || !menu) return;
     var racine = document.documentElement;
     var texte = function (nom) { return marque.getAttribute('data-' + nom) || ''; };
-    var memoriser = function (cle, valeur) { try { localStorage.setItem(cle, valeur); } catch (e) { /* choix non retenu */ } };
+    var memoriser = function (cle, valeur) {
+      try {
+        localStorage.setItem(cle, valeur);
+        if (cle === 'nova_menu_garde') window.novaMenu.garde = JSON.parse(valeur);
+        localStorage.setItem('nova_menu_envoi', valeurMenu());   // vers le serveur avec le lien suivant (menuServeur)
+      } catch (e) { /* choix non retenu */ }
+    };
     var bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'nova-menu-bascule';
@@ -2822,7 +2870,7 @@
     }
   }
 
-  function demarrer() { reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -2425,6 +2425,7 @@
     lignes = lignes.filter(Boolean);
     if (!lignes.length) return;
     lignes.forEach(function (li) { li.hidden = true; li.classList.add('nova-sans-effet'); });
+    lignes.sort(function (a, b) { return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1; });
     var repli = document.createElement('p');
     repli.className = 'nova-app-repli';
     var texte = document.createElement('span');
@@ -2495,7 +2496,11 @@
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () { ecrire(); envoi.click(); });
     pageApparence(formWims, modele);
     var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
-    replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); }), modele);
+    // « Transférer un fichier css » partage son cadre avec la zone de texte (où Nova écrit) : seul son
+    // paragraphe est replié (data-sans-effet-ligne ; demande de l'utilisateur, 2026-10-07).
+    var lignesSeules = (modele.getAttribute('data-sans-effet-ligne') || '').split(',').filter(Boolean);
+    replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); })
+      .concat(lignesSeules.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('p'); })), modele);
   }
 
   /* Réglages de Nova posés dans la feuille de surcharge du portail ou du groupement (demande de

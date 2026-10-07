@@ -732,3 +732,19 @@ body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.flo
  * 2026-10-06) ; les champs texte restent sous leur libellé. */
 body.nova-page-apparence .wimsbody :is(.field, li.field):has(> select) > label { display: inline-block; margin-right: var(--nova-e3); vertical-align: middle; }
 body.nova-page-apparence .wimsbody :is(.field, li.field) > select { display: inline-block; width: auto; max-width: 100%; vertical-align: middle; }
+
+/* Page Apparence d'une classe, d'un groupement ou d'un portail (formulaire avec #pr_cssfile) : chaque réglage
+ * simple sur une ligne, étiquette, champ, aide ; la zone « Insérer des définitions de style css » sur toute la
+ * largeur (demandes de l'utilisateur, 2026-10-07). */
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nova-e2) var(--nova-e3);
+}
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > label { order: 0; display: inline-block; margin: 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > :is(input, select) { order: 1; flex: 0 1 auto; min-width: 0; margin: 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > input:is([type="text"], :not([type])) { flex: 1 1 8rem; width: auto; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > .wims_button_help { order: 2; float: none; margin: 0 var(--nova-e6) 0 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(#pr_cssfile) { flex: 1 1 100%; width: 100%; max-width: none; }
+body.nova-page-apparence form:has(#pr_cssfile) #pr_cssfile { width: 100%; box-sizing: border-box; min-height: 10rem; font-family: var(--nova-police-chiffres); font-size: .9375rem; }

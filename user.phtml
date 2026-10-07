@@ -36,13 +36,69 @@
 :normal
 !! Nova : bouton Mes notes bien visible, tout en haut de l'accueil de l'eleve (demande de l'utilisateur,
 !! 2026-10-03). Lien du menu de WIMS (module adm/class/userscore), libelle de WIMS.
+!! Nova : badges de l'eleve (demande de l'utilisateur, 2026-10-07 ; premier badge : Fidelite). Calcul par
+!! _procs/badges.awk (semaines avec au moins une reponse envoyee, vacances sautees) ; reglages --nova-badges,
+!! --nova-fidelite-paliers, --nova-vacances lus dans les feuilles du site, de la structure et de la classe (la
+!! derniere l'emporte) ; niveau garde dans score/<eleve>.nova (jamais perdu, annonce une seule fois).
+!! Pas dans l'accueil d'un portail ou d'un groupement (le travail est dans ses zones), ni en examen.
+!reset nova_bl nova_b1
+!if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session
+  !ifval 0$class_type<2
+    !set nova_cl=$wims_home/log/classes
+    !set nova_auj=!char 1 to 8 of $wims_now
+    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -f $wims_home/public_html/themes/Nova/_procs/badges.awk
+    !set nova_bl=!line 1 of $nova_bd
+    !set nova_b1=!word 1 of $nova_bl
+    !if $nova_b1=on
+      !set nova_ecr=!line 2 of $nova_bd
+      !if $nova_ecr=1
+        !set nova_st=!line 3 to -1 of $nova_bd
+        !writefile wimshome/log/classes/$wims_class/score/$wims_user.nova $nova_st
+      !endif
+      !set nova_bn=!word 2 of $nova_bl
+      !set nova_bs=!word 4 of $nova_bl
+      !set nova_be=!word 5 of $nova_bl
+      !set nova_bnv=!word 7 of $nova_bl
+      !set nova_bi=$nova_bn
+      !if $nova_bi<1
+        !set nova_bi=1
+      !endif
+    !endif
+    !reset nova_cl nova_auj nova_bd nova_ecr nova_st
+  !endif
+!endif
 !if $wims_user!=supervisor and $wims_user!=$empty
   <div class="nova-mes-notes">
   !set wims_ref_class=nova-mes-notes-bouton
   !href module=adm/class/userscore &#127942; $wims_name_myscore &#127942;
   !reset wims_ref_class
+  !if $nova_b1=on
+    <a class="nova-pastille-badge nova-badge-$nova_bn nova-badge-$nova_be" href="#nova-badges" aria-label="$nova_badges_titre : $nova_fid_nom, $nova_badges_serie $nova_bs $nova_badges_sem">
+      <img src="themes/Nova/img/badges/coeur_0$nova_bi.webp" alt="" width="36" height="36"><span>$nova_bs $nova_badges_sem</span>
+    </a>
+  !endif
   </div>
+  !if $nova_b1=on
+    !if $nova_bnv=1
+      !set nova_bnom=!item $nova_bn of $nova_fid_niveaux
+      !set nova_bp=!word $[$nova_bn+9] of $nova_bl
+      !set nova_bm=!replace internal %n by $nova_bp in $(nova_fid_bravo$nova_bn)
+      <div class="nova-badge-annonce" role="status">
+        <img src="themes/Nova/img/badges/coeur_0$nova_bn.webp" alt="" width="72" height="72">
+        <div><b>$nova_fid_nouveau $nova_fid_nom $nova_bnom&nbsp;!</b><p>$nova_bm</p></div>
+        <p class="nova-badge-annonce-liens"><a href="#nova-badges">$nova_badges_voir</a><button type="button" class="nova-badge-masquer">$nova_badges_masquer</button></p>
+      </div>
+      !reset nova_bnom nova_bp nova_bm
+    !endif
+    <div id="nova-badges" hidden data-fidelite="$nova_bl" data-niveaux="$nova_fid_niveaux" data-images="themes/Nova/img/badges/coeur_0"
+      data-titre="$nova_badges_titre" data-nom="$nova_fid_nom" data-niveau="$nova_badges_niveau" data-obtenu="$nova_badges_obtenu"
+      data-regle="$nova_fid_regle" data-vacances="$nova_fid_vacances" data-serie="$nova_badges_serie" data-record="$nova_badges_record"
+      data-avant="$nova_badges_avant" data-max="$nova_badges_max" data-aucun="$nova_badges_aucun" data-sem="$nova_badges_sem"
+      data-fermer="$nova_badges_fermer" data-suite="$nova_fid_suite" data-suite1="$nova_fid_suite1"
+      data-etat-fait="$nova_fid_etat_fait" data-etat-attente="$nova_fid_etat_attente" data-etat-pause="$nova_fid_etat_pause" data-etat-danger="$nova_fid_etat_danger"></div>
+  !endif
 !endif
+!reset nova_bl nova_b1 nova_bn nova_bs nova_be nova_bnv nova_bi
 !read classlogo.phtml
 !if $class_logo!=$empty
   <div id="classlogo" class="float_$class_logoside">

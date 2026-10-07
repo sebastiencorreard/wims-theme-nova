@@ -98,11 +98,14 @@
 /* Page de l'examen (chronomètre recopié) : ☰, accueil, chronomètre, puis « Terminer » à droite. */
 body.nova-examen-session #wimstopbox .menuitem.chrono { order: 0; margin-right: 0; }
 
-/* Écrans étroits (< 400 px) : pas d'icône d'horloge, espacements serrés ; décompte et « Fin à »
- * restent (la fenêtre d'exercice garde aussi « retour à la liste » et « outils » dans la barre). */
+/* Écrans étroits (< 400 px) : pas d'icône d'horloge, espacements serrés (la fenêtre d'exercice garde aussi « retour à
+ * la liste » et « outils » dans la barre). */
 @media (max-width: 399.98px) {
   .nova-chrono-icone { display: none; }
   .nova-chrono { padding: 0 var(--nova-e2); gap: 6px; }
   .nova-chrono-temps, .nova-chrono #chrono_exam { font-size: 1.375rem; }
   .nova-chrono-fin { padding-left: 6px; font-size: .75rem; }
 }
+
+/* Téléphone (< 640 px) : pas d'heure de fin (« Fin à … »), le décompte seul (demande de l'utilisateur, 2026-10-08). */
+@media (max-width: 639.98px) { .nova-chrono-fin { display: none !important; } }

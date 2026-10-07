@@ -3143,6 +3143,18 @@
     });
   }
 
+  /* Menu latéral rangé dans #wimspagebox par WIMS sur certaines pages (page de réponse d'un exercice de feuille)
+   * au lieu d'être enfant de #wimsbodybox comme partout ailleurs : remis à sa place habituelle, sinon ni le tiroir
+   * ni la grille de Nova ne s'appliquent (vécu le 2026-10-08 : menu ☰ en bas de page, sous les boutons collés et
+   * le voile). */
+  function placerMenu() {
+    var menu = document.getElementById('wimsmenumodubox');
+    var corps = document.getElementById('wimsbodybox');
+    if (!menu || !corps || menu.parentElement === corps) return;
+    var page = document.getElementById('wimspagebox');
+    if (page && page.parentElement === corps && page.contains(menu)) corps.insertBefore(menu, page);
+  }
+
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
    *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
    *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
@@ -3287,7 +3299,7 @@
     }
   }
 
-  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

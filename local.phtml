@@ -27,7 +27,10 @@ nova_suivi,1,module=home&nova_suivi=1
         !if $nova_sc>0
           !set nova_sl=!line 1 of $wims_rm_0
           !if $(nova_sl[1])!=itemsep
-            !set nova_sr=!append line itemsep,0,$module_title to $nova_sr
+            !set nova_sn=$module_title
+            !default nova_sn=$wims_name_configuration
+            !default nova_sn=Navigation
+            !set nova_sr=!append line itemsep,0,$nova_sn to $nova_sr
           !endif
         !endif
       !endif
@@ -41,7 +44,7 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
         !endif
       !next nova_si
       !set wims_rm_0=$nova_sr
-      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr
+      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn
     !endif
   !endif
 !endif

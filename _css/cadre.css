@@ -1077,3 +1077,4 @@ html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:
 .nova-pied { clear: both; padding: var(--nova-e4) var(--nova-e4) calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: var(--nova-petit); }
 .nova-pied a { color: var(--nova-texte-2); text-decoration: underline; text-underline-offset: 2px; }
 .nova-pied a:hover { color: var(--nova-texte); }
+.nova-pied-sep { margin: 0 var(--nova-e2); color: var(--nova-texte-2); }

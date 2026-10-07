@@ -84,7 +84,7 @@
 !set nova_app_titre=Réglages de Nova
 !set nova_app_pastille=thème
 !set nova_app_animations=Animations
-!set nova_app_animations_aide=Étoiles et vibration après une réponse, glissement des menus, défilement automatique des exemples de l'accueil. L'appareil de l'élève peut toujours les refuser.
+!set nova_app_animations_aide=Étoiles et vibration après une réponse, glissement des menus. L'appareil de l'élève peut toujours les refuser.
 !set nova_app_entree=Entrée directe dans le seul cours
 !set nova_app_entree_aide=Portail ou groupement : un élève qui n'a qu'un cours ou une classe y entre directement.
 !set nova_app_clavier=Clavier mathématique tactile

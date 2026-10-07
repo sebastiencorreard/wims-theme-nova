@@ -1646,7 +1646,9 @@
     var textes = document.getElementById('nova-textes');
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
     var n = diapos.length, courant = 0, arrete = false, suspendu = false, minuterie = 0;
-    var calme = animationsCoupees();
+    // Défilement automatique par défaut, indépendant du réglage « Animations » (demande de l'utilisateur,
+    // 2026-10-07) ; coupé seulement si l'appareil demande de réduire les animations.
+    var calme = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var piste = document.createElement('div');
     piste.className = 'nova-car-piste';
     piste.setAttribute('aria-live', 'off');

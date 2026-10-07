@@ -649,7 +649,7 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
 #wimstopbox .menuitem.nova-terminer { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4M5 4h11l-2 4 2 4H5'/%3E%3C/svg%3E"); }
 #wimstopbox .menuitem.is-dropdown-submenu-parent:has(> a.account) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); }
 @media (min-width: 640px) {
-  #wimstopbox .menuitem:is(.class_home, .home, .back, .tools, .help, .whelp, .tchatclose, .exit, .nova-terminer) > :is(a, .text_item)::before,
+  #wimstopbox .menuitem:is(.class_home, .home, .back, .tools, .help, .whelp, .tchatclose, .exit, .nova-terminer):not(.is-dropdown-submenu .menuitem) > :is(a, .text_item)::before,
   #wimstopbox .menuitem.is-dropdown-submenu-parent > a.account::before {
     content: "";
     display: inline-block;
@@ -662,8 +662,9 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
     -webkit-mask: var(--nova-picto) center / contain no-repeat;
             mask: var(--nova-picto) center / contain no-repeat;
   }
-  /* Dans le menu du compte (entrées déplacées), pas d'icône. */
-  #wimstopbox .is-dropdown-submenu .menuitem > :is(a, .text_item)::before { content: none; }
+  /* Dans le menu du compte : les icônes du jeu de WIMS, comme au téléphone (demande de l'utilisateur,
+   * 2026-10-07 ; auparavant aucune icône au-delà de 640 px). */
+  #wimstopbox .is-dropdown-submenu .menuitem > a::before { margin-right: 8px; }
 }
 /* Accueil : le logo de WIMS au lieu de la maison (img/logo-wims-blanc.svg, blanc pour la barre
  * d'accent), suivi de « WIMS » (_widgets/headhome.phtml). Une image et non un masque : le logo a

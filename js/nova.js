@@ -2494,7 +2494,7 @@
         if (cles.indexOf(k) < 0) decl += ' ' + d.trim() + ';';
       });
       var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '').trim();
-      zone.value = (reste ? reste + '\n' : '') + marque + '\nhtml:root { ' + decl + ' }';
+      zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     carte.addEventListener('change', ecrire);
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -2507,6 +2507,13 @@
     var lignesSeules = (modele.getAttribute('data-sans-effet-ligne') || '').split(',').filter(Boolean);
     replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); })
       .concat(lignesSeules.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('p'); })), modele);
+  }
+
+  // Bloc de réglages Nova dans une feuille de style : une déclaration par ligne (demande de l'utilisateur,
+  // 2026-10-07). Aucune ligne ne commence par « : » (WIMS couperait la feuille, voir apparenceClasse).
+  function blocCss(marque, decl) {
+    var lignes = decl.split(';').map(function (d) { return d.trim(); }).filter(Boolean);
+    return marque + '\nhtml:root {\n' + lignes.map(function (d) { return '  ' + d + ';'; }).join('\n') + '\n}';
   }
 
   /* Page « Badges Nova » (demande de l'utilisateur, 2026-10-07) : rubrique de la configuration d'une classe,
@@ -2609,7 +2616,7 @@
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
         .replace(/\s*--nova-(badges-actifs|fidelite-paliers|vacances)\s*:[^;}]*;?/g, '').trim();
-      zone.value = (reste ? reste + '\n' : '') + marque + '\nhtml:root { ' + decl + ' }';
+      zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
@@ -2680,21 +2687,23 @@
     var racine = document.documentElement;
     var actif = getComputedStyle(racine).getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
     if (getComputedStyle(racine).getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
-    var liste = document.getElementById('user_links');
     var maison = document.querySelector('#wimstopbox .class_home a[href]');
     var surAccueil = !!document.getElementById('nova-badges');
+    // « Mes badges » juste après « Mes notes », dans le même menu (le menu latéral ; demande de l'utilisateur,
+    // 2026-10-07). Classe « heart » : icône cœur du jeu Font_Awesome de WIMS (sans elle, un tiret), rien
+    // avec le jeu « default ».
+    var notes = document.querySelector('#wimsmenumodubox .menuitem > a.myscore');
     var textes = document.getElementById('nova-textes');
-    if (actif && document.getElementById('nova-eleve') && liste && (maison || surAccueil) && !document.body.classList.contains('nova-examen-session') &&
-        !liste.querySelector('.nova-mes-badges')) {
-      var li = document.createElement('li');
-      li.className = 'menuitem';
+    if (actif && notes && document.getElementById('nova-eleve') && (maison || surAccueil) &&
+        !document.body.classList.contains('nova-examen-session') && !document.querySelector('.nova-mes-badges')) {
+      var item = notes.parentNode.cloneNode(false);
+      item.removeAttribute('id');
       var lien = document.createElement('a');
-      lien.className = 'nova-mes-badges';
+      lien.className = 'heart nova-mes-badges';
       lien.href = maison ? maison.href.split('#')[0] + '#nova-badges' : '#nova-badges';   // accueil : sans lien de retour
       lien.textContent = (textes && textes.getAttribute('data-texte-mes-badges')) || 'Mes badges';
-      li.appendChild(lien);
-      var nom = liste.querySelector(':scope > .nova-nom');
-      liste.insertBefore(li, nom ? nom.nextSibling : liste.firstChild);
+      item.appendChild(lien);
+      notes.parentNode.parentNode.insertBefore(item, notes.parentNode.nextSibling);
     }
 
     var d = document.getElementById('nova-badges');

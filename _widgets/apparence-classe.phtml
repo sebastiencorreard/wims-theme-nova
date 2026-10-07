@@ -7,7 +7,7 @@
 <script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
 !! Repliés aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
 !! par Nova), feuille de style (css). « Couleur de fond des menus » (couleur d'accent de Nova) : « Couleur du theme ».
-<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer" data-erreur-vacances="$nova_app_vacances_erreur">
+<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
   <div class="nova-app">
     <fieldset class="property_fields blockcenter nova-app-carte">
       <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>
@@ -39,18 +39,38 @@
           <label><input type="radio" name="nova_c_badges" value="non"> $nova_app_non</label>
         </span>
       </div>
-      <div class="nova-app-ligne nova-app-texte">
-        <label class="nova-app-nom" for="nova-app-paliers">$nova_app_paliers<span class="nova-app-aide">$nova_app_paliers_aide</span></label>
-        <input type="text" id="nova-app-paliers" class="nova-app-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-      </div>
-      <div class="nova-app-ligne nova-app-texte">
-        <label class="nova-app-nom" for="nova-app-vacances">$nova_app_vacances<span class="nova-app-aide">$nova_app_vacances_aide</span></label>
-        <textarea id="nova-app-vacances" class="nova-app-vacances" rows="4" spellcheck="false"></textarea>
-      </div>
-      <p class="wims_msg warning nova-app-erreur" role="alert" hidden></p>
       <p class="nova-app-note">$nova_app_note_classe</p>
       <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_app_enregistrer</button></div>
     </fieldset>
+  </div>
+</template>
+!! Page « Badges Nova » (demande de l'utilisateur, 2026-10-07) : rubrique ajoutee par nova.js (rubriqueBadges) a
+!! la configuration de la classe ; c'est la page Apparence (job=present#nova-badges-reglages), dont le formulaire
+!! de WIMS est masque et sert a enregistrer la feuille de style, ou nova.js (badgesClasse) ecrit le bloc
+!! « Nova : badges ». L'interrupteur general des badges reste dans la carte de la page Apparence.
+<template id="nova-badges-classe" data-titre="$nova_bdg_titre" data-erreur-vacances="$nova_app_vacances_erreur" data-etat-oui="$nova_bdg_etat_oui" data-etat-non="$nova_bdg_etat_non">
+  <div class="nova-app nova-badges-reglages">
+    <fieldset class="property_fields blockcenter nova-app-carte">
+      <legend>$nova_bdg_choix</legend>
+      <p class="nova-bdg-etat"><span class="nova-bdg-etat-texte"></span> <a class="nova-bdg-apparence" href="#">$nova_bdg_apparence</a>).</p>
+      <div class="nova-app-ligne nova-bdg-badge">
+        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/Nova/img/badges/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
+      </div>
+      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="fidelite">
+        <label class="nova-app-nom" for="nova-app-paliers">$nova_app_paliers<span class="nova-app-aide">$nova_app_paliers_aide</span></label>
+        <input type="text" id="nova-app-paliers" class="nova-app-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+      </div>
+    </fieldset>
+    <fieldset class="property_fields blockcenter nova-app-carte">
+      <legend>$nova_app_vacances</legend>
+      <div class="nova-app-ligne nova-app-texte">
+        <label class="nova-app-nom" for="nova-app-vacances">$nova_bdg_vacances_titre<span class="nova-app-aide">$nova_app_vacances_aide</span></label>
+        <textarea id="nova-app-vacances" class="nova-app-vacances" rows="5" spellcheck="false"></textarea>
+      </div>
+      <p class="wims_msg warning nova-app-erreur" role="alert" hidden></p>
+    </fieldset>
+    <p class="nova-app-note">$nova_bdg_note</p>
+    <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>
   </div>
 </template>
 !reset nova_cf

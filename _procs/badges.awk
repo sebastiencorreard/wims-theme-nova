@@ -66,6 +66,8 @@ section == "score" && $5 == "score" {
 
 END {
   if (conf["badges"] != "oui") { print "off"; exit }
+  # Badges proposés (page Badges Nova) : liste, « tous » ou « aucun » ; absente = tous.
+  if (conf["badges-actifs"] != "" && conf["badges-actifs"] !~ /(^|[ ,])(fidelite|tous)([ ,]|$)/) { print "off"; exit }
   # Paliers : nombres croissants, 8 au plus (une image par niveau).
   liste = conf["fidelite-paliers"]; if (liste == "") liste = "2 3 5 8 12 16 21 26"
   m = split(liste, brut, /[ ,]+/); np = 0

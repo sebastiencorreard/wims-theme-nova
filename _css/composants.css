@@ -817,3 +817,17 @@ dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
 .nova-badge-niveaux li.nova-verrou img { filter: grayscale(1) opacity(.35); }
 .nova-badge-niveaux li.nova-actuel { border: 2px solid var(--nova-accent); }
 .nova-badge-aide { margin: 0; font-size: .8125rem; color: var(--nova-texte-2); }
+
+/* Page « Badges Nova » (rubrique de la configuration, 2026-10-07) : la page Apparence de WIMS, dont seule la carte
+ * Badges Nova reste visible (js/nova.js, badgesClasse) ; masquée au plus 3 s en attendant le script. */
+html.nova-page-badges:not(.nova-badges-prete) .wimsbody { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-page-badges .wimsbody :is(.nova-app:not(.nova-badges-reglages), form:has(#pr_cssfile)) { display: none !important; }
+.nova-badges-reglages { display: grid; gap: var(--nova-e4); }
+.nova-badges-reglages .nova-app-carte { margin: 0; }
+.nova-bdg-etat { margin: 0 0 var(--nova-e2); color: var(--nova-texte-2); font-size: .9375rem; }
+.nova-bdg-etat a { font-weight: 700; }
+.nova-bdg-coche { display: flex; align-items: center; gap: var(--nova-e3); cursor: pointer; }
+.nova-bdg-coche input { width: 22px; height: 22px; margin: 0; accent-color: var(--nova-accent); flex: none; }
+.nova-bdg-coche img { width: 48px; height: 48px; flex: none; }
+.nova-bdg-detail[hidden] { display: none; }
+.nova-badges-reglages .nova-app-actions { display: flex; justify-content: center; }

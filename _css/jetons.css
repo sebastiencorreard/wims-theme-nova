@@ -72,6 +72,7 @@
    * AAAAMMJJ-AAAAMMJJ séparées par des espaces. Lus par _procs/badges.awk (accueil) et nova.js (badges).
    * Demande de l'utilisateur, 2026-10-07. */
   --nova-badges: non;
+  --nova-badges-actifs: tous;
   --nova-fidelite-paliers: 2 3 5 8 12 16 21 26;
   --nova-vacances: aucune;
 }

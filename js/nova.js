@@ -2726,7 +2726,7 @@
   /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
    * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
-  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet'];
+  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'];
   function reglagesStandard() {
     var d = document.documentElement;
     var cs = getComputedStyle(d);
@@ -2924,6 +2924,7 @@
    *  - la case où le domino tomberait, en surbrillance pendant le glissement (règle de WIMS, f_cright : coin du
    *    domino à moins des 2/3 de la case), ou la case sous le pointeur quand un domino est choisi d'un clic. */
   function dominos() {
+    if (standard('dominos')) return;   // réglage « Dominos du thème standard »
     var repere = document.getElementById('fillobj1');
     var exercice = !!repere && Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); });
     // Page de correction (demande de l'utilisateur, 2026-10-08) : dominos réaffichés par WIMS (.drag_label >

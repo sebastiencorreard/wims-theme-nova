@@ -23,7 +23,7 @@
   !set nova_communication=!getopt nova_communication in $nova_q
   !! Reglages « Rapprocher du theme standard » (2026-10-07) : une declaration par reglage, ecrite plus bas.
   !reset nova_sd
-  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet
+  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet,dominos
     !set nova_sv=!getopt nova_s_$nova_k in $nova_q
     !bound nova_sv within oui,non default non
     !set nova_kh=!replace internal _ by - in $nova_k

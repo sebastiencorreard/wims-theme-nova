@@ -852,31 +852,32 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wimsbody details.nova-app-std { margin-left: 0; margin-right: 0; }
 .wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { margin-left: 0; margin-right: 0; }
 
+/* Tout ce qui suit (dominos) est sous :where(html:not(.nova-std-dominos)) : réglage « Dominos du thème standard ». */
 /* Étiquettes faites d'un tableau, dans les exercices à cases (clickfill : .fill_content > table.wimsborder, comme les
  * dominos de E6/number/dominos.fr) : coins droits, fond transparent (la couleur de la case se voit), séparation
  * franche entre les cases (demande de l'utilisateur, 2026-10-08). Dynapi pose ces étiquettes directement dans
  * <body> (div.wims_grabbable), hors de .wimsbody ; la variante .wimsbody:has(.oefstatement) couvre celles restées
  * dans l'énoncé, où le quadrillage des exercices s'applique. */
-.fill_content table.wimsborder,
-.wimsbody:has(.oefstatement) .fill_content table.wimsborder { border-radius: 0; background: transparent; box-shadow: none; border: 0; margin-top: 4px; margin-bottom: 4px; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder,
+:where(html:not(.nova-std-dominos)) .wimsbody:has(.oefstatement) .fill_content table.wimsborder{ border-radius: 0; background: transparent; box-shadow: none; border: 0; margin-top: 4px; margin-bottom: 4px; }
 /* Contour invisible, légère marge au-dessus et au-dessous (demande de l'utilisateur, 2026-10-08). */
-.fill_content table.wimsborder :is(tr, th, td),
-.fill_content table.wimsborder tr:is(:nth-child(odd), :nth-child(even), :hover) { background: transparent; border-radius: 0; }
-.fill_content table.wimsborder :is(th, td),
-.wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) { border-top: 0; border-bottom: 0; }
-.fill_content table.wimsborder :is(th, td) + :is(th, td),
-.wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left: 2px solid var(--nova-texte-2); }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(tr, th, td),
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder tr:is(:nth-child(odd), :nth-child(even), :hover){ background: transparent; border-radius: 0; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td),
+:where(html:not(.nova-std-dominos)) .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td){ border-top: 0; border-bottom: 0; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td) + :is(th, td),
+:where(html:not(.nova-std-dominos)) .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td){ border-left: 2px solid var(--nova-texte-2); }
 /* Dominos (suite, 2026-10-08) : le tableau occupe toute la largeur de l'étiquette, deux moitiés égales, texte
  * centré, le trait au milieu. Étiquettes (.wims_grabbable) et zones de dépôt (.wims_droppable) de Dynapi à coins
  * arrondis (leur couleur est posée en ligne par Dynapi, le rayon s'y applique). */
-.fill_content:has(> table.wimsborder) { display: block; width: 100%; box-sizing: border-box; }
-.fill_content table.wimsborder { width: 100%; table-layout: fixed; }
-.fill_content table.wimsborder :is(th, td) { width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; }
-.wims_grabbable, .wims_droppable { border-radius: 10px; }
+:where(html:not(.nova-std-dominos)) .fill_content:has(> table.wimsborder){ display: block; width: 100%; box-sizing: border-box; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder{ width: 100%; table-layout: fixed; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td){ width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; }
+:where(html:not(.nova-std-dominos)) .wims_grabbable, :where(html:not(.nova-std-dominos)) .wims_droppable{ border-radius: 10px; }
 /* Largeur fixée par WIMS (205 px) : les expressions les plus longues d'une face (« 4 + (−8) ») la remplissaient
  * jusqu'au trait ; un peu plus petites pour garder de l'air. */
 /* Sans JavaScript : 80 %. nova.js (dominos) pose ensuite un zoom commun aux formules, le plus grand qui tient. */
-.fill_content table.wimsborder :is(th, td) { font-size: 80%; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td){ font-size: 80%; }
 
 /* Dominos réalistes et cases de dépôt explicites (demande de l'utilisateur, 2026-10-08). Dynapi pose la taille, la
  * découpe (clip) et la couleur de fond en ligne ; la couleur dit l'état (scripts/anstype/fill.after, couleurs fixes) :
@@ -884,7 +885,7 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
  *   case vide #ffd080 (souvent par la feuille de WIMS, pas en ligne) · case choisie #C0A060 · case remplie (clic) #c0c0c0.
  * Nova lit cet état dans l'attribut style ([style*="rgb(…)"]) au lieu de l'effacer. Seulement pour les exercices
  * à dominos (étiquettes faites d'un tableau). */
-.wims_grabbable:has(.fill_content > table.wimsborder) {
+:where(html:not(.nova-std-dominos)) .wims_grabbable:has(.fill_content > table.wimsborder){
   box-sizing: border-box;
   background-color: #FFFFFF !important;
   border: 2px solid #1A1D22 !important;
@@ -895,18 +896,18 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
   cursor: grab;
   color: #1A1D22;
 }
-.wims_grabbable:has(.fill_content > table.wimsborder):hover { box-shadow: 0 5px 12px rgb(0 0 0 / 28%); }
+:where(html:not(.nova-std-dominos)) .wims_grabbable:has(.fill_content > table.wimsborder):hover{ box-shadow: 0 5px 12px rgb(0 0 0 / 28%); }
 /* Choisi (clic) ou en cours de glissement : soulevé, contour de l'accent. */
-.wims_grabbable:has(.fill_content > table.wimsborder)[style*="rgb(96, 96, 255)"] {
+:where(html:not(.nova-std-dominos)) .wims_grabbable:has(.fill_content > table.wimsborder)[style*="rgb(96, 96, 255)"]{
   border-color: var(--nova-accent) !important;      /* le cadre noir prend la couleur d'accent (demande de l'utilisateur) */
   box-shadow: 0 10px 22px rgb(0 0 0 / 30%);
   cursor: grabbing;
 }
-.wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-accent) !important; }
-.fill_content table.wimsborder :is(th, td) + :is(th, td),
-.wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left-color: #1A1D22; }
+:where(html:not(.nova-std-dominos)) .wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content table.wimsborder :is(th, td) + :is(th, td){ border-left-color: var(--nova-accent) !important; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td) + :is(th, td),
+:where(html:not(.nova-std-dominos)) .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td){ border-left-color: #1A1D22; }
 
-body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable {
+:where(html:not(.nova-std-dominos)) body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable{
   box-sizing: border-box;
   background-color: #F0F2F5 !important;
   border: 2px dashed #8A93A0 !important;
@@ -914,86 +915,89 @@ body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable {
   color: var(--nova-texte-2);
 }
 /* Case choisie (mode « clic ») : pointillés de l'accent. */
-body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable[style*="rgb(192, 160, 96)"] {
+:where(html:not(.nova-std-dominos)) body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable[style*="rgb(192, 160, 96)"]{
   background-color: var(--nova-accent-doux) !important;
   border-color: var(--nova-accent) !important;
 }
 /* Un domino est choisi ou en glissement : les cases encore vides s'allument (« posez-le ici »). */
 /* (Une case vide n'a pas toujours sa couleur en ligne : « ni remplie, ni choisie ».) */
-body:has(.wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content > table.wimsborder) .wims_droppable:not([style*="rgb(192, 192, 192)"], [style*="rgb(192, 160, 96)"]) {
+:where(html:not(.nova-std-dominos)) body:has(.wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content > table.wimsborder) .wims_droppable:not([style*="rgb(192, 192, 192)"], [style*="rgb(192, 160, 96)"]){
   background-color: var(--nova-accent-doux) !important;
   border-color: var(--nova-accent) !important;
 }
 
 /* Dominos (suite) : consigne au-dessus des dominos, case visée pendant le glissement (nova.js, dominos). */
-.nova-consigne-glisser { margin: var(--nova-e2) 0; color: var(--nova-texte-2); font-size: .9375rem; }
-body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable.nova-survolee {
+:where(html:not(.nova-std-dominos)) .nova-consigne-glisser{ margin: var(--nova-e2) 0; color: var(--nova-texte-2); font-size: .9375rem; }
+:where(html:not(.nova-std-dominos)) body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable.nova-survolee{
   background-color: color-mix(in oklab, var(--nova-accent) 22%, white) !important;
   border: 2px solid var(--nova-accent) !important;
 }
 /* Aucune transition dans les faces des dominos : nova.js (dominos) y mesure le rendu juste après avoir remis le zoom
  * à 1 ; une transition ferait lire l'état précédent (vécu : zoom retombé à 1 sans elle). */
-.fill_content table.wimsborder :is(th, td), .fill_content table.wimsborder :is(th, td) * { transition: none !important; }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td), :where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td) *{ transition: none !important; }
 
 /* Dominos plus hauts, proches du rapport 2 pour 1 d'un vrai domino (demande de l'utilisateur, 2026-10-08) : WIMS les fait
  * 205 × 50 px (taille posée en ligne par Dynapi) ; html.nova-dominos est posée par nova.js avant « load », donc avant
  * que Dynapi ne place ses calques sur les repères : les places réservées dans la page (images transparentes devant
  * fillobj<n> et dans fill<nom>) grandissent d'autant, rien ne déborde sur la suite. */
-html.nova-dominos { --nova-domino-h: 80px; }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
-html.nova-dominos .wims_grabbable:has(.fill_content > table.wimsborder),
-html.nova-dominos .wims_droppable { height: var(--nova-domino-h) !important; }
-html.nova-dominos .wims_grabbable .wims_fill_object { height: 100% !important; display: flex; align-items: center; justify-content: center; }
-html.nova-dominos .wims_grabbable .fill_content { width: 100%; }
-html.nova-dominos div:has(> a[id^="fillobj"]) > img[style*="height:"],
-html.nova-dominos a[id^="fill"]:not([id^="fillobj"]) > img[style*="height:"] { height: calc(var(--nova-domino-h) + 8px) !important; }
-html.nova-dominos .wims_droppable .wims_fill_object { height: 100% !important; display: flex; align-items: center; justify-content: center; }
+html.nova-dominos:not(.nova-std-dominos){ --nova-domino-h: 80px; }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
+html.nova-dominos:not(.nova-std-dominos) .wims_grabbable:has(.fill_content > table.wimsborder),
+html.nova-dominos:not(.nova-std-dominos) .wims_droppable{ height: var(--nova-domino-h) !important; }
+html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .wims_fill_object{ height: 100% !important; display: flex; align-items: center; justify-content: center; }
+html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .fill_content{ width: 100%; }
+html.nova-dominos:not(.nova-std-dominos) div:has(> a[id^="fillobj"]) > img[style*="height:"],
+html.nova-dominos:not(.nova-std-dominos) a[id^="fill"]:not([id^="fillobj"]) > img[style*="height:"]{ height: calc(var(--nova-domino-h) + 8px) !important; }
+html.nova-dominos:not(.nova-std-dominos) .wims_droppable .wims_fill_object{ height: 100% !important; display: flex; align-items: center; justify-content: center; }
 /* Dynapi découpe aussi les cases à leur taille d'origine (clip) : retiré, sinon elles sont coupées à mi-hauteur. */
-html.nova-dominos .wims_droppable { clip: auto !important; overflow: visible !important; }
+html.nova-dominos:not(.nova-std-dominos) .wims_droppable{ clip: auto !important; overflow: visible !important; }
 /* Trait du milieu plus haut (demande de l'utilisateur, 2026-10-08) : le tableau occupe la hauteur du domino, moins
  * une petite marge en haut et en bas ; le texte reste centré. */
-html.nova-dominos .wims_grabbable .fill_content > table.wimsborder { height: calc(var(--nova-domino-h) - 20px); margin-top: 0; margin-bottom: 0; }
+html.nova-dominos:not(.nova-std-dominos) .wims_grabbable .fill_content > table.wimsborder{ height: calc(var(--nova-domino-h) - 20px); margin-top: 0; margin-bottom: 0; }
 
 /* Dominos de la page de correction (demande de l'utilisateur, 2026-10-08) : réaffichés par WIMS (.drag_label >
  * .drag_content > table, dans l'énoncé et l'analyse) et ceux de la solution (table.nova-domino-solution, nova.js) :
  * même habillage que dans l'exercice, sans ombre (ils ne se déplacent pas). Le cadre de WIMS autour d'une réponse
  * (juste, fausse) reste. */
-html.nova-dominos .drag_label:has(> .drag_content > table.wimsborder) {
+html.nova-dominos:not(.nova-std-dominos) .drag_label:has(> .drag_content > table.wimsborder){
   box-sizing: border-box; width: 205px !important; height: var(--nova-domino-h) !important; min-height: 0;
   display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
   background: #FFFFFF !important; border: 2px solid #1A1D22 !important; border-radius: 8px; padding: 0 !important; color: #1A1D22;
 }
-html.nova-dominos .drag_content:has(> table.wimsborder) { width: 100%; }
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) {
+html.nova-dominos:not(.nova-std-dominos) .drag_content:has(> table.wimsborder){ width: 100%; }
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution){
   width: 100%; table-layout: fixed; height: calc(var(--nova-domino-h) - 20px);
   margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
 }
-html.nova-dominos table.nova-domino-solution.nova-domino-solution.nova-domino-solution {
+html.nova-dominos:not(.nova-std-dominos) table.nova-domino-solution.nova-domino-solution.nova-domino-solution{
   box-sizing: border-box; width: 205px; min-width: 205px; height: var(--nova-domino-h); display: inline-table; vertical-align: middle;
   background: #FFFFFF; border: 2px solid #1A1D22 !important; border-radius: 8px; border-collapse: separate;
 }
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(tr, th, td) { background: transparent !important; border: 0 !important; border-radius: 0; }
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) {
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(tr, th, td){ background: transparent !important; border: 0 !important; border-radius: 0; }
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td){
   width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; font-size: 80%; color: #1A1D22;
 }
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) + :is(th, td) { border-left: 2px solid #1A1D22 !important; }
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td),
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) * { transition: none !important; }
-html.nova-dominos table.nova-domino-solution > tbody > tr > :is(th, td) + :is(th, td) { border-left: 2px solid #1A1D22 !important; }
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) + :is(th, td){ border-left: 2px solid #1A1D22 !important; }
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td),
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) *{ transition: none !important; }
+html.nova-dominos:not(.nova-std-dominos) table.nova-domino-solution > tbody > tr > :is(th, td) + :is(th, td){ border-left: 2px solid #1A1D22 !important; }
 /* Même police de départ pour tous les dominos (exercice, énoncé corrigé, analyse, solution) : le zoom commun de
  * nova.js donne alors la même taille partout (le texte de l'analyse, td.tt, partait plus petit). Liseré orange de
  * WIMS autour des dominos réaffichés retiré. */
-.fill_content table.wimsborder :is(th, td) { font-family: var(--nova-police); }
-.fill_content table.wimsborder :is(th, td),
-html.nova-dominos :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td) { font-size: 16px; font-family: var(--nova-police); }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td){ font-family: var(--nova-police); }
+:where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td),
+html.nova-dominos:not(.nova-std-dominos) :is(.drag_content > table.wimsborder, table.nova-domino-solution) :is(th, td){ font-size: 16px; font-family: var(--nova-police); }
 /* (Famille fixée aussi : MathJax règle ses formules sur la hauteur de la police qui les entoure, et l'analyse est en
  * police à chasse fixe, td.tt : ses dominos partaient plus petits.) */
-html.nova-dominos :is(.fill_container, .drag_label):has(.drag_content > table.wimsborder) { outline: 0 !important; box-shadow: none !important; }
-html.nova-dominos .fill_container:has(.drag_content > table.wimsborder) { border: 0 !important; background: transparent !important; padding: 0 !important; }
-.nova-defile-x { max-width: 100%; overflow-x: auto; }
+html.nova-dominos:not(.nova-std-dominos) :is(.fill_container, .drag_label):has(.drag_content > table.wimsborder){ outline: 0 !important; box-shadow: none !important; }
+html.nova-dominos:not(.nova-std-dominos) .fill_container:has(.drag_content > table.wimsborder){ border: 0 !important; background: transparent !important; padding: 0 !important; }
+:where(html:not(.nova-std-dominos)) .nova-defile-x{ max-width: 100%; overflow-x: auto; }
 /* Réponse juste ou fausse dans l'énoncé corrigé : contour vert ou rouge autour du domino (le cadre de WIMS, retiré
  * avec le liseré orange, portait cette information). */
 /* (Couleur du cadre lui-même et fond teinté, au lieu d'un contour ajouté : demande de l'utilisateur, 2026-10-08.) */
-html.nova-dominos .oef_indbad .drag_label:has(> .drag_content > table.wimsborder) { border-color: var(--nova-erreur) !important; background: color-mix(in oklab, var(--nova-erreur) 9%, white) !important; }
-html.nova-dominos .oef_indgood .drag_label:has(> .drag_content > table.wimsborder) { border-color: var(--nova-succes) !important; background: color-mix(in oklab, var(--nova-succes) 9%, white) !important; }
-html.nova-dominos .oef_indbad .drag_content > table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-erreur) !important; }
-html.nova-dominos .oef_indgood .drag_content > table.wimsborder :is(th, td) + :is(th, td) { border-left-color: var(--nova-succes) !important; }
+html.nova-dominos:not(.nova-std-dominos) .oef_indbad .drag_label:has(> .drag_content > table.wimsborder){ border-color: var(--nova-erreur) !important; background: color-mix(in oklab, var(--nova-erreur) 9%, white) !important; }
+html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_label:has(> .drag_content > table.wimsborder){ border-color: var(--nova-succes) !important; background: color-mix(in oklab, var(--nova-succes) 9%, white) !important; }
+html.nova-dominos:not(.nova-std-dominos) .oef_indbad .drag_content > table.wimsborder :is(th, td) + :is(th, td){ border-left-color: var(--nova-erreur) !important; }
+html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wimsborder :is(th, td) + :is(th, td){ border-left-color: var(--nova-succes) !important; }
+/* Exercice à dominos, page de correction : « Analyse de votre réponse » masquée (titre et tableau) ; l'énoncé corrigé
+ * (cadres rouges ou verts) et la solution suffisent ; la phrase de la note reste (demande de l'utilisateur, 2026-10-08). */
+:where(html:not(.nova-std-dominos)) body:has(.drag_content > table.wimsborder) .oefanswer .answer_analysis :is(.oefanswername, table.answeranalysis){ display: none; }

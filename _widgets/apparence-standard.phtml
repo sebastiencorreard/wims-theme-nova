@@ -4,7 +4,7 @@
 !! (separateur dans la cle : _ ou -), nova_std_site=yes et nova_f (log/nova.conf) pour cocher ; sans, nova.js coche.
 <details class="nova-app-std">
   <summary><span class="nova-app-nom">$nova_std_titre<span class="nova-app-aide">$nova_std_aide</span></span></summary>
-  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu-complet
+  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu-complet,dominos
     !set nova_kn=!replace internal - by _ in $nova_k
     !set nova_kr=!replace internal - by $nova_std_sep in $nova_k
     !reset nova_ko nova_kx

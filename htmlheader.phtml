@@ -85,7 +85,7 @@ $wims_CSS
   var mc = document.querySelector('meta[name="nova-classe"]');
   var connu = null;
   try { connu = sessionStorage.getItem('nova-std-' + (mc ? mc.content : '')); } catch (e) {}
-  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet'].forEach(function (k) {
+  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'].forEach(function (k) {
     var v = connu !== null ? ((' ' + connu + ' ').indexOf(' ' + k + ' ') >= 0 ? 'oui' : 'non') : (st[k] || site[k] || 'non');
     if (v === 'oui') d.classList.add('nova-std-' + k);
   });
@@ -97,7 +97,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/Nova/js/nova.js?v=f3da9807c6" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=069bc0524f" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

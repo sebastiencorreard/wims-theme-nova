@@ -2046,16 +2046,7 @@
    * 3 sauts vers le même cours en 10 s. */
   function coursUnique() {
     if (!document.getElementById('nova-eleve')) return;
-    var corps = document.querySelector('.wimsbody');
-    // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
-    // accueil (demande de l'utilisateur, 2026-10-06).
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
-    if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
-    var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
-    var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
-    var travail = document.getElementById('widget_user_list');
-    var seul = liens.length === 1 && !(travail && travail.textContent.trim()) &&
-      !document.querySelector('#wims_class_motd, #wims_class_pmotd');
+    // Avant tout retour anticipé : chaque page de l'élève doit noter sa classe.
     // Sens du déplacement (correction du 2026-10-07, signalée par l'utilisateur : un élève qui remontait du cours
     // vers une page à entrée unique, celle de sa classe, y était renvoyé aussitôt vers le cours, page masquée, et
     // ne passait qu'après plusieurs « Retour » rapides). On ne saute que vers le bas : juste après la connexion
@@ -2066,6 +2057,16 @@
     var precedente = null;
     try { precedente = sessionStorage.getItem('nova-classe-prec'); if (ici) sessionStorage.setItem('nova-classe-prec', ici); } catch (e) { /* sans stockage */ }
     if (/[?&]session=new\./.test(location.href)) precedente = null;
+    var corps = document.querySelector('.wimsbody');
+    // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
+    // accueil (demande de l'utilisateur, 2026-10-06).
+    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
+    if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
+    var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
+    var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
+    var travail = document.getElementById('widget_user_list');
+    var seul = liens.length === 1 && !(travail && travail.textContent.trim()) &&
+      !document.querySelector('#wims_class_motd, #wims_class_pmotd');
     if (!liste) return;
     if (seul) {
       var cible = (/[?&+]class=([^&]*)/.exec(liens[0].getAttribute('href')) || [])[1] || liens[0].href;

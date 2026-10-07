@@ -3158,6 +3158,11 @@
    * le voile). */
   function placerMenu() {
     var menu = document.getElementById('wimsmenumodubox');
+    // Classe connue du jeu Font_Awesome de WIMS ; le jeu default reste sans icone.
+    if (menu) {
+      var suivi = menu.querySelector('.nova_suivi > a');
+      if (suivi) suivi.classList.add('eye');
+    }
     var corps = document.getElementById('wimsbodybox');
     if (!menu || !corps || menu.parentElement === corps) return;
     var page = document.getElementById('wimspagebox');

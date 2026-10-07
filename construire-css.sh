@@ -46,9 +46,14 @@ import re, sys
 f = sys.argv[1]
 t = open(f, encoding='latin-1').read()
 t = re.sub(r'/\*(?!!).*?\*/', '', t, flags=re.S)
-t = re.sub(r'\s+', ' ', t)
-t = re.sub(r'\s*([{};,])\s*', r'\1', t)
-t = t.replace(';}', '}')
+# Chaînes entre guillemets laissées telles quelles (« [style*="rgb(96, 96, 255)"] » : retirer l'espace après la
+# virgule changerait ce que le sélecteur cherche ; vécu le 2026-10-08).
+morceaux = re.split(r'("(?:[^"\\\n]|\\.)*"|\'(?:[^\'\\\n]|\\.)*\')', t)
+for i in range(0, len(morceaux), 2):
+    m = re.sub(r'\s+', ' ', morceaux[i])
+    m = re.sub(r'\s*([{};,])\s*', r'\1', m)
+    morceaux[i] = m.replace(';}', '}')
+t = ''.join(morceaux)
 t = re.sub(r'(/\*!.*?\*/)', r'\n\1\n', t)
 open(f, 'w', encoding='latin-1').write(t.strip() + '\n')
 PY

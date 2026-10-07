@@ -260,6 +260,18 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
 .wims_msg.success { background-color: var(--nova-succes-fond); color: var(--nova-succes); }
 .wims_msg.warning { background-color: var(--nova-attention-fond); color: var(--nova-attention-texte); }
 .wims_msg.alert { background-color: var(--nova-erreur-fond); color: var(--nova-erreur); }
+/* Icône des messages (jeux d'icônes de WIMS : ::before en police d'icônes, 20 px, abaissée de 3 px, parfois en bloc) :
+ * en ligne, à la taille du texte et centrée sur sa première ligne, aux couleurs du thème (demande de l'utilisateur,
+ * 2026-10-08). */
+html body .wims_msg::before {
+  display: inline-block; float: none; width: auto;
+  font-size: 1.15em; line-height: 1; vertical-align: -0.12em;
+  margin: 0 .45em 0 0;
+}
+html body .wims_msg.info::before, html body .wims_msg.help::before { color: var(--nova-accent); }
+html body .wims_msg.warning::before { color: var(--nova-attention); }
+html body .wims_msg.alert::before { color: var(--nova-erreur); }
+html body .wims_msg.success::before { color: var(--nova-succes); }
 
 /* Typographie de contenu (reprise de _css/typo.css, retiré du modèle) */
 img { max-width: 100%; }

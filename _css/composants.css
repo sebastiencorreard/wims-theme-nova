@@ -866,3 +866,13 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) { border-top: 0; border-bottom: 0; }
 .fill_content table.wimsborder :is(th, td) + :is(th, td),
 .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left: 2px solid var(--nova-texte-2); }
+/* Dominos (suite, 2026-10-08) : le tableau occupe toute la largeur de l'étiquette, deux moitiés égales, texte
+ * centré, le trait au milieu. Étiquettes (.wims_grabbable) et zones de dépôt (.wims_droppable) de Dynapi à coins
+ * arrondis (leur couleur est posée en ligne par Dynapi, le rayon s'y applique). */
+.fill_content:has(> table.wimsborder) { display: block; width: 100%; box-sizing: border-box; }
+.fill_content table.wimsborder { width: 100%; table-layout: fixed; }
+.fill_content table.wimsborder :is(th, td) { width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; }
+.wims_grabbable, .wims_droppable { border-radius: 10px; }
+/* Largeur fixée par WIMS (205 px) : les expressions les plus longues d'une face (« 4 + (−8) ») la remplissaient
+ * jusqu'au trait ; un peu plus petites pour garder de l'air. */
+.fill_content table.wimsborder :is(th, td) :is(math, .wims_mathml) { font-size: 92%; }

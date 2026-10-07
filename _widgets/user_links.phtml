@@ -45,12 +45,19 @@
             <li class="menuitem nova-nom" role="presentation">$wims_firstname $wims_lastname</li>
             !! Reglage « Navigation complete pour l'eleve » (2026-10-07) : les autres liens sont ecrits, caches par
             !! le CSS (li.nova-lien-complet) tant que le reglage n'est pas pose.
+            !! Sauf « Changer le mot de passe » (passwd), toujours affiche (demande de l'utilisateur, 2026-10-08).
             !for i_=1 to $wims_user_links_cnt
               !set 1_=!line $i_ of $wims_user_links
-              <li class="menuitem nova-lien-complet">
+              !set nova_lc=!item 1 of $1_
+              !if $nova_lc=passwd
+                <li class="menuitem">
+              !else
+                <li class="menuitem nova-lien-complet">
+              !endif
                 !read $(w_path)oneitem.phtml $1_
               </li>
             !next
+            !reset nova_lc
           !else
             !for i_=1 to $wims_user_links_cnt
               !set 1_=!line $i_ of $wims_user_links

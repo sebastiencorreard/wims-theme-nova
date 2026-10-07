@@ -161,7 +161,7 @@
 !set nova_std_menus_liste=<li>Students, large screens: the side menu stays in a left column instead of the drawer opened by the menu button.</li><li>Students and teachers: the account menu (name, preferences, terms of use, logout) stays in the top bar instead of the "Profile" section of the side menu.</li><li>"Help" stays in the top bar.</li><li>The language choice stays in the top bar.</li><li>Unchanged: on phones and tablets, the side menu stays a drawer.</li>
 !set nova_std_navigation=Full navigation for students
 !set nova_std_navigation_aide=Breadcrumbs and full account menu.
-!set nova_std_navigation_liste=<li>Breadcrumbs are shown at the top of student pages.</li><li>The "Back" button is no longer added to the bar.</li><li>The student's account menu gets all its links back (password, display preferences, terms of use...).</li>
+!set nova_std_navigation_liste=<li>Breadcrumbs are shown at the top of student pages.</li><li>The "Back" button is no longer added to the bar.</li><li>The student's account menu gets all its links back (display preferences, terms of use...), not only the name, the password change and logout.</li>
 !set nova_std_reponse=Standard answer page
 !set nova_std_reponse_aide="Analysis of your answer" table and the standard send button.
 !set nova_std_reponse_liste=<li>The "Analysis of your answer" table is shown as is.</li><li>No "Right answer" / "Wrong answer" box, no wrong answer in red.</li><li>No stars and no shake, even with animations on.</li><li>The button keeps its standard label.</li>

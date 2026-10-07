@@ -13,9 +13,8 @@
 !if $wims_superclass!=$empty
   !! Lu par !sh comme scripts/adm/css.phtml : !record couperait au premier « :root » (separateur WIMS).
   !set nova_css_structure=!sh if test -r $wims_home/log/classes/$wims_superclass/css; then cat $wims_home/log/classes/$wims_superclass/css; fi
-  !if $nova_css_structure!=$empty
+  !! Toujours transmise, meme vide : sinon nova.js reprendrait l'ancienne valeur gardee (sessionStorage).
 <script type="text/plain" id="nova-css-structure">$nova_css_structure</script>
-  !endif
   !reset nova_css_structure
 !endif
 

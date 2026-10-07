@@ -35,9 +35,8 @@
 !set nova_m=!char 1 to 4 of $module
 !if $module=home or $nova_m=adm/
   !set nova_site=!sh if test -r $wims_home/log/nova.conf; then cat $wims_home/log/nova.conf; fi
-  !if $nova_site!=$empty
+  !! Toujours transmis, meme vide (reglages retires : nova.js oublie l'ancienne valeur gardee).
 <script type="text/plain" id="nova-css-site">$nova_site</script>
-  !endif
 !endif
 !! Page Apparence (configuration du site, rubrique 1) : carte « Reglages de Nova » et reglages de WIMS sans effet
 !! avec Nova (repères par leur nom dans lang/confdata, leur rang donne le champ conf_N). Placees par nova.js.

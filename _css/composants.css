@@ -875,7 +875,8 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wims_grabbable, .wims_droppable { border-radius: 10px; }
 /* Largeur fixée par WIMS (205 px) : les expressions les plus longues d'une face (« 4 + (−8) ») la remplissaient
  * jusqu'au trait ; un peu plus petites pour garder de l'air. */
-.fill_content table.wimsborder :is(th, td) :is(math, .wims_mathml) { font-size: 80%; }
+/* Sans JavaScript : 80 %. nova.js (dominos) pose ensuite un zoom commun aux formules, le plus grand qui tient. */
+.fill_content table.wimsborder :is(th, td) { font-size: 80%; }
 
 /* Dominos réalistes et cases de dépôt explicites (demande de l'utilisateur, 2026-10-08). Dynapi pose la taille, la
  * découpe (clip) et la couleur de fond en ligne ; la couleur dit l'état (scripts/anstype/fill.after, couleurs fixes) :
@@ -921,3 +922,13 @@ body:has(.wims_grabbable[style*="rgb(96, 96, 255)"] .fill_content > table.wimsbo
   background-color: var(--nova-accent-doux) !important;
   border-color: var(--nova-accent) !important;
 }
+
+/* Dominos (suite) : consigne au-dessus des dominos, case visée pendant le glissement (nova.js, dominos). */
+.nova-consigne-glisser { margin: var(--nova-e2) 0; color: var(--nova-texte-2); font-size: .9375rem; }
+body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable.nova-survolee {
+  background-color: color-mix(in oklab, var(--nova-accent) 22%, white) !important;
+  border: 2px solid var(--nova-accent) !important;
+}
+/* Aucune transition dans les faces des dominos : nova.js (dominos) y mesure le rendu juste après avoir remis le zoom
+ * à 1 ; une transition ferait lire l'état précédent (vécu : zoom retombé à 1 sans elle). */
+.fill_content table.wimsborder :is(th, td), .fill_content table.wimsborder :is(th, td) * { transition: none !important; }

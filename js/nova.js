@@ -2915,6 +2915,107 @@
     }, true);
   }
 
+  /* Exercices à dominos (étiquettes faites d'un tableau, scripts/anstype/fill.after ; demandes de l'utilisateur,
+   * 2026-10-08) :
+   *  - une consigne au-dessus des dominos (insérée avant que Dynapi ne place ses calques sur les repères
+   *    fillobj1…, après « load » : rien ne se décale) ;
+   *  - une seule taille de texte pour tous les dominos, la plus grande sans débordement (mesurée une fois les
+   *    formules affichées par MathJax) ;
+   *  - la case où le domino tomberait, en surbrillance pendant le glissement (règle de WIMS, f_cright : coin du
+   *    domino à moins des 2/3 de la case), ou la case sous le pointeur quand un domino est choisi d'un clic. */
+  function dominos() {
+    var repere = document.getElementById('fillobj1');
+    if (!repere || !Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); })) return;
+    var textes = document.getElementById('nova-textes');
+    var consigne = textes && textes.getAttribute('data-texte-consigne-dominos');
+    var bloc = repere.parentElement;
+    if (consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
+      var pc = document.createElement('p');
+      pc.className = 'nova-consigne-glisser';
+      pc.textContent = consigne;
+      bloc.parentNode.insertBefore(pc, bloc);
+    }
+    // Taille commune : essais à 20 px, puis la plus grande qui tient partout, sur la face la plus large ou la plus
+    // haute (bornée à 26 px).
+    var essais = 0;
+    var taille = function () {
+      var faces = Array.prototype.slice.call(document.querySelectorAll('.wims_grabbable .fill_content > table.wimsborder :is(th, td)'));
+      var pretes = faces.length && faces.every(function (c) { return !c.querySelector('math') || c.querySelector('mjx-container'); });
+      if (!pretes) { if (++essais < 40) setTimeout(taille, 200); return; }
+      // Même taille pour tous les dominos affichés ensemble (cette page) ; elle peut changer d'un exercice à l'autre
+      // (précision de l'utilisateur, 2026-10-08). Par un zoom commun sur les formules, et non par la taille de police :
+      // MathJax recalcule l'échelle de ses formules d'après la police qui les entoure et annulait le changement (vécu :
+      // largeurs inchangées de 10 à 26 px). Mesure au naturel (zoom 1), puis le plus grand zoom qui tient partout.
+      var mesure = function (c) {
+        // Rendu visible de MathJax (le MathML gardé pour les lecteurs d'écran fausserait la mesure), sinon le texte.
+        var mj = c.querySelectorAll('mjx-container');
+        if (mj.length) {
+          var g = Infinity, d = -Infinity, h = Infinity, bas = -Infinity;
+          Array.prototype.forEach.call(mj, function (m) { var q = m.getBoundingClientRect(); g = Math.min(g, q.left); d = Math.max(d, q.right); h = Math.min(h, q.top); bas = Math.max(bas, q.bottom); });
+          return { width: d - g, height: bas - h };
+        }
+        var r = document.createRange(); r.selectNodeContents(c); return r.getBoundingClientRect();
+      };
+      var contenus = faces.map(function (c) { return c.querySelector('.wims_mathml') || c; });
+      contenus.forEach(function (e) { e.style.zoom = ''; });
+      var z = Infinity;
+      faces.forEach(function (c) {
+        var b = mesure(c), cs = getComputedStyle(c);
+        var largeur = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;   // 2 px d'air de plus de chaque côté
+        var hauteur = c.closest('.wims_grabbable').clientHeight - 12;                                    // marges du tableau (2 × 4 px) et air
+        if (b.width > 0) z = Math.min(z, largeur / b.width);
+        if (b.height > 0) z = Math.min(z, hauteur / b.height);
+      });
+      if (!isFinite(z)) return;
+      z = Math.max(0.5, Math.min(3, Math.floor(z * 100) / 100));   // la hauteur du domino borne déjà la taille
+      contenus.forEach(function (e) { e.style.zoom = String(z); });
+      document.documentElement.setAttribute('data-nova-dominos-zoom', String(z));
+    };
+    // MathJax retouche encore ses formules plusieurs secondes après « load » (fontes, taille relative à la police) :
+    // mesures répétées toutes les 500 ms pendant 8 s, puis à chaque fin de rendu MathJax (vécu : 20 px posés d'après
+    // une mesure prise trop tôt, texte qui débordait). Mesure et taille finale dans la même tâche : rien ne clignote.
+    var relancer = function () { essais = 0; taille(); };
+    window.addEventListener('load', function () {
+      var n = 0;
+      var tic = setInterval(function () { relancer(); if (++n >= 16) clearInterval(tic); }, 500);
+      if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(function () { setTimeout(relancer, 150); });
+    });
+    // Case visée.
+    var glisse = null, rafId = 0, derniere = null;
+    var marquer = function (z) {
+      if (z === derniere) return;
+      if (derniere) derniere.classList.remove('nova-survolee');
+      if (z) z.classList.add('nova-survolee');
+      derniere = z;
+    };
+    var choisi = function () { return document.querySelector('.wims_grabbable[style*="rgb(96, 96, 255)"]'); };
+    document.addEventListener('mousedown', function (e) { var g = e.target.closest && e.target.closest('.wims_grabbable'); glisse = g || null; }, true);
+    document.addEventListener('mouseup', function () { glisse = null; setTimeout(function () { marquer(null); }, 0); }, true);
+    document.addEventListener('mousemove', function (e) {
+      if (rafId) return;
+      rafId = requestAnimationFrame(function () {
+        rafId = 0;
+        var zones = document.querySelectorAll('.wims_droppable');
+        var vise = null;
+        if (glisse) {
+          var g = glisse.getBoundingClientRect();
+          Array.prototype.some.call(zones, function (z) {
+            var r = z.getBoundingClientRect();
+            if (Math.abs(g.left - r.left) <= r.width * 2 / 3 && Math.abs(g.top - r.top) <= r.height * 2 / 3) { vise = z; return true; }
+            return false;
+          });
+        } else if (choisi()) {
+          Array.prototype.some.call(zones, function (z) {
+            var r = z.getBoundingClientRect();
+            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { vise = z; return true; }
+            return false;
+          });
+        }
+        marquer(vise);
+      });
+    }, true);
+  }
+
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
    *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
    *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
@@ -3059,7 +3160,7 @@
     }
   }
 
-  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

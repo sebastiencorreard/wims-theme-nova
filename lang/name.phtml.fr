@@ -179,3 +179,4 @@
 !set nova_std_menu_complet_liste=<li>Le menu latéral de l'enseignant montre toutes ses entrées tant que l'enseignant n'a pas choisi lui-même entre menu simplifié et menu complet.</li><li>Sans changement : le bouton du menu simplifié et le choix des entrées restent disponibles, et le choix de chacun est gardé.</li>
 !set nova_app_communication=Rubrique « Communication » des élèves
 !set nova_app_communication_aide=Forum et « Écrire à l'enseignant » dans le menu des élèves. « Non » masque la rubrique.
+!set nova_consigne_dominos=Glissez chaque domino dans une case, ou touchez un domino puis une case.

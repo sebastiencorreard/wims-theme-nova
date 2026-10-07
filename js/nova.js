@@ -2544,7 +2544,7 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'communication-eleves'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     var marque = '/* Nova : reglages de la page Apparence */';
     var lus = {};
     (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
@@ -2733,9 +2733,12 @@
       d.classList.toggle('nova-std-' + k, oui);
       return oui;
     });
+    // Rubrique Communication des élèves (même mémoire de session, jeton « sans-communication »).
+    var sansCom = cs.getPropertyValue('--nova-communication-eleves').trim().replace(/["']/g, '') === 'non';
+    d.classList.toggle('nova-sans-communication', sansCom);
     // Pour le script de tête des pages suivantes de cette classe (la feuille de la classe arrive après lui).
     var mc = document.querySelector('meta[name="nova-classe"]');
-    try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), actifs.join(' ')); } catch (e) { /* sans stockage */ }
+    try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), actifs.concat(sansCom ? ['sans-communication'] : []).join(' ')); } catch (e) { /* sans stockage */ }
     // Menu enseignant complet par défaut, tant que l'enseignant n'a rien choisi lui-même.
     var choix = null;
     try { choix = localStorage.getItem('nova_menu'); } catch (e) { /* sans stockage */ }

@@ -5,6 +5,7 @@
 !set nova_e=oui
 !set nova_k=non
 !set nova_b=non
+!set nova_m=oui
 !set nova_f=!sh if test -r $wims_home/log/nova.conf; then cat $wims_home/log/nova.conf; fi
 !if --nova-animations: oui isin $nova_f
   !set nova_a=oui
@@ -18,10 +19,14 @@
 !if --nova-badges: oui isin $nova_f
   !set nova_b=oui
 !endif
+!if --nova-communication-eleves: non isin $nova_f
+  !set nova_m=non
+!endif
 !set nova_checked_a_$nova_a=checked
 !set nova_checked_e_$nova_e=checked
 !set nova_checked_k_$nova_k=checked
 !set nova_checked_b_$nova_b=checked
+!set nova_checked_m_$nova_m=checked
 !! Reglages de WIMS sans effet avec Nova : rangs dans lang/confdata (2e mot de la 1re ligne = nom).
 !set nova_noms=page_bgcolor,page_bgimg,ref_menucolor,ref_button_bgcolor,ref_button_color,ref_button_help_bgcolor,ref_button_help_color,css
 !set nova_lg=$modu_lang
@@ -76,6 +81,13 @@
           <label><input type="radio" name="nova_badges" value="non" $(nova_checked_b_non)> $nova_app_non</label>
         </span>
       </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l5">$nova_app_communication<span class="nova-app-aide">$nova_app_communication_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l5">
+          <label><input type="radio" name="nova_communication" value="oui" $(nova_checked_m_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_communication" value="non" $(nova_checked_m_non)> $nova_app_non</label>
+        </span>
+      </div>
       !set nova_std_nom=nova_s_
       !set nova_std_sep=_
       !set nova_std_site=yes
@@ -86,5 +98,5 @@
     </fieldset>
   </form>
 </template>
-!reset nova_a nova_e nova_k nova_b nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme
-!reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non nova_checked_b_oui nova_checked_b_non
+!reset nova_a nova_e nova_k nova_b nova_m nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme
+!reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non nova_checked_b_oui nova_checked_b_non nova_checked_m_oui nova_checked_m_non

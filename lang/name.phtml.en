@@ -177,3 +177,5 @@
 !set nova_std_menu_complet=Full teacher menu by default
 !set nova_std_menu_complet_aide=All side menu entries, until the teacher chooses.
 !set nova_std_menu_complet_liste=<li>The teacher's side menu shows all its entries until the teacher chooses between the simplified and the full menu.</li><li>Unchanged: the simplified menu button and the choice of entries stay available, and each choice is kept.</li>
+!set nova_app_communication=Students' "Communication" section
+!set nova_app_communication_aide=Forum and "Write to the teacher" in the students' menu. "No" hides the section.

@@ -1069,3 +1069,7 @@ html:not(.nova-std-navigation) #user_links > li.nova-lien-complet { display: non
 .nova-nom-std { display: none; }
 html.nova-std-textes .nova-nom-nova { display: none; }
 html.nova-std-textes .nova-nom-std { display: inline; }
+/* Réglage « Rubrique Communication des élèves » à « non » : la rubrique (forum, écrire à l'enseignant) disparaît du
+ * menu des élèves (2026-10-07). */
+html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)),
+html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)) + * { display: none !important; }

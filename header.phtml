@@ -20,6 +20,7 @@
   !set nova_entree_directe=!getopt nova_entree_directe in $nova_q
   !set nova_clavier_maths=!getopt nova_clavier_maths in $nova_q
   !set nova_badges=!getopt nova_badges in $nova_q
+  !set nova_communication=!getopt nova_communication in $nova_q
   !! Reglages « Rapprocher du theme standard » (2026-10-07) : une declaration par reglage, ecrite plus bas.
   !reset nova_sd
   !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet
@@ -36,10 +37,12 @@
   !bound nova_entree_directe within oui,non default oui
   !bound nova_clavier_maths within oui,non default non
   !bound nova_badges within oui,non default non
+  !bound nova_communication within oui,non default oui
   !writefile wimshome/log/nova.conf --nova-animations: $nova_animations;
   !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
   !appendfile wimshome/log/nova.conf --nova-badges: $nova_badges;
+  !appendfile wimshome/log/nova.conf --nova-communication-eleves: $nova_communication;
   !appendfile wimshome/log/nova.conf $nova_sd
   !set nova_app_fait=yes
 !endif

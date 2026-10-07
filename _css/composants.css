@@ -849,3 +849,5 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 .wimsbody details.nova-app-std, .wimsbody details.nova-app-detail { background: none; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none; border-radius: 0; padding-left: 0; padding-right: 0; margin-bottom: 0; }
 .wimsbody details.nova-app-detail { border-top: 0; padding: 0; margin: 0; }
 .wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { background: none; padding-left: 0; padding-right: 0; }
+.wimsbody details.nova-app-std { margin-left: 0; margin-right: 0; }
+.wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { margin-left: 0; margin-right: 0; }

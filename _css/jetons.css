@@ -82,6 +82,9 @@
   --nova-std-listes: defaut;
   --nova-std-menu-complet: defaut;
   --nova-badges: non;
+  /* Rubrique « Communication » (forum, écrire à l'enseignant) du menu des élèves : « oui » (affichée) ; « non » la
+   * masque (page Apparence ; demande de l'utilisateur, 2026-10-07). html.nova-sans-communication. */
+  --nova-communication-eleves: oui;
   --nova-badges-actifs: tous;
   --nova-fidelite-paliers: 2 3 5 8 12 16 21 26;
   --nova-vacances: aucune;

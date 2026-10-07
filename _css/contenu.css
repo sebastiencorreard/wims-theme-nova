@@ -826,6 +826,9 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   color: var(--nova-erreur);
 }
 .nova-verdict-eleve { margin: 0; color: var(--nova-texte-2); }
+/* Commentaire d'auteur encadré (`<div class="feedback">`, ex. fin de course H4/math/quizzautomat « Belle
+ * performance ! ») : WIMS lui laisse 15em de marge à droite, presque tout l'écran d'un téléphone. */
+@media (max-width: 639.98px) { .wimsbody .feedback { margin-right: 0; } }
 .nova-etoile-source { position: relative; }
 .nova-etoiles { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
 .nova-etoiles.nova-etoiles-valider { position: fixed; inset: auto; z-index: 60; }

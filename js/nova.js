@@ -3041,6 +3041,39 @@
       if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(function () { setTimeout(relancer, 150); });
     });
     if (!exercice) return;
+    // Téléphone en portrait, dominos ou cases sur plusieurs lignes : fenêtre flottante qui propose le mode paysage
+    // (demande de l'utilisateur, 2026-10-08). Elle part en paysage ou quand on la ferme (pas de retour de la session).
+    var portrait = window.matchMedia ? matchMedia('(orientation: portrait)') : null;
+    var surUneLigne = function (sel) {
+      var hauts = Array.prototype.map.call(document.querySelectorAll(sel), function (e) { return Math.round(e.getBoundingClientRect().top + window.scrollY); });
+      return !hauts.length || Math.max.apply(null, hauts) - Math.min.apply(null, hauts) < 4;
+    };
+    var fenetre = null;
+    var paysage = function () {
+      var ferme = false;
+      try { ferme = sessionStorage.getItem('nova-paysage-ferme') === '1'; } catch (e) { /* sans stockage */ }
+      var montrer = !ferme && portrait && portrait.matches && document.querySelector('.wims_droppable') &&
+        !(surUneLigne('.wims_droppable') && surUneLigne('.wims_grabbable'));
+      if (!montrer) { if (fenetre) fenetre.hidden = true; return; }
+      if (!fenetre) {
+        fenetre = document.createElement('div');
+        fenetre.className = 'nova-paysage';
+        fenetre.setAttribute('role', 'status');
+        fenetre.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="16" rx="2"/><path d="M3 15a9 9 0 0 0 15 6"/><path d="M18 17v4h-4"/></svg><span></span><button type="button"></button>';
+        fenetre.querySelector('span').textContent = (textes && textes.getAttribute('data-texte-paysage')) || 'Turn your phone sideways.';
+        var bouton = fenetre.querySelector('button');
+        bouton.textContent = '\u00d7';
+        bouton.setAttribute('aria-label', (textes && textes.getAttribute('data-texte-fermer')) || 'Fermer');
+        bouton.addEventListener('click', function () {
+          fenetre.hidden = true;
+          try { sessionStorage.setItem('nova-paysage-ferme', '1'); } catch (e) { /* cette page seulement */ }
+        });
+        document.body.appendChild(fenetre);
+      }
+      fenetre.hidden = false;
+    };
+    window.addEventListener('load', function () { setTimeout(paysage, 1200); });
+    if (portrait && portrait.addEventListener) portrait.addEventListener('change', function () { setTimeout(paysage, 600); });
     // Case visée.
     var glisse = null, rafId = 0, derniere = null;
     var marquer = function (z) {

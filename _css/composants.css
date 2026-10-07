@@ -1007,3 +1007,17 @@ html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wims
  * position soit celle de leur image. En ligne simple, l'espace qui précède l'image restait en fin de ligne quand l'image
  * passait à la ligne, et Dynapi plaçait la case là (vécu au téléphone, 2026-10-08). */
 html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }
+/* Fenêtre « mode paysage » (nova.js, dominos) : en haut de l'écran, sous la barre, au-dessus du contenu. */
+:where(html:not(.nova-std-dominos)) .nova-paysage {
+  position: fixed; left: 50%; top: calc(64px + 10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 400;   /* sous la barre : en bas, elle cachait les boutons collés */
+  width: min(92vw, 26rem); box-sizing: border-box; display: flex; align-items: center; gap: var(--nova-e3);
+  padding: var(--nova-e3) var(--nova-e2) var(--nova-e3) var(--nova-e4);
+  background: var(--nova-surface); color: var(--nova-texte); border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte); box-shadow: 0 10px 28px rgb(0 0 0 / 22%);
+  font-size: .9375rem; line-height: 1.35;
+}
+:where(html:not(.nova-std-dominos)) .nova-paysage[hidden] { display: none; }
+:where(html:not(.nova-std-dominos)) .nova-paysage svg { flex: none; color: var(--nova-accent); }
+:where(html:not(.nova-std-dominos)) .nova-paysage span { flex: 1; }
+:where(html:not(.nova-std-dominos)) .nova-paysage button { all: unset; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--nova-texte-2); }
+:where(html:not(.nova-std-dominos)) .nova-paysage button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }

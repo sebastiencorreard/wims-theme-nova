@@ -868,7 +868,7 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
 
 /* Élèves : pas de fil d'Ariane ; « Retour » dans la barre (js/nova.js, retourEleve). */
 /* Où qu'il soit : dans la fenêtre d'un exercice d'examen, il est rangé dans #wimsexam (2026-10-03). */
-body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
+html:not(.nova-std-navigation) body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 #wimstopbox .menuitem.nova-retour {
   order: -2;
   flex-shrink: 0;
@@ -1035,7 +1035,7 @@ body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
 /* Le message de WIMS attend son remplacement par nova.js (3 s au plus). Sélecteur limité au bouton lui-même :
  * un attribut data-autre-examen ailleurs dans la barre masquait toutes les alertes 3 s (vécu le 2026-10-05,
  * avertissement de « Terminer »). */
-.nova-js body:has(#wimstopbox .nova-examencours[data-autre-examen]) .wimsbody .wims_msg.alert:not(.nova-autre-examen-message) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-autre-examen]) .wimsbody .wims_msg.alert:not(.nova-autre-examen-message) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 
 /* ---------- Rubrique Profil et tiroir de l'élève (demandes de l'utilisateur, 2026-10-07) ---------- */
 /* Profil : rubrique en tête du menu latéral (js/nova.js, profilLateral) ; le nom, en texte, comme une entrée. */
@@ -1046,19 +1046,26 @@ html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:ha
 /* Élève : plus de colonne à gauche, le menu latéral est le tiroir ☰ à toutes les largeurs (sans JavaScript, la
  * colonne reste). */
 @media (min-width: 1024px) {
-  html.nova-js body:has(#nova-eleve) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
-  html.nova-js body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox {
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: min(320px, 86vw); max-height: none; min-height: 0; margin: 0;
     overflow-y: auto; z-index: 300; padding-top: var(--nova-e5);
     transform: translateX(-102%); transition: transform .2s ease;
     box-shadow: 0 0 32px rgb(0 0 0 / 25%); visibility: hidden;
   }
-  html.nova-js body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
-  html.nova-js body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
-  html.nova-js body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
-  html.nova-js body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
   /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
   body:has(#nova-eleve).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox { transition: none; } }
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox { transition: none; } }
+
+/* Réglage « Navigation complète pour l'élève » : liens du compte que Nova cache aux élèves (user_links.phtml). */
+html:not(.nova-std-navigation) #user_links > li.nova-lien-complet { display: none; }
+/* Réglage « Textes du thème standard » : libellé d'origine de l'accueil dans la barre (headhome.phtml). */
+.nova-nom-std { display: none; }
+html.nova-std-textes .nova-nom-nova { display: none; }
+html.nova-std-textes .nova-nom-std { display: inline; }

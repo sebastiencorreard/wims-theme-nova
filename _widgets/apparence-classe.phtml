@@ -39,6 +39,11 @@
           <label><input type="radio" name="nova_c_badges" value="non"> $nova_app_non</label>
         </span>
       </div>
+      !set nova_std_nom=nova_c_std-
+      !set nova_std_sep=-
+      !reset nova_std_site
+      !read themes/Nova/_widgets/apparence-standard.phtml
+      !reset nova_std_nom nova_std_sep
       <p class="nova-app-note">$nova_app_note_classe</p>
       <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_app_enregistrer</button></div>
     </fieldset>

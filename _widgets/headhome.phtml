@@ -12,7 +12,8 @@
  !if " notin $(1_[1]) and $nova_cle isitemof home,class_home and $nova_reste=$empty
    !set nova_nom_sauve=$(wims_name_$(nova_cle))
    !default wims_name_title_$(nova_cle)=$nova_nom_sauve
-   !set wims_name_$(nova_cle)=WIMS
+   !! Reglage « Textes du theme standard » : les deux libelles, le CSS choisit (html.nova-std-textes).
+   !set wims_name_$(nova_cle)=<span class="nova-nom-nova">WIMS</span><span class="nova-nom-std">$nova_nom_sauve</span>
  !endif
  <$div1 class="menuitem $wims_ref_class">
   !! Sur l'accueil, WIMS ecrit l'entree en texte (page courante) : Nova en fait un lien vers l'accueil, comme

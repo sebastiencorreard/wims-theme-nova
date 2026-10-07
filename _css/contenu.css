@@ -109,7 +109,7 @@
  * arrondie, pastille d'icône de la couleur du type, carte cliquable EN ENTIER — le lien principal
  * (premier lien direct) s'étend à toute la carte ; la barre de score, qui a ses propres liens vers
  * les exercices, reste au-dessus. */
-li.wims_sheet_item, li.wims_exam_item, li.wims_doc_item, li.wims_vote_item, li.wims_tool_item, li.wims_glossary_item, li.wims_freework_item {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item, :where(html:not(.nova-std-listes)) li.wims_exam_item, :where(html:not(.nova-std-listes)) li.wims_doc_item, :where(html:not(.nova-std-listes)) li.wims_vote_item, :where(html:not(.nova-std-listes)) li.wims_tool_item, :where(html:not(.nova-std-listes)) li.wims_glossary_item, :where(html:not(.nova-std-listes)) li.wims_freework_item{
   position: relative;
   display: inline-flex;
   flex-wrap: wrap;
@@ -125,17 +125,17 @@ li.wims_sheet_item, li.wims_exam_item, li.wims_doc_item, li.wims_vote_item, li.w
   vertical-align: top;
   transition: box-shadow .15s, border-color .15s, transform .15s;
 }
-li.wims_sheet_item:hover, li.wims_exam_item:hover, li.wims_doc_item:hover, li.wims_vote_item:hover, li.wims_tool_item:hover, li.wims_glossary_item:hover, li.wims_freework_item:hover {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:hover, :where(html:not(.nova-std-listes)) li.wims_exam_item:hover, :where(html:not(.nova-std-listes)) li.wims_doc_item:hover, :where(html:not(.nova-std-listes)) li.wims_vote_item:hover, :where(html:not(.nova-std-listes)) li.wims_tool_item:hover, :where(html:not(.nova-std-listes)) li.wims_glossary_item:hover, :where(html:not(.nova-std-listes)) li.wims_freework_item:hover{
   border-color: var(--nova-accent);
   box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
   transform: translateY(-1px);
 }
-li.wims_sheet_item:has(> a:first-of-type:focus-visible), li.wims_exam_item:has(> a:first-of-type:focus-visible), li.wims_doc_item:has(> a:first-of-type:focus-visible), li.wims_vote_item:has(> a:first-of-type:focus-visible), li.wims_tool_item:has(> a:first-of-type:focus-visible), li.wims_glossary_item:has(> a:first-of-type:focus-visible), li.wims_freework_item:has(> a:first-of-type:focus-visible) {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_exam_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_doc_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_vote_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_tool_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_glossary_item:has(> a:first-of-type:focus-visible), :where(html:not(.nova-std-listes)) li.wims_freework_item:has(> a:first-of-type:focus-visible){
   outline: 3px solid var(--nova-accent);
   outline-offset: 2px;
 }
 /* Pastille d'icône (à la place de l'emoji). */
-li.wims_sheet_item::before, li.wims_exam_item::before, li.wims_doc_item::before, li.wims_vote_item::before, li.wims_tool_item::before, li.wims_glossary_item::before, li.wims_freework_item::before {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item::before, :where(html:not(.nova-std-listes)) li.wims_exam_item::before, :where(html:not(.nova-std-listes)) li.wims_doc_item::before, :where(html:not(.nova-std-listes)) li.wims_vote_item::before, :where(html:not(.nova-std-listes)) li.wims_tool_item::before, :where(html:not(.nova-std-listes)) li.wims_glossary_item::before, :where(html:not(.nova-std-listes)) li.wims_freework_item::before{
   content: "";
   flex: 0 0 auto;
   width: 36px;
@@ -144,15 +144,15 @@ li.wims_sheet_item::before, li.wims_exam_item::before, li.wims_doc_item::before,
   border-radius: 10px;
   background: var(--nova-type-fond) var(--nova-type-icone) center / 20px no-repeat;
 }
-li.wims_sheet_item { --nova-type-fond: #E6F0FA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6FB0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E"); }
-li.wims_exam_item { --nova-type-fond: #FBEAE7; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5473A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2.5 2.5M9 2h6'/%3E%3C/svg%3E"); }
-li.wims_doc_item { --nova-type-fond: #EEECFA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B4FB5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l4 4v14H6z'/%3E%3Cpath d='M14 3v5h5M9 13h7M9 17h7'/%3E%3C/svg%3E"); }
-li.wims_vote_item { --nova-type-fond: #E5F4EC; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232E8A57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M8 12l3 3 5-6'/%3E%3C/svg%3E"); }
-li.wims_tool_item { --nova-type-fond: #ECEEF1; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356606E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E"); }
-li.wims_glossary_item { --nova-type-fond: #F3F3DD; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7A12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z'/%3E%3Cpath d='M5 17a3 3 0 0 1 3-3h11'/%3E%3C/svg%3E"); }
-li.wims_freework_item { --nova-type-fond: #FAEDE6; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B0603F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-5a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h5z'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_sheet_item{ --nova-type-fond: #E6F0FA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232F6FB0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3Cpath d='M13.5 6.5l4 4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_exam_item{ --nova-type-fond: #FBEAE7; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5473A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2.5 2.5M9 2h6'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_doc_item{ --nova-type-fond: #EEECFA; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B4FB5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h9l4 4v14H6z'/%3E%3Cpath d='M14 3v5h5M9 13h7M9 17h7'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_vote_item{ --nova-type-fond: #E5F4EC; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232E8A57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M8 12l3 3 5-6'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_tool_item{ --nova-type-fond: #ECEEF1; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356606E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_glossary_item{ --nova-type-fond: #F3F3DD; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237A7A12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z'/%3E%3Cpath d='M5 17a3 3 0 0 1 3-3h11'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) li.wims_freework_item{ --nova-type-fond: #FAEDE6; --nova-type-icone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B0603F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H4zM20 5h-5a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h5z'/%3E%3C/svg%3E"); }
 /* Lien principal : titre de la carte, et zone cliquable étendue à toute la carte. */
-li.wims_sheet_item > a:first-of-type, li.wims_exam_item > a:first-of-type, li.wims_doc_item > a:first-of-type, li.wims_vote_item > a:first-of-type, li.wims_tool_item > a:first-of-type, li.wims_glossary_item > a:first-of-type, li.wims_freework_item > a:first-of-type {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_exam_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_doc_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_vote_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_tool_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_glossary_item > a:first-of-type, :where(html:not(.nova-std-listes)) li.wims_freework_item > a:first-of-type{
   flex: 1 1 12rem;
   min-width: 0;
   color: var(--nova-texte);
@@ -160,7 +160,7 @@ li.wims_sheet_item > a:first-of-type, li.wims_exam_item > a:first-of-type, li.wi
   text-decoration: none;
   outline: none;
 }
-li.wims_sheet_item > a:first-of-type::after, li.wims_exam_item > a:first-of-type::after, li.wims_doc_item > a:first-of-type::after, li.wims_vote_item > a:first-of-type::after, li.wims_tool_item > a:first-of-type::after, li.wims_glossary_item > a:first-of-type::after, li.wims_freework_item > a:first-of-type::after {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_exam_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_doc_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_vote_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_tool_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_glossary_item > a:first-of-type::after, :where(html:not(.nova-std-listes)) li.wims_freework_item > a:first-of-type::after{
   content: "";
   position: absolute;
   inset: 0;
@@ -168,7 +168,7 @@ li.wims_sheet_item > a:first-of-type::after, li.wims_exam_item > a:first-of-type
   border-radius: inherit;
 }
 /* Numéro d'ordre : petite pastille discrète. */
-.wims_seq_item_n {
+:where(html:not(.nova-std-listes)) .wims_seq_item_n{
   order: -1;
   padding: 1px 8px;
   border: 0;
@@ -178,28 +178,28 @@ li.wims_sheet_item > a:first-of-type::after, li.wims_exam_item > a:first-of-type
   font-size: .8125rem;
   font-weight: 700;
 }
-li[class*="_item"]::before { order: -2; }
+:where(html:not(.nova-std-listes)) li[class*="_item"]::before{ order: -2; }
 /* Le titre reste TOUJOURS au-dessus du contenu de la carte (barre de score, description, statut,
  * échéance…), même quand la place permettrait de le mettre à côté (demande du 2026-10-02) : un saut
  * de ligne invisible (::after, toute la largeur) suit le titre ; le contenu passe dessous en gardant
  * sa taille et son alignement ; l'espacement vertical passe du gap (qui compterait aussi la ligne du
  * saut) à une marge au-dessus de chaque élément de contenu. Un élément vide de WIMS (espaces seuls) est marqué .nova-vide par
  * js/nova.js et masqué : il n'ouvre pas de ligne. */
-li.wims_sheet_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_exam_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_doc_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_vote_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_tool_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_glossary_item > :not(a:first-of-type, .wims_seq_item_n), li.wims_freework_item > :not(a:first-of-type, .wims_seq_item_n) { order: 2; margin-top: 6px; }
-li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)) { row-gap: 0; }
-li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_exam_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_doc_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_vote_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_tool_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_glossary_item > :not(a:first-of-type, .wims_seq_item_n), :where(html:not(.nova-std-listes)) li.wims_freework_item > :not(a:first-of-type, .wims_seq_item_n){ order: 2; margin-top: 6px; }
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)), :where(html:not(.nova-std-listes)) li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide)){ row-gap: 0; }
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_exam_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_doc_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_vote_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_tool_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_glossary_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after, :where(html:not(.nova-std-listes)) li.wims_freework_item:has(> :not(a:first-of-type, .wims_seq_item_n, .nova-vide))::after{
   content: "";
   order: 1;
   flex: 0 0 100%;
   height: 0;
 }
 /* Ce qui reste interactif au-dessus de la zone cliquable : barre de score, autres liens. */
-li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_doc_item .wims_score_bar, li.wims_vote_item .wims_score_bar, li.wims_tool_item .wims_score_bar, li.wims_glossary_item .wims_score_bar, li.wims_freework_item .wims_score_bar,
-li.wims_sheet_item > :not(a:first-of-type) a, li.wims_exam_item > :not(a:first-of-type) a, li.wims_doc_item > :not(a:first-of-type) a, li.wims_vote_item > :not(a:first-of-type) a, li.wims_tool_item > :not(a:first-of-type) a, li.wims_glossary_item > :not(a:first-of-type) a, li.wims_freework_item > :not(a:first-of-type) a {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_exam_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_doc_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_vote_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_tool_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_glossary_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_freework_item .wims_score_bar,
+:where(html:not(.nova-std-listes)) li.wims_sheet_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_exam_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_doc_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_vote_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_tool_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_glossary_item > :not(a:first-of-type) a, :where(html:not(.nova-std-listes)) li.wims_freework_item > :not(a:first-of-type) a{
   position: relative;
   z-index: 2;
 }
-li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_doc_item .wims_score_bar, li.wims_vote_item .wims_score_bar, li.wims_tool_item .wims_score_bar, li.wims_glossary_item .wims_score_bar, li.wims_freework_item .wims_score_bar {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_exam_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_doc_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_vote_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_tool_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_glossary_item .wims_score_bar, :where(html:not(.nova-std-listes)) li.wims_freework_item .wims_score_bar{
   flex: 1 0 100%;
   max-width: none;
   margin: 0;
@@ -214,7 +214,7 @@ li.wims_sheet_item .wims_score_bar, li.wims_exam_item .wims_score_bar, li.wims_d
  * Hors séquence (_widgets/usersheet.phtml), WIMS y met en ligne la couleur de la note
  * (scripts/adm/class/colors, mode color) : écrasée, la pastille reste lisible ; trophées gardés.
  * Examen : même pastille, posée par js/nova.js (notesExamens) d'après user.phtml (!examscore). */
-li.wims_sheet_item > div.wims_user_info, li.wims_exam_item > div.nova-note-examen {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item > div.wims_user_info, :where(html:not(.nova-std-listes)) li.wims_exam_item > div.nova-note-examen{
   position: static;
   order: 0;
   flex: 0 0 auto;
@@ -222,9 +222,9 @@ li.wims_sheet_item > div.wims_user_info, li.wims_exam_item > div.nova-note-exame
   margin: 0 0 0 auto;
   text-align: right;
 }
-li.wims_sheet_item:has(> div.wims_user_info .wims_sheet_score) > a:first-of-type,
-li.wims_exam_item:has(> div.nova-note-examen) > a:first-of-type { flex-basis: 0; }
-li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_sheet_score {
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> div.wims_user_info .wims_sheet_score) > a:first-of-type,
+:where(html:not(.nova-std-listes)) li.wims_exam_item:has(> div.nova-note-examen) > a:first-of-type{ flex-basis: 0; }
+:where(html:not(.nova-std-listes)) li.wims_sheet_item .wims_sheet_score, :where(html:not(.nova-std-listes)) li.wims_exam_item .nova-note-examen .wims_sheet_score{
   display: inline-flex;
   align-items: baseline;
   margin: 0;
@@ -238,7 +238,7 @@ li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-li.wims_sheet_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_exam_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_doc_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_vote_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_tool_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_glossary_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, li.wims_freework_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty { display: none; }
+:where(html:not(.nova-std-listes)) li.wims_sheet_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_exam_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_doc_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_vote_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_tool_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_glossary_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_freework_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty{ display: none; }
 
 
 /* ---------- Rien de plus large que la place disponible ---------- */
@@ -419,8 +419,8 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
  * note. Couleurs (WIMS les écrit parfois en ligne : !important) :
  *   non commencé #E3E6EB · commencé #F0A830 · réussi #2E9E5B · excellent #17734A (liseré or)
  *   · à retravailler #E06A4E ; notes : faible corail, moyen ambre, bon vert (fond doux, texte foncé). */
-.wimsbody li.nova-vide, .wimsbody .nova-vide { display: none !important; }
-.wims_score_bar.nova-score {
+:where(html:not(.nova-std-listes)) .wimsbody li.nova-vide, :where(html:not(.nova-std-listes)) .wimsbody .nova-vide{ display: none !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score{
   display: flex;
   align-items: center;
   gap: var(--nova-e2);
@@ -428,7 +428,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   max-width: none;
   margin: 0;
 }
-.wims_score_bar.nova-score ol {
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score ol{
   display: flex;
   flex: 1 1 auto;
   align-items: center;
@@ -437,7 +437,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   padding: 0;
   list-style: none;
 }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li {
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li{
   flex: 1 1 0;
   min-width: 8px;
   max-width: 32px;
@@ -450,13 +450,13 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   overflow: hidden;
   background: #E3E6EB !important;
 }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li:hover { box-shadow: 0 0 0 2px var(--nova-accent); }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_undone { background: #F0A830 !important; }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_unwork { background: #E06A4E !important; }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done { background: #2E9E5B !important; }
-.wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation { background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
-.nova-score-compte {
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li a{ display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li:hover{ box-shadow: 0 0 0 2px var(--nova-accent); }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_undone{ background: #F0A830 !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_unwork{ background: #E06A4E !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done{ background: #2E9E5B !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation{ background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
+:where(html:not(.nova-std-listes)) .nova-score-compte{
   flex: 0 0 auto;
   color: var(--nova-texte-2);
   font-size: .8125rem;
@@ -465,10 +465,10 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 }
 /* Examen : historique des sessions (js/nova.js, historique) — une pilule colorée par session, toutes
  * identiques (note dans l'info-bulle) ; les plus anciennes résumées en « +k ». */
-.wims_score_bar.nova-score-examen { justify-content: flex-end; min-width: 0; overflow: hidden; }
-.wims_score_bar.nova-score-examen ol { flex: 0 0 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
-.wims_score_bar.nova-score-examen ol > li { flex-shrink: 0; }
-.wims_score_bar.nova-score-examen ol > li.nova-note {
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen{ justify-content: flex-end; min-width: 0; overflow: hidden; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol{ flex: 0 0 auto; justify-content: flex-end; flex-wrap: nowrap; gap: 4px; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol > li{ flex-shrink: 0; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol > li.nova-note{
   width: 20px;
   height: 10px;
   margin: 0;
@@ -478,17 +478,17 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   box-shadow: none;
   overflow: hidden;
 }
-.wims_score_bar.nova-score-examen ol > li.nova-note a { display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
-.wims_score_bar.nova-score-examen ol > li.nova-ancienne { display: none; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol > li.nova-note a{ display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol > li.nova-ancienne{ display: none; }
 /* Couleurs des notes (jetons --nova-note-*, palette A) : niveau posé par js/nova.js (scores). */
-.wims_score_bar ol > li.nova-note[data-niveau="zero"]   { background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
-.wims_score_bar ol > li.nova-note[data-niveau="rouge"]  { background: var(--nova-note-rouge) !important; }
-.wims_score_bar ol > li.nova-note[data-niveau="orange"] { background: var(--nova-note-orange) !important; }
-.wims_score_bar ol > li.nova-note[data-niveau="jaune"]  { background: var(--nova-note-jaune) !important; }
-.wims_score_bar ol > li.nova-note[data-niveau="vert"]   { background: var(--nova-note-vert) !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar ol > li.nova-note[data-niveau="zero"]{ background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+:where(html:not(.nova-std-listes)) .wims_score_bar ol > li.nova-note[data-niveau="rouge"]{ background: var(--nova-note-rouge) !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar ol > li.nova-note[data-niveau="orange"]{ background: var(--nova-note-orange) !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar ol > li.nova-note[data-niveau="jaune"]{ background: var(--nova-note-jaune) !important; }
+:where(html:not(.nova-std-listes)) .wims_score_bar ol > li.nova-note[data-niveau="vert"]{ background: var(--nova-note-vert) !important; }
 /* La plus récente : identique aux autres (demande de l'utilisateur, 2026-10-03) ; la note reste
  * dans l'info-bulle. */
-.wims_score_bar.nova-score-examen ol > li.nova-plus-anciennes {
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score-examen ol > li.nova-plus-anciennes{
   width: auto;
   height: auto;
   overflow: visible;
@@ -505,16 +505,16 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 
 /* Liseré coloré hérité de sheet.css (border-left-color par type, plus une règle bleue #9CF) :
  * retiré. « html body » : ces cartes ne sont pas toujours dans .wimsbody. */
-html body li.wims_sheet_item, html body li.wims_exam_item, html body li.wims_doc_item, html body li.wims_vote_item, html body li.wims_tool_item, html body li.wims_glossary_item, html body li.wims_freework_item { border-left-color: var(--nova-bord); }
-html body li.wims_sheet_item:hover, html body li.wims_exam_item:hover, html body li.wims_doc_item:hover, html body li.wims_vote_item:hover, html body li.wims_tool_item:hover, html body li.wims_glossary_item:hover, html body li.wims_freework_item:hover { border-color: var(--nova-accent); }
-html body li.wims_sheet_item:not(:has(> a)), html body li.wims_exam_item:not(:has(> a)), html body li.wims_doc_item:not(:has(> a)), html body li.wims_vote_item:not(:has(> a)), html body li.wims_tool_item:not(:has(> a)), html body li.wims_glossary_item:not(:has(> a)), html body li.wims_freework_item:not(:has(> a)) { border-color: transparent; }
+html:where(:not(.nova-std-listes)) body li.wims_sheet_item, html:where(:not(.nova-std-listes)) body li.wims_exam_item, html:where(:not(.nova-std-listes)) body li.wims_doc_item, html:where(:not(.nova-std-listes)) body li.wims_vote_item, html:where(:not(.nova-std-listes)) body li.wims_tool_item, html:where(:not(.nova-std-listes)) body li.wims_glossary_item, html:where(:not(.nova-std-listes)) body li.wims_freework_item{ border-left-color: var(--nova-bord); }
+html:where(:not(.nova-std-listes)) body li.wims_sheet_item:hover, html:where(:not(.nova-std-listes)) body li.wims_exam_item:hover, html:where(:not(.nova-std-listes)) body li.wims_doc_item:hover, html:where(:not(.nova-std-listes)) body li.wims_vote_item:hover, html:where(:not(.nova-std-listes)) body li.wims_tool_item:hover, html:where(:not(.nova-std-listes)) body li.wims_glossary_item:hover, html:where(:not(.nova-std-listes)) body li.wims_freework_item:hover{ border-color: var(--nova-accent); }
+html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_exam_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_doc_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_vote_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_tool_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_glossary_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_freework_item:not(:has(> a)){ border-color: transparent; }
 
 /* Feuille d'exercices, vue de l'élève (adm/sheet : ol.wims_sheet_list > li.wims_exo_item) — demande de
  * l'utilisateur, 2026-10-03 : cartes blanches arrondies, cliquables en entier, numéro en pastille,
  * scores en étiquettes et barre de réussite (js/nova.js : feuilleExercices), au lieu du dégradé gris
  * et du cadre noir des scores (sheet.css de WIMS). */
-.wims_sheet:has(> .wims_sheet_list) { margin: var(--nova-e4) 0; padding: 0; border: 0; background: none; box-shadow: none; }
-.wims_sheet > .wims_title_seq {
+:where(html:not(.nova-std-listes)) .wims_sheet:has(> .wims_sheet_list){ margin: var(--nova-e4) 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:where(html:not(.nova-std-listes)) .wims_sheet > .wims_title_seq{
   margin: 0 0 var(--nova-e3);
   padding: 0;
   border: 0;
@@ -523,7 +523,7 @@ html body li.wims_sheet_item:not(:has(> a)), html body li.wims_exam_item:not(:ha
   font-weight: 700;
   color: var(--nova-texte);
 }
-ol.wims_sheet_list {
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: var(--nova-e3);
@@ -532,7 +532,7 @@ ol.wims_sheet_list {
   list-style: none;
   counter-reset: nova-exo;
 }
-ol.wims_sheet_list > li.wims_exo_item {
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item{
   counter-increment: nova-exo;
   position: relative;
   box-sizing: border-box;
@@ -552,8 +552,8 @@ ol.wims_sheet_list > li.wims_exo_item {
   box-shadow: none;
   transition: border-color .15s, box-shadow .15s;
 }
-ol.wims_sheet_list > li.wims_exo_item:hover { border-color: var(--nova-accent); box-shadow: 0 4px 14px rgb(0 0 0 / 8%); }
-ol.wims_sheet_list > li.wims_exo_item::before {
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item:hover{ border-color: var(--nova-accent); box-shadow: 0 4px 14px rgb(0 0 0 / 8%); }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item::before{
   content: counter(nova-exo);
   grid-row: 1 / span 3;
   display: grid;
@@ -565,7 +565,7 @@ ol.wims_sheet_list > li.wims_exo_item::before {
   color: var(--nova-lien);
   font-weight: 700;
 }
-ol.wims_sheet_list > li.wims_exo_item > a {
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item > a{
   grid-column: 2;
   align-self: center;
   font-weight: 700;
@@ -574,19 +574,19 @@ ol.wims_sheet_list > li.wims_exo_item > a {
   line-height: 1.35;
 }
 /* Toute la carte suit le lien de l'exercice. */
-ol.wims_sheet_list > li.wims_exo_item > a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-ol.wims_sheet_list > li.wims_exo_item > a:focus-visible { outline: none; }
-ol.wims_sheet_list > li.wims_exo_item:has(> a:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
-ol.wims_sheet_list > li.wims_exo_item > :not(a) { grid-column: 2; }
-ol.wims_sheet_list .wims_work_desc { margin: var(--nova-e1) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
-ol.wims_sheet_list .wims_user_info { float: none; position: static; margin: var(--nova-e2) 0 0; padding: 0; border: 0; background: none; text-align: left; }
-ol.wims_sheet_list .wims_sheet_score { margin: 0; text-align: left; }
-ol.wims_sheet_list .wims_sheet_score .nova-scores { display: flex; justify-content: flex-start; padding: 0; text-align: left; }
-ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding: 2px 8px; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item > a::after{ content: ""; position: absolute; inset: 0; border-radius: inherit; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item > a:focus-visible{ outline: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item:has(> a:focus-visible){ outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list > li.wims_exo_item > :not(a){ grid-column: 2; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_work_desc{ margin: var(--nova-e1) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_user_info{ float: none; position: static; margin: var(--nova-e2) 0 0; padding: 0; border: 0; background: none; text-align: left; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_sheet_score{ margin: 0; text-align: left; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_sheet_score .nova-scores{ display: flex; justify-content: flex-start; padding: 0; text-align: left; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_sheet_score .nova-score{ display: inline-flex; padding: 2px 8px; }
 /* Téléphone : pastille de note réduite à sa valeur (« 6.5/10 ») ; libellé isolé par js/nova.js
  * (libellesNotes), gardé pour les lecteurs d'écran (demande de l'utilisateur, 2026-10-03). */
 @media (max-width: 639.98px) {
-  li.wims_sheet_item .nova-note-libelle, li.wims_exam_item .nova-note-libelle {
+  :where(html:not(.nova-std-listes)) li.wims_sheet_item .nova-note-libelle, :where(html:not(.nova-std-listes)) li.wims_exam_item .nova-note-libelle{
     position: absolute;
     width: 1px;
     height: 1px;
@@ -601,34 +601,34 @@ ol.wims_sheet_list .wims_sheet_score .nova-score { display: inline-flex; padding
  * l'essai (sur 10) dans title et sa propre couleur en ligne : le CSS lit le title (aucun JS, pas de
  * changement de couleur au chargement) ; un essai inachevé a un title en lettres, il reste gris.
  * Forme : petits carrés arrondis de 10 px (demande de l'utilisateur), moins larges que les pilules d'examen. */
-ol.wims_sheet_list .wims_score_bar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; margin: var(--nova-e2) 0 0; text-align: right; }
-ol.wims_sheet_list .wims_score_bar .wims_score_column { display: contents; }
-ol.wims_sheet_list .wims_seed_item { width: 10px; height: 10px; margin: 0; border: 0; border-radius: 3px; background: var(--nova-note-np) !important; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_score_bar{ display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; margin: var(--nova-e2) 0 0; text-align: right; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_score_bar .wims_score_column{ display: contents; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item{ width: 10px; height: 10px; margin: 0; border: 0; border-radius: 3px; background: var(--nova-note-np) !important; }
 /* Note /10 arrondie comme WIMS (round) : d'abord la partie entière, puis k.5 à k.9 montent d'un cran, 10 en dernier. */
-ol.wims_sheet_list .wims_seed_item:is([title="0"], [title^="0."]) { background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
-ol.wims_sheet_list .wims_seed_item:is([title="1"], [title^="1."], [title="2"], [title^="2."], [title="3"], [title^="3."]) { background: var(--nova-note-rouge) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title="4"], [title^="4."], [title="5"], [title^="5."], [title="6"], [title^="6."]) { background: var(--nova-note-orange) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title="7"], [title^="7."], [title="8"], [title^="8."]) { background: var(--nova-note-jaune) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title="9"], [title^="9."]) { background: var(--nova-note-vert) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title^="0.5"], [title^="0.6"], [title^="0.7"], [title^="0.8"], [title^="0.9"], [title^="1.5"], [title^="1.6"], [title^="1.7"], [title^="1.8"], [title^="1.9"], [title^="2.5"], [title^="2.6"], [title^="2.7"], [title^="2.8"], [title^="2.9"]) { background: var(--nova-note-rouge) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title^="3.5"], [title^="3.6"], [title^="3.7"], [title^="3.8"], [title^="3.9"], [title^="4.5"], [title^="4.6"], [title^="4.7"], [title^="4.8"], [title^="4.9"], [title^="5.5"], [title^="5.6"], [title^="5.7"], [title^="5.8"], [title^="5.9"]) { background: var(--nova-note-orange) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title^="6.5"], [title^="6.6"], [title^="6.7"], [title^="6.8"], [title^="6.9"], [title^="7.5"], [title^="7.6"], [title^="7.7"], [title^="7.8"], [title^="7.9"]) { background: var(--nova-note-jaune) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title^="8.5"], [title^="8.6"], [title^="8.7"], [title^="8.8"], [title^="8.9"], [title^="9.5"], [title^="9.6"], [title^="9.7"], [title^="9.8"], [title^="9.9"]) { background: var(--nova-note-vert) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_seed_item:is([title^="10"]) { background: var(--nova-note-vert) !important; box-shadow: none; }
-ol.wims_sheet_list .wims_sheet_score { display: block; padding: 0; border: 0; background: none; font-size: var(--nova-petit); color: var(--nova-texte-2); }
-.nova-scores { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e2); }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title="0"], [title^="0."]){ background: var(--nova-note-zero) !important; box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title="1"], [title^="1."], [title="2"], [title^="2."], [title="3"], [title^="3."]){ background: var(--nova-note-rouge) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title="4"], [title^="4."], [title="5"], [title^="5."], [title="6"], [title^="6."]){ background: var(--nova-note-orange) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title="7"], [title^="7."], [title="8"], [title^="8."]){ background: var(--nova-note-jaune) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title="9"], [title^="9."]){ background: var(--nova-note-vert) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title^="0.5"], [title^="0.6"], [title^="0.7"], [title^="0.8"], [title^="0.9"], [title^="1.5"], [title^="1.6"], [title^="1.7"], [title^="1.8"], [title^="1.9"], [title^="2.5"], [title^="2.6"], [title^="2.7"], [title^="2.8"], [title^="2.9"]){ background: var(--nova-note-rouge) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title^="3.5"], [title^="3.6"], [title^="3.7"], [title^="3.8"], [title^="3.9"], [title^="4.5"], [title^="4.6"], [title^="4.7"], [title^="4.8"], [title^="4.9"], [title^="5.5"], [title^="5.6"], [title^="5.7"], [title^="5.8"], [title^="5.9"]){ background: var(--nova-note-orange) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title^="6.5"], [title^="6.6"], [title^="6.7"], [title^="6.8"], [title^="6.9"], [title^="7.5"], [title^="7.6"], [title^="7.7"], [title^="7.8"], [title^="7.9"]){ background: var(--nova-note-jaune) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title^="8.5"], [title^="8.6"], [title^="8.7"], [title^="8.8"], [title^="8.9"], [title^="9.5"], [title^="9.6"], [title^="9.7"], [title^="9.8"], [title^="9.9"]){ background: var(--nova-note-vert) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_seed_item:is([title^="10"]){ background: var(--nova-note-vert) !important; box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_sheet_list .wims_sheet_score{ display: block; padding: 0; border: 0; background: none; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) .nova-scores{ display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e2); }
 /* Étiquettes de score (feuilleExercices) : sous .nova-scores, car la barre de score porte aussi la
  * classe nova-score (scores) et prenait ce fond gris arrondi. */
-.nova-scores .nova-score { display: inline-flex; gap: 4px; align-items: baseline; padding: 2px 8px; border-radius: 999px; background: var(--nova-surface-2); font-size: .8125rem; color: var(--nova-texte-2); white-space: nowrap; }
-.nova-scores .nova-score strong { color: var(--nova-texte); font-weight: 700; }
-.nova-barre-reussite { height: 6px; margin: var(--nova-e2) 0 0; border-radius: 3px; background: var(--nova-surface-2); overflow: hidden; }
-.nova-barre-reussite > span { display: block; height: 100%; border-radius: inherit; background: var(--nova-accent); }
-.nova-barre-reussite[data-plein] > span { background: #2E9E5B; }
+:where(html:not(.nova-std-listes)) .nova-scores .nova-score{ display: inline-flex; gap: 4px; align-items: baseline; padding: 2px 8px; border-radius: 999px; background: var(--nova-surface-2); font-size: .8125rem; color: var(--nova-texte-2); white-space: nowrap; }
+:where(html:not(.nova-std-listes)) .nova-scores .nova-score strong{ color: var(--nova-texte); font-weight: 700; }
+:where(html:not(.nova-std-listes)) .nova-barre-reussite{ height: 6px; margin: var(--nova-e2) 0 0; border-radius: 3px; background: var(--nova-surface-2); overflow: hidden; }
+:where(html:not(.nova-std-listes)) .nova-barre-reussite > span{ display: block; height: 100%; border-radius: inherit; background: var(--nova-accent); }
+:where(html:not(.nova-std-listes)) .nova-barre-reussite[data-plein] > span{ background: #2E9E5B; }
 
 /* ---------- Exercices d'un examen (adm/class/exam, page de l'examen) ---------- */
 /* Cartes comme la feuille d'exercices (maquette A, utilisateur, 2026-10-03) ; contenu rangé par js/nova.js
  * (examExercices). WIMS (_css/exam.css) : boutons flottants de 16em en dégradé gris, sur deux colonnes. */
-ol.wims_exam {
+:where(html:not(.nova-std-listes)) ol.wims_exam{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 10px;
@@ -637,7 +637,7 @@ ol.wims_exam {
   list-style: none;
   counter-reset: nova-exo;
 }
-ol.wims_exam > li.exo_item {
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.exo_item{
   counter-increment: nova-exo;
   position: relative;
   display: block;
@@ -653,13 +653,13 @@ ol.wims_exam > li.exo_item {
   color: var(--nova-texte);
 }
 /* Rangé par nova.js : numéro | titre et étiquettes | flèche. Sans lui : carte simple, texte de WIMS. */
-ol.wims_exam.nova-exam-liste > li.exo_item {
+:where(html:not(.nova-std-listes)) ol.wims_exam.nova-exam-liste > li.exo_item{
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
 }
-ol.wims_exam > li.exo_item::before {
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.exo_item::before{
   content: counter(nova-exo);
   display: inline-grid;
   vertical-align: middle;
@@ -673,11 +673,11 @@ ol.wims_exam > li.exo_item::before {
   font-size: .875rem;
   font-weight: 700;
 }
-ol.wims_exam.nova-exam-liste > li.exo_item::before { margin: 0; }
-ol.wims_exam .nova-exo-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-ol.wims_exam .nova-exo-titre, ol.wims_exam .nova-exo-titre a { color: var(--nova-texte); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
-ol.wims_exam .nova-exo-meta { display: flex; flex-wrap: wrap; gap: 6px; }
-ol.wims_exam .nova-puce {
+:where(html:not(.nova-std-listes)) ol.wims_exam.nova-exam-liste > li.exo_item::before{ margin: 0; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-exo-corps{ display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-exo-titre, :where(html:not(.nova-std-listes)) ol.wims_exam .nova-exo-titre a{ color: var(--nova-texte); font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-exo-meta{ display: flex; flex-wrap: wrap; gap: 6px; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce{
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -688,35 +688,35 @@ ol.wims_exam .nova-puce {
   font-size: .8125rem;
   font-weight: 600;
 }
-ol.wims_exam .nova-puce a { color: inherit; text-decoration: none; }
-ol.wims_exam .nova-puce-ok { background: var(--nova-succes-fond); color: var(--nova-succes); }
-ol.wims_exam .nova-puce-ok::first-letter { text-transform: uppercase; }
-ol.wims_exam .nova-puce-ok::before { content: none; }   /* le ✓ de _css/exam.css (.exo_done) n'est plus là */
-ol.wims_exam .nova-puce-echec { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
-ol.wims_exam .nova-puce-bloque { background: #ECEEF1; color: #56606E; }
-ol.wims_exam .nova-puce-bloque::before { content: "\1F512"; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce a{ color: inherit; text-decoration: none; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-ok{ background: var(--nova-succes-fond); color: var(--nova-succes); }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-ok::first-letter{ text-transform: uppercase; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-ok::before{ content: none; }   /* le ✓ de _css/exam.css (.exo_done) n'est plus là */
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-echec{ background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-bloque{ background: #ECEEF1; color: #56606E; }
+:where(html:not(.nova-std-listes)) ol.wims_exam .nova-puce-bloque::before{ content: "\1F512"; }
 /* À faire : toute la carte ouvre l'exercice (lien de WIMS, fenêtre d'examen), flèche à droite. */
-ol.wims_exam > li.nova-exo-afaire::after { content: "\2192"; color: var(--nova-accent); font-weight: 700; }
-ol.wims_exam > li.nova-exo-afaire .nova-exo-titre a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
-ol.wims_exam > li.nova-exo-afaire:hover { border-color: var(--nova-accent); box-shadow: 0 4px 14px rgb(0 0 0 / 8%); }
-ol.wims_exam > li.nova-exo-afaire:has(a:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
-ol.wims_exam > li.nova-exo-afaire a:focus-visible { outline: none; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-afaire::after{ content: "\2192"; color: var(--nova-accent); font-weight: 700; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-afaire .nova-exo-titre a::after{ content: ""; position: absolute; inset: 0; border-radius: inherit; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-afaire:hover{ border-color: var(--nova-accent); box-shadow: 0 4px 14px rgb(0 0 0 / 8%); }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-afaire:has(a:focus-visible){ outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-afaire a:focus-visible{ outline: none; }
 /* Fait : grisé, ✓ dans le rond. */
-ol.wims_exam > li.nova-exo-fait { background: var(--nova-fond, #F4F5F7); box-shadow: none; }
-ol.wims_exam > li.nova-exo-fait::before { content: "\2713"; background: var(--nova-succes-fond); color: var(--nova-succes); }
-ol.wims_exam > li.nova-exo-fait .nova-exo-titre { color: var(--nova-texte-2); }
-ol.wims_exam > li.nova-exo-echec::before { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-fait{ background: var(--nova-fond, #F4F5F7); box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-fait::before{ content: "\2713"; background: var(--nova-succes-fond); color: var(--nova-succes); }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-fait .nova-exo-titre{ color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-echec::before{ background: var(--nova-erreur-fond); color: var(--nova-erreur); }
 /* Bloqué par une dépendance : contour pointillé, atténué. */
-ol.wims_exam > li.nova-exo-bloque { border-style: dashed; background: var(--nova-fond, #F4F5F7); box-shadow: none; }
-ol.wims_exam > li.nova-exo-bloque .nova-exo-titre { color: var(--nova-texte-2); }
-ol.wims_exam > li.nova-exo-ferme { box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-bloque{ border-style: dashed; background: var(--nova-fond, #F4F5F7); box-shadow: none; }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-bloque .nova-exo-titre{ color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) ol.wims_exam > li.nova-exo-ferme{ box-shadow: none; }
 /* Rangement par nova.js : la liste attend son passage (au plus 3 s : sinon WIMS tel quel, en cartes). */
 @keyframes nova-revele { to { visibility: visible; } }
-.nova-js ol.wims_exam:not(.nova-exam-liste) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-js:not(.nova-std-listes) ol.wims_exam:not(.nova-exam-liste) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 /* Élèves : sans les titres « Consigne : » et « Contenu » de WIMS (student.phtml, h2 avant #exam_desc et avant
  * la liste, parfois précédée d'un avertissement d'IP) — demande de l'utilisateur, 2026-10-03. En CSS : le
  * module relit ses textes en vue élève, une surcharge de traduction n'y tiendrait pas. */
-body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
+html:not(.nova-std-examens) body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
 
 /* Accueil de l'élève : bouton « 🏆 Mes notes 🏆 » tout en haut (user.phtml, demande de l'utilisateur, 2026-10-03). */
 .nova-mes-notes { margin: 0 0 var(--nova-e4); text-align: center; }
@@ -774,13 +774,13 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 
 /* Page de choix des exercices d'un examen (adm/class/exam/student.phtml) : sans « Votre score pour cet examen
  * est … » (p.exam_score, demande de l'utilisateur, 2026-10-05). */
-.wimsbody p.exam_score { display: none; }
+html:not(.nova-std-examens) .wimsbody p.exam_score { display: none; }
 
 /* Réponse à un exercice OEF (js/nova.js, retourReponse ; demande de l'utilisateur, 2026-10-05) : le bloc
  * « Analyse de votre réponse » (scripts/oef/answer.phtml) laisse la place à un verdict ; seuls les commentaires
  * de l'auteur (.oef_feedbacks) en restent. Sans JavaScript ou si nova.js ne reconnaît pas le tableau (conditions,
  * « voir l'analyse »), WIMS tel quel ; le bloc attend nova.js au plus 3 s. */
-.nova-js .oefanswer:not(.nova-retour-pret) .answer_analysis { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_analysis { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 .oefanswer.nova-retour .answer_analysis:not(:has(.oef_feedbacks)),
 .oefanswer.nova-retour .answer_analysis > .oefanswername,
 .oefanswer.nova-retour .answer_analysis > .content > :not(.oef_feedbacks) { display: none; }
@@ -857,7 +857,7 @@ body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), 
 }
 
 /* Bouton « Envoyer la réponse » renommé « Valider » par nova.js (retourReponse) : caché jusque-là, 3 s au plus. */
-.nova-js .send_answer input[type="submit"]:not(.nova-valider) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-js:not(.nova-std-reponse) .send_answer input[type="submit"]:not(.nova-valider) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 
 /* Accueil d'un élève qui n'a qu'un cours (js/nova.js, coursUnique ; demande de l'utilisateur, 2026-10-05) :
  * caché pendant que nova.js l'emmène dans le cours ; s'il ne le fait pas (.nova-sans-saut), ou au plus 3 s. */

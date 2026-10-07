@@ -1,0 +1,12 @@
+!! Nova : reglage « Textes du theme standard » (--nova-std-textes, 2026-10-07), lu dans les feuilles du site, de la
+!! structure et de la classe (la derniere l'emporte) ; pose nova_std_textes=oui ou rien. A lire depuis un module de
+!! confiance (adm/...) : surcharges de traduction de lang/, qui s'arretent alors (!exit) et laissent les textes d'origine.
+!reset nova_std_textes
+!set nova_tc=$wims_class
+!default nova_tc=$class
+!set nova_tc=!word 1 of $nova_tc
+!set nova_tv=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$nova_tc/css 2>/dev/null | grep -o -e '--nova-std-textes *: *[a-z]*' | tail -n 1
+!if oui isin $nova_tv
+  !set nova_std_textes=oui
+!endif
+!reset nova_tc nova_tv

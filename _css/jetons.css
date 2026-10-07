@@ -71,6 +71,16 @@
    * :root { --nova-badges: oui; }  Paliers : semaines d'affilée par niveau (8 au plus) ; vacances : périodes
    * AAAAMMJJ-AAAAMMJJ séparées par des espaces. Lus par _procs/badges.awk (accueil) et nova.js (badges).
    * Demande de l'utilisateur, 2026-10-07. */
+  /* Rapprocher Nova du thème standard (page Apparence, section repliée ; demande de l'utilisateur, 2026-10-07) :
+   * sept réglages oui/non, « defaut » = non posé ici (le script de tête et nova.js regardent alors la structure
+   * et le site). Lus par htmlheader.phtml et nova.js (reglagesStandard), qui posent html.nova-std-<réglage>. */
+  --nova-std-menus: defaut;
+  --nova-std-navigation: defaut;
+  --nova-std-reponse: defaut;
+  --nova-std-examens: defaut;
+  --nova-std-textes: defaut;
+  --nova-std-listes: defaut;
+  --nova-std-menu-complet: defaut;
   --nova-badges: non;
   --nova-badges-actifs: tous;
   --nova-fidelite-paliers: 2 3 5 8 12 16 21 26;

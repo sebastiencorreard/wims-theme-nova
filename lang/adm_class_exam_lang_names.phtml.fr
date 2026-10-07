@@ -1,3 +1,8 @@
+!! Reglage « Textes du theme standard » : rien n'est surcharge (_procs/textes-standard.proc).
+!read themes/Nova/_procs/textes-standard.proc
+!if $nova_std_textes=oui
+  !exit
+!endif
 !! Nova : textes de adm/class/exam (lang/names.phtml.fr) surchargés par le thème, lus par
 !! scripts/adm/class/classlang après ceux du module. Pas pris en compte sur la page de l'examen
 !! (job=student : le module y relit ses textes), mais bien sur « Mes notes » (job=score).

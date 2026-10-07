@@ -43,6 +43,14 @@
           !read themes/Nova/_procs/eleve.proc
           !if $nova_est_eleve=yes
             <li class="menuitem nova-nom" role="presentation">$wims_firstname $wims_lastname</li>
+            !! Reglage « Navigation complete pour l'eleve » (2026-10-07) : les autres liens sont ecrits, caches par
+            !! le CSS (li.nova-lien-complet) tant que le reglage n'est pas pose.
+            !for i_=1 to $wims_user_links_cnt
+              !set 1_=!line $i_ of $wims_user_links
+              <li class="menuitem nova-lien-complet">
+                !read $(w_path)oneitem.phtml $1_
+              </li>
+            !next
           !else
             !for i_=1 to $wims_user_links_cnt
               !set 1_=!line $i_ of $wims_user_links

@@ -125,6 +125,7 @@
    *  - le compte, Aide et les autres entrées de la barre passent dans le menu latéral, section
    *    « Profil » (sur téléphone : derrière ☰). Le nom de la classe est masqué (CSS). */
   function modeExamen() {
+    if (standard('examens')) return;   // réglage « Examens comme le thème standard »
     var barre = document.getElementById('wimstopbox');
     var fin = barre && barre.querySelector('#user_links a.endexam');
     // Élève authentifié par CAS (ou autre authentification externe) : html/headmenu_user.phtml met alors le
@@ -191,7 +192,7 @@
       nom.className = 'menuitem nova-profil-nom';
       nom.textContent = compte.textContent.trim();
       groupe.appendChild(nom);
-      Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li a[href]'), ajouter);
+      Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), ajouter);
       Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
         if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
             item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item.classList.contains('nova-examencours') || item === liCompte) return;
@@ -200,14 +201,14 @@
       });
       liCompte.classList.add('nova-examen-large');
       // Menu du compte vide en session (la déconnexion est devenue « Terminer ») : le nom seul, sans menu.
-      if (!Array.prototype.some.call(liCompte.querySelectorAll('#user_links a[href]'), function (a) { return a.getAttribute('href') !== '#user_links'; })) liCompte.classList.add('nova-compte-seul');
+      if (!Array.prototype.some.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) { return a.getAttribute('href') !== '#user_links'; })) liCompte.classList.add('nova-compte-seul');
       cible.insertBefore(groupe, cible.firstChild);
       cible.insertBefore(titre, groupe);
     } else if (liCompte) {
       // Pas de menu latéral (page qui confirme « Terminer », 2026-10-03) : le menu du compte, vide
       // pour un élève en session, disparaît ; Aide et les autres entrées passent à droite, devant
       // « Terminer ».
-      var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links a[href]'), function (a) {
+      var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) {
         return a.getAttribute('href') !== '#user_links';
       });
       if (!restants.length) liCompte.remove();
@@ -720,6 +721,7 @@
   }
 
   function feuilleExercices() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
       if (bloc.querySelector('.nova-scores')) return;
       var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, puces = [], pourcent = null;
@@ -890,7 +892,10 @@
    * modules), écrit par le serveur si ce lien mène à un module de confiance, sinon renvoyé au lien d'après. */
   function valeurMenu() {
     var nm = window.novaMenu;
-    var etat = document.documentElement.classList.contains('nova-menu-simple') ? 'simple' : 'complet';
+    // « defaut » : l'enseignant n'a pas choisi lui-même (menu simplifié, ou complet avec le réglage « Menu
+    // enseignant complet par défaut ») ; sinon son choix.
+    var etat = 'defaut';
+    try { etat = localStorage.getItem('nova_menu') || 'defaut'; } catch (e) { /* sans stockage */ }
     return [etat].concat(nm ? nm.garde : []).join('.');
   }
   function menuServeur() {
@@ -903,11 +908,11 @@
     if (source && nm) {
       var serveur = source.textContent.trim();
       if (attente && attente === serveur) { ecrire('nova_menu_envoi', null); attente = null; }
-      if (!attente && /^(simple|complet)(\.[A-Za-z0-9_-]+)*$/.test(serveur)) {
+      if (!attente && /^(simple|complet|defaut)(\.[A-Za-z0-9_-]+)*$/.test(serveur)) {
         var morceaux = serveur.split('.');
-        var simple = morceaux[0] === 'simple';
+        var simple = morceaux[0] === 'defaut' ? !standard('menu-complet') : morceaux[0] === 'simple';
         nm.garde = morceaux.slice(1);
-        ecrire('nova_menu', simple ? 'simple' : 'complet');
+        ecrire('nova_menu', morceaux[0] === 'defaut' ? null : morceaux[0]);
         ecrire('nova_menu_garde', JSON.stringify(nm.garde));
         racine.classList.toggle('nova-menu-simple', simple);
         var regle = document.getElementById('nova-menu-style');
@@ -1406,6 +1411,7 @@
    * de celui-ci (exercice → feuille → chapitre → accueil). Rien sur l'accueil (aucun lien), ni
    * pendant un examen ou dans la fenêtre d'exercice, qui ont leurs propres boutons. */
   function retourEleve() {
+    if (standard('navigation')) return;   // réglage « Navigation complète pour l'élève » : fil d'Ariane
     if (!document.getElementById('nova-eleve') || document.body.classList.contains('nova-examen-session')) return;
     var barre = document.getElementById('wimstopbox');
     var fil = document.querySelector('.breadcrumbs');
@@ -1483,6 +1489,7 @@
   }
 
   function scores() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
       if (barre.classList.contains('nova-score')) return;
       var cases = barre.querySelectorAll('ol > li');
@@ -1521,6 +1528,7 @@
    * ne l'y met pas. Valeurs calculées par user.phtml (!examscore) dans #nova-notes-examens ; seulement
    * pour un examen déjà commencé (historique non vide). */
   function notesExamens() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     var source = document.getElementById('nova-notes-examens');
     if (!source) return;
     var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Note';
@@ -1545,6 +1553,7 @@
   /* Pastille de note d'une carte (« Note: 6.5/10 ») : le libellé isolé dans un span, que le CSS cache
    * au téléphone (seule la valeur reste visible ; le libellé reste lu par les lecteurs d'écran). */
   function libellesNotes() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     Array.prototype.forEach.call(document.querySelectorAll('li.wims_sheet_item > div.wims_user_info .wims_sheet_score, li.wims_exam_item > div.nova-note-examen .wims_sheet_score'), function (note) {
       if (note.querySelector('.nova-note-libelle')) return;
       var m = /^([^:]+:)\s*(\S.*)$/.exec(note.textContent.replace(/\s+/g, ' ').trim());
@@ -1565,6 +1574,7 @@
    * « Nécessite… »), fermé (titre nu). Nova range : titre, puis étiquettes (poids, état) ; liens de WIMS gardés.
    * Numéro, ✓ et flèche en CSS. */
   function examExercices() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     Array.prototype.forEach.call(document.querySelectorAll('ol.wims_exam'), function (ol) {
       if (ol.classList.contains('nova-exam-liste')) return;
       ol.classList.add('nova-exam-liste');
@@ -1730,6 +1740,7 @@
    * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
    * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
   function legendeTypes() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     var corps = document.querySelector('.wimsbody');
     if (!corps) return;
     var legendes = Array.prototype.filter.call(corps.querySelectorAll('ul.inline'), function (ul) {
@@ -1840,6 +1851,7 @@
    * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
    * l'analyse ») : rien ne change. */
   function retourReponse() {
+    if (standard('reponse')) return;   // réglage « Réponse comme le thème standard »
     var textes = document.getElementById('nova-textes');
     var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-' + cle)) || defaut; };
     document.querySelectorAll('.wimsbody .send_answer input[type="submit"]').forEach(function (b) {
@@ -2019,6 +2031,7 @@
    * _widgets/examencours.phtml avec data-autre-examen, passe sous le message (demande de l'utilisateur,
    * 2026-10-05). Son lien est celui de la barre (la session où l'examen a été commencé). */
   function autreExamen() {
+    if (standard('examens')) return;
     var pastille = document.querySelector('#wimstopbox .nova-examencours[data-autre-examen]');
     var message = document.querySelector('.wimsbody .wims_msg.alert');
     var lien = pastille && pastille.querySelector('a');
@@ -2475,7 +2488,7 @@
     var champ = form.querySelector('[name="' + modele.getAttribute('data-champ-theme') + '"]');
     var label = champ && document.querySelector('label[for="' + champ.id + '"]');
     var texte = modele.getAttribute('data-couleur-theme');
-    if (label && texte) {
+    if (label && texte && !standard('textes')) {
       var noeud = Array.prototype.filter.call(label.childNodes, function (n) { return n.nodeType === 3 && n.nodeValue.trim(); })[0];
       if (noeud) noeud.nodeValue = texte + ' '; else label.insertBefore(document.createTextNode(texte + ' '), label.firstChild);
     }
@@ -2531,10 +2544,10 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges'];
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     var marque = '/* Nova : reglages de la page Apparence */';
     var lus = {};
-    (zone.value.match(/--nova-(animations|entree-directe|clavier-maths|badges)\s*:\s*(oui|non)/g) || []).forEach(function (d) {
+    (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
       var m = /--nova-([a-z-]+)\s*:\s*(oui|non)/.exec(d); lus[m[1]] = m[2];
     });
     cles.forEach(function (k) {
@@ -2708,6 +2721,28 @@
     apres.parentNode.insertBefore(li, apres.nextSibling);
   }
 
+  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
+   * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
+   * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
+  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet'];
+  function reglagesStandard() {
+    var d = document.documentElement;
+    var cs = getComputedStyle(d);
+    var actifs = CLES_STANDARD.filter(function (k) {
+      var oui = cs.getPropertyValue('--nova-std-' + k).trim().replace(/["']/g, '') === 'oui';
+      d.classList.toggle('nova-std-' + k, oui);
+      return oui;
+    });
+    // Pour le script de tête des pages suivantes de cette classe (la feuille de la classe arrive après lui).
+    var mc = document.querySelector('meta[name="nova-classe"]');
+    try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), actifs.join(' ')); } catch (e) { /* sans stockage */ }
+    // Menu enseignant complet par défaut, tant que l'enseignant n'a rien choisi lui-même.
+    var choix = null;
+    try { choix = localStorage.getItem('nova_menu'); } catch (e) { /* sans stockage */ }
+    if (choix === null) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
+  }
+  function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+
   /* Réglages de Nova posés dans la feuille de surcharge du portail ou du groupement (demande de
    * l'utilisateur, 2026-10-06) : WIMS ne charge que la feuille de la classe courante. user.phtml (accueil)
    * transmet la feuille de la structure (#nova-css-structure) ; ses déclarations --nova-… sont gardées pour
@@ -2750,6 +2785,7 @@
     var menu = document.getElementById('wimsmenumodubox');
     var racine = document.documentElement;
     var fini = function () { racine.classList.add('nova-profil-pret'); };
+    if (standard('menus')) { fini(); return; }   // réglage « Menus du thème standard » : le compte reste dans la barre
     if (!barre || !menu || menu.querySelector('.nova-profil')) { fini(); return; }
     var compte = barre.querySelector('a.account');
     var liCompte = compte && compte.closest('li');
@@ -2788,7 +2824,7 @@
     // Langues (sélecteur de la barre, quand WIMS en met un) avant le reste du compte.
     var langues = barre.querySelector('#language_selector');
     if (langues) Array.prototype.forEach.call(langues.querySelectorAll('ul a[href]'), function (a) { ajouter(a); });
-    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li a[href]'), function (a) { ajouter(a); });
+    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
     // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
     var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
     if (aides.length) {
@@ -3018,7 +3054,7 @@
     }
   }
 
-  function demarrer() { menuServeur(); reconnexionCas(); reglagesStructure(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -1,0 +1,28 @@
+!! Nova : section repliee « Rapprocher du theme standard » des cartes de la page Apparence (site : apparence.phtml ;
+!! classe, portail, groupement : apparence-classe.phtml), demande de l'utilisateur, 2026-10-07. Pliee, ainsi que la
+!! liste des changements de chaque reglage. Posees avant : nova_std_nom (debut du nom des boutons), nova_std_sep
+!! (separateur dans la cle : _ ou -), nova_std_site=yes et nova_f (log/nova.conf) pour cocher ; sans, nova.js coche.
+<details class="nova-app-std">
+  <summary><span class="nova-app-nom">$nova_std_titre<span class="nova-app-aide">$nova_std_aide</span></span></summary>
+  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu-complet
+    !set nova_kn=!replace internal - by _ in $nova_k
+    !set nova_kr=!replace internal - by $nova_std_sep in $nova_k
+    !reset nova_ko nova_kx
+    !if $nova_std_site=yes
+      !if --nova-std-$nova_k: oui isin $nova_f
+        !set nova_ko=checked
+      !else
+        !set nova_kx=checked
+      !endif
+    !endif
+    <div class="nova-app-ligne nova-app-ligne-std">
+      <span class="nova-app-nom" id="nova-app-s-$nova_kn">$(nova_std_$(nova_kn))<span class="nova-app-aide">$(nova_std_$(nova_kn)_aide)</span></span>
+      <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-s-$nova_kn">
+        <label><input type="radio" name="$nova_std_nom$nova_kr" value="oui" $nova_ko> $nova_app_oui</label>
+        <label><input type="radio" name="$nova_std_nom$nova_kr" value="non" $nova_kx> $nova_app_non</label>
+      </span>
+      <details class="nova-app-detail"><summary>$nova_std_changements</summary><ul>$(nova_std_$(nova_kn)_liste)</ul></details>
+    </div>
+  !next nova_k
+</details>
+!reset nova_k nova_kn nova_kr nova_ko nova_kx

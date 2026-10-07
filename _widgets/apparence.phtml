@@ -76,6 +76,11 @@
           <label><input type="radio" name="nova_badges" value="non" $(nova_checked_b_non)> $nova_app_non</label>
         </span>
       </div>
+      !set nova_std_nom=nova_s_
+      !set nova_std_sep=_
+      !set nova_std_site=yes
+      !read themes/Nova/_widgets/apparence-standard.phtml
+      !reset nova_std_nom nova_std_sep nova_std_site
       <p class="nova-app-note">$nova_app_note</p>
       <div class="nova-app-actions"><input type="submit" value="$nova_app_enregistrer"></div>
     </fieldset>

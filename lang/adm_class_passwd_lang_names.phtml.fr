@@ -1,3 +1,8 @@
+!! Reglage « Textes du theme standard » : rien n'est surcharge (_procs/textes-standard.proc).
+!read themes/Nova/_procs/textes-standard.proc
+!if $nova_std_textes=oui
+  !exit
+!endif
 !! Nova : intitules du changement de mot de passe (adm/class/passwd), demande de l'utilisateur, 2026-10-03.
 !set name_actualpasswd=Mot de passe actuel
 !set name_newpasswd=Nouveau mot de passe

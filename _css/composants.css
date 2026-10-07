@@ -831,3 +831,21 @@ html.nova-page-badges .wimsbody :is(.nova-app:not(.nova-badges-reglages), form:h
 .nova-bdg-coche img { width: 48px; height: 48px; flex: none; }
 .nova-bdg-detail[hidden] { display: none; }
 .nova-badges-reglages .nova-app-actions { display: flex; justify-content: center; }
+
+/* Section repliée « Rapprocher du thème standard » des cartes Apparence (_widgets/apparence-standard.phtml, 2026-10-07). */
+details.nova-app-std { border-top: 1px solid var(--nova-bord); padding-top: var(--nova-e2); margin-top: var(--nova-e2); }
+details.nova-app-std > summary { display: flex; align-items: center; gap: var(--nova-e2); cursor: pointer; list-style: none; padding: var(--nova-e2) 0; }
+details.nova-app-std > summary::-webkit-details-marker, details.nova-app-detail > summary::-webkit-details-marker { display: none; }
+details.nova-app-std > summary::after { content: ""; flex: none; margin-left: auto; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+details.nova-app-std[open] > summary::after { transform: rotate(-135deg); }
+details.nova-app-std > summary:focus-visible, details.nova-app-detail > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; border-radius: var(--nova-rayon); }
+.nova-app-ligne.nova-app-ligne-std { grid-template-columns: minmax(0, 1fr) auto; }
+.nova-app-ligne-std > details.nova-app-detail { grid-column: 1 / -1; }
+details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: .875rem; }
+details.nova-app-detail > summary::before { content: "\25B8"; }
+details.nova-app-detail[open] > summary::before { content: "\25BE"; }
+details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem; display: grid; gap: 4px; font-size: .875rem; color: var(--nova-texte-2); }
+/* Les details de la section ne sont pas des cartes (règle générale des details de .wimsbody, plus haut). */
+.wimsbody details.nova-app-std, .wimsbody details.nova-app-detail { background: none; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none; border-radius: 0; padding-left: 0; padding-right: 0; margin-bottom: 0; }
+.wimsbody details.nova-app-detail { border-top: 0; padding: 0; margin: 0; }
+.wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { background: none; padding-left: 0; padding-right: 0; }

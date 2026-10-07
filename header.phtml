@@ -20,6 +20,15 @@
   !set nova_entree_directe=!getopt nova_entree_directe in $nova_q
   !set nova_clavier_maths=!getopt nova_clavier_maths in $nova_q
   !set nova_badges=!getopt nova_badges in $nova_q
+  !! Reglages « Rapprocher du theme standard » (2026-10-07) : une declaration par reglage, ecrite plus bas.
+  !reset nova_sd
+  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet
+    !set nova_sv=!getopt nova_s_$nova_k in $nova_q
+    !bound nova_sv within oui,non default non
+    !set nova_kh=!replace internal _ by - in $nova_k
+    !set nova_sd=$nova_sd --nova-std-$nova_kh: $nova_sv;
+  !next nova_k
+  !reset nova_k nova_sv nova_kh
   !reset nova_q
 !endif
 !if $module=adm/manage and $wims_ismanager=2 and $nova_reglages=enregistrer
@@ -31,6 +40,7 @@
   !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
   !appendfile wimshome/log/nova.conf --nova-badges: $nova_badges;
+  !appendfile wimshome/log/nova.conf $nova_sd
   !set nova_app_fait=yes
 !endif
 !! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
@@ -71,7 +81,7 @@
       !set nova_mt=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.- in $nova_mv
       !set nova_m1=!replace internal . by , in $nova_mv
       !set nova_m1=$(nova_m1[1])
-      !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof simple,complet
+      !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof simple,complet,defaut
         !writefile $nova_mf $nova_mv
       !endif
     !endif

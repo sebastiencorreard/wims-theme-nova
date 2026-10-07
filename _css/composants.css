@@ -255,7 +255,7 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
 .infobulle { background-color: var(--nova-neutre-fort); color: #FFFFFF; }
 
 /* Messages */
-.wims_msg { border-radius: var(--nova-rayon); }
+.wims_msg { border-radius: var(--nova-rayon); padding-left: var(--nova-e3); padding-right: var(--nova-e3); }   /* icône moins collée au bord (2026-10-08) */
 .wims_msg.info { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: transparent; }
 .wims_msg.success { background-color: var(--nova-succes-fond); color: var(--nova-succes); }
 .wims_msg.warning { background-color: var(--nova-attention-fond); color: var(--nova-attention-texte); }

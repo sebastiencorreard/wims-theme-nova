@@ -1078,3 +1078,8 @@ html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:
 .nova-pied a { color: var(--nova-texte-2); text-decoration: underline; text-underline-offset: 2px; }
 .nova-pied a:hover { color: var(--nova-texte); }
 .nova-pied-sep { margin: 0 var(--nova-e2); color: var(--nova-texte-2); }
+/* Pied de page en bas de l'écran même quand la page est courte (demande de l'utilisateur, 2026-10-08) : la page est une
+ * colonne d'au moins la hauteur de l'écran, le pied prend la place libre au-dessus de lui. */
+body:has(> .nova-pied) { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+body:has(> .nova-pied) > * { flex-shrink: 0; }
+body > .nova-pied { margin-top: auto; }

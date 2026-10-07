@@ -937,7 +937,7 @@ body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_droppable.nova-
  * 205 × 50 px (taille posée en ligne par Dynapi) ; html.nova-dominos est posée par nova.js avant « load », donc avant
  * que Dynapi ne place ses calques sur les repères : les places réservées dans la page (images transparentes devant
  * fillobj<n> et dans fill<nom>) grandissent d'autant, rien ne déborde sur la suite. */
-html.nova-dominos { --nova-domino-h: 96px; }
+html.nova-dominos { --nova-domino-h: 80px; }   /* 96 px d'abord, un peu moins à la demande de l'utilisateur */
 html.nova-dominos .wims_grabbable:has(.fill_content > table.wimsborder),
 html.nova-dominos .wims_droppable { height: var(--nova-domino-h) !important; }
 html.nova-dominos .wims_grabbable .wims_fill_object { height: 100% !important; display: flex; align-items: center; justify-content: center; }
@@ -947,3 +947,6 @@ html.nova-dominos a[id^="fill"]:not([id^="fillobj"]) > img[style*="height:"] { h
 html.nova-dominos .wims_droppable .wims_fill_object { height: 100% !important; display: flex; align-items: center; justify-content: center; }
 /* Dynapi découpe aussi les cases à leur taille d'origine (clip) : retiré, sinon elles sont coupées à mi-hauteur. */
 html.nova-dominos .wims_droppable { clip: auto !important; overflow: visible !important; }
+/* Trait du milieu plus haut (demande de l'utilisateur, 2026-10-08) : le tableau occupe la hauteur du domino, moins
+ * une petite marge en haut et en bas ; le texte reste centré. */
+html.nova-dominos .wims_grabbable .fill_content > table.wimsborder { height: calc(var(--nova-domino-h) - 20px); margin-top: 0; margin-bottom: 0; }

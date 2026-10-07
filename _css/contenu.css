@@ -250,6 +250,13 @@ li.wims_sheet_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims
 .wimsbody img, .wimsbody svg, .wimsbody canvas, .wimsbody video, .wimsbody iframe { max-width: 100%; }
 .wimsbody img, .wimsbody canvas, .wimsbody video { height: auto; }
 .wimsbody .tox-tinymce { max-width: 100%; }
+/* Exception : les images cliquables des exercices (<input type="image">, réponses « coord » : droites graduées…)
+ * gardent leur taille réelle, même au téléphone, comme avec Pion3 ; en portrait, l'élève tourne son téléphone ou
+ * fait défiler (demande de l'utilisateur, 2026-10-07). nova.js (imagesCliquables) corrige le clic si une autre
+ * règle venait à les réduire. */
+.wimsbody input[type="image"] { max-width: none; }
+/* Sur ces pages seulement, c'est le cadre de l'exercice qui défile, pas toute la page. */
+.wimsbody:has(input[type="image"]) { overflow-x: auto; }
 .wimsbody .tox .tox-toolbar__group { flex-wrap: wrap; }
 /* Code : revient à la ligne partout, fenêtres d'aide (#wimsmhelp) comprises. */
 pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -858,8 +858,11 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
  * <body> (div.wims_grabbable), hors de .wimsbody ; la variante .wimsbody:has(.oefstatement) couvre celles restées
  * dans l'énoncé, où le quadrillage des exercices s'applique. */
 .fill_content table.wimsborder,
-.wimsbody:has(.oefstatement) .fill_content table.wimsborder { border-radius: 0; background: transparent; box-shadow: none; }
+.wimsbody:has(.oefstatement) .fill_content table.wimsborder { border-radius: 0; background: transparent; box-shadow: none; border: 0; margin-top: 4px; margin-bottom: 4px; }
+/* Contour invisible, légère marge au-dessus et au-dessous (demande de l'utilisateur, 2026-10-08). */
 .fill_content table.wimsborder :is(tr, th, td),
 .fill_content table.wimsborder tr:is(:nth-child(odd), :nth-child(even), :hover) { background: transparent; border-radius: 0; }
+.fill_content table.wimsborder :is(th, td),
+.wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) { border-top: 0; border-bottom: 0; }
 .fill_content table.wimsborder :is(th, td) + :is(th, td),
 .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td) { border-left: 2px solid var(--nova-texte-2); }

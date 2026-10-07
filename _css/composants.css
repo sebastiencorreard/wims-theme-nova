@@ -1021,3 +1021,7 @@ html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; 
 :where(html:not(.nova-std-dominos)) .nova-paysage span { flex: 1; }
 :where(html:not(.nova-std-dominos)) .nova-paysage button { all: unset; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--nova-texte-2); }
 :where(html:not(.nova-std-dominos)) .nova-paysage button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+
+/* Indication et Aide inactives pendant un examen (nova.js, aideExamen) : bouton d'aide grisé. */
+body.main_body .wims_button_help.nova-inactif,
+body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-allowed; filter: grayscale(.6); }

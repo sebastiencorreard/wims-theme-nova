@@ -185,3 +185,4 @@
 !set nova_std_dominos_liste=<li>Dominoes and drop boxes with the standard colours and sizes (205 x 50, blue background, orange boxes) instead of white dominoes with a black frame (205 x 80, 175 x 80 on phones) and dashed boxes.</li><li>No computed common text size: the standard one.</li><li>No "Drag each domino..." instruction above the dominoes.</li><li>No highlighted box while dragging, no lit boxes when a domino is chosen.</li><li>No window suggesting landscape mode on phones.</li><li>Correction page: standard dominoes (statement, analysis, solution), no red or green frame, and "Analysis of your answer" shown.</li>
 !set nova_paysage=Turn your phone sideways (landscape) to see the dominoes better.
 !set nova_fermer=Close
+!set nova_indisponible_examen=Not available during an exam

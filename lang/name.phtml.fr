@@ -185,3 +185,4 @@
 !set nova_std_dominos_liste=<li>Dominos et cases de dépôt aux couleurs et dimensions du thème standard (205 × 50, fond bleu, cases orange), au lieu de dominos blancs à contour noir de 205 × 80 (175 × 80 au téléphone) et de cases en pointillés.</li><li>Pas de taille de texte commune calculée : celle du thème standard.</li><li>Pas de consigne « Glissez chaque domino dans une case... » au-dessus des dominos.</li><li>Pas de case mise en évidence pendant le glissement, ni de cases allumées quand un domino est choisi.</li><li>Pas de fenêtre proposant le mode paysage au téléphone.</li><li>Page de correction : dominos du thème standard (énoncé, analyse, solution), sans cadre rouge ou vert, et « Analyse de votre réponse » affichée.</li>
 !set nova_paysage=Tournez votre téléphone en mode paysage pour mieux voir les dominos.
 !set nova_fermer=Fermer
+!set nova_indisponible_examen=Non disponible pendant un examen

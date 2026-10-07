@@ -3110,6 +3110,25 @@
     }, true);
   }
 
+  /* Indication et Aide d'un exercice pendant un examen : WIMS les écrit en texte inactif (scripts/oef/Main.phtml :
+   * <span class="disabled_link"> au lieu du bouton, dans une session _exam), y compris avec le thème Standard. Nova
+   * les montre comme ses boutons d'aide, grisés, avec une info-bulle (demande de l'utilisateur, 2026-10-08). Main.phtml
+   * écrit l'Indication puis l'Aide ; l'Aide se reconnaît à son texte (wims_name_help). */
+  function aideExamen() {
+    var inactifs = document.querySelectorAll('#oef_helphint > span.disabled_link');
+    if (!inactifs.length) return;
+    var textes = document.getElementById('nova-textes');
+    var bulle = (textes && textes.getAttribute('data-texte-indisponible-examen')) || 'Non disponible pendant un examen';
+    Array.prototype.forEach.call(inactifs, function (sp) {
+      var aide = /^(aide|help|hilfe|ayuda|aiuto)$/i.test(sp.textContent.trim());
+      sp.classList.add('wims_button_help', 'nova-inactif');
+      if (!document.getElementById(aide ? 'oef_help' : 'oef_hint')) sp.id = aide ? 'oef_help' : 'oef_hint';   // icône du jeu de WIMS
+      sp.setAttribute('aria-disabled', 'true');
+      sp.setAttribute('role', 'button');
+      sp.title = bulle;
+    });
+  }
+
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
    *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
    *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
@@ -3254,7 +3273,7 @@
     }
   }
 
-  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

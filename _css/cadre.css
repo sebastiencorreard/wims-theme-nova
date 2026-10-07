@@ -161,6 +161,20 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 #wimsmenumodubox .menu a:hover,
 #wimsmenumodubox a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
 #wimsmenumodubox .menuitem > a::before { color: var(--nova-texte-2); }
+/* Exercice d'une feuille : « Qualité : …/10 · Réussite : … % » (html/homeref_user.phtml, entrée `score`).
+ * WIMS l'entoure d'un filet noir à 80 % de largeur : encart doux, pleine largeur. */
+#wimsmenumodubox div.menuitem.score {
+  box-sizing: border-box;
+  width: 100%;
+  margin: var(--nova-e2) 0;
+  padding: var(--nova-e2) var(--nova-e3);
+  background: var(--nova-surface-2);
+  color: var(--nova-texte-2);
+  border: 0;
+  border-radius: var(--nova-rayon);
+  font-size: var(--nova-petit);
+  line-height: 1.6;
+}
 
 /* Titres de groupe. Chez l'enseignant, WIMS fait du menu un accordéon jQuery UI : Nova montre
  * tous les groupes ouverts (comme sur la maquette) et retire l'apparence d'accordéon. */

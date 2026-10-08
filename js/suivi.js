@@ -137,7 +137,10 @@
       if (cle !== avant) {
         fermer();
         var segment = el('li', undefined, 'nova-suivi-segment'), titre = (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title;
-        var t = el('strong', titre); t.title = titre; segment.appendChild(t);
+        var t = el('strong', titre); segment.appendChild(t);
+        // Titre en bulle (CSS) : survol, clavier ou clic, qui le garde affiche.
+        segment.tabIndex = 0;
+        segment.addEventListener('click', function () { this.classList.toggle('nova-suivi-titre-ouvert'); });
         essais = el('ol'); segment.appendChild(essais); list.appendChild(segment); avant = cle;
       }
       if (e.kind !== 'score') { relances.push(e.at); return; }

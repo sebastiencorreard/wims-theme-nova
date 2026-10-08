@@ -107,7 +107,8 @@ supervisées ; un administrateur voit sa structure et ses descendants. Aucun ide
   seuils par défaut. Les signaux sont limités à la fenêtre récente ;
   ils ne sont pas des diagnostics et n'ont aucun effet sur les notes.
 - Chronologie par élève, ouverte par la flèche de sa ligne : frise de gauche à droite (liste au
-  téléphone), groupée par exercice, 40 derniers événements visibles, notes sur 10, feuilles et examens.
+  téléphone), groupée par exercice et passant à la ligne (titre de l'exercice en bulle au survol, au clavier ou
+  au clic ; visible au téléphone), 40 derniers événements visibles, notes sur 10, feuilles et examens.
   Un nouvel essai seul n'est pas montré ; deux ou plus à la suite sans note (l'élève relance sans répondre)
   donnent une flèche grise « ↻ ×N », heures en info-bulle. Toute la ligne de l'élève ouvre et ferme la chronologie.
   Les réponses non comptabilisées sont incluses si WIMS les journalise. Les activités hors feuille

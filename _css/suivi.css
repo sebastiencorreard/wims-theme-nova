@@ -67,11 +67,23 @@
 #nova-suivi-table tr.nova-suivi-chrono td { padding: .2rem 1rem 1rem; border-top: 0; }
 #nova-suivi-table tr.nova-suivi-g-attention + tr.nova-suivi-chrono td { background: color-mix(in oklab, var(--nova-erreur-fond) 35%, var(--nova-surface)); }
 .nova-suivi-chrono-titre { margin: 0 0 .5rem; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--nova-texte-2); }
-.nova-suivi-segments { display: flex; gap: var(--nova-e4); margin: 0; padding: 0 0 .3rem; list-style: none; overflow-x: auto; }
-.nova-suivi-segment { flex: none; display: flex; flex-direction: column; gap: .35rem; min-width: 8.5rem; max-width: 22rem; padding-left: var(--nova-e3); border-left: 2px solid var(--nova-bord); }
+/* Les exercices et leurs notes passent a la ligne : une frise qui defilait elargissait tout le tableau, coupe par
+ * son cadre (on ne voyait plus la fin, signale par l'utilisateur, 2026-10-08). Titre de l'exercice masque, en bulle
+ * au survol, au clavier ou au clic (nova-suivi-titre-ouvert, pose par suivi.js). */
+.nova-suivi-segments { display: flex; flex-wrap: wrap; gap: var(--nova-e3) var(--nova-e4); margin: 0; padding: 0; list-style: none; }
+.nova-suivi-segment { position: relative; display: flex; flex-direction: column; min-width: 0; padding-left: var(--nova-e3); border-left: 2px solid var(--nova-bord); cursor: help; border-radius: 0 6px 6px 0; }
 .nova-suivi-segment:first-child { padding-left: 0; border-left: 0; }
-.nova-suivi-segment > strong { font-size: .8rem; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.nova-suivi-segment > ol { display: flex; gap: var(--nova-e2); margin: 0; padding: 0; list-style: none; }
+.nova-suivi-segment:hover, .nova-suivi-segment:focus-visible, .nova-suivi-segment.nova-suivi-titre-ouvert { background: color-mix(in oklab, var(--nova-accent-doux) 60%, transparent); }
+.nova-suivi-segment:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-suivi-segment > strong {
+  position: absolute; left: 0; bottom: calc(100% + 6px); z-index: 5;
+  width: max-content; max-width: 22rem; padding: .35rem .6rem; border-radius: 8px;
+  background: var(--nova-neutre-fort); color: #FFFFFF; font-size: .8rem; line-height: 1.3; box-shadow: var(--nova-ombre);
+  opacity: 0; pointer-events: none; transition: opacity .12s;
+}
+.nova-suivi-segment:hover > strong, .nova-suivi-segment:focus-visible > strong, .nova-suivi-segment.nova-suivi-titre-ouvert > strong { opacity: 1; }
+html.nova-sans-animation .nova-suivi-segment > strong { transition: none; }
+.nova-suivi-segment > ol { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: 0; padding: 0; list-style: none; }
 .nova-suivi-segment > ol > li { display: grid; justify-items: center; gap: 2px; min-width: 3.4rem; text-align: center; font-size: var(--nova-petit); }
 .nova-suivi-segment .nova-suivi-carre { margin: 0; }
 .nova-suivi-heure { font-family: var(--nova-police-chiffres); }
@@ -117,7 +129,9 @@
   #nova-suivi-table tr.nova-suivi-g-attention + tr.nova-suivi-chrono { background: color-mix(in oklab, var(--nova-erreur-fond) 35%, var(--nova-surface)); }
   #nova-suivi-table tr.nova-suivi-chrono td { padding: 0 .9rem .9rem; }
   .nova-suivi-segments { flex-direction: column; overflow: visible; }
-  .nova-suivi-segment { max-width: none; padding-left: 0; border-left: 0; }
+  .nova-suivi-segment { padding-left: 0; border-left: 0; cursor: auto; gap: .35rem; }
+  .nova-suivi-segment:hover, .nova-suivi-segment.nova-suivi-titre-ouvert { background: none; }
+  .nova-suivi-segment > strong { position: static; width: auto; max-width: none; padding: 0; background: none; color: inherit; box-shadow: none; opacity: 1; margin-top: .3rem; }
   .nova-suivi-segment > ol { flex-direction: column; gap: .3rem; }
   .nova-suivi-segment > ol > li { grid-template-columns: 3.2rem auto 1fr; grid-template-areas: "heure note texte"; justify-items: start; align-items: center; column-gap: var(--nova-e2); text-align: left; }
   .nova-suivi-segment .nova-suivi-heure { grid-area: heure; }

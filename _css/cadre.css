@@ -262,7 +262,7 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
     z-index: 100;
   }
   /* Pied de page (CGU, Aide) : rien d'écrit sous le menu. */
-  body:has(#wimsbodybox > #wimsmenumodubox) > .nova-pied { padding-left: calc(264px + var(--nova-e4)); }
+  body:has(#wimsbodybox > #wimsmenumodubox) > .nova-pied { padding-left: calc(264px + var(--nova-e5)); }
   body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: calc(264px + var(--nova-e5)); }
   /* Le menu remonte jusqu'à la barre du haut et recouvre le début du fil d'Ariane, dont le texte
    * commence déjà après lui (demande de l'utilisateur, 2026-10-03). Le fil d'Ariane prend pour cela
@@ -729,8 +729,10 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
 }
 
 /* ---------- Menu de pied de page de l'enseignant (supervisor.phtml), écrans larges ---------- */
-#wimsmenubox.footer {
-  grid-area: pied;
+/* Même format pour le pied de page de Nova (.nova-pied, CGU et Aide, toutes les pages ; demande de l'utilisateur,
+ * 2026-10-08) : sur l'accueil de l'enseignant, nova.js (piedDePage) range son groupe dans cette barre. */
+#wimsmenubox.footer { grid-area: pied; }
+#wimsmenubox.footer, .nova-pied {
   display: flex;
   flex-wrap: wrap;
   gap: var(--nova-e2) var(--nova-e5);
@@ -740,7 +742,7 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
   background: var(--nova-surface);
   font-size: .9375rem;
 }
-#wimsmenubox .wimsmenu {
+#wimsmenubox .wimsmenu, .nova-pied .wimsmenu {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -750,11 +752,16 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
   background: transparent;
   border: 0;
 }
-#wimsmenubox .wimsmenu + .wimsmenu { padding-left: var(--nova-e5); border-left: 1px solid var(--nova-bord); }
-#wimsmenubox .menuitem { display: inline-flex; padding: 0; }
-#wimsmenubox .menuitem a { padding: var(--nova-e1) var(--nova-e2); border-radius: var(--nova-rayon); color: var(--nova-texte-2); text-decoration: none; }
-#wimsmenubox .menuitem a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
-@media (max-width: 1023.98px) { #wimsmenubox.footer { display: none; } }
+#wimsmenubox .wimsmenu + .wimsmenu, .nova-pied .wimsmenu + .wimsmenu { padding-left: var(--nova-e5); border-left: 1px solid var(--nova-bord); }
+#wimsmenubox .menuitem, .nova-pied .menuitem { display: inline-flex; padding: 0; }
+#wimsmenubox .menuitem a, .nova-pied .menuitem a { padding: var(--nova-e1) var(--nova-e2); border-radius: var(--nova-rayon); color: var(--nova-texte-2); text-decoration: none; }
+#wimsmenubox .menuitem a:hover, .nova-pied .menuitem a:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+/* Moins de 1024 px : la barre de l'enseignant ne garde que CGU et Aide (ses autres groupes sont dans le menu). */
+@media (max-width: 1023.98px) {
+  #wimsmenubox.footer > .wimsmenu:not(.nova-pied-groupe) { display: none; }
+  #wimsmenubox.footer:not(:has(> .nova-pied-groupe)) { display: none; }
+  #wimsmenubox.footer > .nova-pied-groupe { padding-left: 0; border-left: 0; }
+}
 
 /* Parcours (examen en mode « course ») : au-dessous de 768 px, la barre de progression quitte la
  * barre du haut (elle s'y empilait sur 300 px) et devient une bande pleine largeur juste dessous,
@@ -1080,7 +1087,7 @@ html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:ha
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) > .nova-pied { padding-left: var(--nova-e4); }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) > .nova-pied { padding-left: var(--nova-e5); }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
   /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
   body:has(#nova-eleve).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
@@ -1098,10 +1105,7 @@ html.nova-std-textes .nova-nom-std { display: inline; }
 html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)),
 html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)) + * { display: none !important; }
 /* Pied de page : lien vers les CGU (_widgets/footer.phtml, 2026-10-08). */
-.nova-pied { clear: both; padding: var(--nova-e4) var(--nova-e4) calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: var(--nova-petit); }
-.nova-pied a { color: var(--nova-texte-2); text-decoration: underline; text-underline-offset: 2px; }
-.nova-pied a:hover { color: var(--nova-texte); }
-.nova-pied-sep { margin: 0 var(--nova-e2); color: var(--nova-texte-2); }
+.nova-pied { clear: both; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
 /* Pied de page en bas de l'écran même quand la page est courte (demande de l'utilisateur, 2026-10-08) : la page est une
  * colonne d'au moins la hauteur de l'écran, le pied prend la place libre au-dessus de lui. */
 body:has(> .nova-pied) { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }

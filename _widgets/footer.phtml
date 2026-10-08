@@ -1,13 +1,21 @@
 !! Nova : liens vers les conditions generales d'utilisation et vers l'aide en pied de page, sur toutes les pages (demande de
 !! l'utilisateur, 2026-10-08) ; libelle de WIMS (html/name.phtml).
+!! Meme format que le menu de pied de page de l'enseignant (#wimsmenubox.footer, demande de l'utilisateur, 2026-10-08),
+!! pour tous ; sur l'accueil de l'enseignant, nova.js (piedDePage) range ce groupe dans sa barre. Classes cgu et help :
+!! icones du jeu Font_Awesome de WIMS (rien avec default), comme dans la rubrique Profil.
 <div class="nova-pied">
+  <div class="wimsmenu menu nova-pied-groupe">
+    <div class="menuitem cgu">
+  !set wims_ref_class=cgu
   !href module=adm/light&phtml=cgu.phtml $wims_name_cgu
+  !reset wims_ref_class
+    </div>
   !! Aide generale de WIMS (help/main, le Guide), dans sa fenetre comme le fait WIMS ; pas pendant un examen, ou WIMS
   !! retire ses aides (demande de l'utilisateur, 2026-10-08).
   !if _exam notin $wims_session
-    <span class="nova-pied-sep" aria-hidden="true">·</span>
-    <a href="$wims_ref_name?module=help/main&amp;lang=$lang" target="wims_help">$wims_name_help</a>
+    <div class="menuitem help"><a class="help" href="$wims_ref_name?module=help/main&amp;lang=$lang" target="wims_help">$wims_name_help</a></div>
   !endif
+  </div>
 </div>
 !! Nova (2026-10-03) : remplace themes/_widgets/footer_foundation.phtml de WIMS, SANS Foundation.
 !! Ce que Foundation faisait est repris par js/nova.js : menus déroulants (menusDeroulants),

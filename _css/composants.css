@@ -622,6 +622,10 @@ img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; tra
  * grand écran (property_fields est en ligne, avec retour) — demande de l'utilisateur, 2026-10-03. */
 .wimsbody fieldset.property_fields:has(#pw1) { flex-direction: column; flex-wrap: nowrap; width: auto; max-width: 36rem; margin-inline: auto; }
 .wimsbody fieldset.property_fields:has(#pw1) > .field { flex: 0 0 auto; width: auto; }
+/* Connexion : identifiant et mot de passe sur toute la largeur de la carte (la règle « largeur = size » des cartes de
+ * réglages, 2026-10-08, les avait rétrécis à 20 caractères, de longueurs différentes ; signalé par l'utilisateur). */
+.wimsbody fieldset.property_fields:is(:has(input[name="auth_password"]), :has(#pw1)) .field :is(input[type="text"], input[type="password"], input[type="email"], input:not([type])) { width: 100%; }
+.wimsbody fieldset.property_fields:is(:has(input[name="auth_password"]), :has(#pw1)) .nova-mdp { display: block; }
 
 /* Œil du mot de passe (js/nova.js, oeilMotDePasse ; demande de l'utilisateur, 2026-10-05) : bouton dans le
  * champ, à droite ; œil barré quand le mot de passe est en clair. */

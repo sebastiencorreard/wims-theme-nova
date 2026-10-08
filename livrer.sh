@@ -4,8 +4,9 @@
 #
 # L'archive contient le thème servi (gabarits, widgets, procédures, langues, js, polices, css.css
 # minifié), les sources CSS (_css/, css.css.template : themes/mkcss.pl de WIMS reconstruit le css.css
-# de tous les thèmes et en a besoin), les licences, la documentation, ORIGINES.sha256 et VERSION. Elle exclut l'historique git et construire-css.sh /
-# livrer.sh, qui dépendent du conteneur de développement.
+# de tous les thèmes et en a besoin), les licences, la documentation, ORIGINES.sha256 et VERSION.
+# Elle exclut l'historique git et construire-css.sh / livrer.sh, qui dépendent du conteneur de
+# développement, ainsi que l'exemple local.phtml.template de Standard et les badges PNG inutilisés.
 # Refuse de livrer un dépôt modifié et non versionné : l'archive doit correspondre à un commit.
 set -e
 cd "$(dirname "$0")"

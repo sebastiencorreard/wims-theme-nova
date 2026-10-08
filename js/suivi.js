@@ -113,22 +113,42 @@
     var tr = el('tr', undefined, 'nova-suivi-chrono'), td = el('td');
     td.colSpan = 6; td.id = id; tr.appendChild(td);
     td.appendChild(el('p', 'Chronologie \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes', 'nova-suivi-chrono-titre'));
-    // Un groupe par exercice, titre au-dessus de ses notes (un titre par note se chevauchait).
-    var list = el('ol', undefined, 'nova-suivi-segments'), essais = null, avant = '';
+    // Un groupe par exercice, titre au-dessus de ses notes (un titre par note se chevauchait). Nouveaux essais :
+    // rien pour un seul (ouvrir puis repondre, deroulement normal) ; a partir de deux a la suite sans note, une
+    // fleche grise << xN >> (l'eleve relance sans repondre ; choix de l'utilisateur, 2026-10-08).
+    var list = el('ol', undefined, 'nova-suivi-segments'), essais = null, avant = '', relances = [];
+    var vider = function () {
+      if (relances.length >= 2) {
+        var li = el('li', undefined, 'nova-suivi-relance');
+        li.title = relances.length + ' nouveaux essais sans r\u00e9ponse : ' + relances.map(heure).join(', ');
+        li.appendChild(el('span', '', 'nova-suivi-relance-icone'));
+        li.appendChild(el('small', '\u00d7' + relances.length));
+        essais.appendChild(li);
+      }
+      relances = [];
+    };
+    var fermer = function () {
+      if (!essais) return;
+      vider();
+      if (!essais.children.length) essais.appendChild(el('li', 'pas de note', 'nova-suivi-sans-note'));
+    };
     x.recent.slice(-40).forEach(function (e) {
       var cle = e.exam + ':' + e.sheet + ':' + e.exo;
       if (cle !== avant) {
+        fermer();
         var segment = el('li', undefined, 'nova-suivi-segment'), titre = (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title;
         var t = el('strong', titre); t.title = titre; segment.appendChild(t);
         essais = el('ol'); segment.appendChild(essais); list.appendChild(segment); avant = cle;
       }
+      if (e.kind !== 'score') { relances.push(e.at); return; }
+      vider();
       var li = el('li');
-      if (e.kind === 'score') li.appendChild(carre(e.score, e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10'));
-      else li.appendChild(el('span', '+', 'nova-suivi-carre nova-suivi-carre-essai'));
+      li.appendChild(carre(e.score, e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10'));
       li.appendChild(el('span', heure(e.at), 'nova-suivi-heure'));
-      li.appendChild(el('small', e.kind === 'score' ? (e.score === null ? 'r\u00e9sultat indisponible' : 'note') : 'nouvel essai'));
+      li.appendChild(el('small', e.score === null ? 'r\u00e9sultat indisponible' : 'note'));
       essais.appendChild(li);
     });
+    fermer();
     if (!x.recent.length) list.appendChild(el('li', 'Aucun essai journalis\u00e9 dans cette fen\u00eatre.'));
     td.appendChild(list);
     if (x.recent.length > 40) td.appendChild(el('p', 'Les 40 derniers \u00e9v\u00e9nements sont affich\u00e9s.', 'nova-suivi-aide'));

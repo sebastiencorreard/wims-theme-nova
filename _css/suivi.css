@@ -54,7 +54,7 @@
 .nova-suivi-carre-faible { background: var(--nova-note-rouge); }
 .nova-suivi-carre-moyenne { background: var(--nova-note-jaune); }
 .nova-suivi-carre-reussie { background: var(--nova-note-vert); }
-.nova-suivi-carre-np, .nova-suivi-carre-essai { background: var(--nova-surface); box-shadow: inset 0 0 0 1px var(--nova-note-contour); color: var(--nova-texte-2); }
+.nova-suivi-carre-np { background: var(--nova-surface); box-shadow: inset 0 0 0 1px var(--nova-note-contour); color: var(--nova-texte-2); }
 #nova-suivi .nova-suivi-chevron { width: var(--nova-cible); height: var(--nova-cible); padding: 0; border: 0; border-radius: var(--nova-rayon); background: transparent; color: var(--nova-lien); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 #nova-suivi .nova-suivi-chevron::before { content: ""; width: 9px; height: 9px; border: solid currentColor; border-width: 0 2.5px 2.5px 0; transform: translateY(-2px) rotate(45deg); }
 #nova-suivi .nova-suivi-chevron[aria-expanded="true"]::before { transform: translateY(2px) rotate(-135deg); }
@@ -76,6 +76,11 @@
 .nova-suivi-segment .nova-suivi-carre { margin: 0; }
 .nova-suivi-heure { font-family: var(--nova-police-chiffres); }
 #nova-suivi-table .nova-suivi-segment small { margin: 0; font-size: .75rem; }
+/* Relances sans reponse (deux nouveaux essais ou plus a la suite) : fleche grise et nombre, heures en info-bulle. */
+.nova-suivi-segment > ol > li.nova-suivi-relance { min-width: 1.6rem; align-self: start; padding-top: 3px; color: var(--nova-texte-2); cursor: help; }
+.nova-suivi-relance-icone::before { content: "\21BB"; font-size: 1.1rem; line-height: 1; }
+#nova-suivi-table .nova-suivi-relance small { font-weight: 700; }
+#nova-suivi-table .nova-suivi-sans-note { color: var(--nova-texte-2); font-size: var(--nova-petit); }
 
 #nova-suivi-vide { padding: var(--nova-e4); margin: 0; color: var(--nova-texte-2); }
 #nova-suivi > .nova-suivi-aide { margin-top: var(--nova-e4); font-size: var(--nova-petit); max-width: 75ch; }
@@ -118,6 +123,9 @@
   .nova-suivi-segment .nova-suivi-heure { grid-area: heure; }
   .nova-suivi-segment .nova-suivi-carre { grid-area: note; }
   .nova-suivi-segment small { grid-area: texte; }
+  .nova-suivi-segment > ol > li.nova-suivi-relance { grid-template-columns: 3.2rem auto 1fr; grid-template-areas: "heure note texte"; padding-top: 0; }
+  .nova-suivi-relance-icone { grid-area: note; justify-self: center; }
+  .nova-suivi-relance small { grid-area: texte; }
 }
 
 /* Sans JS, masquer le tiret de repli de FontAwesome ; avec .eye, laisser le jeu WIMS choisir l'icone. */

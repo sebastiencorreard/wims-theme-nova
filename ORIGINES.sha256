@@ -1,5 +1,5 @@
 # Fichiers de WIMS 4.32 dont Nova contient une copie adaptée, avec leur empreinte d'origine.
-# Sur un serveur : cd public_html/themes && sha256sum -c Nova/ORIGINES.sha256
+# Sur un serveur : cd public_html/themes && grep -v '^#' <ce fichier> | sha256sum -c
 # Une ligne « ÉCHEC » = l'original a changé depuis la 4.32 : comparer et reporter dans la copie de Nova.
 c358646a7e4831b6c87f00ed038b7e6532095f8acf54306dc3cec3dd32cdd895  _widgets/headmenu.phtml
 9b61fe6273f6564f4f9d4c6ce902fb81de6ea3ac98b9bd3ff940fce5cf339b8b  _widgets/user_links.phtml

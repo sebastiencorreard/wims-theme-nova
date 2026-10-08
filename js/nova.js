@@ -2609,23 +2609,28 @@
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';
-    var lus = {};
-    (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
-      var m = /--nova-([a-z-]+)\s*:\s*(oui|non)/.exec(d); lus[m[1]] = m[2];
-    });
-    cles.forEach(function (k) {
-      // Valeur de la feuille de la classe, sinon valeur en vigueur (site, portail).
-      var v = lus[k] || getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
-      var r = carte.querySelector('input[name="nova_c_' + k + '"][value="' + (v === 'oui' ? 'oui' : 'non') + '"]');
-      if (r) r.checked = true;
-    });
-    nombres.forEach(function (k) {
-      var champ = carte.querySelector('input[name="nova_c_' + k + '"]');
-      if (!champ) return;
-      var m = new RegExp('--nova-' + k + '\\s*:\\s*(\\d+)').exec(zone.value);
-      champ.value = m ? m[1] : '';
-      champ.placeholder = getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim();
-    });
+    // La carte lit la zone de texte : au chargement, et quand le prof modifie lui-même le bloc Nova.
+    var bloc = function () { return /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value); };
+    var lire = function () {
+      var lus = {};
+      (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
+        var m = /--nova-([a-z-]+)\s*:\s*(oui|non)/.exec(d); lus[m[1]] = m[2];
+      });
+      cles.forEach(function (k) {
+        // Valeur de la feuille de la classe, sinon valeur en vigueur (site, portail).
+        var v = lus[k] || getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
+        var r = carte.querySelector('input[name="nova_c_' + k + '"][value="' + (v === 'oui' ? 'oui' : 'non') + '"]');
+        if (r) r.checked = true;
+      });
+      nombres.forEach(function (k) {
+        var champ = carte.querySelector('input[name="nova_c_' + k + '"]');
+        if (!champ) return;
+        var m = new RegExp('--nova-' + k + '\\s*:\\s*(\\d+)').exec(zone.value);
+        champ.value = m ? m[1] : '';
+        champ.placeholder = getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim();
+      });
+    };
+    lire();
     var ecrire = function () {
       var decl = cles.map(function (k) {
         var r = carte.querySelector('input[name="nova_c_' + k + '"]:checked');
@@ -2646,6 +2651,11 @@
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     carte.addEventListener('change', ecrire);
+    // Surcharge réécrite à la volée (demande de l'utilisateur, 2026-10-08) : zone de texte modifiée à la main, bloc
+    // Nova présent → la carte suit la zone ; bloc effacé (par inadvertance) → aussitôt réécrit d'après la carte.
+    // Et toujours à l'enregistrement par le bouton de WIMS.
+    zone.addEventListener('change', function () { if (bloc()) lire(); ecrire(); });
+    formWims.addEventListener('submit', ecrire);
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () { ecrire(); envoi.click(); });

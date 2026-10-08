@@ -49,7 +49,8 @@
 #nova-activite .nova-activite-lien { align-self: flex-start; display: inline-flex; align-items: center; min-height: var(--nova-cible); font-weight: 600; }
 .nova-activite-detail { margin: var(--nova-e4) 0 0; font-size: var(--nova-petit); }
 
-/* Page Apparence : réglages de « Mon activité » en phrases à trous. */
+/* Page Apparence : Oui/Non toujours visible ; réglages de « Mon activité » en phrases à trous, dans un dépliant. */
+.nova-app-activite > details.nova-app-detail { grid-column: 1 / -1; }
 .nova-app-phrases { display: flex; flex-direction: column; gap: var(--nova-e2); padding: var(--nova-e2) 0 var(--nova-e3); }
 .nova-app-phrase { display: block; line-height: 2.5; }
 .nova-app-phrase .nova-app-nombre { width: 4.5rem; min-height: 40px; margin: 0 .25rem; text-align: center; font-weight: 700; }

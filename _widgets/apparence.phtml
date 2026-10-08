@@ -111,22 +111,21 @@
           <label><input type="radio" name="nova_communication" value="non" $(nova_checked_m_non)> $nova_app_non</label>
         </span>
       </div>
-      <details class="nova-app-std nova-app-activite">
-      <summary><span class="nova-app-nom">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span></summary>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-l6">$nova_app_act_activer</span>
+      <div class="nova-app-ligne nova-app-activite">
+        <span class="nova-app-nom" id="nova-app-l6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
         <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l6">
           <label><input type="radio" name="nova_activite" value="oui" $(nova_checked_v_oui)> $nova_app_oui</label>
           <label><input type="radio" name="nova_activite" value="non" $(nova_checked_v_non)> $nova_app_non</label>
         </span>
+        <details class="nova-app-detail"><summary>$nova_app_act_reglages</summary>
+        <div class="nova-app-phrases">
+          <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_activite_seuil" min="1" max="7" step="1" value="$nova_as"> $nova_app_act_seuil2</label>
+          <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_activite_objectif" min="1" max="7" step="1" value="$nova_ao"> $nova_app_act_objectif2</label>
+          <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_activite_heures" min="1" max="80" step="1" value="$nova_ah"> $nova_app_act_heures2</label>
+          <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_activite_notes" min="1" max="20" step="1" value="$nova_an"> $nova_app_act_notes2</label>
+        </div>
+        </details>
       </div>
-      <div class="nova-app-phrases">
-        <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_activite_seuil" min="1" max="7" step="1" value="$nova_as"> $nova_app_act_seuil2</label>
-        <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_activite_objectif" min="1" max="7" step="1" value="$nova_ao"> $nova_app_act_objectif2</label>
-        <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_activite_heures" min="1" max="80" step="1" value="$nova_ah"> $nova_app_act_heures2</label>
-        <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_activite_notes" min="1" max="20" step="1" value="$nova_an"> $nova_app_act_notes2</label>
-      </div>
-      </details>
       !set nova_std_nom=nova_s_
       !set nova_std_sep=_
       !set nova_std_site=yes

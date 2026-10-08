@@ -8,12 +8,10 @@ retirer le thème rend le serveur tel qu'il était.
 Nova contient des copies adaptées de quelques fichiers de WIMS (widgets de la barre du haut,
 procédure du menu enseignant, gabarits de Standard). Avant d'installer sur une autre version :
 
-Chaque archive est livrée avec deux fichiers à côté d'elle (pas dedans : l'archive ne contient que le thème) :
-`nova-AAAA-MM-JJ-xxxxxxx.INSTALLER.md` (ce texte) et `nova-AAAA-MM-JJ-xxxxxxx.ORIGINES.sha256`.
-
 ```sh
 cd /home/wims/public_html/themes          # racine WIMS du serveur
-grep -v '^#' /chemin/nova-AAAA-MM-JJ-xxxxxxx.ORIGINES.sha256 | sha256sum -c
+tar -xzf /chemin/nova-AAAA-MM-JJ-xxxxxxx.tgz Nova/ORIGINES.sha256
+grep -v '^#' Nova/ORIGINES.sha256 | sha256sum -c
 ```
 
 Tout à « OK » : les originaux n'ont pas changé, installer. Une ligne « ÉCHEC » : WIMS a modifié ce

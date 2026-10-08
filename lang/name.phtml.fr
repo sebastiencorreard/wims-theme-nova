@@ -229,3 +229,4 @@
 !set nova_app_act_notes=Montrer les
 !set nova_app_act_notes2=dernières notes.
 !set nova_app_act_herite=Champ vide : valeur du portail, du groupement ou du site.
+!set nova_app_act_activer=Remplacer la page de WIMS

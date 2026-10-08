@@ -229,3 +229,4 @@
 !set nova_app_act_notes=Show the
 !set nova_app_act_notes2=latest scores.
 !set nova_app_act_herite=Empty field: value of the portal, group or site.
+!set nova_app_act_activer=Replace the WIMS page

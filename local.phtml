@@ -9,10 +9,12 @@
       !! Separateur sans titre en tete (adm/class/sequence...) : menumodubox.phtml le retire quand il est
       !! premier ; place apres Participants, il ouvrirait un groupe sans titre, range sous Participants.
       !set wims_rm_0=!nonempty line $wims_rm_0
+      !! Tous : adm/class/config en a deux de suite (vecu le 2026-10-08, groupes de la configuration sous Participants).
       !set nova_sl=!line 1 of $wims_rm_0
-      !if itemsep isitemof $(nova_sl[1]) and $(nova_sl[3])=$empty
+      !while itemsep isitemof $(nova_sl[1]) and $(nova_sl[3])=$empty
         !set wims_rm_0=!line 2 to -1 of $wims_rm_0
-      !endif
+        !set nova_sl=!line 1 of $wims_rm_0
+      !endwhile
       !set nova_sc=!linecnt $wims_rm_0
       !for nova_si=1 to $nova_sc
         !set nova_sl=!line $nova_si of $wims_rm_0
@@ -34,7 +36,9 @@ nova_suivi,1,module=home&nova_suivi=1
         !if $nova_sc>0
           !set nova_sl=!line 1 of $wims_rm_0
           !if $(nova_sl[1])!=itemsep
-            !set nova_sn=$module_title
+            !! Titre traduit du module (comme html/title.phtml), sinon son titre (souvent en anglais).
+            !set nova_sn=!module title_$lang
+            !default nova_sn=$module_title
             !default nova_sn=$wims_name_configuration
             !default nova_sn=Navigation
             !set nova_sr=!append line itemsep,0,$nova_sn to $nova_sr

@@ -198,6 +198,10 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
   color: var(--nova-texte);
 }
 .property_fields .formHelp, .formHelp { margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
+/* Cartes de réglages (Configuration globale de la classe…, demande de l'utilisateur, 2026-10-08) : largeur limitée,
+ * centrées ; le bouton « Aide » flottant d'un champ garde une marge à droite (il touchait la colonne voisine ou le bord). */
+.wimsbody fieldset.property_fields { max-width: 54rem; margin-inline: auto; box-sizing: border-box; }
+.property_fields .field .wims_button_help.float_right { margin-right: var(--nova-e3); }
 .property_fields p { padding: 0; }
 .property_fields .actions, .property_fields .wimsform {
   flex-wrap: wrap;

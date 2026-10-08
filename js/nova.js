@@ -2605,7 +2605,7 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'communication-eleves', 'activite'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';
@@ -2629,6 +2629,11 @@
         champ.value = m ? m[1] : '';
         champ.placeholder = getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim();
       });
+      // Rubriques masquées aux élèves : bloc de la classe s'il le dit, sinon valeur en vigueur (site, structure).
+      var m2 = /--nova-masques-eleves\s*:\s*([^;}\n]*)/.exec(zone.value);
+      var mc2 = /--nova-communication-eleves\s*:\s*(oui|non)/.exec(zone.value);
+      var masques = m2 ? m2[1].trim().split(/[\s,]+/) : mc2 ? (mc2[1] === 'non' ? ['communication'] : []) : rubriquesMasquees(getComputedStyle(document.documentElement));
+      carte.querySelectorAll('input[name="nova_c_masque"]').forEach(function (c) { c.checked = masques.indexOf(c.value) >= 0; });
     };
     lire();
     var ecrire = function () {
@@ -2641,11 +2646,13 @@
         var v = champ ? champ.value.trim() : '';
         if (/^\d+$/.test(v)) decl += ' --nova-' + k + ': ' + v + ';';
       });
+      var choisies = [].filter.call(carte.querySelectorAll('input[name="nova_c_masque"]'), function (c) { return c.checked; }).map(function (c) { return c.value; });
+      if (carte.querySelector('input[name="nova_c_masque"]')) decl += ' --nova-masques-eleves: ' + (choisies.join(' ') || 'aucune') + ';';
       // Autres déclarations --nova-… de l'ancien bloc (réglages ajoutés plus tard, ou écrits à la main) : gardées.
       var ancien = /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
       (ancien ? ancien[1].match(/--nova-[a-z0-9-]+\s*:\s*[^;}]+/g) || [] : []).forEach(function (d) {
         var k = /--nova-([a-z0-9-]+)/.exec(d)[1];
-        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0) decl += ' ' + d.trim() + ';';
+        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0 && k !== 'masques-eleves' && k !== 'communication-eleves') decl += ' ' + d.trim() + ';';
       });
       var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
@@ -2818,18 +2825,30 @@
       d.classList.toggle('nova-std-' + k, oui);
       return oui;
     });
-    // Rubrique Communication des élèves (même mémoire de session, jeton « sans-communication »).
-    var sansCom = cs.getPropertyValue('--nova-communication-eleves').trim().replace(/["']/g, '') === 'non';
-    d.classList.toggle('nova-sans-communication', sansCom);
+    // Rubriques masquées aux élèves (même mémoire de session, jetons « sans-communication », « sans-liens »).
+    var masques = rubriquesMasquees(cs);
+    var jetons = actifs.slice();
+    ['communication', 'liens'].forEach(function (r) {
+      var sans = masques.indexOf(r) >= 0;
+      d.classList.toggle('nova-sans-' + r, sans);
+      if (sans) jetons.push('sans-' + r);
+    });
     // Pour le script de tête des pages suivantes de cette classe (la feuille de la classe arrive après lui).
     var mc = document.querySelector('meta[name="nova-classe"]');
-    try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), actifs.concat(sansCom ? ['sans-communication'] : []).join(' ')); } catch (e) { /* sans stockage */ }
+    try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), jetons.join(' ')); } catch (e) { /* sans stockage */ }
     // Menu enseignant complet par défaut, tant que l'enseignant n'a rien choisi lui-même.
     var choix = null;
     try { choix = localStorage.getItem('nova_menu'); } catch (e) { /* sans stockage */ }
     if (choix === null) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
   }
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+  // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien
+  // --nova-communication-eleves: non.
+  function rubriquesMasquees(cs) {
+    var liste = cs.getPropertyValue('--nova-masques-eleves').trim().replace(/["']/g, '');
+    if (liste && liste !== 'defaut') return liste.split(/[\s,]+/).filter(function (r) { return r === 'communication' || r === 'liens'; });
+    return cs.getPropertyValue('--nova-communication-eleves').trim().replace(/["']/g, '') === 'non' ? ['communication'] : [];
+  }
 
   /* Réglages de Nova posés dans la feuille de surcharge du portail ou du groupement (demande de
    * l'utilisateur, 2026-10-06) : WIMS ne charge que la feuille de la classe courante. user.phtml (accueil)

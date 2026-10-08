@@ -233,3 +233,7 @@
 !set nova_propage_case=Nova theme settings (Appearance page settings and badges)
 !set nova_propage_1=Nova theme settings copied to 1 dependent zone.
 !set nova_propage_n=Nova theme settings copied to %1 dependent zones.
+!set nova_app_masques_eleves=Menu sections hidden from students
+!set nova_app_masques_eleves_aide=Checked: not in the students' menu. The teacher's menu does not change.
+!set nova_app_masque_communication=Communication (forum, write to the teacher)
+!set nova_app_masque_liens=External links (other classes, ENT links)

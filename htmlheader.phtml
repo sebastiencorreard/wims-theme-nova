@@ -89,15 +89,25 @@ $wims_CSS
     var v = connu !== null ? ((' ' + connu + ' ').indexOf(' ' + k + ' ') >= 0 ? 'oui' : 'non') : (st[k] || site[k] || 'non');
     if (v === 'oui') d.classList.add('nova-std-' + k);
   });
-  /* Rubrique Communication des eleves (meme memoire de session : jeton sans-communication). */
-  var com = function (cle) { try { var m2 = /--nova-communication-eleves\s*:\s*(oui|non)/.exec(sessionStorage.getItem(cle) || ''); return m2 ? m2[1] : ''; } catch (e) { return ''; } };
-  var sans = connu !== null ? (' ' + connu + ' ').indexOf(' sans-communication ') >= 0 : (com(m && m.content ? 'nova-reglages-' + m.content : '') || com('nova-reglages-site')) === 'non';
-  if (sans) d.classList.add('nova-sans-communication');
+  /* Rubriques masquees aux eleves (meme memoire de session : jetons sans-communication, sans-liens). Reglage
+     --nova-masques-eleves s'il est pose, sinon l'ancien --nova-communication-eleves. */
+  var val = function (cle, nom) { try { var m2 = new RegExp('--nova-' + nom + '\\s*:\\s*([^;}\\n]*)').exec(sessionStorage.getItem(cle) || ''); return m2 ? m2[1].trim() : ''; } catch (e) { return ''; } };
+  var cles = [m && m.content ? 'nova-reglages-' + m.content : '', 'nova-reglages-site'];
+  var premier = function (nom) { var v = ''; cles.forEach(function (c) { if (!v && c) v = val(c, nom); }); return v; };
+  ['communication', 'liens'].forEach(function (r) {
+    var sans;
+    if (connu !== null) sans = (' ' + connu + ' ').indexOf(' sans-' + r + ' ') >= 0;
+    else {
+      var liste = premier('masques-eleves');
+      sans = liste && liste !== 'defaut' ? (' ' + liste.replace(/,/g, ' ') + ' ').indexOf(' ' + r + ' ') >= 0 : r === 'communication' && premier('communication-eleves') === 'non';
+    }
+    if (sans) d.classList.add('nova-sans-' + r);
+  });
   /* Menu enseignant complet par defaut : seulement si l'enseignant n'a rien choisi lui-meme. */
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/Nova/js/nova.js?v=49626fe60e" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=fca608d7d6" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

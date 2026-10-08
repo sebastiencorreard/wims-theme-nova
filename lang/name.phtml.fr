@@ -233,3 +233,7 @@
 !set nova_propage_case=Paramètres du thème Nova (réglages de la page Apparence et badges)
 !set nova_propage_1=Paramètres du thème Nova propagés à 1 zone dépendante.
 !set nova_propage_n=Paramètres du thème Nova propagés à %1 zones dépendantes.
+!set nova_app_masques_eleves=Rubriques masquées aux élèves
+!set nova_app_masques_eleves_aide=Cochées : absentes du menu des élèves. Le menu de l'enseignant ne change pas.
+!set nova_app_masque_communication=Communication (forum, écrire à l'enseignant)
+!set nova_app_masque_liens=Liens externes (autres classes, liens de l'ENT)

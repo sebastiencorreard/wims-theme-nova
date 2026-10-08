@@ -50,6 +50,21 @@
 !set nova_checked_k_$nova_k=checked
 !set nova_checked_b_$nova_b=checked
 !set nova_checked_m_$nova_m=checked
+!! Rubriques masquees aux eleves (2026-10-08) : --nova-masques-eleves, sinon l'ancien --nova-communication-eleves: non.
+!set nova_ml=!sh sed -n 's/.*--nova-masques-eleves: *\([^;]*\);.*/\1/p' $wims_home/log/nova.conf 2>/dev/null | tail -1
+!reset nova_checked_mc nova_checked_ml
+!if $nova_ml=$empty
+  !if $nova_m=non
+    !set nova_checked_mc=checked
+  !endif
+!else
+  !if communication isin $nova_ml
+    !set nova_checked_mc=checked
+  !endif
+  !if liens isin $nova_ml
+    !set nova_checked_ml=checked
+  !endif
+!endif
 !! Reglages de WIMS sans effet avec Nova : rangs dans lang/confdata (2e mot de la 1re ligne = nom).
 !set nova_noms=page_bgcolor,page_bgimg,ref_menucolor,ref_button_bgcolor,ref_button_color,ref_button_help_bgcolor,ref_button_help_color,css
 !set nova_lg=$modu_lang
@@ -105,10 +120,10 @@
         </span>
       </div>
       <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-l5">$nova_app_communication<span class="nova-app-aide">$nova_app_communication_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l5">
-          <label><input type="radio" name="nova_communication" value="oui" $(nova_checked_m_oui)> $nova_app_oui</label>
-          <label><input type="radio" name="nova_communication" value="non" $(nova_checked_m_non)> $nova_app_non</label>
+        <span class="nova-app-nom" id="nova-app-l5">$nova_app_masques_eleves<span class="nova-app-aide">$nova_app_masques_eleves_aide</span></span>
+        <span class="nova-app-cases" role="group" aria-labelledby="nova-app-l5">
+          <label><input type="checkbox" name="nova_masque_communication" value="oui" $(nova_checked_mc)> $nova_app_masque_communication</label>
+          <label><input type="checkbox" name="nova_masque_liens" value="oui" $(nova_checked_ml)> $nova_app_masque_liens</label>
         </span>
       </div>
       <div class="nova-app-ligne nova-app-activite">
@@ -136,6 +151,7 @@
     </fieldset>
   </form>
 </template>
+!reset nova_ml nova_checked_mc nova_checked_ml
 !reset nova_v nova_av nova_as nova_ao nova_ah nova_an nova_checked_v_oui nova_checked_v_non
 !reset nova_a nova_e nova_k nova_b nova_m nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme
 !reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non nova_checked_b_oui nova_checked_b_non nova_checked_m_oui nova_checked_m_non

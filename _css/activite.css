@@ -54,3 +54,7 @@
 .nova-app-phrases { display: flex; flex-direction: column; gap: var(--nova-e2); padding: var(--nova-e2) 0 var(--nova-e3); }
 .nova-app-phrase { display: block; line-height: 2.5; }
 .nova-app-phrase .nova-app-nombre { width: 4.5rem; min-height: 40px; margin: 0 .25rem; text-align: center; font-weight: 700; }
+
+/* Page Apparence : « Rubriques masquées aux élèves », une case par rubrique (2026-10-08). */
+.nova-app-cases { display: flex; flex-direction: column; gap: var(--nova-e1); }
+.nova-app-cases label { display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 32px; }

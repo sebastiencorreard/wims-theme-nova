@@ -1104,6 +1104,9 @@ html.nova-std-textes .nova-nom-std { display: inline; }
  * menu des élèves (2026-10-07). */
 html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)),
 html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)) + * { display: none !important; }
+/* Rubrique « Liens externes » (autres classes, liens de l'ENT qui sortent de WIMS) masquée aux élèves (2026-10-08). */
+html.nova-sans-liens body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))),
+html.nova-sans-liens body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))) + * { display: none !important; }
 /* Pied de page : lien vers les CGU (_widgets/footer.phtml, 2026-10-08). */
 .nova-pied { clear: both; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
 /* Pied de page en bas de l'écran même quand la page est courte (demande de l'utilisateur, 2026-10-08) : la page est une

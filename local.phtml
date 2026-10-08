@@ -1,5 +1,6 @@
 !! Hook natif des menus WIMS : suivi dans Participants, pour les profs/admins seulement.
-!if $wims_class!=$empty and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session
+!! Pas sur une page d'aide (cmd=help, session _mhelp) : WIMS n'y met pas de menu, le suivi s'y affichait seul (2026-10-08).
+!if $wims_class!=$empty and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session and _mhelp notin $wims_session and $cmd!=help
   !if $wims_user=supervisor or yes isin $supervisable $user_supervisable or $wims_supervise!=$empty
     !if nova_suivi notin $wims_rm_0
       !default nova_menu_participants=Participants

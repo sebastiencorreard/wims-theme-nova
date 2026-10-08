@@ -1,50 +1,54 @@
 <section id="nova-suivi" aria-labelledby="nova-suivi-titre">
   <div class="nova-suivi-haut">
-    <div><h1 id="nova-suivi-titre">Suivi en direct</h1><p>En salle informatique : quels élèves aller voir ?</p></div>
-    <div>
-      !set wims_ref_class=wims_button secondary
-      !href module=home Retour à la classe
-      <button type="button" id="nova-suivi-actualiser">Actualiser</button>
+    <div><h1 id="nova-suivi-titre">Suivi en direct</h1><p id="nova-suivi-sous-titre">En salle informatique : quels élèves aller voir ?</p></div>
+    <div class="nova-suivi-actions">
+      <p id="nova-suivi-etat" role="status">Chargement du relevé</p>
+      <label class="nova-suivi-auto"><input id="nova-suivi-auto" type="checkbox" checked> <span id="nova-suivi-auto-libelle">Actualiser toutes les 30 s</span></label>
+      <button type="button" id="nova-suivi-actualiser" class="wims_button wims_secondary_button">Actualiser</button>
+      <button type="button" id="nova-suivi-reglages" class="wims_button wims_secondary_button" aria-haspopup="dialog">Réglages</button>
       <span hidden id="nova-suivi-refresh">
       !href module=home&nova_suivi=1 Actualiser
       </span>
     </div>
   </div>
-  <p id="nova-suivi-etat" role="status">Chargement du relevé…</p>
   <div id="nova-suivi-commandes" hidden>
-    <div class="nova-suivi-filtres">
-      <label>Afficher <select id="nova-suivi-filtre"><option value="actifs">Séance récente</option><option value="attention">À aller voir</option><option value="difficulte">Difficultés possibles</option><option value="repetition">Répétitions après réussite</option><option value="tous">Toutes les sessions ouvertes</option></select></label>
-      <label>Classe / cours <select id="nova-suivi-classe"><option value="">Toutes les classes autorisées</option></select></label>
-      <label>Rechercher <input id="nova-suivi-recherche" type="search" placeholder="Nom ou identifiant"></label>
-      <label><input id="nova-suivi-auto" type="checkbox" checked> <span id="nova-suivi-auto-libelle">Actualiser toutes les 30 s</span></label>
+    <div id="nova-suivi-compteurs" class="nova-suivi-puces" role="group" aria-label="Afficher"></div>
+    <input type="hidden" id="nova-suivi-filtre" value="actifs">
+    <div class="nova-suivi-cherche">
+      <input id="nova-suivi-recherche" type="search" placeholder="Rechercher un élève" aria-label="Rechercher un élève par son nom ou son identifiant">
+      <label id="nova-suivi-classe-bloc" hidden><span class="nova-suivi-cache">Classe ou cours</span><select id="nova-suivi-classe"><option value="">Toutes mes classes</option></select></label>
     </div>
-    <details class="nova-suivi-reglages"><summary>Seuils de repérage</summary>
-      <div class="nova-suivi-filtres">
-        <label>Fenêtre récente (min) <input id="nova-suivi-fenetre" type="number" min="1" max="120" step="1" value="60"></label>
-        <label>Sans action récente après (min) <input id="nova-suivi-inactivite" type="number" min="1" max="120" step="1" value="5"></label>
-        <label>Actualisation toutes les (s) <input id="nova-suivi-intervalle" type="number" min="10" max="300" step="1" value="30"></label>
-      </div>
-      <div class="nova-suivi-filtres">
-        <label>Difficulté : derniers résultats examinés <input id="nova-suivi-resultats" type="number" min="1" max="100" step="1" value="5"></label>
-        <label>Au moins ce nombre de résultats faibles <input id="nova-suivi-erreurs" type="number" min="1" max="5" step="1" value="3"></label>
-        <label>Note strictement inférieure à (sur 10) <input id="nova-suivi-note-faible" type="number" min="0" max="10" step="0.1" value="5"></label>
-      </div>
-      <div class="nova-suivi-filtres">
-        <label>Réussite : nombre de résultats requis <input id="nova-suivi-reussites" type="number" min="1" max="100" step="1" value="3"></label>
-        <label>Note supérieure ou égale à (sur 10) <input id="nova-suivi-note-reussite" type="number" min="0" max="10" step="0.1" value="9"></label>
-        <label>Répétition : nombre de reprises après réussite <input id="nova-suivi-reprises" type="number" min="1" max="1000" step="1" value="4"></label>
-      </div>
-      <div class="nova-suivi-filtres">
-        <label>Sans résultat depuis (min) : à vérifier <input id="nova-suivi-attente" type="number" min="1" max="120" step="1" value="8"></label>
-        <button type="button" id="nova-suivi-defauts" class="wims_button secondary">Rétablir les seuils par défaut</button>
-      </div>
-      <p class="nova-suivi-aide">La fenêtre récente est limitée à 120 min. Le nombre de résultats faibles est ajusté pour ne pas dépasser le nombre de résultats examinés.</p>
-    </details>
   </div>
-  <div id="nova-suivi-compteurs" class="nova-suivi-compteurs"></div>
-  <div class="nova-suivi-tableau"><table id="nova-suivi-table"><thead><tr><th>Élève</th><th>Activité</th><th>Dernière activité</th><th>Résultats récents</th><th>À regarder</th></tr></thead><tbody></tbody></table></div>
+  <div class="nova-suivi-tableau"><table id="nova-suivi-table"><caption class="nova-suivi-cache">Élèves de la séance, du plus urgent au plus calme</caption><thead><tr><th scope="col">Situation</th><th scope="col">Élève</th><th scope="col">Exercice en cours</th><th scope="col">Dernières notes</th><th scope="col">Dernière action</th><th scope="col"><span class="nova-suivi-cache">Chronologie</span></th></tr></thead><tbody></tbody></table></div>
   <p id="nova-suivi-vide" hidden>Aucun élève ne correspond à ces filtres.</p>
-  <p class="nova-suivi-aide">La séance récente inclut les élèves ayant fait une action dans la fenêtre choisie (60 min par défaut). Le délai sans action récente est réglable ; il ne signifie pas déconnecté. Une session ouverte ne garantit pas la présence devant l’écran. Les signaux invitent à aller voir l’élève ; ils ne décrivent pas ses intentions. Résultats sur 10, y compris les réponses non comptabilisées lorsque WIMS les journalise.</p>
+  <p class="nova-suivi-aide">Notes sur 10 de l’exercice en cours : rouge sous le seuil de difficulté, vert à partir du seuil de réussite. Un signal invite à aller voir l’élève ; il ne dit rien de ses intentions. « Sans action » ne veut pas dire déconnecté, et une session ouverte ne garantit pas la présence devant l’écran. Les réponses non comptabilisées sont comprises lorsque WIMS les journalise.</p>
+  <dialog id="nova-suivi-panneau" class="nova-dialogue" aria-labelledby="nova-suivi-panneau-titre">
+    <h2 id="nova-suivi-panneau-titre">Réglages du repérage</h2>
+    <button type="button" id="nova-suivi-fermer" class="nova-suivi-fermer" aria-label="Fermer">×</button>
+    <p class="nova-suivi-aide">Chaque règle se lit comme une phrase. Les changements s’appliquent tout de suite et restent sur cet ordinateur.</p>
+    <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-seance">
+      <strong id="nova-suivi-r-seance">Séance</strong>
+      <p>Prendre en compte les <input id="nova-suivi-fenetre" type="number" min="1" max="120" step="1" value="60" aria-label="Fenêtre récente, en minutes (120 au plus)"> dernières minutes.</p>
+      <p>Dire « sans action » après <input id="nova-suivi-inactivite" type="number" min="1" max="120" step="1" value="5" aria-label="Minutes avant « sans action »"> min.</p>
+      <p>Actualiser toutes les <input id="nova-suivi-intervalle" type="number" min="10" max="300" step="1" value="30" aria-label="Secondes entre deux actualisations"> s.</p>
+    </div>
+    <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-difficulte">
+      <span id="nova-suivi-r-difficulte" class="nova-suivi-tag nova-suivi-tag-difficulte">Difficulté possible</span>
+      <p>Quand au moins <input id="nova-suivi-erreurs" type="number" min="1" max="5" step="1" value="3" aria-label="Nombre de notes faibles"> des <input id="nova-suivi-resultats" type="number" min="1" max="100" step="1" value="5" aria-label="Nombre de dernières notes examinées"> dernières notes de l’exercice sont sous <input id="nova-suivi-note-faible" type="number" min="0" max="10" step="0.1" value="5" aria-label="Note faible, strictement inférieure à, sur 10"> /10.</p>
+    </div>
+    <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-attente">
+      <span id="nova-suivi-r-attente" class="nova-suivi-tag nova-suivi-tag-attente">Temps long</span>
+      <p>Quand aucune note n’arrive depuis <input id="nova-suivi-attente" type="number" min="1" max="120" step="1" value="8" aria-label="Minutes sans note"> min sur l’exercice en cours.</p>
+    </div>
+    <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-repetition">
+      <span id="nova-suivi-r-repetition" class="nova-suivi-tag nova-suivi-tag-repetition">Répétition</span>
+      <p>Quand l’élève relance l’exercice <input id="nova-suivi-reprises" type="number" min="1" max="1000" step="1" value="4" aria-label="Nombre de reprises"> fois après <input id="nova-suivi-reussites" type="number" min="1" max="100" step="1" value="3" aria-label="Nombre de notes de réussite"> notes d’au moins <input id="nova-suivi-note-reussite" type="number" min="0" max="10" step="0.1" value="9" aria-label="Note de réussite, supérieure ou égale à, sur 10"> /10.</p>
+    </div>
+    <div class="nova-suivi-panneau-bas">
+      <button type="button" id="nova-suivi-defauts" class="wims_button wims_secondary_button">Valeurs par défaut</button>
+      <button type="button" id="nova-suivi-fermer-bas" class="wims_button">Fermer</button>
+    </div>
+  </dialog>
   <noscript><p>Activez JavaScript pour afficher et filtrer ce relevé.</p></noscript>
 </section>
 !set nova_sid=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $wims_session
@@ -53,4 +57,4 @@
   !read wimshome/sessions/$nova_sid/nova-suivi.phtml
 !endif
 !reset nova_sid
-<script src="html/themes/Nova/js/suivi.js?v=2" defer></script>
+<script src="html/themes/Nova/js/suivi.js?v=3" defer></script>

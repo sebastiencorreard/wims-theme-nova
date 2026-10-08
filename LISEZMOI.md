@@ -87,20 +87,27 @@ lecture seule. Un enseignant de portail connecté avec son identifiant n'y voit 
 supervisées ; un administrateur voit sa structure et ses descendants. Aucun identifiant de session
 élève, adresse IP, mot de passe ni réponse saisie n'est envoyé au navigateur de l'enseignant.
 
+- Une seule liste, groupée du plus urgent au plus calme : **À aller voir** (difficulté possible,
+  temps long), **Répétition**, **Au travail**, **Sans action**. Les compteurs en tête servent de
+  filtres ; recherche par nom, choix de la classe ou du cours quand il y en a plusieurs. Une ligne :
+  situation, élève (et la raison du signal), exercice en cours, cinq dernières notes, dernière action.
+  Les notes sont des carrés colorés d'après les seuils : rouge sous la note de difficulté, vert à
+  partir de la note de réussite, jaune entre les deux.
 - Vue par défaut : élèves ayant fait une action dans les **60 dernières minutes**. Fenêtre réglable
-  de 1 à 120 minutes ; filtre par classe/cours, nom et situation.
+  de 1 à 120 minutes ; les sessions encore ouvertes hors de cette fenêtre ont leur propre compteur.
 - **Difficulté possible** : au moins 3 résultats < 5/10 parmi les 5 derniers sur l'exercice ouvert.
 - **Répétition après réussite** : au moins 4 nouveaux essais après 3 résultats >= 9/10 sur cet exercice.
 - **Temps long, à vérifier** : exercice ouvert depuis 8 minutes sans résultat enregistré sur ce
   dernier essai. Ce signal ne distingue pas réflexion, difficulté et absence du poste.
-- Tous ces critères sont réglables dans **Seuils de repérage** : nombre de résultats examinés,
+- Tous ces critères sont réglables dans la fenêtre **Réglages**, écrits comme des phrases à trous : nombre de résultats examinés,
   nombre de résultats faibles, note de difficulté, nombre de réussites, note de réussite, nombre
   de reprises, délais sans résultat et sans action récente, fenêtre récente et fréquence d'actualisation.
   Les notes acceptent les décimales ; le nombre de résultats faibles reste au plus égal au nombre
   de résultats examinés. Les réglages sont conservés dans le navigateur et un bouton rétablit les
   seuils par défaut. Les signaux sont limités à la fenêtre récente ;
   ils ne sont pas des diagnostics et n'ont aucun effet sur les notes.
-- Chronologie par élève (40 derniers événements visibles), notes sur 10, feuilles et examens.
+- Chronologie par élève, ouverte par la flèche de sa ligne : frise de gauche à droite (liste au
+  téléphone), 40 derniers événements visibles, notes sur 10, feuilles et examens.
   Les réponses non comptabilisées sont incluses si WIMS les journalise. Les activités hors feuille
   ou examen restent visibles mais ne reçoivent pas de signal fondé sur leurs résultats.
 - Actualisation toutes les 30 secondes par défaut (réglable de 10 à 300 secondes), sans recharger la page. Suspendue dans un onglet caché,

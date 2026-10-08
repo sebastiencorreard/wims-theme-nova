@@ -82,57 +82,130 @@
     return {r:r, recent:recent, scores:scores, active:active, inSession:inSession, signal:signal, why:why,
       priority:(!inSession ? 10 : ({difficulte:0, attente:1, repetition:2, normal:3}[signal]))};
   }
-  var labels = {difficulte:'Difficult\u00e9 possible', repetition:'R\u00e9p\u00e9tition apr\u00e8s r\u00e9ussite', attente:'Temps long : \u00e0 v\u00e9rifier', normal:'Pas de signal'};
-  function detail(x) {
-    var d = el('details', undefined, 'nova-suivi-detail'), s = el('summary', 'Voir la chronologie'); d.appendChild(s);
-    var list = el('ol');
-    x.recent.slice(-40).reverse().forEach(function (e) {
-      var text = clock(e.at) + ' \u00b7 ' + (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title + ' \u00b7 ';
-      text += e.kind === 'score' ? (e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10') : 'Nouvel essai';
-      list.appendChild(el('li', text));
+  var labels = {difficulte:'Difficult\u00e9 possible', attente:'Temps long', repetition:'R\u00e9p\u00e9tition',
+    travail:'Au travail', silence:'Sans action', ancien:'Session ancienne'};
+  var groupes = ['attention', 'repetition', 'travail', 'silence', 'ancien'];
+  var filtres = {actifs:'Tous', attention:'\u00c0 aller voir', repetition:'R\u00e9p\u00e9tition', travail:'Au travail',
+    silence:'Sans action', tous:'Avec les sessions anciennes'};
+  var ouverts = {};
+  function groupe(x) {
+    if (!x.inSession) return 'ancien';
+    if (x.signal === 'difficulte' || x.signal === 'attente') return 'attention';
+    if (x.signal === 'repetition') return 'repetition';
+    return x.active ? 'travail' : 'silence';
+  }
+  function titreGroupe(g) {
+    return {attention:'\u00c0 aller voir', repetition:'R\u00e9p\u00e9tition apr\u00e8s r\u00e9ussite', travail:'Au travail',
+      silence:'Sans action depuis ' + number('inactivite') + ' min', ancien:'Sessions ouvertes, hors de la fen\u00eatre'}[g];
+  }
+  function heure(t) { return new Date(t * 1000).toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }); }
+  // Couleur d'une note d'apres les seuils : rouge = compte pour une difficulte, vert = compte pour une reussite.
+  function carre(score, titre) {
+    var c = score === null ? 'np' : score < number('note-faible') ? 'faible' : score >= number('note-reussite') ? 'reussie' : 'moyenne';
+    var e = el('span', score === null ? '?' : String(score), 'nova-suivi-carre nova-suivi-carre-' + c);
+    e.title = titre; return e;
+  }
+  function exercice(r) {
+    if (r.sheet && !/^(home|adm\/)/.test(r.module)) return (r.exam ? 'Examen ' : 'Feuille ') + r.sheet + ' \u00b7 ' + r.activity;
+    return r.activity;
+  }
+  function chronologie(x, id) {
+    var tr = el('tr', undefined, 'nova-suivi-chrono'), td = el('td');
+    td.colSpan = 6; td.id = id; tr.appendChild(td);
+    td.appendChild(el('p', 'Chronologie \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes', 'nova-suivi-chrono-titre'));
+    var list = el('ol'), avant = '';
+    x.recent.slice(-40).forEach(function (e) {
+      var li = el('li'), cle = e.exam + ':' + e.sheet + ':' + e.exo;
+      if (cle !== avant) li.appendChild(el('strong', (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title));
+      avant = cle;
+      if (e.kind === 'score') li.appendChild(carre(e.score, e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10'));
+      else li.appendChild(el('span', '+', 'nova-suivi-carre nova-suivi-carre-essai'));
+      li.appendChild(el('span', heure(e.at), 'nova-suivi-heure'));
+      li.appendChild(el('small', e.kind === 'score' ? (e.score === null ? 'r\u00e9sultat indisponible' : 'note') : 'nouvel essai'));
+      list.appendChild(li);
     });
     if (!x.recent.length) list.appendChild(el('li', 'Aucun essai journalis\u00e9 dans cette fen\u00eatre.'));
-    if (x.recent.length > 40) list.appendChild(el('li', 'Les 40 derniers \u00e9v\u00e9nements sont affich\u00e9s.'));
-    if (x.r.historyTruncated) list.appendChild(el('li', 'Historique partiel : les \u00e9v\u00e9nements les plus anciens sont omis.'));
-    d.appendChild(list); return d;
+    td.appendChild(list);
+    if (x.recent.length > 40) td.appendChild(el('p', 'Les 40 derniers \u00e9v\u00e9nements sont affich\u00e9s.', 'nova-suivi-aide'));
+    if (x.r.historyTruncated) td.appendChild(el('p', 'Historique partiel : les \u00e9v\u00e9nements les plus anciens sont omis.', 'nova-suivi-aide'));
+    return tr;
+  }
+  function ligne(x, plusieurs) {
+    var r = x.r, key = r.class + ':' + r.login, ouvert = !!ouverts[key];
+    var tr = el('tr', undefined, 'nova-suivi-' + (x.inSession ? x.signal : 'inactif') + ' nova-suivi-g-' + x.groupe);
+    tr.dataset.key = key;
+    var etiquette = x.groupe === 'attention' || x.groupe === 'repetition' ? x.signal : x.groupe;
+    var situation = el('td'); situation.appendChild(el('span', labels[etiquette], 'nova-suivi-tag nova-suivi-tag-' + etiquette)); tr.appendChild(situation);
+    var nom = el('td', undefined, 'nova-suivi-nom'); nom.appendChild(el('strong', r.name));
+    if (x.signal !== 'normal') nom.appendChild(el('small', x.why + (x.inSession ? '' : ' \u00b7 signal de l\u2019activit\u00e9 pass\u00e9e')));
+    else nom.appendChild(el('small', r.login + (plusieurs ? ' \u00b7 ' + r.className : '')));
+    tr.appendChild(nom);
+    tr.appendChild(el('td', exercice(r), 'nova-suivi-exercice'));
+    var notes = el('td', undefined, 'nova-suivi-notes');
+    if (x.scores.length) x.scores.slice(-5).forEach(function (e) { notes.appendChild(carre(e.score, e.score + '/10 \u00e0 ' + heure(e.at))); });
+    else notes.appendChild(el('small', r.sheet && !/^(home|adm\/)/.test(r.module) ? 'pas encore de note' : '\u2014'));
+    tr.appendChild(notes);
+    tr.appendChild(el('td', ago(r.last).replace('Il y a', 'il y a'), 'nova-suivi-quand'));
+    var cell = el('td', undefined, 'nova-suivi-ouvrir'), b = el('button', undefined, 'nova-suivi-chevron');
+    b.type = 'button';
+    b.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+    b.setAttribute('aria-label', (ouvert ? 'Masquer' : 'Voir') + ' la chronologie de ' + r.name);
+    if (ouvert) b.setAttribute('aria-controls', 'nova-suivi-chrono-' + r.login);
+    b.addEventListener('click', function () { if (ouverts[key]) delete ouverts[key]; else ouverts[key] = true; render(); });
+    cell.appendChild(b); tr.appendChild(cell);
+    return tr;
   }
   function render() {
-    var inactiveMinutes = number('inactivite');
     document.getElementById('nova-suivi-auto-libelle').textContent = 'Actualiser toutes les ' + number('intervalle') + ' s';
-    var analyzed = rows.map(inspect).sort(function (a,b) { return a.priority-b.priority || a.r.name.localeCompare(b.r.name, 'fr'); });
-    var stats = document.getElementById('nova-suivi-compteurs'); stats.replaceChildren();
-    var active = analyzed.filter(function (x) { return x.inSession; });
-    [[active.length, '\u00e9l\u00e8ves dans la s\u00e9ance'], [active.filter(function(x){return x.signal==='difficulte'||x.signal==='attente';}).length, '\u00e0 accompagner'],
-      [active.filter(function(x){return x.signal==='repetition';}).length, 'en r\u00e9p\u00e9tition'], [analyzed.filter(function(x){return !x.active;}).length, 'sans action depuis ' + inactiveMinutes + ' min']].forEach(function (pair) {
-      var card = el('div'); card.appendChild(el('strong', String(pair[0]))); card.appendChild(el('span', pair[1])); stats.appendChild(card);
+    var ordre = {attention:0, repetition:1, travail:2, silence:3, ancien:4};
+    var analyzed = rows.map(inspect);
+    analyzed.forEach(function (x) { x.groupe = groupe(x); });
+    analyzed.sort(function (a,b) { return ordre[a.groupe]-ordre[b.groupe] || a.priority-b.priority || a.r.name.localeCompare(b.r.name, 'fr'); });
+    var nbClasses = Object.keys(classes).length;
+    document.getElementById('nova-suivi-classe-bloc').hidden = nbClasses < 2;
+    var choisie = controls.classe.value;
+    document.getElementById('nova-suivi-sous-titre').textContent =
+      (choisie ? classes[choisie] : nbClasses === 1 ? classes[Object.keys(classes)[0]] : nbClasses + ' classes ou cours') +
+      ' \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes';
+    var scoped = analyzed.filter(function (x) { return !choisie || x.r.class === choisie; });
+    var filter = controls.filtre.value;
+    if (filter === 'difficulte') filter = 'attention';
+    if (!filtres[filter]) filter = 'actifs';
+    controls.filtre.value = filter;
+    var compte = {actifs:0, tous:scoped.length};
+    groupes.forEach(function (g) { compte[g] = 0; });
+    scoped.forEach(function (x) { compte[x.groupe]++; if (x.inSession) compte.actifs++; });
+    var puces = document.getElementById('nova-suivi-compteurs'); puces.replaceChildren();
+    ['actifs', 'attention', 'repetition', 'travail', 'silence', 'tous'].forEach(function (f) {
+      if (f === 'tous' && !compte.ancien && filter !== 'tous') return;
+      var b = el('button', undefined, 'nova-suivi-puce nova-suivi-puce-' + f + (f === filter ? ' on' : ''));
+      b.type = 'button'; b.setAttribute('aria-pressed', f === filter ? 'true' : 'false');
+      b.appendChild(el('strong', String(compte[f]))); b.appendChild(el('span', filtres[f]));
+      b.addEventListener('click', function () { controls.filtre.value = f; saveAndRender(); });
+      puces.appendChild(b);
     });
-    var body = document.querySelector('#nova-suivi-table tbody');
-    var expanded = {};
-    body.querySelectorAll('tr[data-key]').forEach(function (r) { if (r.querySelector('details[open]')) expanded[r.dataset.key]=true; });
-    body.replaceChildren();
-    var filter = controls.filtre.value, term = controls.recherche.value.toLocaleLowerCase('fr');
-    var visible = analyzed.filter(function (x) {
-      return (!controls.classe.value || x.r.class === controls.classe.value) &&
-        (x.r.name+' '+x.r.login).toLocaleLowerCase('fr').includes(term) &&
-        (filter === 'tous' || (x.inSession && (filter === 'actifs' || (filter === 'attention' && x.signal !== 'normal') || filter === x.signal)));
+    var body = document.querySelector('#nova-suivi-table tbody'); body.replaceChildren();
+    var term = controls.recherche.value.toLocaleLowerCase('fr');
+    var visible = scoped.filter(function (x) {
+      return (x.r.name+' '+x.r.login).toLocaleLowerCase('fr').includes(term) &&
+        (filter === 'tous' || (filter === 'actifs' ? x.inSession : x.groupe === filter));
     });
+    var present = {};
+    visible.forEach(function (x) { present[x.r.class + ':' + x.r.login] = true; });
+    Object.keys(ouverts).forEach(function (k) { if (!present[k]) delete ouverts[k]; });
+    var dernier = '';
     visible.forEach(function (x) {
-      var r=x.r, tr=el('tr',undefined,'nova-suivi-'+(x.inSession?x.signal:'inactif')); tr.dataset.key=r.class+':'+r.login;
-      var name=el('td'); name.appendChild(el('strong',r.name)); name.appendChild(el('small',r.login+' \u00b7 '+r.className)); tr.appendChild(name);
-      var activity=el('td'); activity.appendChild(el('span',r.activity));
-      if (r.sheet && !/^(home|adm\/)/.test(r.module)) activity.appendChild(el('small',(r.exam?'Examen ':'Feuille ')+r.sheet+' \u00b7 exercice '+r.exo));
-      tr.appendChild(activity);
-      var last=el('td',ago(r.last)); last.appendChild(el('small',x.active?'Action dans les '+inactiveMinutes+' min':'Sans action depuis '+inactiveMinutes+' min')); tr.appendChild(last);
-      var results=el('td');
-      if (x.scores.length) { var scores=el('div',undefined,'nova-suivi-notes'); x.scores.slice(-5).forEach(function(e){scores.appendChild(el('span',e.score+'/10',e.score<number('note-faible')?'faible':''));}); results.appendChild(scores); results.appendChild(el('small',x.scores.length+' r\u00e9sultats sur cet exercice')); }
-      else results.appendChild(el('span','Aucun r\u00e9sultat r\u00e9cent'));
-      var history=detail(x); history.open=!!expanded[tr.dataset.key]; results.appendChild(history); tr.appendChild(results);
-      var signal=el('td'); signal.appendChild(el('strong',labels[x.signal])); signal.appendChild(el('small',x.why));
-      if (!x.inSession && x.signal!=='normal') signal.appendChild(el('small','Signal de l\u2019activit\u00e9 pass\u00e9e')); tr.appendChild(signal); body.appendChild(tr);
+      if (x.groupe !== dernier) {
+        var tr = el('tr', undefined, 'nova-suivi-groupe'), th = el('th', titreGroupe(x.groupe));
+        th.colSpan = 6; th.scope = 'colgroup'; tr.appendChild(th); body.appendChild(tr); dernier = x.groupe;
+      }
+      body.appendChild(ligne(x, nbClasses > 1));
+      if (ouverts[x.r.class + ':' + x.r.login]) body.appendChild(chronologie(x, 'nova-suivi-chrono-' + x.r.login));
     });
     document.getElementById('nova-suivi-vide').hidden=visible.length>0;
     document.getElementById('nova-suivi-commandes').hidden=false;
-    state.textContent='Relev\u00e9 \u00e0 '+clock(data.now)+' \u00b7 '+visible.length+' \u00e9l\u00e8ve(s) affich\u00e9(s).';
+    state.className = 'nova-suivi-ok';
+    state.textContent='Relev\u00e9 \u00e0 '+clock(data.now);
   }
   async function refresh() {
     if (refreshing) return;
@@ -159,6 +232,7 @@
       });
       render();
     } catch (e) {
+      state.className = 'nova-suivi-panne';
       state.textContent = 'Actualisation impossible. Dernier relev\u00e9 : '+clock(data.now)+'. '+e.message;
     } finally { clearTimeout(timeout); snapshot=Date.now(); refreshing=false; }
   }
@@ -172,7 +246,14 @@
     Object.keys(defaults).forEach(function(id){controls[id].value=defaults[id];});
     saveAndRender();
   });
-  timer = setInterval(function(){if(controls.auto.checked&&!document.hidden&&Date.now()-snapshot>=number('intervalle')*1000&&!root.querySelector('details.nova-suivi-detail[open]')&&!(root.contains(document.activeElement)&&document.activeElement.matches('input[type=search], input[type=number], select')))refresh();},1000);
+  var panneau = document.getElementById('nova-suivi-panneau');
+  document.getElementById('nova-suivi-reglages').addEventListener('click', function () {
+    if (panneau.showModal) panneau.showModal(); else panneau.setAttribute('open', '');
+  });
+  ['nova-suivi-fermer', 'nova-suivi-fermer-bas'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () { if (panneau.close) panneau.close(); else panneau.removeAttribute('open'); });
+  });
+  timer = setInterval(function(){if(controls.auto.checked&&!document.hidden&&Date.now()-snapshot>=number('intervalle')*1000&&!Object.keys(ouverts).length&&!(root.contains(document.activeElement)&&document.activeElement.matches('input[type=search], input[type=number], select')))refresh();},1000);
   window.addEventListener('pagehide',function(){clearInterval(timer);});
   render();
 })();

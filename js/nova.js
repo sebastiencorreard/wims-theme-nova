@@ -3165,8 +3165,15 @@
     }
     var corps = document.getElementById('wimsbodybox');
     if (!menu || !corps || menu.parentElement === corps) return;
+    // Le menu doit etre un enfant de #wimsbodybox. WIMS le met dans #wimspagebox sur la page de reponse d'un
+    // exercice de feuille ; un module au HTML desequilibre (adm/class/sequence, job=addseq : </div> en trop)
+    // fait refermer #wimsbodybox trop tot par le navigateur, et le menu finit sous la page, enfant de <body>.
+    // data-nova-deplace garde l'origine (relevee par l'inventaire du banc).
+    var origine = menu.parentElement;
+    menu.setAttribute('data-nova-deplace', origine === document.body ? 'body' : (origine.id || origine.tagName.toLowerCase()));
     var page = document.getElementById('wimspagebox');
-    if (page && page.parentElement === corps && page.contains(menu)) corps.insertBefore(menu, page);
+    if (page && !page.contains(corps) && page.parentElement !== corps && !corps.contains(page)) corps.appendChild(page);
+    corps.insertBefore(menu, page && page.parentElement === corps ? page : corps.firstChild);
   }
 
   /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).

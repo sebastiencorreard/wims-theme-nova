@@ -6,6 +6,13 @@
       !set wims_name_nova_suivi=Suivi en direct
       !set nova_sp=0
       !set nova_sg=0
+      !! Separateur sans titre en tete (adm/class/sequence...) : menumodubox.phtml le retire quand il est
+      !! premier ; place apres Participants, il ouvrirait un groupe sans titre, range sous Participants.
+      !set wims_rm_0=!nonempty line $wims_rm_0
+      !set nova_sl=!line 1 of $wims_rm_0
+      !if itemsep isitemof $(nova_sl[1]) and $(nova_sl[3])=$empty
+        !set wims_rm_0=!line 2 to -1 of $wims_rm_0
+      !endif
       !set nova_sc=!linecnt $wims_rm_0
       !for nova_si=1 to $nova_sc
         !set nova_sl=!line $nova_si of $wims_rm_0

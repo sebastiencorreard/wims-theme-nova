@@ -245,21 +245,28 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
     align-items: start;
   }
   #wimsbodybox:has(> #wimsmenumodubox) > #wimspagebox { grid-area: page; }
+  /* Menu par-dessus tout le reste, de la barre du haut au bas de l'écran, pied de page compris : il reste
+   * fixe, la colonne de la grille lui garde sa place (demande de l'utilisateur, 2026-10-08). */
   #wimsbodybox > #wimsmenumodubox {
     grid-area: menu;
-    position: sticky;
+    position: fixed;
     top: 64px;
-    width: auto;
-    max-height: calc(100vh - 64px);
-    min-height: calc(100vh - 64px);
+    bottom: 0;
+    left: 0;
+    width: 264px;
+    box-sizing: border-box;
+    max-height: none;
+    min-height: 0;
     overflow-y: auto;
     margin: 0;
     z-index: 100;
   }
+  /* Pied de page (CGU, Aide) : rien d'écrit sous le menu. */
+  body:has(#wimsbodybox > #wimsmenumodubox) > .nova-pied { padding-left: calc(264px + var(--nova-e4)); }
   body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: calc(264px + var(--nova-e5)); }
   /* Le menu remonte jusqu'à la barre du haut et recouvre le début du fil d'Ariane, dont le texte
    * commence déjà après lui (demande de l'utilisateur, 2026-10-03). Le fil d'Ariane prend pour cela
-   * une hauteur fixe, sur une ligne ; le menu remonte d'autant. Élèves : pas de fil d'Ariane. */
+   * une hauteur fixe, sur une ligne ; le menu, fixe sous la barre, le recouvre. Élèves : pas de fil d'Ariane. */
   body:has(#wimsbodybox > #wimsmenumodubox):not(:has(#nova-eleve)) .breadcrumbs {
     box-sizing: border-box;
     height: 48px;
@@ -267,7 +274,6 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
     overflow: hidden;
     white-space: nowrap;
   }
-  body:has(nav > .breadcrumbs):not(:has(#nova-eleve)) #wimsbodybox > #wimsmenumodubox { margin-top: -48px; }
   #wimsbodybox > #wimsmenumodubox { border-radius: 0; }
   #wimstopbox .nova-menu-bouton { display: none; }
 }
@@ -1056,6 +1062,9 @@ html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-
 #wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; box-sizing: border-box; width: 100%; min-width: 0; overflow-wrap: anywhere; }
 /* Le menu du compte de la barre, qui va passer dans le menu latéral : masqué en attendant nova.js (3 s au plus),
  * pour qu'il n'apparaisse pas un instant. */
+/* Menu lateral hors de #wimsbodybox (page de reponse, HTML de module desequilibre) : nova.js placerMenu le
+ * remet en place ; cache jusque-la pour ne pas le voir sous la page, visible au bout de 3 s sans nova.js. */
+html.nova-js #wimsmenumodubox:not(#wimsbodybox > *) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 /* Élève : plus de colonne à gauche, le menu latéral est le tiroir ☰ à toutes les largeurs (sans JavaScript, la
  * colonne reste). */
@@ -1071,6 +1080,7 @@ html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:ha
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
+  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) > .nova-pied { padding-left: var(--nova-e4); }
   html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
   /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
   body:has(#nova-eleve).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }

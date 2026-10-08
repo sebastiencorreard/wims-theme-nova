@@ -113,21 +113,29 @@
     var tr = el('tr', undefined, 'nova-suivi-chrono'), td = el('td');
     td.colSpan = 6; td.id = id; tr.appendChild(td);
     td.appendChild(el('p', 'Chronologie \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes', 'nova-suivi-chrono-titre'));
-    var list = el('ol'), avant = '';
+    // Un groupe par exercice, titre au-dessus de ses notes (un titre par note se chevauchait).
+    var list = el('ol', undefined, 'nova-suivi-segments'), essais = null, avant = '';
     x.recent.slice(-40).forEach(function (e) {
-      var li = el('li'), cle = e.exam + ':' + e.sheet + ':' + e.exo;
-      if (cle !== avant) li.appendChild(el('strong', (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title));
-      avant = cle;
+      var cle = e.exam + ':' + e.sheet + ':' + e.exo;
+      if (cle !== avant) {
+        var segment = el('li', undefined, 'nova-suivi-segment'), titre = (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title;
+        var t = el('strong', titre); t.title = titre; segment.appendChild(t);
+        essais = el('ol'); segment.appendChild(essais); list.appendChild(segment); avant = cle;
+      }
+      var li = el('li');
       if (e.kind === 'score') li.appendChild(carre(e.score, e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10'));
       else li.appendChild(el('span', '+', 'nova-suivi-carre nova-suivi-carre-essai'));
       li.appendChild(el('span', heure(e.at), 'nova-suivi-heure'));
       li.appendChild(el('small', e.kind === 'score' ? (e.score === null ? 'r\u00e9sultat indisponible' : 'note') : 'nouvel essai'));
-      list.appendChild(li);
+      essais.appendChild(li);
     });
     if (!x.recent.length) list.appendChild(el('li', 'Aucun essai journalis\u00e9 dans cette fen\u00eatre.'));
     td.appendChild(list);
     if (x.recent.length > 40) td.appendChild(el('p', 'Les 40 derniers \u00e9v\u00e9nements sont affich\u00e9s.', 'nova-suivi-aide'));
     if (x.r.historyTruncated) td.appendChild(el('p', 'Historique partiel : les \u00e9v\u00e9nements les plus anciens sont omis.', 'nova-suivi-aide'));
+    var masquer = el('button', 'Masquer la chronologie', 'nova-suivi-masquer'); masquer.type = 'button';
+    masquer.addEventListener('click', function () { delete ouverts[x.r.class + ':' + x.r.login]; render(); });
+    td.appendChild(masquer);
     return tr;
   }
   function ligne(x, plusieurs) {
@@ -151,7 +159,10 @@
     b.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
     b.setAttribute('aria-label', (ouvert ? 'Masquer' : 'Voir') + ' la chronologie de ' + r.name);
     if (ouvert) b.setAttribute('aria-controls', 'nova-suivi-chrono-' + r.login);
-    b.addEventListener('click', function () { if (ouverts[key]) delete ouverts[key]; else ouverts[key] = true; render(); });
+    function basculer() { if (ouverts[key]) delete ouverts[key]; else ouverts[key] = true; render(); }
+    b.addEventListener('click', basculer);
+    // Toute la ligne ouvre et ferme la chronologie : au telephone, la pastille de retour en haut peut couvrir la fleche.
+    tr.addEventListener('click', function (e) { if (!e.target.closest('a, button, input, select')) basculer(); });
     cell.appendChild(b); tr.appendChild(cell);
     return tr;
   }

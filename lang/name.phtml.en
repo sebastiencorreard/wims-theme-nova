@@ -59,6 +59,10 @@
 !set nova_bonnes=Correct answers
 !set nova_mauvaise=Wrong answer
 !set nova_bonne_etait=the correct answer was
+!set nova_juste_sur=%1 correct answer out of %2
+!set nova_justes_sur=%1 correct answers out of %2
+!set nova_justes=Correct
+!set nova_a_revoir=To review
 !set nova_partielle=Partly correct answer
 !set nova_precision=Not precise enough
 !set nova_votre_reponse=Your answer:
@@ -164,7 +168,7 @@
 !set nova_std_navigation_liste=<li>Breadcrumbs are shown at the top of student pages.</li><li>The "Back" button is no longer added to the bar.</li><li>The student's account menu gets all its links back (display preferences, terms of use...), not only the name, the password change and logout.</li>
 !set nova_std_reponse=Standard answer page
 !set nova_std_reponse_aide="Analysis of your answer" table and the standard send button.
-!set nova_std_reponse_liste=<li>The "Analysis of your answer" table is shown as is.</li><li>No "Right answer" / "Wrong answer" box, no wrong answer in red.</li><li>No stars and no shake, even with animations on.</li><li>The button keeps its standard label.</li>
+!set nova_std_reponse_liste=<li>The "Analysis of your answer" table is shown as is.</li><li>No "Right answer" / "Wrong answer" box, no "Correct" and "To review" columns for mixed answers, no wrong answer in red.</li><li>No stars and no shake, even with animations on.</li><li>The button keeps its standard label.</li>
 !set nova_std_examens=Standard exams
 !set nova_std_examens_aide=End of session, messages and titles as in the standard theme.
 !set nova_std_examens_liste=<li>"End this exam session" stays in the account menu (or side menu) instead of an "End" button in the bar.</li><li>The student's name, Help and account stay in the bar during the exam.</li><li>Logout links stay visible during the exam.</li><li>The sentence "Your score for this exam is..." is shown on the exam page.</li><li>The "You have already started another exam..." message stays the standard one.</li><li>The titles above the instructions and the exercise list are shown.</li><li>After the "End" warning, "No" goes back to the scores page.</li><li>Unchanged: Nova's timer and the "Exam in progress" pill.</li>

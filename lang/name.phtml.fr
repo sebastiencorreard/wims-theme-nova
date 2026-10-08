@@ -59,6 +59,10 @@
 !set nova_bonnes=Bonnes réponses
 !set nova_mauvaise=Mauvaise réponse
 !set nova_bonne_etait=la bonne réponse était
+!set nova_juste_sur=%1 réponse juste sur %2
+!set nova_justes_sur=%1 réponses justes sur %2
+!set nova_justes=Justes
+!set nova_a_revoir=À revoir
 !set nova_partielle=Réponse partiellement juste
 !set nova_precision=Précision insuffisante
 !set nova_votre_reponse=Votre réponse :
@@ -164,7 +168,7 @@
 !set nova_std_navigation_liste=<li>Le fil d'Ariane est affiché en haut des pages de l'élève.</li><li>Le bouton « Retour » de la barre n'est plus ajouté (le fil d'Ariane le remplace).</li><li>Le menu du compte de l'élève retrouve tous ses liens (préférences d'affichage, conditions générales d'utilisation...), au lieu du nom, de « Changer le mot de passe » et de la déconnexion.</li>
 !set nova_std_reponse=Réponse comme le thème standard
 !set nova_std_reponse_aide=Tableau « Analyse de votre réponse » et bouton « Envoyer la réponse ».
-!set nova_std_reponse_liste=<li>Le tableau « Analyse de votre réponse » est affiché tel quel.</li><li>Plus d'encadré « Bonne réponse » ou « Mauvaise réponse », ni de réponse fausse en rouge dans l'énoncé.</li><li>Plus d'étoiles ni de vibration, même si les animations sont activées.</li><li>Le bouton garde son texte « Envoyer la réponse », au lieu de « Valider ».</li>
+!set nova_std_reponse_liste=<li>Le tableau « Analyse de votre réponse » est affiché tel quel.</li><li>Plus d'encadré « Bonne réponse » ou « Mauvaise réponse », ni de colonnes « Justes » et « À revoir » quand les deux se mêlent, ni de réponse fausse en rouge dans l'énoncé.</li><li>Plus d'étoiles ni de vibration, même si les animations sont activées.</li><li>Le bouton garde son texte « Envoyer la réponse », au lieu de « Valider ».</li>
 !set nova_std_examens=Examens comme le thème standard
 !set nova_std_examens_aide=Terminer, messages et titres de l'examen comme le thème standard.
 !set nova_std_examens_liste=<li>« Terminer cette session d'examen » reste dans le menu du compte (ou dans le menu latéral), au lieu d'un bouton « Terminer » dans la barre.</li><li>Le nom de l'élève, l'Aide et le compte restent dans la barre pendant l'examen.</li><li>Les liens de déconnexion restent affichés pendant l'examen.</li><li>La phrase « Votre score pour cet examen est... » est affichée sur la page de l'examen.</li><li>Le message « Vous avez déjà commencé un autre examen... » reste celui du thème standard.</li><li>Les titres au-dessus de la consigne et de la liste des exercices sont affichés.</li><li>Après l'avertissement de « Terminer », « Non » ramène à la page des notes, et non à la liste des exercices.</li><li>Sans changement : le chronomètre de Nova et la pastille « Examen en cours ».</li>

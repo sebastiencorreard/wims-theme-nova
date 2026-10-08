@@ -1952,6 +1952,56 @@
       titre.textContent = libelle(lignes[0].etat);
       completer(titre, lignes[0]);
       eleve(lignes[0]);
+    } else if (lignes.some(function (l) { return l.etat === 'bonne'; })) {
+      // Réponses justes et à revoir mêlées : deux colonnes, « Justes » | « À revoir » (maquette A, choisie par
+      // l'utilisateur le 2026-10-08). Chaque ligne : [k], la réponse de l'élève, et pour une réponse à revoir
+      // la bonne réponse de WIMS (déplacée, MathJax compris).
+      var justes = lignes.filter(function (l) { return l.etat === 'bonne'; }).length;
+      titre.textContent = texte(justes > 1 ? 'justes-sur' : 'juste-sur', justes > 1 ? '%1 correct answers out of %2' : '%1 correct answer out of %2')
+        .replace('%1', justes).replace('%2', lignes.length);
+      boite.className = 'nova-verdict nova-verdict-mixte';
+      var colonnes = document.createElement('div');
+      colonnes.className = 'nova-verdict-colonnes';
+      var colonne = function (cle, nom) {
+        var c = document.createElement('div');
+        c.className = 'nova-verdict-colonne nova-verdict-colonne-' + cle;
+        var t = document.createElement('p');
+        t.className = 'nova-verdict-colonne-titre';
+        t.textContent = nom;
+        c.appendChild(t);
+        var ul = document.createElement('ul');
+        c.appendChild(ul);
+        colonnes.appendChild(c);
+        return ul;
+      };
+      var listeJustes = colonne('justes', texte('justes', 'Correct'));
+      var listeRevoir = colonne('revoir', texte('a-revoir', 'To review'));
+      lignes.forEach(function (ligne) {
+        var li = document.createElement('li');
+        if (ligne.nom) {
+          var num = document.createElement('span');
+          num.className = 'nova-verdict-num';
+          num.textContent = /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom + ' :';
+          li.appendChild(num);
+        }
+        var contenu = document.createElement('span');
+        li.appendChild(contenu);
+        var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
+        if (donnee) {
+          while (ligne.eleve.firstChild) donnee.appendChild(ligne.eleve.firstChild);
+          if (ligne.etat === 'mauvaise') donnee.className = 'nova-faux';
+          contenu.appendChild(donnee);
+        }
+        if (ligne.etat === 'bonne') { listeJustes.appendChild(li); return; }
+        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' — ' : '') + libelle(ligne.etat)));
+        if (ligne.juste) {
+          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' → ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
+          ligne.juste.classList.add('nova-verdict-juste');
+          contenu.appendChild(ligne.juste);
+        } else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
+        listeRevoir.appendChild(li);
+      });
+      corps.appendChild(colonnes);
     } else {
       titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
       var liste = document.createElement('ul');

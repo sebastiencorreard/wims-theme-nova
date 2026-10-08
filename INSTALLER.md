@@ -51,6 +51,8 @@ par défaut de WIMS, Nova prend sa prune.
 - Dans le menu enseignant ou administrateur, Participants → Suivi en direct ouvre le relevé ;
   il n'apparaît pas chez un élève.
 - Un examen montre le chronomètre Nova (libellé « Temps restant », heure de fin).
+- Chez un élève, « Mon activité » ouvre la page Nova (régularité, temps de travail, dernières notes) ; la carte
+  Nova de la page Apparence (site ou classe) propose ses réglages et les rubriques masquées aux élèves.
 - Les navigateurs gardent l'ancien `css.css` en cache (son adresse porte `?ver=<version de WIMS>`,
   inchangée par une mise à jour du thème) : forcer le rechargement (Ctrl+Maj+R) après une mise à jour.
 
@@ -67,9 +69,12 @@ rechargement des navigateurs. Les réglages de thème des classes ne changent pa
 
 ## Bon à savoir
 
-- Le mode sombre suit le réglage de l'appareil ; la zone de contenu reste claire (lisibilité des
-  exercices, écrits par les modules pour un fond clair).
-- Les textes propres à Nova sont en français, anglais et néerlandais (`lang/`), anglais pour les
-  autres langues. Les fichiers de `lang/` sont en latin-1.
+- Pas de mode sombre : Nova reste clair quel que soit le réglage de l'appareil (les règles sombres de `jetons.css`
+  ne s'appliquent que si `htmlheader.phtml` pose `<meta name="nova-sombre">`, ce qu'il ne fait pas).
+- Les textes propres à Nova sont en français et en anglais (`lang/`). Le néerlandais ne couvre que les textes
+  anciens (barre, connexion) : les pages récentes (« Mon activité », réglages de la page Apparence…) y seraient
+  sans texte. Les fichiers de `lang/` sont en latin-1.
+- Programmes externes utilisés côté serveur, présents dans une installation WIMS ordinaire : `awk`, `perl`
+  (modules standard), `sh`, `find`, `sed`.
 - Si un administrateur lance `themes/mkcss.pl`, le `css.css` de Nova est reconstruit à partir de
   `css.css.template` et de `_css/` : c'est prévu, les sources sont livrées.

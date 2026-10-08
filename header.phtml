@@ -65,6 +65,31 @@
   !appendfile wimshome/log/nova.conf $nova_sd
   !set nova_app_fait=yes
 !endif
+!! Zones dependantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : case « Parametres du theme
+!! Nova » ajoutee par nova.js (propagationNova), traitee ici, sur l'accueil (module de confiance) : superviseur d'une
+!! structure seulement (types 2, 3, 4, comme propagate.proc) ; _procs/propager.sh recopie les blocs Nova de sa feuille
+!! dans celles des zones. Message affiche par nova.js (#nova-propage).
+!if $module=home and $wims_user=supervisor and $wims_class!=$empty
+  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_q=!replace internal + by $ $ in $nova_q
+  !set nova_pr=!getopt nova_propager in $nova_q
+  !if $nova_pr=1
+    !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
+    !if $nova_ct isitemof 2,3,4
+      !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
+      !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
+      !set nova_pn=!sh sh $wims_home/public_html/themes/Nova/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup"
+      !if $nova_pn=1
+        !set nova_pt=$nova_propage_1
+      !else
+        !set nova_pt=!replace internal %1 by $nova_pn in $nova_propage_n
+      !endif
+<div id="nova-propage" hidden>$nova_pt</div>
+    !endif
+  !endif
+  !reset nova_q nova_pr nova_ct nova_tn nova_sup nova_pn nova_pt
+!endif
 !! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
 !! derniere valeur lue (sessionStorage).
 !set nova_m=!char 1 to 4 of $module

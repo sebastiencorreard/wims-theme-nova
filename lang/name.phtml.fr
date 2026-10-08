@@ -230,3 +230,6 @@
 !set nova_app_act_notes2=dernières notes.
 !set nova_app_act_herite=Champ vide : valeur du portail, du groupement ou du site.
 !set nova_app_act_reglages=Réglages de la page
+!set nova_propage_case=Paramètres du thème Nova (réglages de la page Apparence et badges)
+!set nova_propage_1=Paramètres du thème Nova propagés à 1 zone dépendante.
+!set nova_propage_n=Paramètres du thème Nova propagés à %1 zones dépendantes.

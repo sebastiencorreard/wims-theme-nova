@@ -21,6 +21,11 @@
   !set nova_clavier_maths=!getopt nova_clavier_maths in $nova_q
   !set nova_badges=!getopt nova_badges in $nova_q
   !set nova_communication=!getopt nova_communication in $nova_q
+  !set nova_activite=!getopt nova_activite in $nova_q
+  !set nova_act_s=!getopt nova_activite_seuil in $nova_q
+  !set nova_act_o=!getopt nova_activite_objectif in $nova_q
+  !set nova_act_h=!getopt nova_activite_heures in $nova_q
+  !set nova_act_n=!getopt nova_activite_notes in $nova_q
   !! Reglages « Rapprocher du theme standard » (2026-10-07) : une declaration par reglage, ecrite plus bas.
   !reset nova_sd
   !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet,dominos
@@ -43,6 +48,20 @@
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
   !appendfile wimshome/log/nova.conf --nova-badges: $nova_badges;
   !appendfile wimshome/log/nova.conf --nova-communication-eleves: $nova_communication;
+  !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
+  !bound nova_activite within oui,non default oui
+  !bound nova_act_s between 1 and 7 default 2
+  !bound nova_act_o between 1 and 7 default 3
+  !bound nova_act_h between 1 and 80 default 6
+  !bound nova_act_n between 1 and 20 default 5
+  !set nova_act_s=$[floor($nova_act_s)]
+  !set nova_act_o=$[floor($nova_act_o)]
+  !set nova_act_h=$[floor($nova_act_h)]
+  !set nova_act_n=$[floor($nova_act_n)]
+  !ifval $nova_act_o<$nova_act_s
+    !set nova_act_o=$nova_act_s
+  !endif
+  !appendfile wimshome/log/nova.conf --nova-activite: $nova_activite; --nova-activite-seuil: $nova_act_s; --nova-activite-objectif: $nova_act_o; --nova-activite-heures: $nova_act_h; --nova-activite-notes: $nova_act_n;
   !appendfile wimshome/log/nova.conf $nova_sd
   !set nova_app_fait=yes
 !endif

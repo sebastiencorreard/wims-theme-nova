@@ -15,6 +15,13 @@
 </div><!--wimspagebox-->
   !goto nova_menu
 !endif
+!! Nova : page « Mon activité » de l'eleve a la place de l'accueil (nova_activite=1, 2026-10-08).
+!read themes/Nova/_widgets/activite-entree.phtml
+!if $nova_activite_page=1
+</div><!--wimsbody-->
+</div><!--wimspagebox-->
+  !goto nova_menu
+!endif
 !! Nova : feuille de surcharge du portail ou du groupement (WIMS ne la charge que dans la structure elle-meme) :
 !! transmise a nova.js (reglagesStructure), qui en applique les reglages --nova-... dans toutes ses zones.
 !if $wims_superclass!=$empty

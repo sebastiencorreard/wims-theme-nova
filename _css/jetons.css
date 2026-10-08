@@ -71,6 +71,15 @@
    * :root { --nova-badges: oui; }  Paliers : semaines d'affilée par niveau (8 au plus) ; vacances : périodes
    * AAAAMMJJ-AAAAMMJJ séparées par des espaces. Lus par _procs/badges.awk (accueil) et nova.js (badges).
    * Demande de l'utilisateur, 2026-10-07. */
+  /* Page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A) : « oui » remplace la page de
+   * WIMS (adm/class/activity) par la page Nova ; seuil = en dessous, on encourage (jours de travail par semaine) ;
+   * objectif = jours visés ; heures = au-delà, on invite à faire des pauses (heures par semaine) ; notes = nombre de
+   * dernières notes montrées. Page Apparence (site, portail, classe). Lus par _procs/activite.awk et nova.js. */
+  --nova-activite: oui;
+  --nova-activite-seuil: 2;
+  --nova-activite-objectif: 3;
+  --nova-activite-heures: 6;
+  --nova-activite-notes: 5;
   /* Rapprocher Nova du thème standard (page Apparence, section repliée ; demande de l'utilisateur, 2026-10-07) :
    * sept réglages oui/non, « defaut » = non posé ici (le script de tête et nova.js regardent alors la structure
    * et le site). Lus par htmlheader.phtml et nova.js (reglagesStandard), qui posent html.nova-std-<réglage>. */

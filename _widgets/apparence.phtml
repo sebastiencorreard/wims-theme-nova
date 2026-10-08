@@ -22,6 +22,29 @@
 !if --nova-communication-eleves: non isin $nova_f
   !set nova_m=non
 !endif
+!! Page « Mon activite » des eleves (2026-10-08) : interrupteur et nombres de log/nova.conf (0 = absent : defaut).
+!set nova_v=oui
+!if --nova-activite: non isin $nova_f
+  !set nova_v=non
+!endif
+!set nova_av=!sh awk '{ s = $$0; while (match(s, /--nova-activite-[a-z]+: *[0-9]+/)) { t = substr(s, RSTART, RLENGTH); sub(/--nova-activite-/, "", t); split(t, a, /: */); v[a[1]] = a[2]; s = substr(s, RSTART + RLENGTH) } } END { print v["seuil"] + 0, v["objectif"] + 0, v["heures"] + 0, v["notes"] + 0 }' $wims_home/log/nova.conf 2>/dev/null
+!set nova_as=!word 1 of $nova_av
+!set nova_ao=!word 2 of $nova_av
+!set nova_ah=!word 3 of $nova_av
+!set nova_an=!word 4 of $nova_av
+!if $nova_as=$empty or $nova_as=0
+  !set nova_as=2
+!endif
+!if $nova_ao=$empty or $nova_ao=0
+  !set nova_ao=3
+!endif
+!if $nova_ah=$empty or $nova_ah=0
+  !set nova_ah=6
+!endif
+!if $nova_an=$empty or $nova_an=0
+  !set nova_an=5
+!endif
+!set nova_checked_v_$nova_v=checked
 !set nova_checked_a_$nova_a=checked
 !set nova_checked_e_$nova_e=checked
 !set nova_checked_k_$nova_k=checked
@@ -88,6 +111,19 @@
           <label><input type="radio" name="nova_communication" value="non" $(nova_checked_m_non)> $nova_app_non</label>
         </span>
       </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l6">
+          <label><input type="radio" name="nova_activite" value="oui" $(nova_checked_v_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_activite" value="non" $(nova_checked_v_non)> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-phrases">
+        <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_activite_seuil" min="1" max="7" step="1" value="$nova_as"> $nova_app_act_seuil2</label>
+        <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_activite_objectif" min="1" max="7" step="1" value="$nova_ao"> $nova_app_act_objectif2</label>
+        <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_activite_heures" min="1" max="80" step="1" value="$nova_ah"> $nova_app_act_heures2</label>
+        <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_activite_notes" min="1" max="20" step="1" value="$nova_an"> $nova_app_act_notes2</label>
+      </div>
       !set nova_std_nom=nova_s_
       !set nova_std_sep=_
       !set nova_std_site=yes
@@ -98,5 +134,6 @@
     </fieldset>
   </form>
 </template>
+!reset nova_v nova_av nova_as nova_ao nova_ah nova_an nova_checked_v_oui nova_checked_v_non
 !reset nova_a nova_e nova_k nova_b nova_m nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme
 !reset nova_checked_a_oui nova_checked_a_non nova_checked_e_oui nova_checked_e_non nova_checked_k_oui nova_checked_k_non nova_checked_b_oui nova_checked_b_non nova_checked_m_oui nova_checked_m_non

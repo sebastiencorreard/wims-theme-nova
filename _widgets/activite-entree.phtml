@@ -1,0 +1,15 @@
+!! Nova : page « Mon activité » de l'élève (nova_activite=1 ; lien du menu réécrit par nova.js, activiteLien).
+!! Élèves seulement, hors examen et hors outil ; les données viennent de la session WIMS, jamais de l'adresse.
+!reset nova_activite_page
+!if $wims_user!=supervisor and $wims_user!=$empty and yes notin $user_supervisable
+  !if _tool notin $wims_session and _exam notin $wims_session
+    !set nova_sq=!sh printf '%s' "$$QUERY_STRING"
+    !set nova_sq=!replace internal & by $ $ in $nova_sq
+    !set nova_sq=!replace internal + by $ $ in $nova_sq
+    !set nova_activite_page=!getopt nova_activite in $nova_sq
+    !reset nova_sq
+    !if $nova_activite_page=1
+      !read themes/Nova/_widgets/activite.phtml
+    !endif
+  !endif
+!endif

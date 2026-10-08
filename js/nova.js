@@ -2605,7 +2605,9 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'communication-eleves'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'communication-eleves', 'activite'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
+    var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';
     var lus = {};
     (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
@@ -2617,16 +2619,28 @@
       var r = carte.querySelector('input[name="nova_c_' + k + '"][value="' + (v === 'oui' ? 'oui' : 'non') + '"]');
       if (r) r.checked = true;
     });
+    nombres.forEach(function (k) {
+      var champ = carte.querySelector('input[name="nova_c_' + k + '"]');
+      if (!champ) return;
+      var m = new RegExp('--nova-' + k + '\\s*:\\s*(\\d+)').exec(zone.value);
+      champ.value = m ? m[1] : '';
+      champ.placeholder = getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim();
+    });
     var ecrire = function () {
       var decl = cles.map(function (k) {
         var r = carte.querySelector('input[name="nova_c_' + k + '"]:checked');
         return '--nova-' + k + ': ' + (r ? r.value : 'non') + ';';
       }).join(' ');
+      nombres.forEach(function (k) {
+        var champ = carte.querySelector('input[name="nova_c_' + k + '"]');
+        var v = champ ? champ.value.trim() : '';
+        if (/^\d+$/.test(v)) decl += ' --nova-' + k + ': ' + v + ';';
+      });
       // Autres déclarations --nova-… de l'ancien bloc (réglages ajoutés plus tard, ou écrits à la main) : gardées.
       var ancien = /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
       (ancien ? ancien[1].match(/--nova-[a-z0-9-]+\s*:\s*[^;}]+/g) || [] : []).forEach(function (d) {
         var k = /--nova-([a-z0-9-]+)/.exec(d)[1];
-        if (cles.indexOf(k) < 0) decl += ' ' + d.trim() + ';';
+        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0) decl += ' ' + d.trim() + ';';
       });
       var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
@@ -3206,6 +3220,18 @@
    * au lieu d'être enfant de #wimsbodybox comme partout ailleurs : remis à sa place habituelle, sinon ni le tiroir
    * ni la grille de Nova ne s'appliquent (vécu le 2026-10-08 : menu ☰ en bas de page, sous les boutons collés et
    * le voile). */
+  /* Page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A) : le lien de WIMS
+   * (module adm/class/activity) mène à la page Nova de l'accueil (nova_activite=1, _widgets/activite.phtml), sauf
+   * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
+  function activiteLien() {
+    if (!document.getElementById('nova-eleve') || standard('menus')) return;
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
+    if (v === 'non') return;
+    document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
+      a.href = a.href.replace(/module=adm%2Fclass%2Factivity(&\+job=[^&]*)?/, 'module=home&+nova_activite=1');
+    });
+  }
+
   function placerMenu() {
     var menu = document.getElementById('wimsmenumodubox');
     // Classe connue du jeu Font_Awesome de WIMS ; le jeu default reste sans icone.
@@ -3370,7 +3396,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); reglagesStructure(); reglagesStandard(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

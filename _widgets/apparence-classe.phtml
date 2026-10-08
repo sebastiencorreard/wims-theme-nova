@@ -46,6 +46,20 @@
           <label><input type="radio" name="nova_c_communication-eleves" value="non"> $nova_app_non</label>
         </span>
       </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-c6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c6">
+          <label><input type="radio" name="nova_c_activite" value="oui"> $nova_app_oui</label>
+          <label><input type="radio" name="nova_c_activite" value="non"> $nova_app_non</label>
+        </span>
+      </div>
+      <div class="nova-app-phrases">
+        <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_c_activite-seuil" min="1" max="7" step="1"> $nova_app_act_seuil2</label>
+        <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_c_activite-objectif" min="1" max="7" step="1"> $nova_app_act_objectif2</label>
+        <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_c_activite-heures" min="1" max="80" step="1"> $nova_app_act_heures2</label>
+        <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_c_activite-notes" min="1" max="20" step="1"> $nova_app_act_notes2</label>
+        <p class="nova-app-aide">$nova_app_act_herite</p>
+      </div>
       !set nova_std_nom=nova_c_std-
       !set nova_std_sep=-
       !reset nova_std_site

@@ -79,6 +79,23 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
   commentaire en tête de `htmlheader.phtml`.
 - **Téléphone** : la barre du haut tient sur une ligne ; ce qui ne tient pas passe dans le menu « ⋯ ».
 
+## Mon activité (page des élèves)
+
+Le lien « Mon activité » du menu des élèves mène à une page Nova simple (au lieu des graphiques de WIMS, toujours
+accessibles par un lien en bas de page) : trois cartes, pour des élèves de 11 à 18 ans.
+
+- **Ma régularité** : jours de travail de la semaine (lundi-dimanche), un rond par jour. Sous le seuil
+  d'encouragement, un message et le bouton « Faire un exercice » ; entre le seuil et l'objectif, « C'est bien,
+  encore N jours » ; objectif atteint, « Bravo ». Pendant les vacances (celles des badges), pas d'objectif.
+- **Mon temps de travail** : durée de la semaine, barre avec un repère au seuil de pause ; au-delà, invitation à
+  faire des pauses. Sessions comptées par WIMS chaque nuit (`log/ccaccount`, pauses de plus de 15 min non comptées).
+- **Mes dernières notes** : les N dernières notes des feuilles (pas des examens), carré coloré, exercice, jour.
+
+Réglages (page Apparence du site, d'un portail ou groupement, d'une classe) : `--nova-activite` (oui/non),
+`--nova-activite-seuil` (2 jours), `--nova-activite-objectif` (3 jours, au moins le seuil), `--nova-activite-heures`
+(6 h par semaine), `--nova-activite-notes` (5). Implémentation : `_widgets/activite*.phtml`, `_procs/activite.awk`,
+`_css/activite.css`, nova.js `activiteLien`. « Menus comme le thème standard » garde la page de WIMS.
+
 ## Suivi en direct (salle informatique)
 
 L’entrée **Suivi en direct**, dans la rubrique **Participants** du menu latéral professeur/admin,

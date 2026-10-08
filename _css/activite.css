@@ -1,0 +1,55 @@
+/* Nova : page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A ; _widgets/activite.phtml).
+ * Trois cartes : régularité de la semaine, temps de travail, dernières notes. Lecture simple pour des élèves de 11
+ * à 18 ans : un grand chiffre par carte, un message, peu de texte. */
+#nova-activite { max-width: 72rem; margin: 0 auto; }
+#nova-activite h1 { margin: 0 0 var(--nova-e5); }
+.nova-activite-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--nova-e5); align-items: start; }
+.nova-activite-carte { display: flex; flex-direction: column; gap: var(--nova-e3); min-width: 0; padding: var(--nova-e5); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; }
+#nova-activite .nova-activite-titre { margin: 0; font-size: .95rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--nova-texte-2); }
+.nova-activite-chiffre { margin: 0; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+.nova-activite-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Semaine : un rond par jour, plein les jours de travail ; aujourd'hui cerclé ; jours à venir plus pâles. */
+.nova-activite-jours { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--nova-e1); margin: 0; padding: 0; list-style: none; }
+.nova-activite-jours li { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: var(--nova-petit); font-weight: 600; color: var(--nova-texte-2); }
+.nova-activite-point { width: 30px; height: 30px; border-radius: 50%; background: var(--nova-piste); }
+.nova-activite-on .nova-activite-point { background: var(--nova-accent); }
+.nova-activite-auj .nova-activite-point { box-shadow: 0 0 0 2px var(--nova-surface), 0 0 0 4px var(--nova-accent); }
+.nova-activite-auj { color: var(--nova-texte); }
+.nova-activite-futur .nova-activite-point { background: transparent; box-shadow: inset 0 0 0 2px var(--nova-piste); }
+
+/* Messages : encourager (accent), bien et bravo (vert), pause (ambre), vacances (neutre). */
+.nova-activite-msg { margin: 0; padding: var(--nova-e3) var(--nova-e4); border-radius: 12px; line-height: 1.45; }
+.nova-activite-msg-encourage { background: var(--nova-accent-doux); color: var(--nova-lien-survol); }
+.nova-activite-msg-bien, .nova-activite-msg-bravo { background: var(--nova-succes-fond); color: var(--nova-succes); }
+.nova-activite-msg-bravo { font-weight: 600; }
+.nova-activite-msg-pause { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.nova-activite-msg-repos { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+#nova-activite .nova-activite-bouton { align-self: flex-start; display: inline-flex; align-items: center; min-height: var(--nova-cible); }
+
+/* Temps : barre, repère du seuil de pause à 80 % de la piste ; ambre au-delà. */
+.nova-activite-piste { position: relative; height: 14px; border-radius: 999px; background: var(--nova-piste); }
+.nova-activite-barre { display: block; height: 100%; border-radius: 999px; background: var(--nova-note-vert); }
+.nova-activite-trop .nova-activite-barre { background: var(--nova-note-orange); }
+.nova-activite-repere { position: absolute; left: 80%; top: -4px; bottom: -4px; width: 2px; background: var(--nova-neutre-fort); }
+.nova-activite-legende { margin: -4px 0 0; text-align: right; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-activite-petit { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+
+/* Dernières notes : carré coloré (niveaux de WIMS, jetons --nova-note-*), exercice, quand. */
+.nova-activite-notes { display: flex; flex-direction: column; gap: var(--nova-e3); margin: 0; padding: 0; list-style: none; }
+.nova-activite-note { display: flex; align-items: center; gap: var(--nova-e3); min-width: 0; }
+.nova-activite-carre { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; font-family: var(--nova-police-chiffres); font-weight: 700; color: var(--nova-neutre-fort); }
+.nova-activite-n-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1px var(--nova-note-contour); }
+.nova-activite-n-rouge { background: var(--nova-note-rouge); }
+.nova-activite-n-orange { background: var(--nova-note-orange); }
+.nova-activite-n-jaune { background: var(--nova-note-jaune); }
+.nova-activite-n-vert { background: var(--nova-note-vert); }
+.nova-activite-exo { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.nova-activite-exo small { font-size: var(--nova-petit); color: var(--nova-texte-2); }
+#nova-activite .nova-activite-lien { align-self: flex-start; display: inline-flex; align-items: center; min-height: var(--nova-cible); font-weight: 600; }
+.nova-activite-detail { margin: var(--nova-e4) 0 0; font-size: var(--nova-petit); }
+
+/* Page Apparence : réglages de « Mon activité » en phrases à trous. */
+.nova-app-phrases { display: flex; flex-direction: column; gap: var(--nova-e2); padding: var(--nova-e2) 0 var(--nova-e3); }
+.nova-app-phrase { display: block; line-height: 2.5; }
+.nova-app-phrase .nova-app-nombre { width: 4.5rem; min-height: 40px; margin: 0 .25rem; text-align: center; font-weight: 700; }

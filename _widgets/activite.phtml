@@ -1,0 +1,188 @@
+!! Nova : page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A) : régularité de la
+!! semaine (jours de travail, seuil d'encouragement, objectif), temps de travail (seuil de pause), dernières notes.
+!! Calcul par _procs/activite.awk sur les réglages (site, structure, classe), log/ccaccount (sessions comptées par
+!! WIMS chaque nuit) et les journaux de notes de l'élève. Lu par _widgets/activite-entree.phtml.
+!set nova_cl=$wims_home/log/classes
+!set nova_cc=$wims_home/log/ccaccount
+!set nova_auj=!char 1 to 8 of $wims_now
+!set nova_ad=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#cc'; cat $nova_cc/$wims_class/$wims_user $nova_cc/$wims_superclass/$wims_user 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -f $wims_home/public_html/themes/Nova/_procs/activite.awk
+!set nova_l=!line 1 of $nova_ad
+!set nova_seuil=!word 2 of $nova_l
+!set nova_obj=!word 3 of $nova_l
+!set nova_h=!word 4 of $nova_l
+!set nova_l=!line 2 of $nova_ad
+!set nova_n=!word 2 of $nova_l
+!set nova_masque=!word 3 of $nova_l
+!set nova_jds=!word 4 of $nova_l
+!set nova_vac=!word 5 of $nova_l
+!set nova_l=!line 3 of $nova_ad
+!set nova_m=!word 2 of $nova_l
+!set nova_pc=!word 3 of $nova_l
+!set nova_tr=!word 4 of $nova_l
+!set nova_hh=!word 5 of $nova_l
+!set nova_mm=!word 6 of $nova_l
+!default nova_seuil=2
+!default nova_obj=3
+!default nova_h=6
+!default nova_n=0
+!default nova_masque=0000000
+!default nova_jds=0
+!default nova_m=0
+!default nova_pc=0
+!set nova_nl=!linecnt $nova_ad
+
+<section id="nova-activite" aria-labelledby="nova-activite-titre">
+<h1 id="nova-activite-titre">$wims_name_myactivity</h1>
+<div class="nova-activite-cartes">
+
+<section class="nova-activite-carte" aria-labelledby="nova-act-regularite">
+<h2 id="nova-act-regularite" class="nova-activite-titre">$nova_act_regularite</h2>
+!if $nova_n=0
+  !set nova_t=$nova_act_jours0
+!else
+  !if $nova_n=1
+    !set nova_t=$nova_act_jours1
+  !else
+    !set nova_t=!replace internal %1 by $nova_n in $nova_act_joursn
+  !endif
+!endif
+<p class="nova-activite-chiffre">$nova_t</p>
+<ol class="nova-activite-jours">
+!for nova_i=1 to 7
+  !set nova_c=!char $nova_i of $nova_masque
+  !set nova_lt=!item $nova_i of $nova_act_lettres
+  !set nova_nm=!item $nova_i of $nova_act_noms
+  !reset nova_cls nova_sr
+  !if $nova_c=1
+    !set nova_cls=nova-activite-on
+    !set nova_sr=, $nova_act_travail
+  !endif
+  !ifval $nova_i=$nova_jds+1
+    !set nova_cls=$nova_cls nova-activite-auj
+  !endif
+  !ifval $nova_i>$nova_jds+1
+    !set nova_cls=$nova_cls nova-activite-futur
+  !endif
+  <li class="$nova_cls"><span class="nova-activite-point" aria-hidden="true"></span><span aria-hidden="true">$nova_lt</span><span class="nova-activite-cache">$nova_nm$nova_sr</span></li>
+!next nova_i
+</ol>
+!set nova_reste=$[$nova_obj-$nova_n]
+!reset nova_bouton
+!if $nova_vac=1
+  !set nova_ty=repos
+  !set nova_t=$nova_act_vacances
+!else
+  !ifval $nova_n>=$nova_obj
+    !set nova_ty=bravo
+    !set nova_t=$nova_act_bravo
+  !else
+    !ifval $nova_n<$nova_seuil
+      !set nova_ty=encourage
+      !set nova_bouton=yes
+      !if $nova_reste=1
+        !set nova_t=$nova_act_encourage1
+      !else
+        !set nova_t=$nova_act_encourage
+      !endif
+    !else
+      !set nova_ty=bien
+      !if $nova_reste=1
+        !set nova_t=$nova_act_bien1
+      !else
+        !set nova_t=$nova_act_bien
+      !endif
+    !endif
+  !endif
+!endif
+!set nova_t=!replace internal %1 by $nova_reste in $nova_t
+!set nova_t=!replace internal %2 by $nova_obj in $nova_t
+<p class="nova-activite-msg nova-activite-msg-$nova_ty">$nova_t</p>
+!if $nova_bouton=yes
+  !set wims_ref_class=wims_button nova-activite-bouton
+  !href module=home $nova_act_exercice
+!endif
+</section>
+
+<section class="nova-activite-carte" aria-labelledby="nova-act-temps">
+<h2 id="nova-act-temps" class="nova-activite-titre">$nova_act_temps</h2>
+!ifval $nova_m<60
+  !set nova_d=$nova_m min
+!else
+  !set nova_d=$nova_hh h $nova_mm
+!endif
+!set nova_t=!replace internal %1 by $nova_d in $nova_act_duree
+<p class="nova-activite-chiffre">$nova_t</p>
+!reset nova_trop
+!if $nova_tr=1
+  !set nova_trop=nova-activite-trop
+!endif
+!set nova_t=!replace internal %1 by $nova_h in $nova_act_repere
+<div class="nova-activite-piste $nova_trop" aria-hidden="true"><span class="nova-activite-barre" style="width: $nova_pc%"></span><span class="nova-activite-repere"></span></div>
+<p class="nova-activite-legende">$nova_t</p>
+!if $nova_trop!=$empty
+<p class="nova-activite-msg nova-activite-msg-pause">$nova_act_pause</p>
+!endif
+<p class="nova-activite-petit">$nova_act_maj</p>
+</section>
+
+<section class="nova-activite-carte" aria-labelledby="nova-act-notes">
+<h2 id="nova-act-notes" class="nova-activite-titre">$nova_act_notes</h2>
+!ifval $nova_nl<4
+<p class="nova-activite-petit">$nova_act_aucune</p>
+!else
+<ul class="nova-activite-notes">
+  !for nova_i=4 to $nova_nl
+    !set nova_l=!line $nova_i of $nova_ad
+    !set nova_ns=!word 2 of $nova_l
+    !set nova_nv=!word 3 of $nova_l
+    !set nova_ec=!word 4 of $nova_l
+    !set nova_js=!word 5 of $nova_l
+    !set nova_dt=!word 6 of $nova_l
+    !set nova_fe=!word 7 of $nova_l
+    !set nova_ex=!word 8 of $nova_l
+    !set nova_rec=!record $nova_ex of wimshome/log/classes/$wims_class/sheets/.sheet$nova_fe
+    !set nova_tt=!line 5 of $nova_rec
+    !if $nova_tt=$empty
+      !set nova_tt=!replace internal %1 by $nova_ex in $nova_act_exo
+    !endif
+    !if $nova_ec=0
+      !set nova_q=$nova_act_aujourdhui
+    !else
+      !if $nova_ec=1
+        !set nova_q=$nova_act_hier
+      !else
+        !ifval $nova_ec<7
+          !set nova_q=!item $[$nova_js+1] of $nova_act_noms
+        !else
+          !set nova_q=!replace internal %1 by $nova_dt in $nova_act_le
+        !endif
+      !endif
+    !endif
+    !set nova_cn=vert
+    !ifval $nova_nv<9
+      !set nova_cn=jaune
+    !endif
+    !ifval $nova_nv<7
+      !set nova_cn=orange
+    !endif
+    !ifval $nova_nv<4
+      !set nova_cn=rouge
+    !endif
+    !ifval $nova_nv<1
+      !set nova_cn=zero
+    !endif
+  <li class="nova-activite-note"><span class="nova-activite-carre nova-activite-n-$nova_cn">$nova_ns</span><span class="nova-activite-exo"><strong>$nova_tt</strong><small>$nova_q</small></span></li>
+  !next nova_i
+</ul>
+!endif
+!set wims_ref_class=nova-activite-lien
+!href module=adm/class/userscore $nova_act_toutes
+</section>
+
+</div>
+<p class="nova-activite-detail">
+!set wims_ref_class=nova-activite-lien
+!href module=adm/class/activity $nova_act_detail
+</p>
+</section>
+!reset nova_cl nova_cc nova_auj nova_ad nova_l nova_seuil nova_obj nova_h nova_n nova_masque nova_jds nova_vac nova_m nova_nl nova_t nova_i nova_c nova_lt nova_nm nova_cls nova_sr nova_reste nova_bouton nova_ty nova_d nova_hh nova_mm nova_pc nova_tr nova_trop nova_ns nova_nv nova_ec nova_js nova_dt nova_fe nova_ex nova_rec nova_tt nova_q nova_cn

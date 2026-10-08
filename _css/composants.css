@@ -202,6 +202,30 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
  * centrées ; le bouton « Aide » flottant d'un champ garde une marge à droite (il touchait la colonne voisine ou le bord). */
 .wimsbody fieldset.property_fields { max-width: 54rem; margin-inline: auto; box-sizing: border-box; }
 .property_fields .field .wims_button_help.float_right { margin-right: var(--nova-e3); }
+/* Champs de réglages plus lisibles (2026-10-08, validé par l'utilisateur) : champ de texte à une largeur raisonnable ;
+ * bouton « Aide » collé au libellé qu'il explique, plus discret, au lieu d'être rejeté à droite de la colonne. Seulement
+ * pour un champ simple (libellé, aide, une commande) : un champ composé (« Meilleures notes : nombre / anonymat ») reste tel quel. */
+.property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"]) { width: min(100%, 26rem); max-width: 100%; box-sizing: border-box; }
+/* Largeur donnée par WIMS (attribut size : 5 pour un nombre, 40 pour un nom) : respectée, dans la limite de la colonne. */
+.property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"])[size] { width: auto; }
+/* Téléphone : un champ long (size de WIMS au-delà de 10) prend la largeur disponible, sinon il élargirait la carte. */
+@media (max-width: 639.98px) {
+  .property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"])[size]:not([size="1"], [size="2"], [size="3"], [size="4"], [size="5"], [size="6"], [size="7"], [size="8"], [size="9"], [size="10"]) { width: 100%; }
+  .property_fields .field.halfwidth { padding-right: 0; }
+}
+/* Deux demi-colonnes côte à côte : une gouttière, les champs ne se touchent plus. */
+.property_fields .field.halfwidth { box-sizing: border-box; padding-right: var(--nova-e5); }
+/* Un libellé qui suit un champ (« Coordonnées GPS » après « Localisation ») commence une ligne. */
+.property_fields .field:has(> label:first-child) > :is(input, select, textarea) ~ label { display: block; margin-top: var(--nova-e2); }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--nova-e2); align-items: center;
+}
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > * { grid-column: 1 / -1; justify-self: start; }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > label:first-child { grid-column: 1; margin-bottom: 0; }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > .wims_button_help {
+  grid-column: 2; grid-row: 1; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem;
+}
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > :is(input, select, textarea) { margin-top: var(--nova-e1); }
 .property_fields p { padding: 0; }
 .property_fields .actions, .property_fields .wimsform {
   flex-wrap: wrap;

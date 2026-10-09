@@ -82,11 +82,21 @@
       <legend>$nova_bdg_choix</legend>
       <p class="nova-bdg-etat"><span class="nova-bdg-etat-texte"></span> <a class="nova-bdg-apparence" href="#">$nova_bdg_apparence</a>).</p>
       <div class="nova-app-ligne nova-bdg-badge">
-        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/Nova/img/badges/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
+        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/Nova/img/badges/fidelite/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
       </div>
       <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="fidelite">
         <label class="nova-app-nom" for="nova-app-paliers">$nova_app_paliers<span class="nova-app-aide">$nova_app_paliers_aide</span></label>
-        <input type="text" id="nova-app-paliers" class="nova-app-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+        <input type="text" id="nova-app-paliers" class="nova-app-paliers" data-cle="fidelite-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+        <label class="nova-app-phrase">$nova_bdg_fid_exercices <input type="number" class="nova-app-nombre" data-cle="fidelite-exercices" min="1" max="50" step="1"></label>
+      </div>
+      <div class="nova-app-ligne nova-bdg-badge">
+        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="perseverance"> <img src="themes/Nova/img/badges/perseverance/flamme_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_per_nom<span class="nova-app-aide">$nova_bdg_per_desc</span></span></label>
+      </div>
+      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="perseverance">
+        <label class="nova-app-nom" for="nova-app-paliers-per">$nova_bdg_per_paliers<span class="nova-app-aide">$nova_bdg_per_paliers_aide</span></label>
+        <input type="text" id="nova-app-paliers-per" class="nova-app-paliers" data-cle="perseverance-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+        <p class="nova-app-phrase">$nova_bdg_per_regle1 <input type="number" class="nova-app-nombre" data-cle="perseverance-reussite" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle1"> $nova_bdg_per_regle2 <input type="number" class="nova-app-nombre" data-cle="perseverance-echecs" min="1" max="20" step="1" aria-label="$nova_bdg_per_regle2"> $nova_bdg_per_regle3 <input type="number" class="nova-app-nombre" data-cle="perseverance-echec" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle3"> $nova_bdg_per_regle4</p>
+        <label class="nova-bdg-examens"><input type="checkbox" data-cle="perseverance-examens"> $nova_bdg_per_examens</label>
       </div>
     </fieldset>
     <fieldset class="property_fields blockcenter nova-app-carte">

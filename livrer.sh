@@ -30,8 +30,10 @@ tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp/Nova"
 git archive "$commit" | tar -x -C "$tmp/Nova" --exclude=construire-css.sh --exclude=livrer.sh
 printf '%s\n' "$commit" > "$tmp/Nova/VERSION"
-# Ni exemple de Standard, ni images inutilisées (badges PNG : seuls les WebP sont affichés ; 2026-10-08).
-rm -f "$tmp/Nova/local.phtml.template" "$tmp/Nova"/img/badges/*.png
+# Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08), badges
+# pas encore codés (dossier img/badges/etoile, 2026-10-09 : à retirer de cette liste quand il servira).
+rm -f "$tmp/Nova/local.phtml.template" "$tmp/Nova"/img/badges/*.png "$tmp/Nova"/img/badges/*/*.png
+rm -rf "$tmp/Nova/img/badges/etoile"
 tar -czf "$sortie/$nom.tgz" -C "$tmp" Nova
 echo "Livraison : $(cd "$sortie" && pwd)/$nom.tgz ($(du -h "$sortie/$nom.tgz" | cut -f1), commit $commit)"
 # Dernière version seulement : les archives précédentes partent (chacune se reconstruit par ./livrer.sh <commit>).

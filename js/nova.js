@@ -1993,9 +1993,9 @@
           contenu.appendChild(donnee);
         }
         if (ligne.etat === 'bonne') { listeJustes.appendChild(li); return; }
-        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' — ' : '') + libelle(ligne.etat)));
+        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' \u2014 ' : '') + libelle(ligne.etat)));
         if (ligne.juste) {
-          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' → ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
+          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' \u2192 ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
           ligne.juste.classList.add('nova-verdict-juste');
           contenu.appendChild(ligne.juste);
         } else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
@@ -2657,15 +2657,18 @@
       var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
-    carte.addEventListener('change', ecrire);
+    // Bloc réécrit seulement si le prof a touché à la carte, ou si un bloc présent au chargement a disparu : sinon la
+    // classe garderait toutes les valeurs en dur et ne suivrait plus le portail ou le site (vu le 2026-10-09).
+    var touche = false, blocAuChargement = !!bloc();
+    carte.addEventListener('change', function () { touche = true; ecrire(); });
     // Surcharge réécrite à la volée (demande de l'utilisateur, 2026-10-08) : zone de texte modifiée à la main, bloc
     // Nova présent → la carte suit la zone ; bloc effacé (par inadvertance) → aussitôt réécrit d'après la carte.
-    // Et toujours à l'enregistrement par le bouton de WIMS.
-    zone.addEventListener('change', function () { if (bloc()) lire(); ecrire(); });
-    formWims.addEventListener('submit', ecrire);
+    // Et à l'enregistrement par le bouton de WIMS, dans les mêmes cas.
+    zone.addEventListener('change', function () { if (bloc()) lire(); else if (touche || blocAuChargement) ecrire(); });
+    formWims.addEventListener('submit', function () { if (touche || (blocAuChargement && !bloc())) ecrire(); });
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
-    if (enregistrer && envoi) enregistrer.addEventListener('click', function () { ecrire(); envoi.click(); });
+    if (enregistrer && envoi) enregistrer.addEventListener('click', function () { touche = true; ecrire(); envoi.click(); });
     pageApparence(formWims, modele);
     var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
     // « Transférer un fichier css » partage son cadre avec la zone de texte (où Nova écrit) : seul son
@@ -2724,14 +2727,18 @@
         return m ? m[3] + '/' + m[2] + '/' + m[1] + ' - ' + m[6] + '/' + m[5] + '/' + m[4] : '';
       }).filter(Boolean).join('\n');
     };
-    var paliers = carte.querySelector('.nova-app-paliers');
     var vacances = carte.querySelector('.nova-app-vacances');
     var erreur = carte.querySelector('.nova-app-erreur');
     var herite = getComputedStyle(document.documentElement);
-    if (paliers) {
-      paliers.value = valeur(zone.value, 'fidelite-paliers');
-      paliers.placeholder = herite.getPropertyValue('--nova-fidelite-paliers').trim().replace(/["']/g, '');
-    }
+    // Champs des badges (paliers, exercices par semaine, règle de Persévérance, examens ; 2026-10-09) : un champ par
+    // réglage, nommé par data-cle ; vide = valeur héritée (portail, groupement, site), montrée en exemple.
+    var champs = Array.prototype.slice.call(carte.querySelectorAll('[data-cle]'));
+    champs.forEach(function (c) {
+      var k = c.getAttribute('data-cle'), v = valeur(zone.value, k);
+      var h = herite.getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
+      if (c.type === 'checkbox') c.checked = (v || h || 'oui') !== 'non';
+      else { c.value = v; c.placeholder = h; }
+    });
     if (vacances) {
       vacances.value = enLignes(valeur(zone.value, 'vacances'));
       vacances.placeholder = enLignes(herite.getPropertyValue('--nova-vacances').trim());
@@ -2775,13 +2782,17 @@
     var ecrire = function () {
       var choisis = cases.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
       var decl = '--nova-badges-actifs: ' + (choisis.length ? choisis.join(' ') : 'aucun') + ';';
-      var p = paliers ? (paliers.value.match(/\d+/g) || []).slice(0, 8).join(' ') : '';
-      if (p) decl += ' --nova-fidelite-paliers: ' + p + ';';
+      champs.forEach(function (c) {
+        var k = c.getAttribute('data-cle');
+        if (c.type === 'checkbox') { decl += ' --nova-' + k + ': ' + (c.checked ? 'oui' : 'non') + ';'; return; }
+        var v = c.classList.contains('nova-app-paliers') ? (c.value.match(/\d+/g) || []).slice(0, 8).join(' ') : c.value.trim().replace(',', '.');
+        if (v && (c.classList.contains('nova-app-paliers') || /^\d+(\.\d+)?$/.test(v))) decl += ' --nova-' + k + ': ' + v + ';';
+      });
       var v = lireVacances();
       if (v.periodes.length) decl += ' --nova-vacances: ' + v.periodes.join(' ') + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-paliers|vacances)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|vacances)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -3373,8 +3384,9 @@
     var masquer = document.querySelector('.nova-badge-annonce .nova-badge-masquer');
     if (masquer) masquer.addEventListener('click', function () { masquer.closest('.nova-badge-annonce').remove(); });
     var fenetre = null;
-    var ouvrir = function () {
+    var ouvrir = function (badge) {
       if (!fenetre) fenetre = fenetreBadges(d);
+      if (badge && fenetre.choisir) fenetre.choisir(badge);
       if (typeof fenetre.showModal === 'function') { if (!fenetre.open) fenetre.showModal(); }
       else fenetre.setAttribute('open', '');
     };
@@ -3382,27 +3394,26 @@
       var a = e.target.closest && e.target.closest('a[href$="#nova-badges"]');
       if (!a) return;
       e.preventDefault();
-      ouvrir();
+      ouvrir(a.getAttribute('data-badge'));
     });
     if (location.hash === '#nova-badges') {
       try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* adresse gardée */ }
       ouvrir();
     }
   }
-  // Fenêtre « Mes badges » (maquette, section 2) : niveau, série, record, ce qui reste, les 8 niveaux.
+  // Fenêtre « Mes badges » : un onglet par badge proposé (Fidélité, Persévérance ; maquette du 2026-10-09). Chaque
+  // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
   function fenetreBadges(d) {
     var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
-    var mots = a('fidelite').split(/\s+/);
-    var niveau = +mots[1], record = +mots[2], serie = +mots[3], etat = mots[4], prochain = +mots[5], obtenu = mots[7];
-    var np = +mots[8], paliers = mots.slice(9, 9 + np).map(Number);
-    var noms = a('niveaux').split(',');
-    var image = function (n) { return a('images') + Math.max(1, n) + '.webp'; };
     var el = function (balise, classe, texte) {
       var e = document.createElement(balise);
       if (classe) e.className = classe;
       if (texte != null) e.textContent = texte;
       return e;
     };
+    var noms = a('niveaux').split(',');
+    var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
+    var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
     var f = el('dialog', 'nova-badges-fenetre');
     f.setAttribute('aria-labelledby', 'nova-badges-titre');
     var tete = el('div', 'nova-badges-entete');
@@ -3417,50 +3428,125 @@
     // Toucher à côté de la fenêtre : la ferme.
     f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
 
-    var carte = el('section', 'nova-badge-detail');
-    var haut = el('div', 'nova-badge-haut');
-    var img = el('img', niveau ? '' : 'nova-badge-verrou');
-    img.src = image(niveau); img.alt = ''; img.width = 96; img.height = 96;
-    haut.appendChild(img);
-    var titre = el('div');
-    titre.appendChild(el('h3', '', a('nom')));
-    titre.appendChild(el('p', 'nova-badge-niveau', niveau ? noms[niveau - 1] + ' \u00b7 ' + a('niveau') + ' ' + niveau + '/' + np : a('aucun')));
-    if (niveau && /^\d{8}$/.test(obtenu)) {
-      var date = new Date(+obtenu.slice(0, 4), +obtenu.slice(4, 6) - 1, +obtenu.slice(6, 8));
-      titre.appendChild(el('p', '', a('obtenu') + ' ' + date.toLocaleDateString(racineLangue(), { day: 'numeric', month: 'long', year: 'numeric' }) + '.'));
-    }
-    titre.appendChild(el('p', '', a('regle')));
-    haut.appendChild(titre);
-    carte.appendChild(haut);
-
-    var chiffres = el('div', 'nova-badge-chiffres');
-    var chiffre = function (valeur, libelle) {
-      var c = el('div');
-      c.appendChild(el('b', '', String(valeur)));
-      c.appendChild(el('span', '', libelle));
-      chiffres.appendChild(c);
+    var dateLongue = function (o) {
+      if (!/^\d{8}$/.test(o)) return '';
+      return new Date(+o.slice(0, 4), +o.slice(4, 6) - 1, +o.slice(6, 8)).toLocaleDateString(racineLangue(), { day: 'numeric', month: 'long', year: 'numeric' });
     };
-    chiffre(serie, a('serie'));
-    chiffre(record, a('record'));
-    if (niveau < np) chiffre(prochain, a('avant').replace('%s', noms[niveau]));
-    carte.appendChild(chiffres);
-    var suite = niveau < np ? (prochain === 1 ? a('suite1') : a('suite')).replace('%n', prochain).replace('%s', noms[niveau]) : a('max');
-    carte.appendChild(el('p', 'nova-badge-etat nova-badge-etat-' + etat, (a('etat-' + etat) + ' ' + (etat === 'pause' ? '' : suite)).trim()));
-
-    var grille = el('ol', 'nova-badge-niveaux');
-    paliers.forEach(function (p, i) {
-      var n = i + 1;
-      var li = el('li', n < niveau ? 'nova-atteint' : (n === niveau ? 'nova-atteint nova-actuel' : 'nova-verrou'));
-      var im = el('img');
-      im.src = image(n); im.alt = ''; im.width = 52; im.height = 52; im.loading = 'lazy';
-      li.appendChild(im);
-      li.appendChild(el('span', '', noms[i] || String(n)));
-      li.appendChild(el('b', '', p + ' ' + a('sem')));
-      grille.appendChild(li);
-    });
-    carte.appendChild(grille);
-    carte.appendChild(el('p', 'nova-badge-aide', a('vacances')));
-    f.appendChild(carte);
+    // Panneau commun : en-tête (image, nom, niveau, date, règle), chiffres, état, grille des niveaux, aide.
+    var panneau = function (cle, nom, niveau, np, paliers, obtenu, regle, chiffresListe, etatClasse, etatTexte, unite, aide, images) {
+      var carte = el('section', 'nova-badge-detail');
+      carte.setAttribute('data-badge', cle);
+      var image = function (n) { return images + Math.max(1, n) + '.webp'; };
+      var haut = el('div', 'nova-badge-haut');
+      var img = el('img', niveau ? '' : 'nova-badge-verrou');
+      img.src = image(niveau); img.alt = ''; img.width = 96; img.height = 96;
+      haut.appendChild(img);
+      var titre = el('div');
+      titre.appendChild(el('h3', '', nom));
+      titre.appendChild(el('p', 'nova-badge-niveau', niveau ? noms[niveau - 1] + ' \u00b7 ' + a('niveau') + ' ' + niveau + '/' + np : a('aucun')));
+      var dt = niveau ? dateLongue(obtenu) : '';
+      if (dt) titre.appendChild(el('p', '', a('obtenu') + ' ' + dt + '.'));
+      titre.appendChild(el('p', '', regle));
+      haut.appendChild(titre);
+      carte.appendChild(haut);
+      var chiffres = el('div', 'nova-badge-chiffres');
+      chiffresListe.forEach(function (c) {
+        var b = el('div');
+        b.appendChild(el('b', '', String(c[0])));
+        b.appendChild(el('span', '', c[1]));
+        chiffres.appendChild(b);
+      });
+      carte.appendChild(chiffres);
+      if (etatTexte) carte.appendChild(el('p', 'nova-badge-etat nova-badge-etat-' + etatClasse, etatTexte));
+      var grille = el('ol', 'nova-badge-niveaux');
+      paliers.forEach(function (p, i) {
+        var n = i + 1;
+        var li = el('li', n < niveau ? 'nova-atteint' : (n === niveau ? 'nova-atteint nova-actuel' : 'nova-verrou'));
+        var im = el('img');
+        im.src = image(n); im.alt = ''; im.width = 52; im.height = 52; im.loading = 'lazy';
+        li.appendChild(im);
+        li.appendChild(el('span', '', noms[i] || String(n)));
+        li.appendChild(el('b', '', unite ? p + ' ' + unite : String(p)));
+        grille.appendChild(li);
+      });
+      carte.appendChild(grille);
+      carte.appendChild(el('p', 'nova-badge-aide', aide));
+      return carte;
+    };
+    var panneaux = [];
+    // Fidélité : fidelite on niveau record serie etat prochain nouveau obtenu np paliers…
+    var mf = a('fidelite').split(/\s+/);
+    if (mf[1] === 'on') {
+      var niveau = +mf[2], record = +mf[3], serie = +mf[4], etat = mf[5], prochain = +mf[6], np = +mf[9];
+      var paliers = mf.slice(10, 10 + np).map(Number);
+      var suite = niveau < np ? (prochain === 1 ? a('fid-suite1') : a('fid-suite')).replace('%n', prochain).replace('%s', noms[niveau]) : a('max');
+      var attente = (parsem === 1 ? a('fid-etat-attente1') : a('fid-etat-attente')).replace('%e', parsem);
+      var etatTexte = etat === 'pause' ? a('fid-etat-pause') : ((etat === 'attente' ? attente : a('fid-etat-' + etat)) + ' ' + suite).trim();
+      var chiffresF = [[serie, a('serie')], [record, a('record')]];
+      if (niveau < np) chiffresF.push([prochain, a('avant').replace('%s', noms[niveau])]);
+      panneaux.push(['fidelite', a('fid-nom'), panneau('fidelite', a('fid-nom'), niveau, np, paliers, mf[8],
+        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), a('fid-vacances'), a('images-fidelite'))]);
+    }
+    // Persévérance : perseverance on niveau total prochain nouveau obtenu np paliers…
+    var mp = a('perseverance').split(/\s+/);
+    if (mp[1] === 'on') {
+      var nivP = +mp[2], total = +mp[3], prochP = +mp[4], npP = +mp[7];
+      var palP = mp.slice(8, 8 + npP).map(Number);
+      var chiffresP = [[total, a('per-total')]];
+      if (nivP < npP) chiffresP.push([prochP, a('avant').replace('%s', noms[nivP])]);
+      // « En cours » : exercice qui n'attend qu'une réussite (titre|échecs), sinon ce qui reste.
+      var enc = a('encours'), etatP, texteP;
+      if (enc && enc.indexOf('|') > 0) {
+        var t = enc.split('|');
+        etatP = 'attente';
+        texteP = a('per-encours').replace('%t', t[0]).replace('%n', t[1]).replace('%e', echec);
+      } else {
+        etatP = 'fait';
+        texteP = nivP < npP ? (prochP === 1 ? a('per-suite1') : a('per-suite')).replace('%n', prochP).replace('%s', noms[nivP]) : a('max');
+      }
+      panneaux.push(['perseverance', a('per-nom'), panneau('perseverance', a('per-nom'), nivP, npP, palP, mp[6],
+        a('per-regle').replace('%r', reussite).replace('%n', nechecs).replace('%e', echec), chiffresP, etatP, texteP, '',
+        a(examens ? 'per-examens-oui' : 'per-examens-non'), a('images-perseverance'))]);
+    }
+    // Onglets, s'il y a plus d'un badge.
+    var onglets = null;
+    f.choisir = function (cle) {
+      panneaux.forEach(function (p) {
+        var on = p[0] === cle;
+        p[2].hidden = !on;
+        if (p[3]) { p[3].setAttribute('aria-selected', on ? 'true' : 'false'); p[3].classList.toggle('nova-actif', on); p[3].tabIndex = on ? 0 : -1; }
+      });
+    };
+    if (panneaux.length > 1) {
+      onglets = el('div', 'nova-badges-onglets');
+      onglets.setAttribute('role', 'tablist');
+      panneaux.forEach(function (p) {
+        var b = el('button', 'nova-badges-onglet');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.id = 'nova-onglet-' + p[0];
+        var im = el('img');
+        var niv = p[0] === 'fidelite' ? +mf[2] : +mp[2];
+        im.src = a('images-' + p[0]) + Math.max(1, niv) + '.webp'; im.alt = ''; im.width = 28; im.height = 28;
+        if (!niv) im.className = 'nova-badge-verrou';
+        b.appendChild(im);
+        b.appendChild(document.createTextNode(p[1]));
+        b.addEventListener('click', function () { f.choisir(p[0]); });
+        p[2].setAttribute('role', 'tabpanel');
+        p[2].setAttribute('aria-labelledby', b.id);
+        p[3] = b;
+        onglets.appendChild(b);
+      });
+      onglets.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var i = panneaux.findIndex(function (p) { return !p[2].hidden; });
+        var n = (i + (e.key === 'ArrowRight' ? 1 : panneaux.length - 1)) % panneaux.length;
+        f.choisir(panneaux[n][0]); panneaux[n][3].focus();
+      });
+      f.appendChild(onglets);
+    }
+    panneaux.forEach(function (p) { f.appendChild(p[2]); });
+    if (panneaux.length) f.choisir(panneaux[0][0]);
     document.body.appendChild(f);
     return f;
   }

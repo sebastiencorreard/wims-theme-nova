@@ -813,8 +813,10 @@ a.nova-pastille-badge {
 a.nova-pastille-badge:hover { border-color: var(--nova-accent); color: var(--nova-texte); }
 a.nova-pastille-badge:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 3px; }
 a.nova-pastille-badge img { width: 36px; height: 36px; }
-a.nova-pastille-badge.nova-badge-0 img, .nova-badges-fenetre img.nova-badge-verrou { filter: grayscale(1) opacity(.45); }
-a.nova-pastille-badge.nova-badge-danger { box-shadow: inset 0 0 0 2px var(--nova-attention); }
+/* Une seule pastille « Badges » (maquette B, 2026-10-09) : une icône par badge proposé, qui se chevauchent ; grise
+ * tant que le badge n'a pas de niveau. */
+a.nova-pastille-badge img + img { margin-left: -14px; }
+a.nova-pastille-badge img.nova-badge-niv-0, .nova-badges-fenetre img.nova-badge-verrou { filter: grayscale(1) opacity(.45); }
 
 .nova-badge-annonce {
   display: grid; grid-template-columns: 72px 1fr; gap: var(--nova-e3); align-items: center;
@@ -841,6 +843,14 @@ dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
 .nova-badges-fermer { all: unset; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 1.75rem; line-height: 1; cursor: pointer; }
 .nova-badges-fermer:focus-visible { outline: 3px solid var(--nova-sur-accent); outline-offset: -3px; }
 .nova-badge-detail { display: grid; gap: var(--nova-e3); padding: var(--nova-e4); }
+/* Onglets de la fenêtre (un par badge, 2026-10-09). */
+.nova-badges-onglets { display: flex; gap: 6px; padding: var(--nova-e3) var(--nova-e4) 0; border-bottom: 1px solid var(--nova-bord); }
+.nova-badges-onglet { all: unset; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 var(--nova-e2); border: 1px solid var(--nova-bord); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--nova-surface-2); color: var(--nova-texte-2); font-weight: 700; cursor: pointer; }
+.nova-badges-onglet.nova-actif { background: var(--nova-surface); color: var(--nova-lien); margin-bottom: -1px; padding-bottom: 1px; }
+.nova-badges-onglet:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: -3px; }
+.nova-badges-onglet img { width: 28px; height: 28px; }
+.nova-badges-onglets ~ .nova-badge-detail { background: var(--nova-surface); }
+.nova-badge-detail[hidden] { display: none; }
 .nova-badge-haut { display: grid; grid-template-columns: 96px 1fr; gap: var(--nova-e3); align-items: center; }
 .nova-badge-haut img { width: 96px; height: 96px; }
 .nova-badge-haut h3 { margin: 0; font-size: 1.125rem; }

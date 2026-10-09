@@ -58,3 +58,10 @@
 /* Page Apparence : « Rubriques masquées aux élèves », une case par rubrique (2026-10-08). */
 .nova-app-cases { display: flex; flex-direction: column; gap: var(--nova-e1); }
 .nova-app-cases label { display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 32px; }
+
+/* Page « Badges Nova » : case « Inclure les notes d'examens » de Persévérance (2026-10-09). */
+.nova-bdg-examens { display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 44px; justify-self: start; }
+/* Dans une ligne de texte de la carte (champs pleine largeur), les nombres d'une phrase et la case gardent leur taille. */
+.nova-app-ligne.nova-app-texte .nova-app-phrase .nova-app-nombre { display: inline-block; width: 4.5rem; margin: 0 .25rem; }
+.nova-app-ligne.nova-app-texte input[type="checkbox"] { width: auto; margin: 0; }
+.nova-app-ligne.nova-app-texte .nova-app-phrase { margin: 0; }

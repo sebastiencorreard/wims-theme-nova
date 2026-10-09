@@ -76,6 +76,9 @@
    * objectif = jours visés ; heures = au-delà, on invite à faire des pauses (heures par semaine) ; notes = nombre de
    * dernières notes montrées. Page Apparence (site, portail, classe). Lus par _procs/activite.awk et nova.js. */
   --nova-activite: oui;
+  /* Fil d'Ariane des profs et admins fixe sous la barre du haut, sur grand écran (2026-10-09) : « oui » ; « non » le
+   * laisse défiler avec la page. Page Apparence (site, portail, classe). nova.js pose html.nova-fil-libre. */
+  --nova-fil-fixe: oui;
   --nova-activite-seuil: 2;
   --nova-activite-objectif: 3;
   --nova-activite-heures: 6;

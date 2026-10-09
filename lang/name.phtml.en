@@ -260,3 +260,5 @@
 !set nova_bdg_per_regle3=scores below
 !set nova_bdg_per_regle4=/10.
 !set nova_bdg_per_examens=Include exam scores
+!set nova_app_fil=Fixed breadcrumb
+!set nova_app_fil_aide=Teachers and admins, large screens: the breadcrumb stays under the top bar when the page scrolls.

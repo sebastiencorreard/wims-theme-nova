@@ -276,6 +276,12 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
   }
   #wimsbodybox > #wimsmenumodubox { border-radius: 0; }
   #wimstopbox .nova-menu-bouton { display: none; }
+  /* Fil d'Ariane des profs et admins fixe sous la barre du haut (demande de l'utilisateur, 2026-10-09, à l'essai) :
+   * sous le menu de gauche (z-index 100), qui en recouvre déjà le début, au-dessus du contenu. Les ancres de la page
+   * s'arrêtent sous les deux bandes (64 + 48 px). Élèves : pas de fil d'Ariane (bouton Retour). Réglable (--nova-fil-fixe). */
+  /* Réglage « Fil d'Ariane fixe » à « non » (page Apparence) : html.nova-fil-libre, le fil défile. */
+  html:not(.nova-fil-libre) body:not(:has(#nova-eleve)) > nav:has(> .breadcrumbs) { position: sticky; top: 64px; z-index: 90; background: var(--nova-fond); }
+  html:not(.nova-fil-libre):has(body:not(:has(#nova-eleve)) > nav > .breadcrumbs) { scroll-padding-top: 124px; }
 }
 
 /* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */

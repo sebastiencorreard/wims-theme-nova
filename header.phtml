@@ -23,6 +23,7 @@
   !set nova_mq_c=!getopt nova_masque_communication in $nova_q
   !set nova_mq_l=!getopt nova_masque_liens in $nova_q
   !set nova_activite=!getopt nova_activite in $nova_q
+  !set nova_fil=!getopt nova_fil in $nova_q
   !set nova_act_s=!getopt nova_activite_seuil in $nova_q
   !set nova_act_o=!getopt nova_activite_objectif in $nova_q
   !set nova_act_h=!getopt nova_activite_heures in $nova_q
@@ -57,8 +58,10 @@
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
   !appendfile wimshome/log/nova.conf --nova-badges: $nova_badges;
   !appendfile wimshome/log/nova.conf --nova-masques-eleves: $nova_mq;
+  !appendfile wimshome/log/nova.conf --nova-fil-fixe: $nova_fil;
   !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
   !bound nova_activite within oui,non default oui
+  !bound nova_fil within oui,non default oui
   !bound nova_act_s between 1 and 7 default 2
   !bound nova_act_o between 1 and 7 default 3
   !bound nova_act_h between 1 and 80 default 6

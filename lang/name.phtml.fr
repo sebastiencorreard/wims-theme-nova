@@ -260,3 +260,5 @@
 !set nova_bdg_per_regle3=notes sous
 !set nova_bdg_per_regle4=/10.
 !set nova_bdg_per_examens=Inclure les notes d'examens
+!set nova_app_fil=Fil d'Ariane fixe
+!set nova_app_fil_aide=Profs et admins, grand écran : le fil d'Ariane reste sous la barre du haut quand la page défile.

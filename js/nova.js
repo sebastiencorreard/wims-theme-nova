@@ -2605,7 +2605,7 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';
@@ -2836,6 +2836,8 @@
       d.classList.toggle('nova-std-' + k, oui);
       return oui;
     });
+    // Fil d'Ariane fixe des profs et admins (2026-10-09) : « non » le laisse défiler.
+    d.classList.toggle('nova-fil-libre', cs.getPropertyValue('--nova-fil-fixe').trim().replace(/["']/g, '') === 'non');
     // Rubriques masquées aux élèves (même mémoire de session, jetons « sans-communication », « sans-liens »).
     var masques = rubriquesMasquees(cs);
     var jetons = actifs.slice();

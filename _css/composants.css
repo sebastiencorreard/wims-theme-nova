@@ -923,11 +923,13 @@ details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem;
 :where(html:not(.nova-std-dominos)) .wimsbody:has(.oefstatement) .fill_content table.wimsborder :is(th, td) + :is(th, td){ border-left: 2px solid var(--nova-texte-2); }
 /* Dominos (suite, 2026-10-08) : le tableau occupe toute la largeur de l'étiquette, deux moitiés égales, texte
  * centré, le trait au milieu. Étiquettes (.wims_grabbable) et zones de dépôt (.wims_droppable) de Dynapi à coins
- * arrondis (leur couleur est posée en ligne par Dynapi, le rayon s'y applique). */
+ * légèrement arrondis (leur couleur est posée en ligne par Dynapi, le rayon s'y applique). */
 :where(html:not(.nova-std-dominos)) .fill_content:has(> table.wimsborder){ display: block; width: 100%; box-sizing: border-box; }
 :where(html:not(.nova-std-dominos)) .fill_content table.wimsborder{ width: 100%; table-layout: fixed; }
 :where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td){ width: 50%; text-align: center; vertical-align: middle; padding: 2px 4px; white-space: nowrap; }
-:where(html:not(.nova-std-dominos)) .wims_grabbable, :where(html:not(.nova-std-dominos)) .wims_droppable{ border-radius: 10px; }
+/* Étiquettes et cases des autres exercices à déplacer : arrondi léger (demande de l'utilisateur, 2026-10-09 ; 10 px
+ * rendaient rondes les petites tuiles). Les dominos ont leur propre arrondi (8 px, règles suivantes). */
+:where(html:not(.nova-std-dominos)) .wims_grabbable, :where(html:not(.nova-std-dominos)) .wims_droppable{ border-radius: 4px; }
 /* Largeur fixée par WIMS (205 px) : les expressions les plus longues d'une face (« 4 + (−8) ») la remplissaient
  * jusqu'au trait ; un peu plus petites pour garder de l'air. */
 /* Sans JavaScript : 80 %. nova.js (dominos) pose ensuite un zoom commun aux formules, le plus grand qui tient. */

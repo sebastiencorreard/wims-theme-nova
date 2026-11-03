@@ -1838,9 +1838,16 @@
         var fixer = telephone.matches && dessous && bloc.getClientRects().length > 0;
         if (fixer === bloc.classList.contains('nova-collant')) return;
         if (fixer) {
-          cale.style.height = bloc.offsetHeight + 'px';
+          // La cale doit tenir exactement la place du bloc, marges comprises (celles de ses paragraphes
+          // traversent le bloc) : sinon le repère bouge de quelques pixels et le bloc se fixe et se libère
+          // sans fin à cet endroit, il « vibre » (signalé par l'utilisateur, 2026-11-04). On mesure le repère
+          // avant et après, et on corrige la hauteur de la cale de l'écart.
+          var avant = repere.getBoundingClientRect().top, hauteur = bloc.offsetHeight;
+          cale.style.height = hauteur + 'px';
           bloc.parentNode.insertBefore(cale, bloc);
           bloc.classList.add('nova-collant');
+          var ecart = avant - repere.getBoundingClientRect().top;
+          if (Math.abs(ecart) > 0.5) cale.style.height = Math.max(0, hauteur + ecart) + 'px';
         } else {
           bloc.classList.remove('nova-collant');
           if (cale.parentNode) cale.parentNode.removeChild(cale);

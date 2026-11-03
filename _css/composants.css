@@ -227,6 +227,18 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
   grid-column: 2; grid-row: 1; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem;
 }
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > :is(input, select, textarea) { margin-top: var(--nova-e1); }
+/* Configuration d'une feuille (adm/sheet/sheetinfo.phtml ; demande de l'utilisateur, 2026-11-03). Un champ nombre ignore
+ * l'attribut size : largeur raisonnable, au lieu de toute la colonne. Des champs côte à côte : une gouttière, comme les
+ * demi-colonnes. « Règle de calcul » : Aide collé au libellé, puis la règle et « I= » sur une même ligne. */
+.property_fields .field input[type="number"] { width: 8rem; max-width: 100%; box-sizing: border-box; }
+@media (min-width: 640px) { .property_fields .field.box:not(.fullwidth, .halfwidth) { box-sizing: border-box; padding-right: var(--nova-e5); } }
+@media (max-width: 639.98px) { .wimsbody fieldset.property_fields { min-width: 0; } }
+.property_fields .field:has(> #formulaB) { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--nova-e2); }
+.property_fields .field:has(> #formulaB)::after { content: ""; order: 3; flex-basis: 100%; }
+.property_fields .field:has(> #formulaB) > label:first-child { order: 1; margin-bottom: 0; }
+.property_fields .field:has(> #formulaB) > .wims_button_help { order: 2; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem; }
+.property_fields .field:has(> #formulaB) > :not(label:first-child, .wims_button_help) { order: 4; margin-top: var(--nova-e1); }
+.property_fields .field:has(> #formulaB) > label[for="formulaB"] { margin-left: var(--nova-e2); font-weight: 700; }
 .property_fields p { padding: 0; }
 .property_fields .actions, .property_fields .wimsform {
   flex-wrap: wrap;

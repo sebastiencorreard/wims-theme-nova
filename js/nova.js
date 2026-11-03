@@ -1537,7 +1537,8 @@
 
   /* Note retenue d'un examen sur sa carte (accueil de la classe), comme la note d'une feuille : WIMS
    * ne l'y met pas. Valeurs calculées par user.phtml (!examscore) dans #nova-notes-examens ; seulement
-   * pour un examen déjà commencé (historique non vide). */
+   * pour un examen déjà commencé (relevé score/<élève>.exam, pas l'historique : WIMS en efface les vieilles
+   * sessions, la pastille disparaissait ; 2026-11-04). */
   function notesExamens() {
     if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     var source = document.getElementById('nova-notes-examens');
@@ -1549,9 +1550,9 @@
     });
     Array.prototype.forEach.call(document.querySelectorAll('li.wims_exam_item'), function (li) {
       if (li.querySelector('.nova-note-examen')) return;
-      var lien = li.querySelector('a[href*="exam="]'), barre = li.querySelector('.wims_score_bar ol > li');
+      var lien = li.querySelector('a[href*="exam="]');
       var m = lien && /[?&+]exam=(\d+)/.exec(lien.getAttribute('href'));
-      if (!m || !barre || notes[m[1]] === undefined) return;
+      if (!m || notes[m[1]] === undefined) return;
       var bloc = document.createElement('div'), note = document.createElement('span');
       bloc.className = 'wims_user_info nova-note-examen';
       note.className = 'wims_sheet_score';

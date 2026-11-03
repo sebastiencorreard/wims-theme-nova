@@ -5,7 +5,7 @@
 !set nova_chrono_1min=Dernière minute
 !set nova_chrono_fin=Temps écoulé
 !set nova_chrono_fin_detail=Les réponses envoyées maintenant ne seront pas prises en compte.
-!set nova_chrono_fin_detail_exo=Vous pouvez encore finir l'exercice, mais la note baisse avec le retard, jusqu'à 0.
+!set nova_chrono_fin_detail_exo=Vous pouvez encore finir l'exercice, mais la note baisse avec le retard.
 !set nova_chrono_fin_detail_exo0=Une réponse envoyée maintenant aura la note 0.
 !set nova_chrono_fin_a=Fin à
 !set nova_menu_activites=Activités

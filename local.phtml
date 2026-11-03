@@ -60,3 +60,23 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
     !endif
   !endif
 !endif
+
+!! Entree << Badges Nova >> juste apres << Apparence >> dans le menu de la configuration d'une classe, d'un portail ou
+!! d'un groupement (demande de l'utilisateur, 2026-11-04) : c'est la page Apparence avec l'ancre que lit le script de
+!! tete (html.nova-page-badges, nova.js badgesClasse). Texte : lang/name.phtml (nova_bdg_rubrique) ; icone : nova.js placerMenu.
+!if $module=adm/class/config and config_present isin $wims_rm_0 and nova_badges notin $wims_rm_0
+  !default nova_bdg_rubrique=Nova badges
+  !set wims_name_nova_badges=$nova_bdg_rubrique
+  !set nova_bc=!linecnt $wims_rm_0
+  !reset nova_br
+  !for nova_bi=1 to $nova_bc
+    !set nova_bl=!line $nova_bi of $wims_rm_0
+    !set nova_br=!append line $nova_bl to $nova_br
+    !set nova_bn=!item 1 of $nova_bl
+    !if $nova_bn=config_present
+      !set nova_br=!append line nova_badges,1,cmd=reply&job=present#nova-badges-reglages to $nova_br
+    !endif
+  !next nova_bi
+  !set wims_rm_0=$nova_br
+  !reset nova_bc nova_bi nova_bl nova_bn nova_br
+!endif

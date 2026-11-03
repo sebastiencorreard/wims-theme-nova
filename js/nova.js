@@ -2818,6 +2818,23 @@
 
   // Rubrique « Badges Nova » dans la page Configuration et maintenance d'une classe, d'un groupement ou d'un
   // portail, juste après « Apparence » (demande de l'utilisateur, 2026-10-07).
+  /* Page Apparence d'une classe : dans l'aide de l'interrupteur des badges, « Badges Nova » devient un lien vers la
+   * rubrique (adresse de l'entrée du menu, local.phtml ; demande de l'utilisateur, 2026-11-04). */
+  function lienRubriqueBadges() {
+    var aide = document.querySelector('#nova-app-c4 .nova-app-aide'), cible = document.querySelector('#wimsmenumodubox .nova_badges > a');
+    if (!aide || !cible || aide.querySelector('a') || aide.childNodes.length !== 1 || aide.firstChild.nodeType !== 3) return;
+    var textes = document.getElementById('nova-textes');
+    var nom = (textes && textes.getAttribute('data-texte-rubrique-badges')) || 'Badges Nova';
+    var texte = aide.firstChild.nodeValue, i = texte.indexOf(nom);
+    if (i < 0) return;
+    var lien = document.createElement('a');
+    lien.href = cible.href;
+    lien.textContent = nom;
+    aide.textContent = '';
+    aide.appendChild(document.createTextNode(texte.slice(0, i)));
+    aide.appendChild(lien);
+    aide.appendChild(document.createTextNode(texte.slice(i + nom.length)));
+  }
   function rubriqueBadges() {
     var app = document.querySelector('.wimsbody ul.wims_nopuce li > a[href*="job=present"]');
     if (!app || !/module=adm%2Fclass%2Fconfig|module=adm\/class\/config/.test(app.href) || document.querySelector('.nova-rubrique-badges')) return;
@@ -3349,6 +3366,8 @@
     if (menu) {
       var suivi = menu.querySelector('.nova_suivi > a');
       if (suivi) suivi.classList.add('eye');
+      var badgesNova = menu.querySelector('.nova_badges > a');
+      if (badgesNova) badgesNova.classList.add('heart');
     }
     var corps = document.getElementById('wimsbodybox');
     if (!menu || !corps || menu.parentElement === corps) return;
@@ -3584,7 +3603,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

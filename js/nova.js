@@ -320,6 +320,8 @@
     var boite = item.firstChild;
     var attributs = examen ? ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'] : ['texte-fin', 'texte-fin-detail'];
     attributs.forEach(function (a) { boite.setAttribute('data-' + a, t(a, '')); });
+    // Exercice : après le décompte, la note baisse avec le retard (scoredelay de WIMS), elle n'est pas perdue.
+    if (!examen) boite.setAttribute('data-texte-fin-detail', t('texte-fin-detail-exo', t('texte-fin-detail', '')));
     if (examen) boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
     boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
     var miroir = boite.querySelector('.nova-chrono-miroir');

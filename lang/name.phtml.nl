@@ -5,6 +5,8 @@
 !set nova_chrono_1min=Laatste minuut
 !set nova_chrono_fin=De tijd is om
 !set nova_chrono_fin_detail=Antwoorden die nu worden verstuurd, tellen niet meer mee.
+!set nova_chrono_fin_detail_exo=U kunt de oefening nog afmaken, maar het cijfer daalt naarmate de tijd verstrijkt, tot 0.
+!set nova_chrono_fin_detail_exo0=Een antwoord dat nu wordt verstuurd, krijgt het cijfer 0.
 !set nova_chrono_fin_a=Einde om
 !set nova_menu_activites=Activiteiten
 !set nova_menu_participants=Deelnemers

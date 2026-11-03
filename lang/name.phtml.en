@@ -5,6 +5,8 @@
 !set nova_chrono_1min=Last minute
 !set nova_chrono_fin=Time is up
 !set nova_chrono_fin_detail=Answers sent now will not be taken into account.
+!set nova_chrono_fin_detail_exo=You can still finish the exercise, but the score goes down as time passes, down to 0.
+!set nova_chrono_fin_detail_exo0=An answer sent now will score 0.
 !set nova_chrono_fin_a=Ends at
 !set nova_menu_activites=Activities
 !set nova_menu_participants=Participants

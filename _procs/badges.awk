@@ -6,15 +6,16 @@
 # Variable : auj (AAAAMMJJ, 8 premiers caractères de $wims_now).
 # Sortie :
 #   fidelite off | fidelite on niveau record serie etat prochain nouveau obtenu np palier1 … palierN
-#     etat : fait (assez d'exercices cette semaine), attente, danger (relance : badges qui la demandent), pause (vacances).
+#     etat : fait (assez de jours de travail cette semaine), attente, danger (relance : badges qui la demandent), pause (vacances).
 #   perseverance off | perseverance on niveau total prochain nouveau obtenu np palier1 … palierN
 #   encours - | encours <examen 0/1> <feuille ou examen> <exercice> <échecs> : exercice le plus récent avec assez
 #     d'échecs et pas encore de réussite (Persévérance : « une réussite et il compte »).
-#   reglages <exercices par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0>
+#   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> <vacances saisies 1/0>
 #   ecrire 1|0 (score/<élève>.nova à réécrire), puis son nouveau contenu.
 #
-# Fidélité : une semaine (lundi-dimanche) compte si l'élève y a envoyé une réponse dans au moins
-# --nova-fidelite-exercices exercices différents (1 par défaut). Une semaine de vacances (tous ses jours de classe, du
+# Régularité (« fidelite » dans les clés et le stock ; renommé le 2026-11-04) : une semaine (lundi-dimanche) compte si
+# l'élève y a envoyé au moins une réponse sur --nova-fidelite-jours jours différents (1 par défaut, 1 à 7 ; avant le
+# 2026-11-04 : --nova-fidelite-exercices exercices différents, réglage abandonné). Une semaine de vacances (tous ses jours de classe, du
 # lundi au vendredi, dans une période de --nova-vacances) est sautée : elle ne compte pas et ne casse pas la série.
 # Persévérance : un exercice compte (une fois) quand l'élève y obtient au moins --nova-perseverance-reussite après au
 # moins --nova-perseverance-echecs notes sous --nova-perseverance-echec ; examens compris si --nova-perseverance-examens
@@ -91,10 +92,10 @@ section == "score" && $5 == "score" {
   cle = $1 " " $3 " " $4 " " $6
   if (cle in vu) next
   vu[cle] = 1
-  # Fidélité : exercices différents de chaque semaine.
+  # Régularité : jours de travail (au moins une réponse envoyée) de chaque semaine.
   w = semaine(jours(d8))
   ex = (examen ? "E" : "") $3 "." $4
-  if (!((w, ex) in fait)) { fait[w, ex] = 1; nfait[w]++ }
+  if (!((w, d8) in fait)) { fait[w, d8] = 1; nfait[w]++ }
   if (!(w in dernier) || d8 > dernier[w]) dernier[w] = d8
   if (w0 == "" || w < w0) w0 = w
   # Persévérance : notes de chaque exercice, triées plus bas.
@@ -110,14 +111,14 @@ END {
     if (split(brut[i], ab, "-") != 2 || !jour8(ab[1]) || !jour8(ab[2])) continue
     nv++; va[nv] = jours(ab[1]); vb[nv] = jours(ab[2])
   }
-  parsem = int(nombre(conf["fidelite-exercices"], 1, 50, 1))
+  parsem = int(nombre(conf["fidelite-jours"], 1, 7, 1))
   reussite = nombre(conf["perseverance-reussite"], 0, 10, 7)
   echec = nombre(conf["perseverance-echec"], 0, 10, 5)
   nechecs = int(nombre(conf["perseverance-echecs"], 1, 20, 2))
   examens = conf["perseverance-examens"] != "non"
   ecrire = 0; stock = ""
 
-  # ---------- Fidélité ----------
+  # ---------- Régularité ----------
   if (!actif("fidelite")) print "fidelite off"
   else {
     np = paliers(conf["fidelite-paliers"], "2 3 5 8 12 16 21 26", pal)
@@ -197,7 +198,7 @@ END {
     stock = stock s "\n"
   }
   print "encours " encours
-  print "reglages " parsem " " reussite " " echec " " nechecs " " examens
+  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " " (nv > 0 ? 1 : 0)
   # Badges coupés : leur ligne de stock est gardée telle quelle (rien n'est perdu).
   if (!actif("fidelite") && ancien["fidelite"] != "") stock = stock ancien["fidelite"] "\n"
   if (!actif("perseverance") && ancien["perseverance"] != "") stock = stock ancien["perseverance"] "\n"

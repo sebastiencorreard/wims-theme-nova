@@ -103,9 +103,9 @@ désactivés par défaut. Chez l'élève : une pastille « Badges » à côté d
 sans niveau), une annonce à chaque nouveau niveau, une fenêtre à onglets. 8 niveaux par badge (Papier à
 Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la configuration :
 
-- **Fidélité** : une semaine compte quand l'élève y fait au moins `--nova-fidelite-exercices` exercices différents
-  (1) ; paliers en semaines d'affilée (`2 3 5 8 12 16 21 26`) ; les semaines de vacances ne comptent pas et ne
-  cassent pas la série.
+- **Régularité** (ex-Fidélité ; clés `fidelite`) : une semaine compte quand l'élève y envoie au moins une réponse
+  sur `--nova-fidelite-jours` jours différents (1, de 1 à 7) ; paliers en semaines d'affilée (`2 3 5 8 12 16 21 26`) ;
+  les semaines de vacances (`--nova-vacances`, si des dates sont saisies) ne comptent pas et ne cassent pas la série.
 - **Persévérance** : un exercice compte (une fois) quand l'élève y obtient au moins `--nova-perseverance-reussite`
   (7/10) après au moins `--nova-perseverance-echecs` (2) notes sous `--nova-perseverance-echec` (5/10) ; examens
   compris par défaut (`--nova-perseverance-examens`) ; paliers `1 3 5 10 15 20 25 30`.

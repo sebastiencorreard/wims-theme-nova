@@ -107,7 +107,7 @@
   /* Fidélité : exercices différents à faire dans une semaine pour qu'elle compte (2026-10-09). Persévérance : paliers
    * (exercices réussis après des difficultés), note de réussite (au moins), note faible (strictement sous), nombre de
    * notes faibles avant la réussite, examens compris (oui/non). Lus par _procs/badges.awk ; page « Badges Nova ». */
-  --nova-fidelite-exercices: 1;
+  --nova-fidelite-jours: 1;
   --nova-perseverance-paliers: 1 3 5 10 15 20 25 30;
   --nova-perseverance-reussite: 7;
   --nova-perseverance-echec: 5;

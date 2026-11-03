@@ -3426,6 +3426,8 @@
     var noms = a('niveaux').split(',');
     var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
     var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
+    // Dates de vacances saisies (--nova-vacances) : sinon, pas de phrase sur les vacances (utilisateur, 2026-11-04).
+    var vacancesSaisies = reg[6] === '1';
     var f = el('dialog', 'nova-badges-fenetre');
     f.setAttribute('aria-labelledby', 'nova-badges-titre');
     var tete = el('div', 'nova-badges-entete');
@@ -3482,11 +3484,11 @@
         grille.appendChild(li);
       });
       carte.appendChild(grille);
-      carte.appendChild(el('p', 'nova-badge-aide', aide));
+      if (aide) carte.appendChild(el('p', 'nova-badge-aide', aide));
       return carte;
     };
     var panneaux = [];
-    // Fidélité : fidelite on niveau record serie etat prochain nouveau obtenu np paliers…
+    // Régularité (ex-Fidélité) : fidelite on niveau record serie etat prochain nouveau obtenu np paliers…
     var mf = a('fidelite').split(/\s+/);
     if (mf[1] === 'on') {
       var niveau = +mf[2], record = +mf[3], serie = +mf[4], etat = mf[5], prochain = +mf[6], np = +mf[9];
@@ -3497,7 +3499,7 @@
       var chiffresF = [[serie, a('serie')], [record, a('record')]];
       if (niveau < np) chiffresF.push([prochain, a('avant').replace('%s', noms[niveau])]);
       panneaux.push(['fidelite', a('fid-nom'), panneau('fidelite', a('fid-nom'), niveau, np, paliers, mf[8],
-        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), a('fid-vacances'), a('images-fidelite'))]);
+        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), vacancesSaisies ? a('fid-vacances') : '', a('images-fidelite'))]);
     }
     // Persévérance : perseverance on niveau total prochain nouveau obtenu np paliers…
     var mp = a('perseverance').split(/\s+/);

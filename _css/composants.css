@@ -215,8 +215,9 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
 }
 /* Deux demi-colonnes côte à côte : une gouttière, les champs ne se touchent plus. */
 .property_fields .field.halfwidth { box-sizing: border-box; padding-right: var(--nova-e5); }
-/* Un libellé qui suit un champ (« Coordonnées GPS » après « Localisation ») commence une ligne. */
-.property_fields .field:has(> label:first-child) > :is(input, select, textarea) ~ label { display: block; margin-top: var(--nova-e2); }
+/* Un libellé qui suit un champ (« Coordonnées GPS » après « Localisation ») commence une ligne ; pas celui d'un
+ * bouton radio ou d'une case (!formradio : « ( ) Non, ( ) Oui »), qui reste à côté (configuration d'une feuille, 2026-11-03). */
+.property_fields .field:has(> label:first-child) > :is(input, select, textarea) ~ label:not(:is(input[type="radio"], input[type="checkbox"]) + label) { display: block; margin-top: var(--nova-e2); }
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) {
   display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--nova-e2); align-items: center;
 }

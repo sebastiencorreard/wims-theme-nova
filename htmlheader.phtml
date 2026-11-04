@@ -39,28 +39,39 @@ $wims_CSS
      <meta name="nova-sombre" content="auto"> et passer color-scheme a "light dark".
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
+<meta name="nova-module" content="$module">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
    n'apparaisse un instant. Pas de signe dollar dans ce script : le C de WIMS le remplacerait. */
 (function () {
   var d = document.documentElement;
-  d.classList.add('nova-js');  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
+  d.classList.add('nova-js');
+  /* modtool (demande de l'utilisateur, 2026-11-04) : son propre choix, gardes a part (suffixe _modtool), et liste
+     inverse : les entrees CACHEES, tout le menu par defaut. */
+  var mm = document.querySelector('meta[name="nova-module"]');
+  var mt = !!mm && mm.content === 'adm/modtool';
+  var suf = mt ? '_modtool' : '';  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
   /* Page Badges Nova (rubrique de la configuration de la classe, js/nova.js badgesClasse) : la page Apparence
      de WIMS, masquee jusqu'au passage du script. */
   if (/^#nova(-|%2D)badges(-|%2D)reglages(?![\s\S])/i.test(location.hash) && /job=present/.test(location.search)) d.classList.add('nova-page-badges');
-  var defaut = ['add_sheet', 'add_exam', 'participantview', 'nova_suivi', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
-  var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), style: function (liste) {
+  var defaut = mt ? [] : ['add_sheet', 'add_exam', 'participantview', 'nova_suivi', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
+  var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), inverse: mt, suffixe: suf, contexte: mt ? 'modtool-' : '', style: function (liste) {
     var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
       .map(function (c) { return '.' + c; }).join(', ') || '.nova-aucune';
     var p = '.nova-menu-simple:not(.nova-menu-edition) body:has(#nova-menu-bascule) #wimsmenumodubox ';
+    if (mt) {
+      /* Entrees cachees ; un titre seulement quand toutes les entrees de sa famille le sont. */
+      var tm = p + '.menu_title:has(+ * .menuitem):not(:has(+ * .menuitem:not(:is(' + k + '))))';
+      return p + '.menuitem:is(' + k + '):not(.nova-deconnexion), ' + tm + ', ' + tm + ' + * { display: none !important; }';
+    }
     var titre = p + '.menu_title:not(:has(+ * :is(' + k + ')))';
     /* Deconnexion (rubrique Profil) : jamais masquee, meme avec toute sa rubrique. */
     return p + '.menuitem:not(:is(' + k + '), .nova-deconnexion), ' + titre + ', ' + titre + ' + :not(:has(.nova-deconnexion)) { display: none !important; }';
   } };
   try {
-    if (localStorage.getItem('nova_menu') !== 'complet') d.classList.add('nova-menu-simple');
-    var g = JSON.parse(localStorage.getItem('nova_menu_garde') || 'null');
+    if (localStorage.getItem('nova_menu' + suf) !== 'complet') d.classList.add('nova-menu-simple');
+    var g = JSON.parse(localStorage.getItem('nova_menu_garde' + suf) || 'null');
     if (Array.isArray(g)) menu.garde = g;
   } catch (e) { d.classList.add('nova-menu-simple'); }
   var s = document.createElement('style');
@@ -107,7 +118,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/Nova/js/nova.js?v=ced84140a8" defer></script>
+<script src="html/themes/Nova/js/nova.js?v=d81af4e1b3" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

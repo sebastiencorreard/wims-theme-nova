@@ -1072,6 +1072,42 @@ html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-
 
 /* ---------- Rubrique Profil et tiroir de l'élève (demandes de l'utilisateur, 2026-10-07) ---------- */
 /* Profil : rubrique en tête du menu latéral (js/nova.js, profilLateral) ; le nom, en texte, comme une entrée. */
+/* Langue (modtool, pages hors classe ; js/nova.js choixLangue ; maquette A, 2026-11-04) : une ligne « Langue : Français »,
+ * drapeau actuel en tête (pas de tiret de Font_Awesome), chevron à droite ; la liste se déplie dessous, en retrait. */
+#wimsmenumodubox .nova-langue { display: block; }
+#wimsmenumodubox .nova-langue > a::before { content: none; }
+#wimsmenumodubox .nova-langue > a::after {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 4px 3px auto;
+  border-right: 2px solid var(--nova-texte-2);
+  border-bottom: 2px solid var(--nova-texte-2);
+  transform: rotate(45deg);
+}
+#wimsmenumodubox .nova-langue > a[aria-expanded="true"]::after { transform: rotate(-135deg); margin-bottom: -3px; }
+.nova-menu-edition #wimsmenumodubox .nova-langue > a::after { content: none; }
+#wimsmenumodubox .nova-langue img.vignette { flex: none; width: 24px; height: auto; margin: 0; }
+#wimsmenumodubox .nova-langues { margin: 0 0 var(--nova-e2) var(--nova-e5); }
+#wimsmenumodubox .nova-langues[hidden] { display: none; }
+#wimsmenumodubox .nova-langues a {
+  display: flex; align-items: center; gap: var(--nova-e2);
+  min-height: 36px; padding: 0 var(--nova-e3); border-radius: var(--nova-rayon);
+  color: var(--nova-texte); text-decoration: none;
+}
+#wimsmenumodubox .nova-langues a:not([href]):hover { background: transparent; }
+#wimsmenumodubox .nova-langues a::before { content: none; }
+#wimsmenumodubox .nova-langues a[aria-current] { font-weight: 700; cursor: default; }
+#wimsmenumodubox .nova-langues a[aria-current]::after {
+  content: "";
+  width: 5px;
+  height: 10px;
+  margin: 0 6px 3px auto;
+  border-right: 2px solid var(--nova-accent);
+  border-bottom: 2px solid var(--nova-accent);
+  transform: rotate(45deg);
+}
 #wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; box-sizing: border-box; width: 100%; min-width: 0; overflow-wrap: anywhere; }
 /* Le menu du compte de la barre, qui va passer dans le menu latéral : masqué en attendant nova.js (3 s au plus),
  * pour qu'il n'apparaisse pas un instant. */

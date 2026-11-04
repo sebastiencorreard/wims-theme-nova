@@ -63,6 +63,20 @@
   !distribute items div,div into div0,div1
   !read themes/_widgets/menumodubox.phtml
   !reset div0 div1
+  !! Nova : menu personnalisable dans modtool aussi (demande de l'utilisateur, 2026-11-04 ; js/nova.js basculeMenu,
+  !! liste des entrees cachees, tout le menu par defaut : htmlheader.phtml).
+  !if $module=adm/modtool and $wims_menu_items!=$empty
+    !default nova_menu_voir_tout=Full menu
+    !default nova_menu_simplifier=Simplify the menu
+    !default nova_menu_personnaliser=Choose menu items
+    !default nova_menu_termine=Done
+    !default nova_menu_defaut=Back to the default menu
+    !default nova_menu_cacher=Hide
+    !default nova_menu_montrer=Show
+    <span id="nova-menu-bascule" hidden data-voir-tout="$nova_menu_voir_tout" data-simplifier="$nova_menu_simplifier"
+      data-personnaliser="$nova_menu_personnaliser" data-termine="$nova_menu_termine" data-defaut="$nova_menu_defaut"
+      data-cacher="$nova_menu_cacher" data-montrer="$nova_menu_montrer"></span>
+  !endif
 
   !distribute items div,span into div0,div1
   !!read themes/_widgets/menubox.phtml

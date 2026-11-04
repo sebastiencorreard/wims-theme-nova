@@ -896,9 +896,11 @@
     var nm = window.novaMenu;
     // « defaut » : l'enseignant n'a pas choisi lui-même (menu simplifié, ou complet avec le réglage « Menu
     // enseignant complet par défaut ») ; sinon son choix.
+    // modtool : choix à part (préfixe « modtool- », fichier à part sur le serveur ; header.phtml).
+    var suf = nm ? nm.suffixe || '' : '';
     var etat = 'defaut';
-    try { etat = localStorage.getItem('nova_menu') || 'defaut'; } catch (e) { /* sans stockage */ }
-    return [etat].concat(nm ? nm.garde : []).join('.');
+    try { etat = localStorage.getItem('nova_menu' + suf) || 'defaut'; } catch (e) { /* sans stockage */ }
+    return [(nm && nm.contexte || '') + etat].concat(nm ? nm.garde : []).join('.');
   }
   function menuServeur() {
     var nm = window.novaMenu;
@@ -910,19 +912,20 @@
     if (source && nm) {
       var serveur = source.textContent.trim();
       if (attente && attente === serveur) { ecrire('nova_menu_envoi', null); attente = null; }
-      if (!attente && /^(simple|complet|defaut)(\.[A-Za-z0-9_-]+)*$/.test(serveur)) {
-        var morceaux = serveur.split('.');
-        var simple = morceaux[0] === 'defaut' ? !standard('menu-complet') : morceaux[0] === 'simple';
+      var ctx = nm.contexte || '';
+      if (!attente && serveur.indexOf(ctx) === 0 && /^(simple|complet|defaut)(\.[A-Za-z0-9_-]+)*$/.test(serveur.slice(ctx.length))) {
+        var morceaux = serveur.slice(ctx.length).split('.');
+        var simple = morceaux[0] === 'defaut' ? (nm.inverse || !standard('menu-complet')) : morceaux[0] === 'simple';
         nm.garde = morceaux.slice(1);
-        ecrire('nova_menu', morceaux[0] === 'defaut' ? null : morceaux[0]);
-        ecrire('nova_menu_garde', JSON.stringify(nm.garde));
+        ecrire('nova_menu' + (nm.suffixe || ''), morceaux[0] === 'defaut' ? null : morceaux[0]);
+        ecrire('nova_menu_garde' + (nm.suffixe || ''), JSON.stringify(nm.garde));
         racine.classList.toggle('nova-menu-simple', simple);
         var regle = document.getElementById('nova-menu-style');
         if (regle) regle.textContent = nm.style(nm.garde);
       }
     }
     // Nouvelle entree Participants : gardee une fois, puis personnalisable comme les autres.
-    if (nm && document.querySelector('#wimsmenumodubox .nova_suivi') && nm.garde.indexOf('suivi_v1') < 0) {
+    if (nm && !nm.inverse && document.querySelector('#wimsmenumodubox .nova_suivi') && nm.garde.indexOf('suivi_v1') < 0) {
       if (nm.garde.indexOf('nova_suivi') < 0) nm.garde.push('nova_suivi');
       nm.garde.push('suivi_v1');
       ecrire('nova_menu_garde', JSON.stringify(nm.garde));
@@ -953,7 +956,7 @@
     var texte = function (nom) { return marque.getAttribute('data-' + nom) || ''; };
     var memoriser = function (cle, valeur) {
       try {
-        localStorage.setItem(cle, valeur);
+        localStorage.setItem(cle + (window.novaMenu.suffixe || ''), valeur);   // modtool : clés _modtool
         if (cle === 'nova_menu_garde') window.novaMenu.garde = JSON.parse(valeur);
         localStorage.setItem('nova_menu_envoi', valeurMenu());   // vers le serveur avec le lien suivant (menuServeur)
       } catch (e) { /* choix non retenu */ }
@@ -965,7 +968,9 @@
       var simple = racine.classList.contains('nova-menu-simple');
       bouton.textContent = texte(simple ? 'voir-tout' : 'simplifier');
       bouton.setAttribute('aria-pressed', simple ? 'false' : 'true');
-      bouton.hidden = racine.classList.contains('nova-menu-edition');
+      // modtool (liste des entrées cachées) : rien de caché, rien à basculer.
+      var nm = window.novaMenu;
+      bouton.hidden = racine.classList.contains('nova-menu-edition') || !!(nm && nm.inverse && !nm.garde.length);
     };
     bouton.addEventListener('click', function () {
       var simple = racine.classList.toggle('nova-menu-simple');
@@ -1029,7 +1034,7 @@
       familles.forEach(function (f) {
         var visibles = 0;
         f[1].forEach(function (item) {
-          var vue = garde.indexOf(cle(item)) >= 0;
+          var vue = (garde.indexOf(cle(item)) >= 0) !== !!nm.inverse;   // modtool : liste des entrées cachées
           if (vue) visibles++;
           item.classList.toggle('nova-masquee', !vue);
           var b = item.querySelector(':scope > .nova-oeil');
@@ -1044,12 +1049,14 @@
       });
       regle.textContent = nm.style(garde);
       defaut.hidden = !enEdition() || garde.slice().sort().join() === nm.defaut.slice().sort().join();
+      afficher();
     };
     var basculer = function (cles, montrer) {
+      var dans = montrer !== !!nm.inverse;   // modtool : montrer = retirer de la liste
       cles.forEach(function (c) {
         var i = garde.indexOf(c);
-        if (montrer && i < 0) garde.push(c);
-        if (!montrer && i >= 0) garde.splice(i, 1);
+        if (dans && i < 0) garde.push(c);
+        if (!dans && i >= 0) garde.splice(i, 1);
       });
       memoriser('nova_menu_garde', JSON.stringify(garde));
       rafraichir();
@@ -1075,7 +1082,11 @@
     });
     defaut.addEventListener('click', function () {
       garde = nm.defaut.slice();
-      try { localStorage.removeItem('nova_menu_garde'); } catch (e) { /* rien à oublier */ }
+      nm.garde = garde.slice();
+      try {
+        localStorage.removeItem('nova_menu_garde' + (nm.suffixe || ''));
+        localStorage.setItem('nova_menu_envoi', valeurMenu());
+      } catch (e) { /* rien à oublier */ }
       rafraichir();
     });
     // En édition, un clic dans le menu bascule l'entrée ou la famille au lieu d'ouvrir le lien ou
@@ -2878,8 +2889,9 @@
     try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), jetons.join(' ')); } catch (e) { /* sans stockage */ }
     // Menu enseignant complet par défaut, tant que l'enseignant n'a rien choisi lui-même.
     var choix = null;
-    try { choix = localStorage.getItem('nova_menu'); } catch (e) { /* sans stockage */ }
-    if (choix === null) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
+    var nmr = window.novaMenu;
+    try { choix = localStorage.getItem('nova_menu' + (nmr && nmr.suffixe || '')); } catch (e) { /* sans stockage */ }
+    if (choix === null && !(nmr && nmr.inverse)) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
   }
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
   // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien
@@ -2927,6 +2939,55 @@
    * outils » si elle existe, sinon dans « Profil ». Élève et enseignant ; chez l'élève, le menu latéral est un
    * tiroir ☰ à toutes les largeurs (CSS). Pages sans menu latéral : la barre garde son menu du compte. Pendant
    * une session d'examen, modeExamen a déjà sa section « Profil ». */
+  /* Entrée « Langue : <langue actuelle> » de la rubrique Profil, qui déplie la liste des autres langues (drapeau + nom,
+   * langue actuelle cochée en tête). Libellés de WIMS ($wims_name_Language, lang_name_*). Clé profil_langue. */
+  function choixLangue(selecteur, autres) {
+    var d = document.createElement('div');
+    d.className = 'menuitem profil_langue nova-langue';
+    var bouton = document.createElement('a');
+    bouton.href = '#';
+    bouton.setAttribute('role', 'button');
+    bouton.setAttribute('aria-expanded', 'false');
+    var actuelle = selecteur.querySelector('a.current .legende, .disabled .legende');
+    var nomActuel = actuelle ? actuelle.textContent.trim() : (document.documentElement.lang || '');
+    var libelle = (selecteur.querySelector('a.lang') || selecteur).textContent.replace(/\s+/g, ' ').trim() || 'Language';
+    var texte = document.createElement('span');
+    texte.className = 'nova-langue-texte';
+    texte.textContent = libelle + ' : ' + nomActuel;
+    // Drapeau de la langue actuelle en guise d'icône : Font_Awesome n'a pas de globe, et le jeu « default » aucune icône.
+    var drapeau = selecteur.querySelector('a.current img, a.lang img');
+    if (drapeau) { var dr = drapeau.cloneNode(true); dr.alt = ''; dr.className = 'vignette'; bouton.appendChild(dr); }
+    bouton.appendChild(texte);
+    var liste = document.createElement('div');
+    liste.className = 'nova-langues';
+    liste.id = 'nova-langues';
+    liste.hidden = true;
+    bouton.setAttribute('aria-controls', liste.id);
+    var courant = selecteur.querySelector('a.current');
+    if (courant) {
+      var c = courant.cloneNode(true);
+      var precision = c.querySelector('.smaller');
+      if (precision) precision.remove();
+      c.setAttribute('aria-current', 'true');
+      liste.appendChild(c);
+    }
+    Array.prototype.forEach.call(autres, function (a) {
+      var copie = a.cloneNode(true);
+      copie.removeAttribute('id');
+      liste.appendChild(copie);
+    });
+    bouton.addEventListener('click', function (e) {
+      if (document.documentElement.classList.contains('nova-menu-edition')) return;   // menuPersonnel s'en charge
+      e.preventDefault();
+      var ouvrir = liste.hidden;
+      liste.hidden = !ouvrir;
+      bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+    });
+    d.appendChild(bouton);
+    d.appendChild(liste);
+    return d;
+  }
+
   function profilLateral() {
     var barre = document.getElementById('wimstopbox');
     var menu = document.getElementById('wimsmenumodubox');
@@ -2968,9 +3029,13 @@
     nom.className = 'menuitem profil_nom nova-profil-nom';
     nom.textContent = compte.textContent.replace(/\s+/g, ' ').trim();
     groupe.appendChild(nom);
-    // Langues (sélecteur de la barre, quand WIMS en met un) avant le reste du compte.
+    // Langues (sélecteur de la barre, quand WIMS en met un : modtool, pages hors classe) : UNE entrée « Langue :
+    // Français » qui déplie la liste (maquette A, demande de l'utilisateur, 2026-11-04 ; avant : une entrée par langue).
     var langues = barre.querySelector('#language_selector');
-    if (langues) Array.prototype.forEach.call(langues.querySelectorAll('ul a[href]'), function (a) { ajouter(a); });
+    if (langues) {
+      var autres = langues.querySelectorAll('#lang_list a[href]');   // pas « ul a » : la liste de la barre contient le sélecteur
+      if (autres.length) groupe.appendChild(choixLangue(langues, autres));
+    }
     Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
     // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
     var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
@@ -2999,7 +3064,7 @@
     // Menu simplifié de l'enseignant : les entrées de Profil et l'Aide déplacée, nouvelles, sont gardées une
     // première fois (repère profil_v1 dans la liste), pour qu'aucune ne disparaisse d'elle-même.
     var nm = window.novaMenu;
-    if (nm && document.getElementById('nova-menu-bascule') && nm.garde.indexOf('profil_v1') < 0) {
+    if (nm && !nm.inverse && document.getElementById('nova-menu-bascule') && nm.garde.indexOf('profil_v1') < 0) {
       Array.prototype.forEach.call(menu.querySelectorAll('.nova-profil .menuitem, .menuitem.help, .menuitem.whelp'), function (item) {
         Array.prototype.forEach.call(item.classList, function (c) {
           if ((/^profil_/.test(c) || c === 'help' || c === 'whelp') && nm.garde.indexOf(c) < 0) nm.garde.push(c);

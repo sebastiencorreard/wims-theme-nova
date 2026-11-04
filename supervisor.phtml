@@ -139,13 +139,6 @@
   !href module=adm/class/classes&type=authsupervisor&class=$test_up $SU_Bprogram
 !endif
 
-!if $class_type notin 24
-  <div id="wims_supervisor_search">
-    !read ./form.phtml
-    <br class="clearall">
-    !read ./result.phtml
-  </div>
-!endif
 !set docpubliccnt=!recordcnt wimshome/log/classes/$wims_class/doc/.docindex
 !set toolcnt=!recordcnt wimshome/log/classes/$wims_class/tool/.toolindex
 !set glossarycnt=!recordcnt wimshome/log/classes/$wims_class/tool/.glossaryindex
@@ -291,6 +284,16 @@
         !read tablesort.phtml
       </div>
     !endif
+  </div>
+!endif
+
+!! Moteur de recherche SOUS les feuilles et examens (demande de l'utilisateur, 2026-11-04 ; Standard : au-dessus).
+!! Apres une recherche, le formulaire de WIMS renvoie a l'ancre #searchform : la page s'ouvre sur le moteur.
+!if $class_type notin 24
+  <div id="wims_supervisor_search">
+    !read ./form.phtml
+    <br class="clearall">
+    !read ./result.phtml
   </div>
 !endif
 

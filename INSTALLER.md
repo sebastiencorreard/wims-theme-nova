@@ -26,8 +26,16 @@ tar -xzf /chemin/nova-AAAA-MM-JJ-xxxxxxx.tgz      # crée themes/Nova
 chown -R wims:wims Nova                            # le compte qui fait tourner WIMS
 ```
 
-Le dossier doit s'appeler exactement `Nova` : ses gabarits citent leur propre chemin
-(`themes/Nova/_widgets/…`, `html/themes/Nova/js/nova.js`). Ne pas le renommer.
+Le dossier peut porter un autre nom : les gabarits trouvent leurs fichiers par `$wims_theme`, le
+thème choisi par le site ou la classe. On peut donc garder deux versions côte à côte, par exemple
+`Nova` et `Nova_1_2`, et choisir l'une ou l'autre classe par classe. **Pas de point dans le nom**
+(`Nova_1.2`) : WIMS refuse alors de charger le `css.css` du thème (`src/config.c`) et les pages
+s'affichent sans style. Une archive au bon nom : `DOSSIER=Nova_1_2 ./livrer.sh` (depuis le dépôt),
+ou renommer le dossier après `tar -x`.
+
+Les deux versions partagent les mêmes réglages et données : `log/nova.conf`, blocs Nova des feuilles
+de classe, menus choisis (`.nova_menu_<login>`), badges (`score/<élève>.nova`), et la mémoire du
+navigateur. Une version plus ancienne ignore les réglages qu'elle ne connaît pas.
 
 Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossiers qui contiennent un
 `visitor.phtml`). Aucune recompilation, aucun redémarrage.
@@ -46,7 +54,8 @@ par défaut de WIMS, Nova prend sa prune.
 
 ## 4. Vérifier
 
-- Une page de classe charge `html/themes/Nova/css.css` (outils de développement du navigateur).
+- Une page de classe charge `html/themes/<dossier>/css.css` et `html/themes/<dossier>/js/nova.js` (outils de
+  développement du navigateur).
 - Le menu de la classe est à gauche sur ordinateur, replié derrière ☰ sur téléphone.
 - Dans le menu enseignant ou administrateur, Participants → Suivi en direct ouvre le relevé ;
   il n'apparaît pas chez un élève.
@@ -59,7 +68,7 @@ par défaut de WIMS, Nova prend sa prune.
 ## 5. Revenir en arrière
 
 Remettre `standard` (ou l'ancien thème) dans la configuration du site et des classes concernées,
-puis, si l'on veut, supprimer `themes/Nova`. Une classe dont le thème n'existe plus retombe sur le
+puis, si l'on veut, supprimer `themes/Nova` (ou le dossier de la version retirée). Une classe dont le thème n'existe plus retombe sur le
 thème par défaut du site.
 
 ## Mettre à jour Nova

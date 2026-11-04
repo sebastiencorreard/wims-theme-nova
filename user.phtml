@@ -9,14 +9,14 @@
 !!initialisation
 !set home_theme=yes
 
-!read themes/Nova/_widgets/suivi-entree.phtml
+!read themes/$wims_theme/_widgets/suivi-entree.phtml
 !if $nova_suivi_page=1
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
   !goto nova_menu
 !endif
 !! Nova : page « Mon activité » de l'eleve a la place de l'accueil (nova_activite=1, 2026-10-08).
-!read themes/Nova/_widgets/activite-entree.phtml
+!read themes/$wims_theme/_widgets/activite-entree.phtml
 !if $nova_activite_page=1
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
@@ -62,7 +62,7 @@
   !ifval 0$class_type<2
     !set nova_cl=$wims_home/log/classes
     !set nova_auj=!char 1 to 8 of $wims_now
-    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -f $wims_home/public_html/themes/Nova/_procs/badges.awk
+    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
     !set nova_lf=!line 1 of $nova_bd
     !set nova_lp=!line 2 of $nova_bd
     !set nova_lc=!line 3 of $nova_bd
@@ -112,7 +112,7 @@
       !if $nova_i<1
         !set nova_i=1
       !endif
-      <img class="nova-badge-niv-$nova_n" src="themes/Nova/img/badges/fidelite/coeur_0$nova_i.webp" alt="" width="36" height="36">
+      <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/fidelite/coeur_0$nova_i.webp" alt="" width="36" height="36">
     !endif
     !if $nova_po=on
       !set nova_n=!word 3 of $nova_lp
@@ -120,7 +120,7 @@
       !if $nova_i<1
         !set nova_i=1
       !endif
-      <img class="nova-badge-niv-$nova_n" src="themes/Nova/img/badges/perseverance/flamme_0$nova_i.webp" alt="" width="36" height="36">
+      <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/perseverance/flamme_0$nova_i.webp" alt="" width="36" height="36">
     !endif
     <span>$nova_badges_court</span>
     </a>
@@ -136,7 +136,7 @@
         !set nova_bp=!word $[$nova_n+10] of $nova_lf
         !set nova_bm=!replace internal %n by $nova_bp in $(nova_fid_bravo$nova_n)
       <div class="nova-badge-annonce" role="status">
-        <img src="themes/Nova/img/badges/fidelite/coeur_0$nova_n.webp" alt="" width="72" height="72">
+        <img src="themes/$wims_theme/img/badges/fidelite/coeur_0$nova_n.webp" alt="" width="72" height="72">
         <div><b>$nova_fid_nouveau $nova_fid_nom $nova_bnom&nbsp;!</b><p>$nova_bm</p></div>
         <p class="nova-badge-annonce-liens"><a href="#nova-badges" data-badge="fidelite">$nova_badges_voir</a><button type="button" class="nova-badge-masquer">$nova_badges_masquer</button></p>
       </div>
@@ -154,14 +154,14 @@
           !set nova_bm=!replace internal %n by $nova_bp in $nova_per_bravo
         !endif
       <div class="nova-badge-annonce" role="status">
-        <img src="themes/Nova/img/badges/perseverance/flamme_0$nova_n.webp" alt="" width="72" height="72">
+        <img src="themes/$wims_theme/img/badges/perseverance/flamme_0$nova_n.webp" alt="" width="72" height="72">
         <div><b>$nova_fid_nouveau $nova_per_nom $nova_bnom&nbsp;!</b><p>$nova_bm</p></div>
         <p class="nova-badge-annonce-liens"><a href="#nova-badges" data-badge="perseverance">$nova_badges_voir</a><button type="button" class="nova-badge-masquer">$nova_badges_masquer</button></p>
       </div>
       !endif
     !endif
     <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-encours="$nova_ct" data-reglages="$nova_lr"
-      data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/Nova/img/badges/fidelite/coeur_0" data-images-perseverance="themes/Nova/img/badges/perseverance/flamme_0"
+      data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/fidelite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
       data-titre="$nova_badges_titre" data-niveau="$nova_badges_niveau" data-obtenu="$nova_badges_obtenu"
       data-serie="$nova_badges_serie" data-record="$nova_badges_record" data-avant="$nova_badges_avant" data-max="$nova_badges_max"
       data-aucun="$nova_badges_aucun" data-sem="$nova_badges_sem" data-fermer="$nova_badges_fermer"
@@ -180,7 +180,7 @@
     <img src="$class_logo" alt="class logo">
   </div>
 !endif
-!read themes/Nova/_widgets/classtitle.phtml
+!read themes/$wims_theme/_widgets/classtitle.phtml
 
 !read adm/class/initclass $wims_superclass, auth
 
@@ -343,7 +343,7 @@
 </div><!--end of wimsbodybox-->
 :end
 !read themes/_widgets/session_warn.phtml
-!read themes/Nova/_widgets/footer.phtml
+!read themes/$wims_theme/_widgets/footer.phtml
 
 </body>
 </html>

@@ -6,7 +6,7 @@
 !endif
 !set home_theme=yes
 
-!read themes/Nova/_widgets/suivi-entree.phtml
+!read themes/$wims_theme/_widgets/suivi-entree.phtml
 !if $nova_suivi_page=1
 </div><!--wimsbody-->
 </div><!--wimspagebox-->
@@ -304,7 +304,7 @@
 !if $class_type isin 24
   !read themes/_procs/menumodubox2.proc
 !else
-  !read themes/Nova/_procs/menumodubox0.proc
+  !read themes/$wims_theme/_procs/menumodubox0.proc
 !endif
 !read themes/_widgets/menumodubox_accordion.phtml
 !! Nova : bascule menu simplifié / complet (bouton créé par js/nova.js)
@@ -335,7 +335,7 @@
 
 !!read themes/_widgets/visitorcredits.phtml
 !read themes/_widgets/session_warn.phtml
-!read themes/Nova/_widgets/footer.phtml
+!read themes/$wims_theme/_widgets/footer.phtml
 </body>
 </html>
 <!-- end of $wims_theme/supervisor.phtml -->

@@ -8,7 +8,7 @@ use Time::Local qw(timelocal);
 use File::Basename qw(dirname);
 use File::Temp qw(tempfile);
 my $home = dirname(dirname(dirname(dirname(dirname(__FILE__)))));
-# Installed at /home/wims/public_html/themes/Nova/_procs/suivi.pl.
+# Installed at /home/wims/public_html/themes/<dossier du theme>/_procs/suivi.pl.
 my $sid = shift // '';
 my $render = (shift // '') eq '--render';
 my $now = time;

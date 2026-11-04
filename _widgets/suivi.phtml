@@ -53,8 +53,8 @@
 </section>
 !set nova_sid=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $wims_session
 !if $nova_sid=$wims_session
-  !sh perl $wims_home/public_html/themes/Nova/_procs/suivi.pl $nova_sid --render
+  !sh perl $wims_home/public_html/themes/$wims_theme/_procs/suivi.pl $nova_sid --render
   !read wimshome/sessions/$nova_sid/nova-suivi.phtml
 !endif
 !reset nova_sid
-<script src="html/themes/Nova/js/suivi.js?v=7" defer></script>
+<script src="html/themes/$wims_theme/js/suivi.js?v=7" defer></script>

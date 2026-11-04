@@ -10,7 +10,7 @@
 <ul class="wimsmenu dropdown menu">
 
   !if _help isin $wims_session or _test isin $wims_session
-    !read themes/Nova/_widgets/headmenu.phtml
+    !read themes/$wims_theme/_widgets/headmenu.phtml
   !else
 
     !! about WIMS
@@ -21,7 +21,7 @@
     !endif
 
     !! head menus
-    !read themes/Nova/_widgets/headmenu.phtml
+    !read themes/$wims_theme/_widgets/headmenu.phtml
 
     !! User Links
     !if _ notin $wims_session and $wims_firstname$wims_lastname$wims_user$wims_developer!=$empty and ($module!=adm/class/tchat or $job!=viewpage)
@@ -40,7 +40,7 @@
           !! cachés pour le moment. Les enseignants (y compris ceux d'un établissement ou d'un
           !! groupement, connectés avec leur identifiant : _procs/eleve.proc) et les développeurs
           !! gardent tout. Pour rendre ces liens aux élèves : retirer la condition ci-dessous.
-          !read themes/Nova/_procs/eleve.proc
+          !read themes/$wims_theme/_procs/eleve.proc
           !if $nova_est_eleve=yes
             <li class="menuitem nova-nom" role="presentation">$wims_firstname $wims_lastname</li>
             !! Reglage « Navigation complete pour l'eleve » (2026-10-07) : les autres liens sont ecrits, caches par

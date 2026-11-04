@@ -203,7 +203,7 @@ Après toute modification de `_css/` : `./construire-css.sh`.
 - Les fichiers `header`, `tail`, `visitor`, `user`, `supervisor`, `docheader`, `doctail`,
   `mhelpheader`… du thème sont appelés par `html/themes.phtml` ; `htmlheader.phtml` et `css.css`
   sont lus par le code C. Il n'y a **pas** de surcharge générale de `html/*.phtml`.
-- Un thème peut lire **ses propres copies de widgets** (`!read themes/Nova/_widgets/…`).
+- Un thème peut lire **ses propres copies de widgets** (`!read themes/$wims_theme/_widgets/…` : Nova ne cite jamais son propre nom de dossier).
 - Traductions : `lang/<module avec des _>_<script>.<langue>` est lu après le module
   (`scripts/adm/language`, `scripts/adm/class/classlang`), par exemple
   `lang/adm_class_exam_lang_names.phtml.fr`. **Limite** : un module qui relit ses textes lui-même

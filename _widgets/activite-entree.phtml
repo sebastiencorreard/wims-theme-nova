@@ -9,7 +9,7 @@
     !set nova_activite_page=!getopt nova_activite in $nova_sq
     !reset nova_sq
     !if $nova_activite_page=1
-      !read themes/Nova/_widgets/activite.phtml
+      !read themes/$wims_theme/_widgets/activite.phtml
     !endif
   !endif
 !endif

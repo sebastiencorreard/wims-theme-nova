@@ -1,5 +1,5 @@
 <!-- begin of standard/docheader.phtml -->
-!read themes/Nova/_widgets/accent.phtml
+!read themes/$wims_theme/_widgets/accent.phtml
 
 !! document menu
 !nocache
@@ -25,7 +25,7 @@
     !distribute items span into div1
     !if $doc!=$helpd
       <div class="wimsmenu menu float_left">
-        !read themes/Nova/_widgets/headhome.phtml
+        !read themes/$wims_theme/_widgets/headhome.phtml
       </div>
     !endif
     !read themes/_widgets/docheadermenu.phtml
@@ -35,7 +35,7 @@
 !if $wims_lightpopup=yes
   <div id="wimslightpopup">
 !else
-  !read themes/Nova/_widgets/ariane.phtml
+  !read themes/$wims_theme/_widgets/ariane.phtml
 !endif
 
 <div id="wimsbodybox">

@@ -4,8 +4,8 @@
   !set w_path = $empty
 !endif
 <!-- begin of standard/header.phtml -->
-!read themes/Nova/_widgets/accent.phtml
-!read themes/Nova/_widgets/couleurs-notes.phtml
+!read themes/$wims_theme/_widgets/accent.phtml
+!read themes/$wims_theme/_widgets/couleurs-notes.phtml
 
 !! Nova : reglages du thème pour tout le site (2026-10-06, demande de l'utilisateur), dans log/nova.conf
 !! (declarations CSS --nova-...). Enregistres depuis la page Apparence de la maintenance, par le gestionnaire
@@ -91,7 +91,7 @@
     !if $nova_ct isitemof 2,3,4
       !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
       !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
-      !set nova_pn=!sh sh $wims_home/public_html/themes/Nova/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup"
+      !set nova_pn=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup"
       !if $nova_pn=1
         !set nova_pt=$nova_propage_1
       !else
@@ -113,12 +113,12 @@
 !! Page Apparence (configuration du site, rubrique 1) : carte « Reglages de Nova » et reglages de WIMS sans effet
 !! avec Nova (repères par leur nom dans lang/confdata, leur rang donne le champ conf_N). Placees par nova.js.
 !if $module=adm/manage and $wims_ismanager=2 and $job=conf and $confcat=1
-  !read themes/Nova/_widgets/apparence.phtml
+  !read themes/$wims_theme/_widgets/apparence.phtml
 !endif
 !! Page Apparence de la configuration d'une classe, d'un groupement ou d'un portail : meme carte, ecrite dans
 !! la feuille de style de la classe (js/nova.js, apparenceClasse). WIMS ne montre cette page qu'a qui en a le droit.
 !if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
-  !read themes/Nova/_widgets/apparence-classe.phtml
+  !read themes/$wims_theme/_widgets/apparence-classe.phtml
 !endif
 !! Nova : menu enseignant personnalise (js/nova.js, basculeMenu), garde sur le serveur pour suivre l'enseignant
 !! d'un poste a l'autre (demande de l'utilisateur, 2026-10-07) : log/classes/<structure ou classe>/.nova_menu_<login>
@@ -128,7 +128,7 @@
 !! modtool (2026-11-04) : son propre fichier (.nova_menu_modtool_<login>), valeur prefixee par modtool- ; le compte
 !! developpeur (wims_developer) ne change rien : c'est toujours l'enseignant de la classe.
 !if ($module=home or $nova_m=adm/) and $wims_user!=$empty and $wims_class!=$empty and ($wims_developer=$empty or $module=adm/modtool)
-  !read themes/Nova/_procs/eleve.proc
+  !read themes/$wims_theme/_procs/eleve.proc
   !if $nova_est_eleve!=yes
     !set nova_mk=$wims_superclass
     !default nova_mk=!word 1 of $wims_class
@@ -220,20 +220,20 @@
     <div id="wimstopbox">
     !distribute items span into div1
     <div class="wimsmenu menu float_left">
-    !read themes/Nova/_widgets/headhome.phtml
+    !read themes/$wims_theme/_widgets/headhome.phtml
     !! Nova : le nom de la classe a cote de l'accueil (pas pendant un examen : place au chronometre).
     !if $wims_classname!=$empty and _exam notin $wims_session
       <span class="nova-classe">$wims_classname</span>
     !endif
-    !read themes/Nova/_widgets/examencours.phtml
+    !read themes/$wims_theme/_widgets/examencours.phtml
     !! Nova : marque des participants (eleves) : fil d'Ariane masque, bouton Retour (js/nova.js).
-    !read themes/Nova/_procs/eleve.proc
+    !read themes/$wims_theme/_procs/eleve.proc
     !if $nova_est_eleve=yes
       <span id="nova-eleve" hidden></span>
     !endif
     </div>
     !distribute items li into div1
-    !read themes/Nova/_widgets/user_links.phtml
+    !read themes/$wims_theme/_widgets/user_links.phtml
     <div class="wimsmenu menu">
     !!read themes/_widgets/headmenu.phtml
     !!read themes/_widgets/about.phtml
@@ -255,7 +255,7 @@
     !reset div1
     </div><!--wimstopbox-->
     !if _light notin $wims_session
-      !read themes/Nova/_widgets/ariane.phtml
+      !read themes/$wims_theme/_widgets/ariane.phtml
     !endif
   !endif
 !endif

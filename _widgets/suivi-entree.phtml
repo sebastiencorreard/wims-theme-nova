@@ -8,7 +8,7 @@
     !set nova_suivi_page=!getopt nova_suivi in $nova_sq
     !reset nova_sq
     !if $nova_suivi_page=1
-      !read themes/Nova/_widgets/suivi.phtml
+      !read themes/$wims_theme/_widgets/suivi.phtml
     !endif
   !endif
 !endif

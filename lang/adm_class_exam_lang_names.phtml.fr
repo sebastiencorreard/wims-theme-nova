@@ -1,5 +1,5 @@
 !! Reglage « Textes du theme standard » : rien n'est surcharge (_procs/textes-standard.proc).
-!read themes/Nova/_procs/textes-standard.proc
+!read themes/$wims_theme/_procs/textes-standard.proc
 !if $nova_std_textes=oui
   !exit
 !endif

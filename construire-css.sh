@@ -62,5 +62,6 @@ cp "$tmp" css.css
 # nova.js : son adresse porte l'empreinte de son contenu, pour qu'un navigateur (un téléphone
 # surtout) ne garde pas une ancienne version en cache ; htmlheader.phtml est mis à jour ici.
 empreinte=$(sha256sum js/nova.js | cut -c1-10)
-sed -i "s|html/themes/Nova/js/nova.js[^\"]*\"|html/themes/Nova/js/nova.js?v=$empreinte\"|" htmlheader.phtml
+# Chemin par $wims_theme (remplacé par le C de WIMS) : le dossier du thème peut porter un autre nom (Nova_1.2…).
+sed -i "s|html/themes/[^/]*/js/nova.js[^\"]*\"|html/themes/\$wims_theme/js/nova.js?v=$empreinte\"|" htmlheader.phtml
 echo "css.css : $(wc -c < css.css) octets, $feuilles feuilles${LISIBLE:+ (lisible)}"

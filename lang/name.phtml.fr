@@ -144,7 +144,7 @@
 !set nova_fid_bravo8=%n semaines d'affilée : le plus haut niveau, chapeau !
 !set nova_app_badges=Badges des élèves
 !set nova_app_paliers=Paliers du badge Régularité
-!set nova_app_paliers_aide=Semaines d'affilée pour chacun des 8 niveaux, séparées par des espaces. Vide : valeur héritée.
+!set nova_app_paliers_aide=Semaines d'affilée pour chacun des 8 niveaux, séparées par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_app_vacances=Vacances
 !set nova_app_vacances_aide=Une période par ligne, « JJ/MM/AAAA - JJ/MM/AAAA ». Ces semaines ne comptent pas et ne cassent pas la série. Vide : valeur héritée (portail, groupement).
 !set nova_app_vacances_erreur=Ligne non comprise (attendu : JJ/MM/AAAA - JJ/MM/AAAA) :
@@ -271,7 +271,7 @@
 !set nova_bdg_fid_exercices=Jours de travail par semaine (1 à 7)
 !set nova_bdg_per_desc=Réussir un exercice après plusieurs notes faibles. 8 niveaux, jamais perdus.
 !set nova_bdg_per_paliers=Paliers du badge Persévérance
-!set nova_bdg_per_paliers_aide=Exercices réussis après des difficultés, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée.
+!set nova_bdg_per_paliers_aide=Exercices réussis après des difficultés, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_bdg_per_regle1=Compter un exercice quand l'élève y obtient au moins
 !set nova_bdg_per_regle2=/10 après au moins
 !set nova_bdg_per_regle3=notes sous
@@ -292,7 +292,7 @@
 !set nova_ech_bravo=%n DM préparés : tu arrives toujours échauffé, bravo !
 !set nova_bdg_ech_desc=S'entraîner avant chaque DM noté : deux examens au même contenu, beaucoup d'essais pour l'entraînement, peu pour le DM noté. 8 niveaux, jamais perdus.
 !set nova_bdg_ech_paliers=Paliers du badge Échauffement
-!set nova_bdg_ech_paliers_aide=DM préparés, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée.
+!set nova_bdg_ech_paliers_aide=DM préparés, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_bdg_ech_sessions1=Compter un DM quand l'élève a fait au moins
 !set nova_bdg_ech_sessions2=sessions complètes de l'entraînement (une réponse à chaque exercice) avant d'ouvrir le DM noté.
 !set nova_bdg_ech_mots=Reconnaître aussi les DM par leur titre

@@ -59,12 +59,13 @@ function nombre(v, mini, maxi, defaut) {
   v += 0; if (v < mini) return mini; if (v > maxi) return maxi
   return v
 }
-# Paliers : nombres croissants, 8 au plus (une image par niveau) ; liste vide ou fausse : défaut.
+# Paliers : nombres croissants, 8 au plus (une image par niveau) ; liste vide ou fausse : défaut. 0 accepté (niveau
+# d'office, pour tester ; 2026-11-07, utilisateur) : comme tout niveau, il reste acquis dans le stock de l'élève.
 function paliers(liste, defaut, pal,    m, brut, i, p, n) {
   if (liste == "") liste = defaut
   m = split(liste, brut, /[ ,]+/); n = 0
   for (i = 1; i <= m && n < 8; i++) {
-    if (brut[i] !~ /^[0-9]+$/ || brut[i] + 0 < 1) continue
+    if (brut[i] !~ /^[0-9]+$/) continue
     p = brut[i] + 0; if (n && p <= pal[n]) p = pal[n] + 1
     pal[++n] = p
   }
@@ -187,6 +188,7 @@ END {
   else {
     np = paliers(conf["fidelite-paliers"], "2 3 5 8 12 16 21 26", pal)
     serie = 0; record = 0; niveau = 0; obtenu = ""
+    while (niveau < np && pal[niveau + 1] == 0) niveau++    # paliers à 0 : niveaux d'office
     if (w0 != "") for (w = w0; w <= wc; w++) {
       if (vacances(w)) continue
       if (nfait[w] >= parsem) {

@@ -904,6 +904,10 @@ html.nova-page-badges .wimsbody :is(.nova-app:not(.nova-badges-reglages), form:h
 .nova-bdg-coche input { width: 22px; height: 22px; margin: 0; accent-color: var(--nova-accent); flex: none; }
 .nova-bdg-coche img { width: 48px; height: 48px; flex: none; }
 .nova-bdg-detail[hidden] { display: none; }
+/* Détails de chaque badge repliés par défaut (2026-11-07, utilisateur) : « ▸ Réglages » sous la case du badge. */
+.nova-bdg-contenu { display: grid; gap: var(--nova-e2); margin-top: var(--nova-e2); }
+.nova-app-ligne.nova-bdg-detail { border-top: 0; padding-top: 0; }
+.wimsbody details.nova-app-detail.nova-bdg-replie > summary { margin-left: calc(22px + 48px + 2 * var(--nova-e3)); }
 .nova-badges-reglages .nova-app-actions { display: flex; justify-content: center; }
 
 /* Section repliée « Rapprocher du thème standard » des cartes Apparence (_widgets/apparence-standard.phtml, 2026-10-07). */

@@ -284,5 +284,7 @@
 !set nova_bdg_ech_mots_aide=When the two exams do not have the same content: words that tell the titles apart, separated by commas, the rest of the title identical ("DM 02 (practice)", "DM 02 (graded)"). Accents and case ignored. Empty: inherited value.
 !set nova_bdg_ech_mots_t=Practice
 !set nova_bdg_ech_mots_n=Graded
+!! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
+!set nova_bdg_reglages=Settings
 !set nova_app_fil=Fixed breadcrumb
 !set nova_app_fil_aide=Teachers and admins, large screens: the breadcrumb stays under the top bar when the page scrolls.

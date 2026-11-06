@@ -284,5 +284,7 @@
 !set nova_bdg_ech_mots_aide=Quand les deux examens n'ont pas le même contenu : mots qui distinguent les titres, séparés par des virgules, le reste du titre identique (« DMWIMS 02 (entraînement) », « DMWIMS 02 (noté) »). Accents et majuscules ignorés. Vide : valeur héritée.
 !set nova_bdg_ech_mots_t=Entraînement
 !set nova_bdg_ech_mots_n=DM noté
+!! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
+!set nova_bdg_reglages=Réglages
 !set nova_app_fil=Fil d'Ariane fixe
 !set nova_app_fil_aide=Profs et admins, grand écran : le fil d'Ariane reste sous la barre du haut quand la page défile.

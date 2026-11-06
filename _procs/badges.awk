@@ -25,7 +25,9 @@
 # vaut oui (défaut).
 # Échauffement (demande de l'utilisateur, 2026-11-06 : « DM WIMS » = un examen d'entraînement à beaucoup d'essais et un
 # examen noté au même contenu, à peu d'essais) : un DM compte quand l'élève a fait au moins --nova-echauffement-sessions
-# sessions de l'entraînement (avec au moins une réponse envoyée) avant d'ouvrir le DM noté. Paire reconnue (1) par le
+# sessions COMPLÈTES de l'entraînement (une réponse à chaque exercice ; 2026-11-07, utilisateur) avant d'ouvrir le DM
+# noté. Terminée : WIMS bloque les autres examens tant qu'une session est ouverte (« Terminer » ou temps écoulé), et la
+# ligne « -- » de « Terminer » (score/<élève>.exam) ne dit pas quelle session elle clôt : rien de plus à vérifier. Paire reconnue (1) par le
 # contenu (mêmes exercices et paniers, ligne 2 des enregistrements de .exam<n>), s'ils sont seuls à l'avoir : le plus
 # d'essais = entraînement, l'autre = noté ; (2) sinon par le titre : un mot de --nova-echauffement-entrainement ou de --nova-echauffement-note, le reste du
 # titre identique. Sessions lues dans noscore/<élève> (lignes « E… » : date, session, examen, exercice, type).
@@ -107,6 +109,7 @@ function lireExamens(    f, l, k, i, n, ligne, c) {
       if (n && ++ligne == 2) { gsub(/[ \t,]+/, " ", l); gsub(/^ +| +$/, "", l); xsig[k] = xsig[k] "|" l }
     }
     close(f)
+    xnex[k] = n
   }
 }
 function actif(nom) {
@@ -134,12 +137,14 @@ section == "stock" {
   next
 }
 # Échauffement : sessions d'examen (lignes « E… » de noscore/), toutes les lignes (ouvrir un exercice = commencer).
+# Par session : exercices différents ayant reçu une réponse, et l'heure où le dernier d'entre eux l'a reçue (noscore/
+# s'écrit dans l'ordre). Une session « faite entièrement » a une réponse à chaque exercice de l'examen (2026-11-07).
 section == "score" && $1 ~ /^E[0-9]/ {
   s = substr($1, 2); n = $3 + 0
   if (!(n in xdeb) || s < xdeb[n]) xdeb[n] = s
   if ($5 == "score") {
-    if (!((n, $2) in xrep)) { xns[n]++; xses[n, xns[n]] = $2; xrep[n, $2] = s }
-    else if (s < xrep[n, $2]) xrep[n, $2] = s
+    if (!((n, $2) in xnx)) { xns[n]++; xses[n, xns[n]] = $2 }
+    if (!((n, $2, $4 + 0) in xexo)) { xexo[n, $2, $4 + 0] = 1; xnx[n, $2]++; if (s > xfin[n, $2]) xfin[n, $2] = s }
   }
 }
 section == "score" && $5 == "score" {
@@ -296,7 +301,10 @@ END {
       kn += 0; faites = 0
       for (i = 1; i <= nt[kn]; i++) {
         kt = tr[kn, i]
-        for (b = 1; b <= xns[kt]; b++) if (!(kn in xdeb) || xrep[kt, xses[kt, b]] < xdeb[kn]) faites++
+        for (b = 1; b <= xns[kt]; b++) {
+          ss = xses[kt, b]
+          if (xnex[kt] && xnx[kt, ss] >= xnex[kt] && (!(kn in xdeb) || xfin[kt, ss] < xdeb[kn])) faites++
+        }
       }
       if (kn in xdeb) { if (faites >= nsess) { total++; nd++; quand[nd] = substr(xdeb[kn], 1, 8) } }
       else if (xetat[kn] == 1 && kn > dmk) { dmk = kn; dmf = faites }

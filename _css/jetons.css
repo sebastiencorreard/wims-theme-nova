@@ -113,7 +113,7 @@
   --nova-perseverance-echec: 5;
   --nova-perseverance-echecs: 2;
   --nova-perseverance-examens: oui;
-  /* Échauffement (DM WIMS, 2026-11-06) : sessions d'entraînement (avec une réponse) avant d'ouvrir le DM noté, paliers
+  /* Échauffement (DM WIMS, 2026-11-06) : sessions d'entraînement complètes (une réponse à chaque exercice) avant d'ouvrir le DM noté, paliers
    * (DM préparés), mots des titres pour reconnaître une paire quand le contenu diffère (virgules). _procs/badges.awk. */
   --nova-echauffement-sessions: 2;
   --nova-echauffement-paliers: 1 3 5 8 12 16 21 26;

@@ -133,7 +133,7 @@
       !if $nova_i<1
         !set nova_i=1
       !endif
-      <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/echauffement/haltere_0$nova_i.webp" alt="" width="36" height="36">
+      <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/entrainement/halteres_0$nova_i.webp" alt="" width="36" height="36">
     !endif
     <span>$nova_badges_court</span>
     </a>
@@ -185,7 +185,7 @@
           !set nova_bm=!replace internal %n by $nova_bp in $nova_ech_bravo
         !endif
       <div class="nova-badge-annonce" role="status">
-        <img src="themes/$wims_theme/img/badges/echauffement/haltere_0$nova_n.webp" alt="" width="72" height="72">
+        <img src="themes/$wims_theme/img/badges/entrainement/halteres_0$nova_n.webp" alt="" width="72" height="72">
         <div><b>$nova_fid_nouveau $nova_ech_nom $nova_bnom&nbsp;!</b><p>$nova_bm</p></div>
         <p class="nova-badge-annonce-liens"><a href="#nova-badges" data-badge="echauffement">$nova_badges_voir</a><button type="button" class="nova-badge-masquer">$nova_badges_masquer</button></p>
       </div>
@@ -193,7 +193,7 @@
     !endif
     <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-encours="$nova_ct" data-reglages="$nova_lr"
       data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/regularite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
-      data-images-echauffement="themes/$wims_theme/img/badges/echauffement/haltere_0"
+      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0"
       data-titre="$nova_badges_titre" data-niveau="$nova_badges_niveau" data-obtenu="$nova_badges_obtenu"
       data-serie="$nova_badges_serie" data-record="$nova_badges_record" data-avant="$nova_badges_avant" data-max="$nova_badges_max"
       data-aucun="$nova_badges_aucun" data-sem="$nova_badges_sem" data-fermer="$nova_badges_fermer"

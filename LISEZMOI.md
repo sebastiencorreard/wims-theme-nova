@@ -118,7 +118,7 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
   ignorés. La fenêtre rappelle le prochain DM noté ouvert et les sessions qui manquent.
 
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
-Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/flamme_0N`, `echauffement/haltere_0N`.
+Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/flamme_0N`, `entrainement/halteres_0N`.
 
 ## Suivi en direct (salle informatique)
 

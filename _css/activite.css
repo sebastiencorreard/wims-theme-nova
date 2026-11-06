@@ -65,3 +65,6 @@
 .nova-app-ligne.nova-app-texte .nova-app-phrase .nova-app-nombre { display: inline-block; width: 4.5rem; margin: 0 .25rem; }
 .nova-app-ligne.nova-app-texte input[type="checkbox"] { width: auto; margin: 0; }
 .nova-app-ligne.nova-app-texte .nova-app-phrase { margin: 0; }
+/* Échauffement : mots des titres (2026-11-06), libellé puis champ sur la même ligne, champ pleine largeur au téléphone. */
+.nova-app-ligne.nova-app-texte .nova-bdg-mots { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); line-height: 1.4; }
+.nova-app-ligne.nova-app-texte .nova-bdg-mots .nova-app-mots { flex: 1 1 14rem; min-width: 0; width: auto; }

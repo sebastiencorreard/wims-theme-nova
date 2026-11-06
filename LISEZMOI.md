@@ -109,9 +109,16 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
 - **Persévérance** : un exercice compte (une fois) quand l'élève y obtient au moins `--nova-perseverance-reussite`
   (7/10) après au moins `--nova-perseverance-echecs` (2) notes sous `--nova-perseverance-echec` (5/10) ; examens
   compris par défaut (`--nova-perseverance-examens`) ; paliers `1 3 5 10 15 20 25 30`.
+- **Échauffement** (« DM WIMS » : un examen d'entraînement à beaucoup d'essais et un examen noté au même contenu, à
+  peu d'essais) : un DM compte quand l'élève a fait au moins `--nova-echauffement-sessions` (2) sessions de
+  l'entraînement, avec au moins une réponse envoyée, avant d'ouvrir le DM noté ; paliers `1 3 5 8 12 16 21 26`. Les deux
+  examens sont reconnus par leur contenu (mêmes exercices et paniers, seuls à l'avoir : le plus d'essais = entraînement),
+  sinon par leur titre : un mot de `--nova-echauffement-entrainement` ou de `--nova-echauffement-note` (« note, test,
+  graded »), le reste du titre identique (« DMWIMS 02 (entraînement) » / « DMWIMS 02 (noté) »), accents et majuscules
+  ignorés. La fenêtre rappelle le prochain DM noté ouvert et les sessions qui manquent.
 
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
-Images : `img/badges/<badge>/` (WebP).
+Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/flamme_0N`, `echauffement/haltere_0N`.
 
 ## Suivi en direct (salle informatique)
 

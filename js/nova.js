@@ -2806,6 +2806,12 @@
       champs.forEach(function (c) {
         var k = c.getAttribute('data-cle');
         if (c.type === 'checkbox') { decl += ' --nova-' + k + ': ' + (c.checked ? 'oui' : 'non') + ';'; return; }
+        // Listes de mots (titres des DM d'Échauffement, 2026-11-06) : lettres, chiffres, espaces, virgules.
+        if (c.classList.contains('nova-app-mots')) {
+          var mots = c.value.split(',').map(function (m) { return m.replace(/[^0-9A-Za-z\u00c0-\u00ff' -]+/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean).join(', ');
+          if (mots) decl += ' --nova-' + k + ': ' + mots + ';';
+          return;
+        }
         var v = c.classList.contains('nova-app-paliers') ? (c.value.match(/\d+/g) || []).slice(0, 8).join(' ') : c.value.trim().replace(',', '.');
         if (v && (c.classList.contains('nova-app-paliers') || /^\d+(\.\d+)?$/.test(v))) decl += ' --nova-' + k + ': ' + v + ';';
       });
@@ -2813,7 +2819,7 @@
       if (v.periodes.length) decl += ' --nova-vacances: ' + v.periodes.join(' ') + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|vacances)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|vacances)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -3497,7 +3503,7 @@
       ouvrir();
     }
   }
-  // Fenêtre « Mes badges » : un onglet par badge proposé (Fidélité, Persévérance ; maquette du 2026-10-09). Chaque
+  // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
   // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
   function fenetreBadges(d) {
     var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
@@ -3510,6 +3516,7 @@
     var noms = a('niveaux').split(',');
     var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
     var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
+    var nsess = +reg[7] || 2;   // Échauffement : sessions d'entraînement demandées avant le DM noté
     // Dates de vacances saisies (--nova-vacances) : sinon, pas de phrase sur les vacances (utilisateur, 2026-11-04).
     var vacancesSaisies = reg[6] === '1';
     var f = el('dialog', 'nova-badges-fenetre');
@@ -3606,6 +3613,27 @@
         a('per-regle').replace('%r', reussite).replace('%n', nechecs).replace('%e', echec), chiffresP, etatP, texteP, '',
         a(examens ? 'per-examens-oui' : 'per-examens-non'), a('images-perseverance'))]);
     }
+    // Échauffement (DM WIMS, 2026-11-06) : echauffement on niveau total prochain nouveau obtenu np paliers… ;
+    // data-dm = « faites demandées titre » du DM noté ouvert et pas encore commencé, ou « - ».
+    var mh = a('echauffement').split(/\s+/);
+    if (mh[1] === 'on') {
+      var nivH = +mh[2], totalH = +mh[3], prochH = +mh[4], npH = +mh[7];
+      var palH = mh.slice(8, 8 + npH).map(Number);
+      var chiffresH = [[totalH, a('ech-total')]];
+      if (nivH < npH) chiffresH.push([prochH, a('avant').replace('%s', noms[nivH])]);
+      var dm = /^dm (\d+) (\d+) (.+)$/.exec(a('dm')), etatH, texteH;
+      if (dm) {
+        var reste = +dm[2] - +dm[1];
+        etatH = reste > 0 ? 'attente' : 'fait';
+        texteH = (reste > 1 ? a('ech-dm').replace('%n', reste) : (reste === 1 ? a('ech-dm1') : a('ech-pret'))).replace('%t', dm[3]);
+      } else {
+        etatH = 'fait';
+        texteH = nivH < npH ? (prochH === 1 ? a('ech-suite1') : a('ech-suite')).replace('%n', prochH).replace('%s', noms[nivH]) : a('max');
+      }
+      panneaux.push(['echauffement', a('ech-nom'), panneau('echauffement', a('ech-nom'), nivH, npH, palH, mh[6],
+        (nsess === 1 ? a('ech-regle1') : a('ech-regle')).replace('%n', nsess), chiffresH, etatH, texteH, '',
+        a('ech-aide'), a('images-echauffement'))]);
+    }
     // Onglets, s'il y a plus d'un badge.
     var onglets = null;
     f.choisir = function (cle) {
@@ -3624,7 +3652,7 @@
         b.setAttribute('role', 'tab');
         b.id = 'nova-onglet-' + p[0];
         var im = el('img');
-        var niv = p[0] === 'fidelite' ? +mf[2] : +mp[2];
+        var niv = +({ fidelite: mf, perseverance: mp, echauffement: mh }[p[0]][2]);
         im.src = a('images-' + p[0]) + Math.max(1, niv) + '.webp'; im.alt = ''; im.width = 28; im.height = 28;
         if (!niv) im.className = 'nova-badge-verrou';
         b.appendChild(im);

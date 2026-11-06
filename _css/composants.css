@@ -1105,3 +1105,15 @@ html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; 
 /* Indication et Aide inactives pendant un examen (nova.js, aideExamen) : bouton d'aide grisé. */
 body.main_body .wims_button_help.nova-inactif,
 body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-allowed; filter: grayscale(.6); }
+
+/* Alerte des zones dépendantes aux réglages Nova différents (pages Apparence et Badges Nova d'une structure, 2026-11-07,
+ * utilisateur ; nova.js ecartsZones). Même largeur que les cartes de réglages. */
+.wimsbody .nova-ecarts { width: 100%; max-width: 54rem; margin: 0 auto var(--nova-e4); box-sizing: border-box; }
+.nova-ecarts p { margin: 0 0 var(--nova-e2); }
+.nova-ecarts .nova-ecarts-titre { font-weight: 700; }
+.nova-ecarts details.nova-app-detail { margin-bottom: var(--nova-e3); }
+.nova-ecarts details.nova-app-detail > ul { columns: 14rem auto; column-gap: var(--nova-e5); }
+.nova-ecarts .nova-ecarts-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: 0; }
+.nova-ecarts .nova-ecarts-actions > * { margin: 0; }
+.nova-ecarts a.wims_button:not([href]) { opacity: .5; pointer-events: none; }
+.nova-ecarts .nova-ecarts-attente { margin: var(--nova-e2) 0 0; font-weight: 600; }

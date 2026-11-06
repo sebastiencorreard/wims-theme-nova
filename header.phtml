@@ -80,27 +80,51 @@
 !! Zones dependantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : case « Parametres du theme
 !! Nova » ajoutee par nova.js (propagationNova), traitee ici, sur l'accueil (module de confiance) : superviseur d'une
 !! structure seulement (types 2, 3, 4, comme propagate.proc) ; _procs/propager.sh recopie les blocs Nova de sa feuille
-!! dans celles des zones. Message affiche par nova.js (#nova-propage).
+!! dans celles des zones. Message affiche par nova.js (#nova-propage). 2026-11-07 (utilisateur) : apparence et badges
+!! separes : nova_propager=apparence, badges ou tout (1 = tout, ancien lien).
 !if $module=home and $wims_user=supervisor and $wims_class!=$empty
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
   !set nova_q=!replace internal + by $ $ in $nova_q
   !set nova_pr=!getopt nova_propager in $nova_q
-  !if $nova_pr=1
+  !reset nova_pp
+  !if $nova_pr=1 or $nova_pr=tout
+    !set nova_pp=apparence,badges
+    !set nova_pq=$nova_propage_quoi_tout
+  !endif
+  !if $nova_pr=apparence or $nova_pr=badges
+    !set nova_pp=$nova_pr
+    !set nova_pq=$(nova_propage_quoi_$nova_pr)
+  !endif
+  !if $nova_pp!=$empty
     !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
     !if $nova_ct isitemof 2,3,4
       !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
       !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
-      !set nova_pn=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup"
+      !set nova_pn=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" "$nova_pp"
       !if $nova_pn=1
         !set nova_pt=$nova_propage_1
       !else
         !set nova_pt=!replace internal %1 by $nova_pn in $nova_propage_n
       !endif
+      !set nova_pt=!replace internal %2 by $nova_pq in $nova_pt
 <div id="nova-propage" hidden>$nova_pt</div>
     !endif
   !endif
-  !reset nova_q nova_pr nova_ct nova_tn nova_sup nova_pn nova_pt
+  !reset nova_q nova_pr nova_pp nova_pq nova_ct nova_tn nova_sup nova_pn nova_pt
+!endif
+!! Pages Apparence et Badges Nova d'une structure (2026-11-07, utilisateur) : zones dependantes dont les blocs Nova
+!! different de ceux de la structure (copie ancienne ou reglage de la zone). nova.js (ecartsZones) en fait une alerte
+!! avec un bouton qui propage (accueil, nova_propager). Memes droits que la propagation.
+!if $module=adm/class/config and $wims_user=supervisor and $wims_class!=$empty
+  !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
+  !if $nova_ct isitemof 2,3,4
+    !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
+    !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
+    !set nova_ez=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" apparence,badges ecarts
+<ul id="nova-ecarts" hidden data-titre="$nova_ecart_titre" data-titre1="$nova_ecart_titre1" data-texte="$nova_ecart_texte" data-texte1="$nova_ecart_texte1" data-quoi-apparence="$nova_ecart_quoi_apparence" data-quoi-badges="$nova_ecart_quoi_badges" data-voir="$nova_ecart_voir" data-appliquer="$nova_ecart_appliquer" data-plus-tard="$nova_ecart_plus_tard" data-attente="$nova_ecart_attente">$nova_ez</ul>
+  !endif
+  !reset nova_ct nova_tn nova_sup nova_ez
 !endif
 !! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
 !! derniere valeur lue (sessionStorage).

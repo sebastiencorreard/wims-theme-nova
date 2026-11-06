@@ -3372,10 +3372,27 @@
     });
   }
 
-  /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : case « Paramètres du
-   * thème Nova » ajoutée à la liste de WIMS. Cochée, l'envoi envoie d'abord les autres cases à WIMS (s'il y en a), puis
-   * ouvre l'accueil avec nova_propager=1 : header.phtml (module de confiance) y recopie les blocs Nova de la feuille de la
-   * structure dans celles de ses zones et pose #nova-propage, message affiché ici en tête de page. */
+  /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
+   * ?session= sans compteur ouvre l'accueil du contexte. */
+  function lienAccueil(suite) {
+    var m = /[?&]session=([^&.]+)/.exec(location.search), session = m ? m[1] : '';
+    if (!session) {
+      var champ = document.querySelector('input[name="session"]');
+      if (champ) session = champ.value.split('.')[0];
+    }
+    if (!session) {
+      var a = document.querySelector('a[href*="session="]');
+      m = a && /session=([^&.]+)/.exec(a.getAttribute('href'));
+      if (m) session = m[1];
+    }
+    return 'wims.cgi?session=' + encodeURIComponent(session) + '&lang=' + encodeURIComponent(racineLangue()) + '&module=home' + suite;
+  }
+
+  /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : cases « Apparence du thème
+   * Nova » et « Badges Nova » (séparées le 2026-11-07, utilisateur) ajoutées à la liste de WIMS. Cochées, l'envoi envoie
+   * d'abord les autres cases à WIMS (s'il y en a), puis ouvre l'accueil avec nova_propager=apparence|badges|tout :
+   * header.phtml (module de confiance) y recopie les blocs Nova choisis de la feuille de la structure dans celles de ses
+   * zones et pose #nova-propage, message affiché ici en tête de page. */
   function propagationNova() {
     var fait = document.getElementById('nova-propage');
     var corps = document.querySelector('.wimsbody');
@@ -3387,26 +3404,26 @@
       corps.insertBefore(msg, corps.firstChild);
     }
     var cases = document.querySelectorAll('.wimsbody input[type="checkbox"][name="propagate"]');
-    if (!cases.length || !cases[0].form || document.getElementById('propagate_nova')) return;
+    if (!cases.length || !cases[0].form || document.getElementById('propagate_nova_apparence')) return;
     var form = cases[0].form, liste = cases[0].closest('ul');
     var textes = document.getElementById('nova-textes');
-    var li = document.createElement('li');
-    var nova = document.createElement('input');
-    nova.type = 'checkbox'; nova.id = 'propagate_nova';
-    var label = document.createElement('label');
-    label.htmlFor = 'propagate_nova';
-    label.textContent = (textes && textes.getAttribute('data-texte-propager-nova')) || 'Nova theme settings';
-    li.appendChild(nova); li.appendChild(label);
-    if (liste) liste.appendChild(li); else cases[cases.length - 1].parentNode.appendChild(li);
+    var ajouter = function (partie, defaut) {
+      var li = document.createElement('li');
+      var c = document.createElement('input');
+      c.type = 'checkbox'; c.id = 'propagate_nova_' + partie; c.value = partie;
+      var label = document.createElement('label');
+      label.htmlFor = c.id;
+      label.textContent = (textes && textes.getAttribute('data-texte-propager-' + partie)) || defaut;
+      li.appendChild(c); li.appendChild(label);
+      if (liste) liste.appendChild(li); else cases[cases.length - 1].parentNode.appendChild(li);
+      return c;
+    };
+    var nova = [ajouter('apparence', 'Nova theme appearance'), ajouter('badges', 'Nova badges')];
     form.addEventListener('submit', function (e) {
-      if (!nova.checked) return;
+      var choisies = nova.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
+      if (!choisies.length) return;
       e.preventDefault();
-      var champ = form.querySelector('input[name="session"]');
-      var session = champ ? champ.value.split('.')[0] : '';
-      var langue = form.querySelector('input[name="lang"]');
-      var accueil = form.getAttribute('action') || 'wims.cgi';
-      accueil += (accueil.indexOf('?') < 0 ? '?' : '&') + 'session=' + encodeURIComponent(session) +
-        (langue ? '&lang=' + encodeURIComponent(langue.value) : '') + '&module=home&nova_propager=1';
+      var accueil = lienAccueil('&nova_propager=' + (choisies.length > 1 ? 'tout' : choisies[0]));
       var suite = function () { location.href = accueil; };
       if (![].some.call(cases, function (c) { return c.checked; })) { suite(); return; }
       var donnees = new FormData(form);
@@ -3417,6 +3434,59 @@
       var envoi = methode === 'post' ? fetch(cible, { method: 'POST', body: donnees, credentials: 'same-origin' })
         : fetch(cible + (cible.indexOf('?') < 0 ? '?' : '&') + new URLSearchParams(donnees).toString(), { credentials: 'same-origin' });
       envoi.then(suite, suite);
+    });
+  }
+
+  /* Pages Apparence et Badges Nova d'un portail ou d'un groupement (demande de l'utilisateur, 2026-11-07) : alerte en
+   * tête de la carte quand des zones dépendantes ont d'autres réglages Nova (#nova-ecarts, header.phtml), avec la liste
+   * repliée, « Appliquer ces réglages à toutes les zones » (propagation par l'accueil, réglages ENREGISTRÉS : bouton
+   * désactivé dès qu'un champ de la page change) et « Plus tard » (referme jusqu'à la prochaine visite). */
+  function ecartsZones() {
+    var src = document.getElementById('nova-ecarts');
+    if (!src) return;
+    var t = function (n) { return src.getAttribute('data-' + n) || ''; };
+    var cibles = { apparence: '.wimsbody .nova-app:not(.nova-badges-reglages)', badges: '.wimsbody .nova-badges-reglages' };
+    Object.keys(cibles).forEach(function (partie) {
+      var zones = src.querySelectorAll('li[data-partie="' + partie + '"]');
+      var bloc = document.querySelector(cibles[partie]);
+      if (!zones.length || !bloc || bloc.querySelector('.nova-ecarts')) return;
+      var el = function (balise, classe, texte) {
+        var e = document.createElement(balise);
+        if (classe) e.className = classe;
+        if (texte != null) e.textContent = texte;
+        return e;
+      };
+      var n = zones.length;
+      var alerte = el('div', 'nova-ecarts wims_msg warning');
+      alerte.setAttribute('role', 'status');
+      alerte.appendChild(el('p', 'nova-ecarts-titre', (n === 1 ? t('titre1') : t('titre').replace('%n', n)).replace('%q', t('quoi-' + partie))));
+      alerte.appendChild(el('p', '', n === 1 ? t('texte1') : t('texte')));
+      var details = el('details', 'nova-app-detail');
+      details.appendChild(el('summary', '', t('voir')));
+      var ul = el('ul');
+      [].forEach.call(zones, function (z) { ul.appendChild(el('li', '', z.textContent)); });
+      details.appendChild(ul);
+      alerte.appendChild(details);
+      var actions = el('p', 'nova-ecarts-actions');
+      var appliquer = el('a', 'wims_button', t('appliquer'));
+      appliquer.href = lienAccueil('&nova_propager=' + partie);
+      var plusTard = el('button', 'nova-ecarts-plus-tard wims_button wims_secondary_button', t('plus-tard'));
+      plusTard.type = 'button';
+      plusTard.addEventListener('click', function () { alerte.remove(); });
+      actions.appendChild(appliquer); actions.appendChild(plusTard);
+      alerte.appendChild(actions);
+      var attente = el('p', 'nova-ecarts-attente', t('attente'));
+      attente.hidden = true;
+      alerte.appendChild(attente);
+      bloc.insertBefore(alerte, bloc.firstChild);
+      var modifie = function (e) {
+        if (alerte.contains(e.target)) return;
+        appliquer.setAttribute('aria-disabled', 'true');
+        appliquer.removeAttribute('href');
+        attente.hidden = false;
+      };
+      bloc.addEventListener('input', modifie);
+      bloc.addEventListener('change', modifie);
     });
   }
 
@@ -3696,7 +3766,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -118,6 +118,10 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
   ignorés. La fenêtre rappelle le prochain DM noté ouvert et les sessions qui manquent.
 
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
+
+Portail ou groupement : les réglages d'une zone l'emportent sur ceux de la structure. Pour les recopier dans les zones :
+« Zones dépendantes » de la configuration, cases « Apparence du thème Nova » et « Badges Nova » (séparées). Les pages
+Apparence et Badges Nova de la structure signalent les zones dont les réglages diffèrent et proposent de les mettre à jour.
 Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/flamme_0N`, `entrainement/halteres_0N`.
 
 ## Suivi en direct (salle informatique)

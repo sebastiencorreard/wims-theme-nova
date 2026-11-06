@@ -234,9 +234,24 @@
 !set nova_app_act_notes2=dernières notes.
 !set nova_app_act_herite=Champ vide : valeur du portail, du groupement ou du site.
 !set nova_app_act_reglages=Réglages de la page
-!set nova_propage_case=Paramètres du thème Nova (réglages de la page Apparence et badges)
-!set nova_propage_1=Paramètres du thème Nova propagés à 1 zone dépendante.
-!set nova_propage_n=Paramètres du thème Nova propagés à %1 zones dépendantes.
+!set nova_propage_case_apparence=Apparence du thème Nova (réglages Nova de la page Apparence)
+!set nova_propage_case_badges=Badges Nova (badges proposés et leurs réglages)
+!set nova_propage_1=Réglages propagés à 1 zone dépendante : %2.
+!set nova_propage_n=Réglages propagés à %1 zones dépendantes : %2.
+!set nova_propage_quoi_tout=apparence du thème Nova et badges Nova
+!set nova_propage_quoi_apparence=apparence du thème Nova
+!set nova_propage_quoi_badges=badges Nova
+!! Pages Apparence et Badges Nova d'une structure (2026-11-07) : zones aux reglages differents. %n nombre, %q quoi.
+!set nova_ecart_titre=%n zones dépendantes n'utilisent pas ces réglages %q
+!set nova_ecart_titre1=1 zone dépendante n'utilise pas ces réglages %q
+!set nova_ecart_quoi_apparence=d'apparence de Nova
+!set nova_ecart_quoi_badges=des badges
+!set nova_ecart_texte=Elles ont leurs propres réglages : une copie plus ancienne, ou un réglage fait dans la zone.
+!set nova_ecart_texte1=Elle a ses propres réglages : une copie plus ancienne, ou un réglage fait dans la zone.
+!set nova_ecart_voir=Voir les zones
+!set nova_ecart_appliquer=Appliquer ces réglages à toutes les zones
+!set nova_ecart_plus_tard=Plus tard
+!set nova_ecart_attente=Enregistrez d'abord vos changements, puis appliquez-les aux zones.
 !set nova_app_masques_eleves=Rubriques masquées aux élèves
 !set nova_app_masques_eleves_aide=Cochées : absentes du menu des élèves. Le menu de l'enseignant ne change pas.
 !set nova_app_masque_communication=Communication (forum, écrire à l'enseignant)

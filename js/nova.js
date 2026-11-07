@@ -3832,7 +3832,7 @@
       d.className = 'menuitem profil_avatar';
       var a = document.createElement('a');
       a.href = lienMonAvatar();
-      a.className = 'user';
+      a.className = 'smile-o';   // Font_Awesome : visage (\f118) ; « user » perdait contre le tiret générique
       var span = document.createElement('span');
       span.textContent = memo.titre;
       a.appendChild(span);

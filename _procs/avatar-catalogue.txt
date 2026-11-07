@@ -7,6 +7,8 @@
 # Couleurs (2026-11-07, maquette v3 validee par l'utilisateur) : fonds pastel retires, fond transparent gratuit par defaut ;
 # fonds en degrade = noms (coucher, ocean, aurore, bonbon, lagon, galaxie ; couleurs dans nova.js AVATAR_DEGRADES),
 # recompenses de badges, masques quand leur badge n'est pas active (comme tous les elements de badge).
+# hatColor (2026-11-07, utilisateur) : couleur des chapeaux (hat, winterHat1, 02, 03, 04), onglet montre seulement quand un
+# chapeau est porte ; memes couleurs et prix que les vetements ; sans choix, le chapeau prend la couleur du vetement.
 top shortFlat libre
 top shortRound libre
 top shortWaved 1
@@ -39,6 +41,21 @@ top winterHat1 perseverance:1
 top winterHat02 perseverance:2
 top winterHat03 perseverance:4
 top winterHat04 perseverance:6
+hatColor 262e33 libre
+hatColor 929598 libre
+hatColor ffffff libre
+hatColor 25557c 1
+hatColor 5199e4 1
+hatColor 65c9ff 1
+hatColor ffafb9 1
+hatColor ff488e 1
+hatColor ff5c5c 1
+hatColor ff9f1c 1
+hatColor ffd60a 1
+hatColor 06d6a0 1
+hatColor 8338ec 1
+hatColor 7b1e3a 1
+hatColor 1b4332 1
 hairColor 2c1b18 libre
 hairColor 4a312c libre
 hairColor 724133 libre

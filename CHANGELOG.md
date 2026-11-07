@@ -13,6 +13,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - **Badge Au top** : récompense un DM noté réussi (9/10 par défaut).
 - **Régularité** (ex-Fidélité) : compteur de semaines travaillées, sans série à perdre ; une semaine compte quand l'élève a envoyé au moins une réponse le nombre de jours choisi.
 - **Mon activité** : un jour de travail = au moins une réponse envoyée ; vacances par zone A, B ou C (dates officielles fournies), dates personnalisées, ou aucune.
+- Avatar : couleur des chapeaux au choix (onglet visible seulement quand un chapeau est porté).
 - Fenêtre des badges : onglets en icône ; niveau « Cuivre » renommé « Bronze ».
 
 ### Enseignants

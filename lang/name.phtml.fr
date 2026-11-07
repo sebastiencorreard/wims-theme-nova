@@ -373,7 +373,7 @@
 !set nova_av_enr_bloque=Débloque d'abord l'élément en aperçu, ou clique sur Annuler.
 !set nova_av_tire=Tiré parmi tes éléments débloqués. Enregistre-le s'il te plaît.
 !set nova_av_premier=Choisis ton avatar, puis enregistre-le : il apparaîtra en haut de tes pages.
-!set nova_av_categories=Coiffure,Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Lunettes (couleur),Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond
+!set nova_av_categories=Coiffure,Chapeau (couleur),Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Lunettes (couleur),Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond
 !set nova_av_ouverts=%n sur %m débloqués.
 !set nova_av_motif=Choisir un motif met le tee-shirt à motif.
 !set nova_av_lunettes=Choisis aussi des lunettes (onglet Lunettes) pour voir cette couleur sur ton avatar.

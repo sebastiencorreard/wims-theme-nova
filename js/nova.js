@@ -3951,7 +3951,7 @@
    * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
    * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
    * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
-  var AVATAR_CATEGORIES = ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
+  var AVATAR_CATEGORIES = ['top', 'hatColor', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
     'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
   function cleAvatar() {
     var cle = cleCouleur();
@@ -3964,6 +3964,9 @@
     try { var cle = cleAvatar(); if (!cle) return; if (v) localStorage.setItem(cle, JSON.stringify(v)); else localStorage.removeItem(cle); } catch (e) { /* sans stockage : rien */ }
   }
   // Fonds en dégradé du catalogue (récompenses de badges ; maquette v3 validée le 2026-11-07).
+  // Coiffures qui sont des chapeaux : seules à montrer l'onglet « Chapeau (couleur) » (hatColor).
+  var AVATAR_CHAPEAUX = ['hat', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04'];
+  function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0; }
   var AVATAR_DEGRADES = { coucher: ['ff6b6b', 'ffd60a'], ocean: ['00b4d8', '3a86ff'], aurore: ['06d6a0', '8338ec'],
     bonbon: ['ff006e', 'ffafcc'], lagon: ['9ef01a', '00b4d8'], galaxie: ['1d3557', '8338ec'] };
   // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
@@ -3974,7 +3977,8 @@
     ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'clothing', 'clothesColor', 'clothingGraphic', 'backgroundColor'].forEach(function (k) {
       if (c[k]) o[k] = [c[k]];
     });
-    if (c.clothesColor) o.hatColor = [c.clothesColor];
+    // Couleur du chapeau (2026-11-07) : la sienne, sinon celle du vêtement (avatars enregistrés avant).
+    if (c.hatColor || c.clothesColor) o.hatColor = [c.hatColor || c.clothesColor];
     if (AVATAR_DEGRADES[c.backgroundColor]) { o.backgroundColor = AVATAR_DEGRADES[c.backgroundColor]; o.backgroundType = ['gradientLinear']; o.backgroundRotation = [135]; }
     if (c.accessoriesColor) o.accessoriesColor = [c.accessoriesColor];
     if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
@@ -4149,12 +4153,14 @@
     AVATAR_CATEGORIES.forEach(function (k, i) {
       var libres = (etat.ordre[k] || []).filter(function (v) { return etat.elements[k + '.' + v] === 'libre'; });
       if (k === 'accessories' || k === 'facialHair') libres = ['aucun'];
+      if (k === 'hatColor') return;   // sans choix : couleur du vêtement
       // Peau : tirage parmi les teintes naturelles (le jaune et l'orange restent au choix de l'élève).
       if (k === 'skinColor') libres = libres.filter(function (v) { return v !== 'f8d25c' && v !== 'fd9841'; });
       if (libres.length) choix[k] = libres[(graine + i * 7) % libres.length];
     });
     etat.enregistre.split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) choix[e.slice(0, i)] = e.slice(i + 1); });
     if (!choix.clothingGraphic) choix.clothingGraphic = (etat.ordre.clothingGraphic || ['pizza'])[0];
+    if (!choix.hatColor && choix.clothesColor && ouvert('hatColor.' + choix.clothesColor)) choix.hatColor = choix.clothesColor;
     var chaine = function (c) {
       return AVATAR_CATEGORIES.filter(function (k) { return c[k] && ouvert(k + '.' + c[k]); }).map(function (k) { return k + '.' + c[k]; }).join(',');
     };
@@ -4302,8 +4308,10 @@
       boutonEnr.disabled = !!enAttente || occupe;
       boutonEnr.title = enAttente ? t('enr-bloque') : '';
       onglets.textContent = '';
+      if (AVATAR_CATEGORIES[catActive] === 'hatColor' && !porteChapeau(choix)) catActive = 0;
       AVATAR_CATEGORIES.forEach(function (k, i) {
         if (!etat.ordre[k]) return;
+        if (k === 'hatColor' && !porteChapeau(choix)) return;   // chapeau porté (pas seulement essayé)
         var b = el('button', 'nova-avatar-onglet');
         b.type = 'button';
         b.setAttribute('role', 'tab');

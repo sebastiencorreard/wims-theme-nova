@@ -2657,6 +2657,7 @@
       carte.querySelectorAll('input[name="nova_c_masque"]').forEach(function (c) { c.checked = masques.indexOf(c.value) >= 0; });
     };
     lire();
+    var vac = vacancesApparence(carte, zone, modele);
     var ecrire = function () {
       var decl = cles.map(function (k) {
         var r = carte.querySelector('input[name="nova_c_' + k + '"]:checked');
@@ -2673,9 +2674,12 @@
       var ancien = /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
       (ancien ? ancien[1].match(/--nova-[a-z0-9-]+\s*:\s*[^;}]+/g) || [] : []).forEach(function (d) {
         var k = /--nova-([a-z0-9-]+)/.exec(d)[1];
-        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0 && k !== 'masques-eleves' && k !== 'communication-eleves') decl += ' ' + d.trim() + ';';
+        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0 && k !== 'masques-eleves' && k !== 'communication-eleves' && k !== 'vacances') decl += ' ' + d.trim() + ';';
       });
-      var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '').trim();
+      // Vacances (2026-11-07) : écrites ici seulement, retirées des autres blocs (ancien bloc des badges).
+      decl += vac.decl();
+      var reste = zone.value.replace(/\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
+        .replace(/\s*--nova-vacances\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     // Bloc réécrit seulement si le prof a touché à la carte, ou si un bloc présent au chargement a disparu : sinon la
@@ -2686,7 +2690,10 @@
     // Nova présent → la carte suit la zone ; bloc effacé (par inadvertance) → aussitôt réécrit d'après la carte.
     // Et à l'enregistrement par le bouton de WIMS, dans les mêmes cas.
     zone.addEventListener('change', function () { if (bloc()) lire(); else if (touche || blocAuChargement) ecrire(); });
-    formWims.addEventListener('submit', function () { if (touche || (blocAuChargement && !bloc())) ecrire(); });
+    formWims.addEventListener('submit', function (e) {
+      if (vac.erreurs()) { e.preventDefault(); vac.montrer(); return; }   // dates non comprises : rien d'envoyé
+      if (touche || (blocAuChargement && !bloc())) ecrire();
+    });
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () { touche = true; ecrire(); envoi.click(); });
@@ -2697,6 +2704,97 @@
     var lignesSeules = (modele.getAttribute('data-sans-effet-ligne') || '').split(',').filter(Boolean);
     replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); })
       .concat(lignesSeules.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('p'); })), modele);
+  }
+
+  /* Vacances de « Mon activité » (demande de l'utilisateur, 2026-11-07, maquette validée) : héritées (portail, groupement),
+   * aucune, zone A, B, C (dates officielles livrées avec Nova : #nova-vacances-zones, _procs/vacances-zones.txt) ou dates
+   * personnalisées (une période par ligne). Résumé des dates de l'année scolaire en cours pour une zone. Renvoie decl()
+   * (déclaration à écrire, vide si héritée), erreurs() (lignes non comprises) et montrer(). */
+  function vacancesEnLignes(v) {
+    return (v || '').split(/\s+/).map(function (p) {
+      var m = /^(\d{4})(\d\d)(\d\d)-(\d{4})(\d\d)(\d\d)$/.exec(p);
+      return m ? m[3] + '/' + m[2] + '/' + m[1] + ' - ' + m[6] + '/' + m[5] + '/' + m[4] : '';
+    }).filter(Boolean).join('\n');
+  }
+  // Lignes « JJ/MM/AAAA - JJ/MM/AAAA » (aussi « du … au … ») en périodes AAAAMMJJ-AAAAMMJJ ; lignes non comprises à part.
+  function lirePeriodes(texte) {
+    var bonnes = [], mauvaises = [];
+    var deux = function (n) { return ('0' + n).slice(-2); };
+    (texte || '').split('\n').forEach(function (l) {
+      var t = l.trim();
+      if (!t) return;
+      var m = /^(?:du\s+)?(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(?:-|\u2013|au|\u00e0)\s*(\d{1,2})\/(\d{1,2})\/(\d{4})$/i.exec(t);
+      if (m && m[3] + deux(m[2]) + deux(m[1]) <= m[6] + deux(m[5]) + deux(m[4])) bonnes.push(m[3] + deux(m[2]) + deux(m[1]) + '-' + m[6] + deux(m[5]) + deux(m[4]));
+      else mauvaises.push(t);
+    });
+    return { periodes: bonnes, mauvaises: mauvaises };
+  }
+  function vacancesApparence(carte, zone, modele) {
+    var bloc = carte.querySelector('.nova-app-vac');
+    var vide = { decl: function () { return ''; }, erreurs: function () { return 0; }, montrer: function () {} };
+    if (!bloc) return vide;
+    var t = function (n) { return modele.getAttribute('data-' + n) || ''; };
+    var radios = [].slice.call(bloc.querySelectorAll('input[name="nova_c_vacances"]'));
+    var resume = bloc.querySelector('.nova-app-vac-resume'), saisie = bloc.querySelector('.nova-app-vac-saisie');
+    var dates = bloc.querySelector('.nova-app-vac-dates'), erreur = bloc.querySelector('.nova-app-vac-erreur');
+    var source = document.getElementById('nova-vacances-zones');
+    var lignes = (source ? source.textContent : '').split('\n').map(function (l) { return l.trim().split(/\s+/); }).filter(function (c) { return c.length === 4; });
+    var noms = t('vac-noms').split(','), cles = ['Toussaint', 'Noel', 'Hiver', 'Printemps', 'Ete'];
+    var jm = function (d) { return d.slice(6, 8) + '/' + d.slice(4, 6); };
+    var nomZone = function (v) { return t('vac-zone') + ' ' + v.slice(5).toUpperCase(); };
+    var resumeZone = function (v) {
+      var auj = new Date(), y = auj.getFullYear();
+      var an = auj.getMonth() >= 7 ? y + '-' + (y + 1) : (y - 1) + '-' + y;   // d\u00e8s ao\u00fbt : l'ann\u00e9e qui vient
+      var z = v.slice(5).toUpperCase();
+      var items = lignes.filter(function (c) { return c[0] === z && c[1] === an; }).map(function (c) {
+        var i = cles.indexOf(c[2]), nom = i >= 0 && noms[i] ? noms[i] : c[2], p = c[3].split('-');
+        return c[2] === 'Ete' ? nom + ' ' + t('vac-ete').replace('%d', jm(p[0])) : nom + ' ' + jm(p[0]) + ' \u2013 ' + jm(p[1]);
+      });
+      return items.length ? nomZone(v) + ', ' + an + ' : ' + items.join(' \u00b7 ') : t('vac-manque').replace('%a', an);
+    };
+    var herite = (bloc.getAttribute('data-herite') || '').trim();
+    var decrire = function (v) {
+      if (/^zone-[abc]$/.test(v)) return nomZone(v);
+      var r = radios.filter(function (x) { return x.value === (v === 'aucune' || !v ? 'aucune' : 'dates'); })[0];
+      return r ? r.parentNode.textContent.trim() : v;
+    };
+    var etiquette = bloc.querySelector('.nova-app-vac-herite span');
+    if (etiquette && herite) etiquette.textContent = t('vac-herite-de').replace('%h', etiquette.textContent.trim()).replace('%v', decrire(herite));
+    // Valeur de la classe : dernière déclaration de sa feuille (ancien bloc des badges compris).
+    var toutes = zone.value.match(/--nova-vacances\s*:\s*[^;}\n]*/g) || [];
+    var propre = toutes.length ? toutes[toutes.length - 1].replace(/--nova-vacances\s*:\s*/, '').replace(/["']/g, '').trim() : '';
+    var choix = !propre ? (radios.some(function (r) { return r.value === ''; }) ? '' : 'aucune')
+      : propre === 'aucune' ? 'aucune' : /^zone-[abc]$/.test(propre) ? propre : 'dates';
+    if (choix === 'dates') dates.value = vacancesEnLignes(propre);
+    radios.forEach(function (r) { r.checked = r.value === choix; });
+    var valeur = function () { var r = radios.filter(function (x) { return x.checked; })[0]; return r ? r.value : ''; };
+    var montrer = function () {
+      var m = valeur() === 'dates' ? lirePeriodes(dates.value).mauvaises : [];
+      erreur.hidden = !m.length;
+      erreur.textContent = m.length ? t('erreur-vacances') + ' ' + m.join(' ; ') : '';
+      return m.length;
+    };
+    var maj = function () {
+      var v = valeur(), effective = v === '' ? herite : v;
+      saisie.hidden = v !== 'dates';
+      resume.textContent = /^zone-[abc]$/.test(effective) ? resumeZone(effective) : effective === 'aucune' ? t('vac-resume-aucune') : '';
+      resume.hidden = !resume.textContent;
+      montrer();
+    };
+    radios.forEach(function (r) { r.addEventListener('change', maj); });
+    dates.addEventListener('input', montrer);
+    maj();
+    return {
+      decl: function () {
+        var v = valeur();
+        if (v === '') return '';
+        if (v !== 'dates') return ' --nova-vacances: ' + v + ';';
+        var p = lirePeriodes(dates.value).periodes;
+        return ' --nova-vacances: ' + (p.length ? p.join(' ') : 'aucune') + ';';
+      },
+      erreurs: montrer,
+      montrer: function () { if (montrer()) dates.focus(); }
+    };
   }
 
   // Bloc de réglages Nova dans une feuille de style : une déclaration par ligne (demande de l'utilisateur,
@@ -2742,14 +2840,6 @@
       var m = new RegExp('--nova-' + cle + '\\s*:\\s*([^;}\\n]*)').exec(texte);
       return m ? m[1].trim().replace(/["']/g, '') : '';
     };
-    var enLignes = function (v) {
-      return (v || '').split(/\s+/).map(function (p) {
-        var m = /^(\d{4})(\d\d)(\d\d)-(\d{4})(\d\d)(\d\d)$/.exec(p);
-        return m ? m[3] + '/' + m[2] + '/' + m[1] + ' - ' + m[6] + '/' + m[5] + '/' + m[4] : '';
-      }).filter(Boolean).join('\n');
-    };
-    var vacances = carte.querySelector('.nova-app-vacances');
-    var erreur = carte.querySelector('.nova-app-erreur');
     var herite = getComputedStyle(document.documentElement);
     // Champs des badges (paliers, exercices par semaine, règle de Persévérance, examens ; 2026-10-09) : un champ par
     // réglage, nommé par data-cle ; vide = valeur héritée (portail, groupement, site), montrée en exemple.
@@ -2760,27 +2850,6 @@
       if (c.type === 'checkbox') c.checked = (v || h || 'oui') !== 'non';
       else { c.value = v; c.placeholder = h; }
     });
-    if (vacances) {
-      vacances.value = enLignes(valeur(zone.value, 'vacances'));
-      vacances.placeholder = enLignes(herite.getPropertyValue('--nova-vacances').trim());
-    }
-    // Lignes « JJ/MM/AAAA - JJ/MM/AAAA » (aussi « du … au … ») en périodes AAAAMMJJ-AAAAMMJJ ; lignes non comprises.
-    var lireVacances = function () {
-      var bonnes = [], mauvaises = [];
-      (vacances ? vacances.value : '').split('\n').forEach(function (l) {
-        var t = l.trim();
-        if (!t) return;
-        var m = /^(?:du\s+)?(\d{1,2})\/(\d{1,2})\/(\d{4})\s*(?:-|\u2013|au|\u00e0)\s*(\d{1,2})\/(\d{1,2})\/(\d{4})$/i.exec(t);
-        var deux = function (n) { return ('0' + n).slice(-2); };
-        if (m && m[3] + deux(m[2]) + deux(m[1]) <= m[6] + deux(m[5]) + deux(m[4])) bonnes.push(m[3] + deux(m[2]) + deux(m[1]) + '-' + m[6] + deux(m[5]) + deux(m[4]));
-        else mauvaises.push(t);
-      });
-      if (erreur) {
-        erreur.hidden = !mauvaises.length;
-        erreur.textContent = mauvaises.length ? modele.getAttribute('data-erreur-vacances') + ' ' + mauvaises.join(' ; ') : '';
-      }
-      return { periodes: bonnes, erreurs: mauvaises.length };
-    };
     // Interrupteur général (page Apparence) : rappelé en tête, avec le lien.
     var actif = valeur(zone.value, 'badges') || herite.getPropertyValue('--nova-badges').trim().replace(/["']/g, '');
     var etat = carte.querySelector('.nova-bdg-etat-texte');
@@ -2815,21 +2884,22 @@
         var v = c.classList.contains('nova-app-paliers') ? (c.value.match(/\d+/g) || []).slice(0, 8).join(' ') : c.value.trim().replace(',', '.');
         if (v && (c.classList.contains('nova-app-paliers') || /^\d+(\.\d+)?$/.test(v))) decl += ' --nova-' + k + ': ' + v + ';';
       });
-      var v = lireVacances();
-      if (v.periodes.length) decl += ' --nova-vacances: ' + v.periodes.join(' ') + ';';
+      // Vacances (2026-11-07) : réglées sur la page Apparence (« Mon activité ») ; celles d'un ancien bloc des badges sont
+      // gardées telles quelles jusqu'au prochain enregistrement de la page Apparence, qui les reprend.
+      var ancienBloc = /\/\* Nova : badges \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
+      var vacAncienne = ancienBloc && /--nova-vacances\s*:\s*([^;}\n]*)/.exec(ancienBloc[1]);
+      if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|vacances)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () {
       ecrire();
-      if (lireVacances().erreurs) { if (vacances) vacances.focus(); return; }   // rien d'envoyé : à corriger d'abord
       envoi.click();
     });
-    if (vacances) vacances.addEventListener('input', lireVacances);
     racine.classList.add('nova-badges-prete');
   }
 
@@ -3587,8 +3657,6 @@
     var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
     var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
     var nsess = +reg[7] || 2;   // Échauffement : sessions d'entraînement demandées avant le DM noté
-    // Dates de vacances saisies (--nova-vacances) : sinon, pas de phrase sur les vacances (utilisateur, 2026-11-04).
-    var vacancesSaisies = reg[6] === '1';
     var f = el('dialog', 'nova-badges-fenetre');
     f.setAttribute('aria-labelledby', 'nova-badges-titre');
     var tete = el('div', 'nova-badges-entete');
@@ -3649,18 +3717,19 @@
       return carte;
     };
     var panneaux = [];
-    // Régularité (ex-Fidélité) : fidelite on niveau record serie etat prochain nouveau obtenu np paliers…
+    // Régularité (ex-Fidélité ; compteur de semaines depuis le 2026-11-07, maquette validée par l'utilisateur) :
+    // fidelite on niveau total total etat prochain nouveau obtenu np paliers… (etat : fait | attente).
     var mf = a('fidelite').split(/\s+/);
     if (mf[1] === 'on') {
-      var niveau = +mf[2], record = +mf[3], serie = +mf[4], etat = mf[5], prochain = +mf[6], np = +mf[9];
+      var niveau = +mf[2], totalF = +mf[3], etat = mf[5] === 'fait' ? 'fait' : 'attente', prochain = +mf[6], np = +mf[9];
       var paliers = mf.slice(10, 10 + np).map(Number);
       var suite = niveau < np ? (prochain === 1 ? a('fid-suite1') : a('fid-suite')).replace('%n', prochain).replace('%s', noms[niveau]) : a('max');
-      var attente = (parsem === 1 ? a('fid-etat-attente1') : a('fid-etat-attente')).replace('%e', parsem);
-      var etatTexte = etat === 'pause' ? a('fid-etat-pause') : ((etat === 'attente' ? attente : a('fid-etat-' + etat)) + ' ' + suite).trim();
-      var chiffresF = [[serie, a('serie')], [record, a('record')]];
+      var etatTexte = etat === 'fait' ? (a('fid-etat-fait') + ' ' + suite).trim()
+        : (parsem === 1 ? a('fid-etat-attente1') : a('fid-etat-attente')).replace('%e', parsem);
+      var chiffresF = [[totalF, a('fid-total')]];
       if (niveau < np) chiffresF.push([prochain, a('avant').replace('%s', noms[niveau])]);
       panneaux.push(['fidelite', a('fid-nom'), panneau('fidelite', a('fid-nom'), niveau, np, paliers, mf[8],
-        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), vacancesSaisies ? a('fid-vacances') : '', a('images-fidelite'))]);
+        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), a('fid-aide'), a('images-fidelite'))]);
     }
     // Persévérance : perseverance on niveau total prochain nouveau obtenu np paliers…
     var mp = a('perseverance').split(/\s+/);

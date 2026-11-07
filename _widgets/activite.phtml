@@ -5,7 +5,7 @@
 !set nova_cl=$wims_home/log/classes
 !set nova_cc=$wims_home/log/ccaccount
 !set nova_auj=!char 1 to 8 of $wims_now
-!set nova_ad=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#cc'; cat $nova_cc/$wims_class/$wims_user $nova_cc/$wims_superclass/$wims_user 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -f $wims_home/public_html/themes/$wims_theme/_procs/activite.awk
+!set nova_ad=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#cc'; cat $nova_cc/$wims_class/$wims_user $nova_cc/$wims_superclass/$wims_user 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v zones=$wims_home/public_html/themes/$wims_theme/_procs/vacances-zones.txt -f $wims_home/public_html/themes/$wims_theme/_procs/activite.awk
 !set nova_l=!line 1 of $nova_ad
 !set nova_seuil=!word 2 of $nova_l
 !set nova_obj=!word 3 of $nova_l

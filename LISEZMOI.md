@@ -86,14 +86,19 @@ accessibles par un lien en bas de page) : trois cartes, pour des élèves de 11 
 
 - **Ma régularité** : jours de travail de la semaine (lundi-dimanche), un rond par jour. Sous le seuil
   d'encouragement, un message et le bouton « Faire un exercice » ; entre le seuil et l'objectif, « C'est bien,
-  encore N jours » ; objectif atteint, « Bravo ». Pendant les vacances (celles des badges), pas d'objectif.
+  encore N jours » ; objectif atteint, « Bravo ». Pendant les vacances, pas d'objectif.
 - **Mon temps de travail** : durée de la semaine, barre avec un repère au seuil de pause ; au-delà, invitation à
   faire des pauses. Sessions comptées par WIMS chaque nuit (`log/ccaccount`, pauses de plus de 15 min non comptées).
 - **Mes dernières notes** : les N dernières notes des feuilles (pas des examens), carré coloré, exercice, jour.
 
 Réglages (page Apparence du site, d'un portail ou groupement, d'une classe) : `--nova-activite` (oui/non),
 `--nova-activite-seuil` (2 jours), `--nova-activite-objectif` (3 jours, au moins le seuil), `--nova-activite-heures`
-(6 h par semaine), `--nova-activite-notes` (5). Implémentation : `_widgets/activite*.phtml`, `_procs/activite.awk`,
+(6 h par semaine), `--nova-activite-notes` (5), `--nova-vacances` (vacances : `zone-a`, `zone-b`, `zone-c`, périodes
+`AAAAMMJJ-AAAAMMJJ` ou `aucune` ; dans une classe ou une zone, absent = celles du portail ou du groupement). Les dates
+des zones A, B et C sont livrées avec Nova (`_procs/vacances-zones.txt`, jeu de données officiel « Calendrier
+scolaire » de data.education.gouv.fr) : Nova prend celles de l'année scolaire en cours, sans rien à refaire d'une année
+sur l'autre. Le fichier est mis à jour par `maj-vacances.py` (dépôt seulement) avant une livraison ; une année absente
+est signalée sur la page Apparence. Implémentation : `_widgets/activite*.phtml`, `_procs/activite.awk`,
 `_css/activite.css`, nova.js `activiteLien`. « Menus comme le thème standard » garde la page de WIMS.
 
 ## Badges des élèves
@@ -104,8 +109,8 @@ sans niveau), une annonce à chaque nouveau niveau, une fenêtre à onglets. 8 n
 Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la configuration :
 
 - **Régularité** (ex-Fidélité ; clés `fidelite`) : une semaine compte quand l'élève y envoie au moins une réponse
-  sur `--nova-fidelite-jours` jours différents (1, de 1 à 7) ; paliers en semaines d'affilée (`2 3 5 8 12 16 21 26`) ;
-  les semaines de vacances (`--nova-vacances`, si des dates sont saisies) ne comptent pas et ne cassent pas la série.
+  sur `--nova-fidelite-jours` jours différents (1, de 1 à 7) ; paliers en semaines comptées (`2 4 6 9 12 16 20 25`),
+  pas forcément d'affilée : une semaine sans travail ne fait rien perdre, une semaine de vacances travaillée compte.
 - **Persévérance** : un exercice compte (une fois) quand l'élève y obtient au moins `--nova-perseverance-reussite`
   (7/10) après au moins `--nova-perseverance-echecs` (2) notes sous `--nova-perseverance-echec` (5/10) ; examens
   compris par défaut (`--nova-perseverance-examens`) ; paliers `1 3 5 10 15 20 25 30`.

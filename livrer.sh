@@ -12,7 +12,7 @@
 # L'archive contient le thème servi (gabarits, widgets, procédures, langues, js, polices, css.css
 # minifié), les sources CSS (_css/, css.css.template : themes/mkcss.pl de WIMS reconstruit le css.css
 # de tous les thèmes et en a besoin), les licences, la documentation, ORIGINES.sha256 et VERSION.
-# Elle exclut l'historique git et construire-css.sh / livrer.sh, qui dépendent du conteneur de
+# Elle exclut l'historique git et construire-css.sh / livrer.sh / maj-vacances.py, qui dépendent du conteneur de
 # développement, ainsi que l'exemple local.phtml.template de Standard et les badges PNG inutilisés.
 # Sans argument, refuse de livrer un dépôt modifié et non versionné : l'archive doit correspondre à un commit.
 set -e
@@ -37,7 +37,7 @@ nom="$prefixe-$date-$commit"
 mkdir -p "$sortie"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp/$DOSSIER"
-git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh
+git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh --exclude=maj-vacances.py
 printf '%s\n' "$commit" > "$tmp/$DOSSIER/VERSION"
 # Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08), badges
 # pas encore codés (dossier img/badges/etoile, 2026-10-09 : à retirer de cette liste quand il servira).

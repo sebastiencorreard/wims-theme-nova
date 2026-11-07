@@ -6,20 +6,22 @@
 # Variables : auj (AAAAMMJJ, 8 premiers caractères de $wims_now) ; classe (dossier de la classe, pour Échauffement :
 #   exams/.exams et exams/.exam<n>, lus ici par getline).
 # Sortie :
-#   fidelite off | fidelite on niveau record serie etat prochain nouveau obtenu np palier1 … palierN
-#     etat : fait (assez de jours de travail cette semaine), attente, danger (relance : badges qui la demandent), pause (vacances).
+#   fidelite off | fidelite on niveau total total etat prochain nouveau obtenu np palier1 … palierN
+#     etat : fait (la semaine en cours compte déjà), attente.
 #   perseverance off | perseverance on niveau total prochain nouveau obtenu np palier1 … palierN
 #   encours - | encours <examen 0/1> <feuille ou examen> <exercice> <échecs> : exercice le plus récent avec assez
 #     d'échecs et pas encore de réussite (Persévérance : « une réussite et il compte »).
 #   echauffement off | echauffement on niveau total prochain nouveau obtenu np palier1 … palierN
 #   dm - | dm <sessions faites> <sessions demandées> <titre du DM noté> : DM noté ouvert, pas encore commencé (le plus récent).
-#   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> <vacances saisies 1/0>
+#   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> 0 <sessions d'Échauffement>
+#     (6e champ : anciennes vacances, gardé pour la place)
 #   ecrire 1|0 (score/<élève>.nova à réécrire), puis son nouveau contenu.
 #
 # Régularité (« fidelite » dans les clés et le stock ; renommé le 2026-11-04) : une semaine (lundi-dimanche) compte si
 # l'élève y a envoyé au moins une réponse sur --nova-fidelite-jours jours différents (1 par défaut, 1 à 7 ; avant le
-# 2026-11-04 : --nova-fidelite-exercices exercices différents, réglage abandonné). Une semaine de vacances (tous ses jours de classe, du
-# lundi au vendredi, dans une période de --nova-vacances) est sautée : elle ne compte pas et ne casse pas la série.
+# 2026-11-04 : --nova-fidelite-exercices exercices différents, réglage abandonné). Depuis le 2026-11-07 (utilisateur) :
+# COMPTEUR de semaines, vacances comprises si l'élève y travaille, rien ne se casse (avant : série d'affilée, vacances
+# sautées). Les dates de vacances ne servent plus qu'à « Mon activité » (activite.awk).
 # Persévérance : un exercice compte (une fois) quand l'élève y obtient au moins --nova-perseverance-reussite après au
 # moins --nova-perseverance-echecs notes sous --nova-perseverance-echec ; examens compris si --nova-perseverance-examens
 # vaut oui (défaut).
@@ -44,15 +46,6 @@ function jours(s,    y, m, d, era, yoe, doy, doe) {
 }
 # Semaine (lundi-dimanche) d'un jour : le 1970-01-01 est un jeudi.
 function semaine(j) { return int((j + 3) / 7) }
-function vacances(w,    j, k, dedans) {
-  if (!nv) return 0
-  for (j = w * 7 - 3; j <= w * 7 + 1; j++) {
-    dedans = 0
-    for (k = 1; k <= nv; k++) if (j >= va[k] && j <= vb[k]) dedans = 1
-    if (!dedans) return 0
-  }
-  return 1
-}
 function jour8(s) { return s ~ /^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$/ }
 function nombre(v, mini, maxi, defaut) {
   if (v !~ /^[0-9]+(\.[0-9]+)?$/) return defaut
@@ -170,12 +163,7 @@ section == "score" && $5 == "score" {
 }
 
 END {
-  j = jours(auj); wc = semaine(j); jds = (j + 3) % 7   # 0 = lundi
-  m = split(conf["vacances"], brut, /[ ,]+/)
-  for (i = 1; i <= m; i++) {
-    if (split(brut[i], ab, "-") != 2 || !jour8(ab[1]) || !jour8(ab[2])) continue
-    nv++; va[nv] = jours(ab[1]); vb[nv] = jours(ab[2])
-  }
+  j = jours(auj); wc = semaine(j)
   parsem = int(nombre(conf["fidelite-jours"], 1, 7, 1))
   reussite = nombre(conf["perseverance-reussite"], 0, 10, 7)
   echec = nombre(conf["perseverance-echec"], 0, 10, 5)
@@ -184,38 +172,33 @@ END {
   ecrire = 0; stock = ""
 
   # ---------- Régularité ----------
+  # Compteur (2026-11-07, utilisateur) : chaque semaine (lundi-dimanche) avec au moins --nova-fidelite-jours jours de
+  # travail compte, vacances comprises (sans obligation) ; une semaine sans travail ne casse rien. Total gardé au plus
+  # haut (stock), niveaux jamais perdus. Ligne : fidelite on niveau total total etat prochain nouveau obtenu np paliers…
+  # (4e champ = ancienne série, gardé pour la place ; etat : fait = la semaine en cours compte déjà, sinon attente).
   if (!actif("fidelite")) print "fidelite off"
   else {
-    np = paliers(conf["fidelite-paliers"], "2 3 5 8 12 16 21 26", pal)
-    serie = 0; record = 0; niveau = 0; obtenu = ""
+    np = paliers(conf["fidelite-paliers"], "2 4 6 9 12 16 20 25", pal)
+    total = 0; niveau = 0; obtenu = ""
     while (niveau < np && pal[niveau + 1] == 0) niveau++    # paliers à 0 : niveaux d'office
     if (w0 != "") for (w = w0; w <= wc; w++) {
-      if (vacances(w)) continue
-      if (nfait[w] >= parsem) {
-        serie++
-        if (serie > record) {
-          record = serie
-          while (niveau < np && record >= pal[niveau + 1]) { niveau++; obtenu = dernier[w] }
-        }
-      } else if (w < wc) serie = 0    # la semaine en cours n'est pas finie : elle ne casse rien
+      if (nfait[w] < parsem) continue
+      total++
+      while (niveau < np && total >= pal[niveau + 1]) { niveau++; obtenu = dernier[w] }
     }
     if (st["fidelite", "niveau"] + 0 > niveau) { niveau = st["fidelite", "niveau"] + 0; obtenu = st["fidelite", "obtenu"] }
     else if (st["fidelite", "niveau"] + 0 == niveau && st["fidelite", "obtenu"] != "") obtenu = st["fidelite", "obtenu"]
-    if (st["fidelite", "record"] + 0 > record) record = st["fidelite", "record"] + 0
+    if (st["fidelite", "total"] + 0 > total) total = st["fidelite", "total"] + 0
     if (niveau > np) niveau = np
-    relance = 0    # pas de relance (un badge qui ne se perd pas ; demande de l'utilisateur)
-    if (vacances(wc)) etat = "pause"
-    else if (nfait[wc] >= parsem) etat = "fait"
-    else if (relance && jds >= 3 && serie > 0) etat = "danger"
-    else etat = "attente"
+    etat = nfait[wc] >= parsem ? "fait" : "attente"
     prochain = 0
-    if (niveau < np) { prochain = pal[niveau + 1] - serie; if (prochain < 1) prochain = 1 }
+    if (niveau < np) { prochain = pal[niveau + 1] - total; if (prochain < 1) prochain = 1 }
     nouveau = niveau > st["fidelite", "vu"] + 0 ? 1 : 0
     if (obtenu == "") obtenu = "-"
-    ligne = "fidelite on " niveau " " record " " serie " " etat " " prochain " " nouveau " " obtenu " " np
+    ligne = "fidelite on " niveau " " total " " total " " etat " " prochain " " nouveau " " obtenu " " np
     for (i = 1; i <= np; i++) ligne = ligne " " pal[i]
     print ligne
-    s = "fidelite niveau=" niveau " obtenu=" obtenu " vu=" niveau " record=" record
+    s = "fidelite niveau=" niveau " obtenu=" obtenu " vu=" niveau " total=" total
     if (s != ancien["fidelite"]) ecrire = 1
     stock = stock s "\n"
   }
@@ -332,7 +315,7 @@ END {
   }
   print "dm " dm
   print "encours " encours
-  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " " (nv > 0 ? 1 : 0) " " (nsess ? nsess : 2)
+  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " 0 " (nsess ? nsess : 2)
   # Badges coupés : leur ligne de stock est gardée telle quelle (rien n'est perdu).
   if (!actif("fidelite") && ancien["fidelite"] != "") stock = stock ancien["fidelite"] "\n"
   if (!actif("perseverance") && ancien["perseverance"] != "") stock = stock ancien["perseverance"] "\n"

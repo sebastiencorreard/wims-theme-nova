@@ -5,9 +5,20 @@
 !! en debut de ligne (une feuille commencant par « :root » y apparaissait vide, et l'enregistrer l'effacait).
 !set nova_cf=!sh if test -r $wims_home/log/classes/$wims_class/css; then cat $wims_home/log/classes/$wims_class/css; fi
 <script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
+!! Vacances de « Mon activite » (2026-11-07, utilisateur ; avant : page Badges Nova) : zone A, B, C (dates officielles
+!! livrees avec Nova, _procs/vacances-zones.txt, maj-vacances.py) ou dates personnalisees ; valeur de la structure
+!! (portail, groupement) pour l'option « heritee ».
+!set nova_vz=!sh cat $wims_home/public_html/themes/$wims_theme/_procs/vacances-zones.txt 2>/dev/null
+<script type="text/plain" id="nova-vacances-zones">$nova_vz</script>
+!reset nova_vs
+!if $wims_superclass!=$empty and $wims_superclass!=$wims_class
+  !set nova_vs=!sh grep -ao -- '--nova-vacances *: *[^;}]*' $wims_home/log/classes/$wims_superclass/css 2>/dev/null | tail -1 | cut -d: -f2
+  !set nova_vs=!trim $nova_vs
+  !default nova_vs=aucune
+!endif
 !! Repliés aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
 !! par Nova), feuille de style (css). « Couleur de fond des menus » (couleur d'accent de Nova) : « Couleur du theme ».
-<template id="nova-apparence-classe" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+<template id="nova-apparence-classe" data-vac-noms="$nova_app_vac_noms" data-vac-ete="$nova_app_vac_ete" data-vac-manque="$nova_app_vac_manque" data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="$nova_app_vac_resume_aucune" data-vac-herite-de="$nova_app_vac_herite_de" data-erreur-vacances="$nova_app_vacances_erreur" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
   <div class="nova-app">
     <fieldset class="property_fields blockcenter nova-app-carte">
       <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>
@@ -66,6 +77,23 @@
           <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_c_activite-heures" min="1" max="80" step="1"> $nova_app_act_heures2</label>
           <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_c_activite-notes" min="1" max="20" step="1"> $nova_app_act_notes2</label>
           <p class="nova-app-aide">$nova_app_act_herite</p>
+          <div class="nova-app-vac" role="radiogroup" aria-labelledby="nova-app-vac-titre" data-herite="$nova_vs">
+            <p class="nova-app-nom" id="nova-app-vac-titre">$nova_app_vac_titre<span class="nova-app-aide">$nova_app_vac_aide</span></p>
+            <div class="nova-app-vac-choix">
+!if $nova_vs!=$empty
+              <label class="nova-app-vac-herite"><input type="radio" name="nova_c_vacances" value=""> <span>$nova_app_vac_herite</span></label>
+!endif
+              <label><input type="radio" name="nova_c_vacances" value="aucune"> $nova_app_vac_aucune</label>
+              <label><input type="radio" name="nova_c_vacances" value="zone-a"> $nova_app_vac_zone A</label>
+              <label><input type="radio" name="nova_c_vacances" value="zone-b"> $nova_app_vac_zone B</label>
+              <label><input type="radio" name="nova_c_vacances" value="zone-c"> $nova_app_vac_zone C</label>
+              <label><input type="radio" name="nova_c_vacances" value="dates"> $nova_app_vac_dates</label>
+            </div>
+            <p class="nova-app-aide nova-app-vac-resume" aria-live="polite"></p>
+            <label class="nova-app-vac-saisie" hidden><span class="nova-app-aide">$nova_app_vacances_aide</span>
+              <textarea class="nova-app-vac-dates" rows="5" spellcheck="false"></textarea></label>
+            <p class="wims_msg warning nova-app-vac-erreur" role="alert" hidden></p>
+          </div>
         </div>
         </details>
       </div>
@@ -122,14 +150,6 @@
           <label class="nova-app-phrase nova-bdg-mots">$nova_bdg_ech_mots_n <input type="text" class="nova-app-mots" data-cle="echauffement-note" autocomplete="off" spellcheck="false"></label>
         </div></details>
       </div>
-    </fieldset>
-    <fieldset class="property_fields blockcenter nova-app-carte">
-      <legend>$nova_app_vacances</legend>
-      <div class="nova-app-ligne nova-app-texte">
-        <label class="nova-app-nom" for="nova-app-vacances">$nova_bdg_vacances_titre<span class="nova-app-aide">$nova_app_vacances_aide</span></label>
-        <textarea id="nova-app-vacances" class="nova-app-vacances" rows="5" spellcheck="false"></textarea>
-      </div>
-      <p class="wims_msg warning nova-app-erreur" role="alert" hidden></p>
     </fieldset>
     <p class="nova-app-note">$nova_bdg_note</p>
     <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>

@@ -4,7 +4,7 @@
 #   #cc     log/ccaccount de la classe et de la structure : une ligne par session de travail, comptée par WIMS
 #           chaque nuit (« AAAAMMJJ.HH:MM minutes », pauses de plus de 15 min non comptées, bin/ccsum) ;
 #   #score  score/<élève> et noscore/<élève> (« E… » = examen ; 5e champ « score », 6e = note sur 10).
-# Variable : auj (AAAAMMJJ).
+# Variables : auj (AAAAMMJJ) ; zones (fichier des vacances des zones A, B, C).
 # Sortie :
 #   reglages <seuil> <objectif> <heures> <notes> <oui|non>
 #   jours <nombre> <masque lundi..dimanche, 0/1> <aujourd'hui 0..6> <vacances 0/1>
@@ -75,9 +75,16 @@ END {
   nbnotes = entier(conf["activite-notes"], 1, 20, 5)
   print "reglages " seuil " " objectif " " heures " " nbnotes " " (conf["activite"] == "non" ? "non" : "oui")
 
-  # Vacances (périodes AAAAMMJJ-AAAAMMJJ, celles des badges) : aujourd'hui dans l'une d'elles.
-  vac = 0; ja = jours(auj)
-  m = split(conf["vacances"], brut, /[ ,]+/)
+  # Vacances (--nova-vacances, page Apparence) : périodes AAAAMMJJ-AAAAMMJJ, ou zone-a|b|c (2026-11-07, utilisateur) : les
+  # périodes officielles de la zone, lues dans le fichier livré avec Nova (-v zones=…, _procs/vacances-zones.txt,
+  # « <zone> <année> <nom> <début>-<fin> », toutes années). Aujourd'hui dans l'une d'elles : pas d'objectif.
+  vac = 0; ja = jours(auj); periodes = conf["vacances"]
+  if (periodes ~ /^zone-[abc]$/ && zones != "") {
+    z = toupper(substr(periodes, 6, 1)); periodes = ""
+    while ((getline l < zones) > 0) { split(l, c, " "); if (c[1] == z) periodes = periodes " " c[4] }
+    close(zones)
+  }
+  m = split(periodes, brut, /[ ,]+/)
   for (i = 1; i <= m; i++)
     if (split(brut[i], ab, "-") == 2 && jour8(ab[1]) && jour8(ab[2]) && ja >= jours(ab[1]) && ja <= jours(ab[2])) vac = 1
   masque = ""; n = 0

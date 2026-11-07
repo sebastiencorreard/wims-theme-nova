@@ -68,3 +68,17 @@
 /* Échauffement : mots des titres (2026-11-06), libellé puis champ sur la même ligne, champ pleine largeur au téléphone. */
 .nova-app-ligne.nova-app-texte .nova-bdg-mots { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); line-height: 1.4; }
 .nova-app-ligne.nova-app-texte .nova-bdg-mots .nova-app-mots { flex: 1 1 14rem; min-width: 0; width: auto; }
+
+/* Page Apparence, réglages de « Mon activité » : vacances (2026-11-07, maquette validée) : héritées, aucune, zone A, B, C
+   ou dates personnalisées ; résumé des dates de l'année ; zone de saisie seulement pour les dates personnalisées. */
+.nova-app-vac { display: flex; flex-direction: column; gap: var(--nova-e2); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
+.nova-app-vac .nova-app-nom { margin: 0; }
+.nova-app-vac-choix { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e4); }
+.nova-app-vac-choix label { display: inline-flex; align-items: center; gap: var(--nova-e1); min-height: 40px; }
+.nova-app-vac-choix .nova-app-vac-herite { flex-basis: 100%; }
+.nova-app-vac-choix input[type="radio"] { margin: 0; }
+.nova-app-vac-resume { margin: 0; line-height: 1.5; }
+.nova-app-vac-resume[hidden], .nova-app-vac-saisie[hidden] { display: none; }
+.nova-app-vac-saisie { display: flex; flex-direction: column; gap: var(--nova-e1); }
+.nova-app-vac-dates { width: 100%; box-sizing: border-box; min-height: 6.5rem; resize: vertical; font-family: var(--nova-police-chiffres); }
+.nova-app-vac-erreur { margin: 0; }

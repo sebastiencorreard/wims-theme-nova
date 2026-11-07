@@ -1437,15 +1437,23 @@
     if (!document.getElementById('nova-eleve') || document.body.classList.contains('nova-examen-session')) return;
     var barre = document.getElementById('wimstopbox');
     var fil = document.querySelector('.breadcrumbs');
-    if (!barre || !fil || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
+    if (!barre || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
+    // Pages Nova de l'accueil (Mon avatar, Mon activité ; signalé par l'utilisateur le 2026-11-07 : pas de sortie au
+    // téléphone) : leur fil d'Ariane n'a pas de lien vers l'accueil, qui est leur page parente.
+    var pageAccueil = /[?&+]nova_(avatar|activite)=1/.test(location.search) && lienAccueil('');
+    if (!fil && !pageAccueil) return;
     // Le lien « Chapitre » qu'ajoute WIMS sur la page d'une feuille (module=home&seq=N) mène à la page
     // d'une seule séquence, sans onglets : on remonte à l'accueil de la classe, où WIMS rouvre l'onglet
     // d'origine (adm/tabscript, sessionStorage) — comme le retour depuis un examen.
-    var liens = Array.prototype.filter.call(fil.querySelectorAll('a[href]'), function (a) {
+    var liens = fil ? Array.prototype.filter.call(fil.querySelectorAll('a[href]'), function (a) {
       return !/[?&+]module=home(&|$)/.test(a.getAttribute('href')) || !/[?&+]seq=/.test(a.getAttribute('href'));
-    });
-    if (!liens.length) return;
+    }) : [];
     var precedent = liens[liens.length - 1];
+    if (pageAccueil) {
+      var maison = barre.querySelector('.class_home a[href]');
+      precedent = { href: new URL(pageAccueil, location.href).href, textContent: maison ? maison.textContent : '' };
+    }
+    if (!precedent) return;
     var textes = document.getElementById('nova-textes');
     var libelle = (textes && textes.getAttribute('data-retour')) || 'Retour';
     var item = document.createElement('span');
@@ -1453,7 +1461,7 @@
     var a = document.createElement('a');
     a.href = precedent.href;
     a.className = 'nova-retour-lien';
-    a.title = libelle + ' : ' + precedent.textContent.trim();
+    a.title = precedent.textContent.trim() ? libelle + ' : ' + precedent.textContent.trim() : libelle;
     a.setAttribute('aria-label', a.title);
     var texte = document.createElement('span');
     texte.className = 'text_item';

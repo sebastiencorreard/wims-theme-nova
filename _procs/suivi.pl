@@ -95,7 +95,7 @@ while (my $s = readdir $dh) {
     my ($sheet,$exo) = ($v->{w_wims_sheet}||0,$v->{w_wims_exo}||0);
     if ($exam && ($v->{w_worksheet}//'') =~ /^(\d+)\.(\d+)$/) { ($sheet,$exo)=($1,$2); }
     $students{$key} = { login=>$u, name=>join(' ', grep { length } ($st->{wims_firstname}//'', $st->{wims_lastname}//'')),
-        class=>$c, className=>$st->{wims_classname}//$c, last=>$last,
+        class=>$c, owner=>$owner, className=>$st->{wims_classname}//$c, last=>$last,
         module=>$v->{w_module}//'', sheet=>0+$sheet, exo=>0+$exo,
         exam=>$exam ? JSON::PP::true : JSON::PP::false,
         started=>epoch($v->{w_wims_module_start_time}), activity=>$v->{w_title}//'', events=>[] };
@@ -136,6 +136,11 @@ for my $r (values %students) {
     if (@ev > 500) { splice @ev,0,@ev-500; $r->{historyTruncated}=JSON::PP::true; }
     $r->{events} = \@ev;
     $r->{name} ||= $r->{login};
+    # Avatar de l'eleve (Nova, 2026-11-07) : choix enregistre pour sa structure (.nova_avatar_<login>), dessine par suivi.js.
+    { my ($racine) = split m{/}, ($r->{owner} // $r->{class});
+      my ($ch) = read_file("$home/log/classes/$racine/.nova_avatar_$r->{login}", 1) =~ /^choix ([A-Za-z0-9.,]+)$/m;
+      $r->{avatar} = $ch if $ch; }
+    delete $r->{owner};
     if ($r->{sheet} && $r->{exo} && $r->{module} !~ /^(?:home|adm\/)/) {
         $r->{activity} = activity_title($r->{class},$r->{exam},$r->{sheet},$r->{exo});
     } else { $r->{activity} = $r->{module} eq 'home' ? 'Accueil' : ($r->{activity} || $r->{module} || 'Activite inconnue'); }

@@ -3779,6 +3779,8 @@
     return avatarScript;
   }
   function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
+  // Suivi en salle (js/suivi.js) : dessin d'un avatar d'élève d'après son choix enregistré.
+  window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(optionsAvatar(choix)); }); };
   function poserAvatarBarre(memo) {
     var barre = document.getElementById('wimstopbox');
     var ancien = document.querySelector('.nova-avatar-barre');

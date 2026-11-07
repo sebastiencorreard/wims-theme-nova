@@ -4,6 +4,7 @@
   var root = document.getElementById('nova-suivi');
   if (!root) return;
   var dataEl = document.getElementById('nova-suivi-donnees'), data;
+  var avatarEl = document.getElementById('nova-suivi-avatar-script'), avatarScript = avatarEl && avatarEl.getAttribute('data-script'), avatars = {};
   var state = document.getElementById('nova-suivi-etat');
   function el(tag, text, cls) {
     var e = document.createElement(tag); if (text !== undefined) e.textContent = text;
@@ -167,7 +168,15 @@
     tr.dataset.key = key;
     var etiquette = x.groupe === 'attention' || x.groupe === 'repetition' ? x.signal : x.groupe;
     var situation = el('td'); situation.appendChild(el('span', labels[etiquette], 'nova-suivi-tag nova-suivi-tag-' + etiquette)); tr.appendChild(situation);
-    var nom = el('td', undefined, 'nova-suivi-nom'); nom.appendChild(el('strong', r.name));
+    var nom = el('td', undefined, 'nova-suivi-nom'), fort = el('strong', r.name);
+    // Avatar de l'eleve (Nova, 2026-11-07) : dessine par nova.js (novaAvatarDessin, js/avatar.js charge a la demande).
+    if (r.avatar && window.novaAvatarDessin && avatarScript) {
+      var img = el('img', undefined, 'nova-suivi-avatar'); img.alt = '';
+      if (avatars[r.avatar]) img.src = avatars[r.avatar];
+      else window.novaAvatarDessin(r.avatar, avatarScript).then(function (u) { avatars[r.avatar] = u; img.src = u; }).catch(function () { img.remove(); });
+      fort.insertBefore(img, fort.firstChild);
+    }
+    nom.appendChild(fort);
     if (x.signal !== 'normal') nom.appendChild(el('small', x.why + (x.inSession ? '' : ' \u00b7 signal de l\u2019activit\u00e9 pass\u00e9e')));
     else nom.appendChild(el('small', r.login + (plusieurs ? ' \u00b7 ' + r.className : '')));
     tr.appendChild(nom);

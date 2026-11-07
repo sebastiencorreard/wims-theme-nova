@@ -862,17 +862,12 @@ dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
 .nova-badges-onglet.nova-actif { background: var(--nova-surface); color: var(--nova-lien); margin-bottom: -1px; padding-bottom: 1px; }
 .nova-badges-onglet:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: -3px; }
 .nova-badges-onglet img { width: 28px; height: 28px; }
-/* Trois badges ou plus (Échauffement, 2026-11-06) : au téléphone, image au-dessus du nom, onglets de même largeur sans
- * déborder de la fenêtre (vu à 390 px). */
-.nova-badges-onglet { flex: 1 1 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 32rem) {
-  .nova-badges-onglets { gap: 4px; padding-inline: var(--nova-e2); }
-  .nova-badges-onglet { flex-direction: column; gap: 2px; padding: 6px 4px; font-size: .8125rem; }
-  /* Quatre badges ou plus (Au top, 2026-11-07) : les noms ne tiennent plus ; onglets inactifs en icône seule (nom en
-     info-bulle et pour les lecteurs d'écran), l'onglet actif garde son nom et prend plus de place. */
-  .nova-badges-onglets:has(> :nth-child(4)) .nova-badges-onglet:not(.nova-actif) .nova-badges-onglet-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .nova-badges-onglets:has(> :nth-child(4)) .nova-badges-onglet.nova-actif { flex-grow: 2.2; }
-}
+/* Icône seule, à toutes les largeurs (2026-11-07, utilisateur : les noms ne tenaient plus, le nom est en titre du
+ * panneau) ; nom en info-bulle (title) et pour les lecteurs d'écran. Onglets de même largeur. */
+.nova-badges-onglet { flex: 1 1 0; min-width: 0; position: relative; min-height: 48px; padding: 6px 4px; }
+.nova-badges-onglet img { width: 36px; height: 36px; }
+.nova-badges-onglet-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 32rem) { .nova-badges-onglets { gap: 4px; padding-inline: var(--nova-e2); } }
 .nova-badges-onglets ~ .nova-badge-detail { background: var(--nova-surface); }
 .nova-badge-detail[hidden] { display: none; }
 .nova-badge-haut { display: grid; grid-template-columns: 96px 1fr; gap: var(--nova-e3); align-items: center; }

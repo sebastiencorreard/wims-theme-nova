@@ -109,3 +109,6 @@
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)); }
 /* Pas assez de jetons : « Débloquer » désactivé, et qui en a l'air. */
 .nova-avatar-confirmer .wims_button:disabled { opacity: .45; cursor: not-allowed; }
+/* Fond transparent : damier sous la vignette (2026-11-07). */
+.nova-avatar-tuile.nova-avatar-transparent img { background-color: var(--nova-surface);
+  background-image: conic-gradient(var(--nova-piste) 25%, transparent 0 50%, var(--nova-piste) 0 75%, transparent 0); background-size: 12px 12px; }

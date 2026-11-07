@@ -3752,6 +3752,9 @@
   function garderAvatar(v) {
     try { var cle = cleAvatar(); if (!cle) return; if (v) localStorage.setItem(cle, JSON.stringify(v)); else localStorage.removeItem(cle); } catch (e) { /* sans stockage : rien */ }
   }
+  // Fonds en dégradé du catalogue (récompenses de badges ; maquette v3 validée le 2026-11-07).
+  var AVATAR_DEGRADES = { coucher: ['ff6b6b', 'ffd60a'], ocean: ['00b4d8', '3a86ff'], aurore: ['06d6a0', '8338ec'],
+    bonbon: ['ff006e', 'ffafcc'], lagon: ['9ef01a', '00b4d8'], galaxie: ['1d3557', '8338ec'] };
   // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
   function optionsAvatar(choix) {
     var c = {};
@@ -3761,6 +3764,7 @@
       if (c[k]) o[k] = [c[k]];
     });
     if (c.clothesColor) o.hatColor = [c.clothesColor];
+    if (AVATAR_DEGRADES[c.backgroundColor]) { o.backgroundColor = AVATAR_DEGRADES[c.backgroundColor]; o.backgroundType = ['gradientLinear']; o.backgroundRotation = [135]; }
     if (c.accessoriesColor) o.accessoriesColor = [c.accessoriesColor];
     if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
     if (!c.facialHair || c.facialHair === 'aucun') o.facialHairProbability = 0;
@@ -4037,7 +4041,14 @@
     var catActive = 0, enAttente = null, occupe = false, dessin = null;
     var rendu = function (c) { return dessin ? dessin(optionsAvatar(AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
     var dire = function (texte) { message.textContent = texte || ''; };
-    var nbOuverts = function (k) { return (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); }).length; };
+    // Éléments proposés : tous, sauf ceux d'un badge qui n'est pas activé dans la classe (utilisateur, 2026-11-07).
+    var proposes = function (k) {
+      return (etat.ordre[k] || []).filter(function (v) {
+        var p = (etat.elements[k + '.' + v] || '').split('-');
+        return p[0] !== 'badge' || (badgesAvatar[p[1]] || [0, false])[1];
+      });
+    };
+    var nbOuverts = function (k) { return proposes(k).filter(function (v) { return ouvert(k + '.' + v); }).length; };
     var dessiner = function () {
       var j = etat.jetons;
       nbJetons.textContent = (singulier(j.dispo) ? t('jeton') : t('jetons')).replace('%n', j.dispo);
@@ -4064,12 +4075,12 @@
         b.setAttribute('role', 'tab');
         b.setAttribute('aria-selected', i === catActive ? 'true' : 'false');
         b.appendChild(document.createTextNode(noms[i] || k));
-        b.appendChild(el('span', 'nova-avatar-compte', nbOuverts(k) + '/' + etat.ordre[k].length));
+        b.appendChild(el('span', 'nova-avatar-compte', nbOuverts(k) + '/' + proposes(k).length));
         b.addEventListener('click', function () { catActive = i; enAttente = null; dessiner(); });
         onglets.appendChild(b);
       });
       var k = AVATAR_CATEGORIES[catActive];
-      var valeurs = etat.ordre[k] || [];
+      var valeurs = proposes(k);
       note.textContent = k === 'clothingGraphic' ? t('motif') : t('ouverts').replace('%n', nbOuverts(k)).replace('%m', valeurs.length);
       if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) note.textContent += ' ' + t('lunettes');
       grille.textContent = '';
@@ -4082,7 +4093,7 @@
         if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) essai.accessories = 'prescription02';
         var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
         var essaye = enAttente && enAttente.k === k && enAttente.v === v;
-        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : '') + (essaye ? ' nova-avatar-essaye' : ''));
+        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : '') + (essaye ? ' nova-avatar-essaye' : '') + (v === 'transparent' ? ' nova-avatar-transparent' : ''));
         b.type = 'button';
         b.setAttribute('aria-pressed', porte ? 'true' : 'false');
         var nomV = v === 'aucun' ? t('aucun') : v;

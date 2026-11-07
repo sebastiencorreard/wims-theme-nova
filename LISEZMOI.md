@@ -149,7 +149,8 @@ d'une feuille, animé quand il augmente). Avataaars de DiceBear, dessinés dans 
 arrivant au moins `--nova-avatar-secondes` (15) après l'ouverture de l'exercice, une fois par jour et par exercice, au
 plus `--nova-avatar-max-jour` (10) par jour ; `--nova-avatar-depart` (1) jeton offert au départ, puis un jeton par palier de `--nova-avatar-paliers` (`3 10 20 30 40`), puis un
 tous les `--nova-avatar-pas` (10). Éléments (`_procs/avatar-catalogue.txt`) : libres, à 1 ou 2 jetons, ou récompenses
-des badges (niveaux fixés dans le catalogue). Tout est compté et vérifié sur le serveur (`_procs/avatar.awk`), dans
+des badges (niveaux fixés dans le catalogue ; masqués quand leur badge n'est pas activé), dont six fonds en dégradé ;
+fond transparent par défaut. Tout est compté et vérifié sur le serveur (`_procs/avatar.awk`), dans
 toutes les zones de la structure ; choix et achats gardés dans `log/classes/<structure ou classe>/.nova_avatar_<login>`.
 Seuls l'élève et ses enseignants (suivi en salle, devant son nom) le voient.
 

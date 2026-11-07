@@ -4,6 +4,9 @@
 # echauffement, top). Valeur aucun = sans accessoire / sans barbe. Retires a la demande de l'utilisateur : hijab, turban,
 # bouche vomit, motifs skull, skullOutline, resist. Lu par _procs/avatar.awk, qui transmet a nova.js l'etat de chaque element.
 # Niveaux des elements de badge fixes dans le theme (decision de l'utilisateur, 2026-11-07).
+# Couleurs (2026-11-07, maquette v3 validee par l'utilisateur) : fonds pastel retires, fond transparent gratuit par defaut ;
+# fonds en degrade = noms (coucher, ocean, aurore, bonbon, lagon, galaxie ; couleurs dans nova.js AVATAR_DEGRADES),
+# recompenses de badges, masques quand leur badge n'est pas active (comme tous les elements de badge).
 top shortFlat libre
 top shortRound libre
 top shortWaved 1
@@ -101,19 +104,19 @@ accessories wayfarers 1
 accessories eyepatch 2
 accessories sunglasses top:1
 accessoriesColor 262e33 libre
-accessoriesColor 3c4f5c libre
 accessoriesColor 929598 libre
-accessoriesColor e6e6e6 1
-accessoriesColor 25557c 1
-accessoriesColor 5199e4 1
-accessoriesColor 65c9ff 1
-accessoriesColor b1e2ff 1
-accessoriesColor a7ffc4 1
-accessoriesColor ffffb1 1
-accessoriesColor ffafb9 1
-accessoriesColor ff488e 1
-accessoriesColor ff5c5c 1
+accessoriesColor 6b4226 libre
 accessoriesColor ffffff 1
+accessoriesColor 25557c 1
+accessoriesColor 7b1e3a 1
+accessoriesColor 1b4332 1
+accessoriesColor c9a227 1
+accessoriesColor ff5c5c 1
+accessoriesColor ff9f1c 1
+accessoriesColor ffd60a 1
+accessoriesColor 06d6a0 1
+accessoriesColor 3a86ff 1
+accessoriesColor ff006e 1
 facialHair aucun libre
 facialHair beardLight 1
 facialHair beardMedium 1
@@ -137,24 +140,32 @@ clothingGraphic cumbia 2
 clothingGraphic hola 2
 clothingGraphic diamond top:3
 clothesColor 262e33 libre
-clothesColor 3c4f5c libre
-clothesColor e6e6e6 libre
-clothesColor 929598 1
+clothesColor 929598 libre
+clothesColor ffffff libre
 clothesColor 25557c 1
 clothesColor 5199e4 1
 clothesColor 65c9ff 1
-clothesColor b1e2ff 1
-clothesColor a7ffc4 1
-clothesColor ffffb1 1
 clothesColor ffafb9 1
 clothesColor ff488e 1
 clothesColor ff5c5c 1
-clothesColor ffffff 1
-backgroundColor f3e9f0 libre
-backgroundColor e6eef8 libre
-backgroundColor e7f5ec libre
-backgroundColor fff4d6 1
-backgroundColor ffe3e0 1
-backgroundColor d9d2f5 1
-backgroundColor b6e3f4 1
-backgroundColor ffd5dc 1
+clothesColor ff9f1c 1
+clothesColor ffd60a 1
+clothesColor 06d6a0 1
+clothesColor 8338ec 1
+clothesColor 7b1e3a 1
+clothesColor 1b4332 1
+backgroundColor transparent libre
+backgroundColor ff6b6b 1
+backgroundColor ffd60a 1
+backgroundColor 06d6a0 1
+backgroundColor 3a86ff 1
+backgroundColor 8338ec 1
+backgroundColor ff006e 1
+backgroundColor 1d3557 1
+backgroundColor 7b1e3a 1
+backgroundColor galaxie top:2
+backgroundColor ocean echauffement:2
+backgroundColor coucher fidelite:3
+backgroundColor aurore perseverance:3
+backgroundColor lagon echauffement:4
+backgroundColor bonbon fidelite:5

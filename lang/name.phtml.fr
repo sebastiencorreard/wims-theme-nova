@@ -396,6 +396,6 @@
 !set nova_bdg_av_regle3=secondes après son ouverture, une fois par jour ; au plus
 !set nova_bdg_av_regle4=exercices par jour.
 !set nova_bdg_av_paliers=Paliers des jetons
-!set nova_bdg_av_paliers_aide=Nombre d'exercices réussis qu'il faut pour chaque jeton (par défaut : 3 6 10 15 20).
+!set nova_bdg_av_paliers_aide=Nombre d'exercices réussis qu'il faut pour chaque jeton (par défaut : 3 10 20 30 40).
 !set nova_bdg_av_pas1=Ensuite, un jeton tous les
 !set nova_bdg_av_pas2=exercices réussis.

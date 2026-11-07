@@ -12,7 +12,7 @@
 #   la reponse arrive au moins --nova-avatar-secondes (15) apres l'ouverture de l'exercice (ligne « new » de la meme
 #   session, de la meme feuille et du meme exercice) ;
 #   et au plus --nova-avatar-max-jour (10) exercices comptent par jour.
-# Jetons : un par palier de --nova-avatar-paliers (« 3 6 10 15 20 »), puis un tous les --nova-avatar-pas (10) exercices.
+# Jetons : un par palier de --nova-avatar-paliers (« 3 10 20 30 40 »), puis un tous les --nova-avatar-pas (10) exercices.
 # Un element ouvert le reste toujours (meme si son prix change) ; un element de badge s'ouvre au niveau du catalogue,
 # badges actifs seulement.
 #
@@ -111,14 +111,14 @@ END {
   delai = int(nombre(conf["avatar-secondes"], 0, 600, 15))
   maxj = int(nombre(conf["avatar-max-jour"], 1, 100, 10))
   pas = int(nombre(conf["avatar-pas"], 1, 100, 10))
-  liste = conf["avatar-paliers"]; if (liste == "") liste = "3 6 10 15 20"
+  liste = conf["avatar-paliers"]; if (liste == "") liste = "3 10 20 30 40"
   m = split(liste, brut, /[ ,]+/); np = 0
   for (i = 1; i <= m && np < 20; i++) {
     if (brut[i] !~ /^[0-9]+$/) continue
     p = brut[i] + 0; if (p < 1) p = 1; if (np && p <= pal[np]) p = pal[np] + 1
     pal[++np] = p
   }
-  if (!np) np = split("3 6 10 15 20", pal, " ")
+  if (!np) np = split("3 10 20 30 40", pal, " ")
 
   # Exercices comptes : une fois par jour et par exercice, au plus maxj par jour.
   total = 0; ajd = 0

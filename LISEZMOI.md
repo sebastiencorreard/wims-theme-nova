@@ -146,7 +146,7 @@ Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/f
 barre, sauf en examen. Avataaars de DiceBear, dessinés dans le navigateur par `js/avatar.js` (construit, voir
 `js/avatar.LISEZMOI.txt`). Jetons : un exercice compte quand sa note atteint `--nova-avatar-seuil` (7/10), la réponse
 arrivant au moins `--nova-avatar-secondes` (15) après l'ouverture de l'exercice, une fois par jour et par exercice, au
-plus `--nova-avatar-max-jour` (10) par jour ; un jeton par palier de `--nova-avatar-paliers` (`3 6 10 15 20`), puis un
+plus `--nova-avatar-max-jour` (10) par jour ; un jeton par palier de `--nova-avatar-paliers` (`3 10 20 30 40`), puis un
 tous les `--nova-avatar-pas` (10). Éléments (`_procs/avatar-catalogue.txt`) : libres, à 1 ou 2 jetons, ou récompenses
 des badges (niveaux fixés dans le catalogue). Tout est compté et vérifié sur le serveur (`_procs/avatar.awk`), dans
 toutes les zones de la structure ; choix et achats gardés dans `log/classes/<structure ou classe>/.nova_avatar_<login>`.

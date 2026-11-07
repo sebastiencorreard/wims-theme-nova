@@ -395,6 +395,6 @@
 !set nova_bdg_av_regle3=seconds after it was opened, once a day; at most
 !set nova_bdg_av_regle4=exercises per day.
 !set nova_bdg_av_paliers=Token thresholds
-!set nova_bdg_av_paliers_aide=Number of passed exercises needed for each token (default: 3 6 10 15 20).
+!set nova_bdg_av_paliers_aide=Number of passed exercises needed for each token (default: 3 10 20 30 40).
 !set nova_bdg_av_pas1=Then one token every
 !set nova_bdg_av_pas2=passed exercises.

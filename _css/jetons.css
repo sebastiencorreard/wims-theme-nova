@@ -132,6 +132,7 @@
   --nova-avatar-max-jour: 10;
   --nova-avatar-paliers: 3 10 20 30 40;
   --nova-avatar-pas: 10;
+  --nova-avatar-depart: 1;
 }
 
 /* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand htmlheader.phtml pose

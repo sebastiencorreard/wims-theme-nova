@@ -3,7 +3,9 @@
 
 /* Pastille de la barre, a droite (le compte des eleves est dans le menu Profil). Font_Awesome met un tiret devant
  * toute entree de barre sans icone : pas ici (ce n'est pas un .menuitem), mais on le coupe quand meme. */
-#wimstopbox .nova-avatar-barre { margin-left: auto; flex: none; display: block; width: 40px; height: 40px; border-radius: 50%;
+/* Zone de droite : compteur de jetons puis avatar (2026-11-07, maquette A, utilisateur). */
+#wimstopbox .nova-avatar-zone { margin-left: auto; flex: none; display: flex; align-items: center; gap: var(--nova-e2); }
+#wimstopbox .nova-avatar-barre { flex: none; display: block; width: 40px; height: 40px; border-radius: 50%;
   overflow: hidden; padding: 0; background: var(--nova-accent-doux); border: 2px solid var(--nova-sur-accent); box-sizing: border-box; }
 #wimstopbox .nova-avatar-barre::before { content: none; }
 /* Les images de la barre ont une taille fixee par cadre.css : celle-ci remplit le rond, buste agrandi. */
@@ -20,8 +22,7 @@
 .nova-avatar-portrait { width: 200px; max-width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--nova-accent-doux); }
 .nova-avatar-portrait img { display: block; width: 100%; height: 100%; }
 .nova-avatar-jetons { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; font-size: 1.15rem; font-weight: 700; }
-.nova-avatar-jeton { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-size: .85rem;
-  background: var(--nova-attention-fond); border: 2px solid var(--nova-attention); color: var(--nova-attention-texte); }
+.nova-avatar-jetons .nova-piece { width: 30px; height: 30px; }
 .nova-avatar-jauge { width: 100%; height: 10px; border-radius: 99px; background: var(--nova-piste); overflow: hidden; }
 .nova-avatar-jauge span { display: block; height: 100%; border-radius: 99px; background: var(--nova-accent); }
 .nova-avatar-petit { margin: 0; width: 100%; text-align: left; font-size: .88rem; color: var(--nova-texte-2); }
@@ -56,3 +57,32 @@
 .nova-avatar-regles h2 { margin: 0 0 var(--nova-e2); font-size: 1.05rem; }
 .nova-avatar-regles ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 4px; }
 .nova-avatar-credits { margin: var(--nova-e4) 0 0; font-size: .8rem; color: var(--nova-texte-2); text-align: center; }
+
+/* Pièce des jetons (nova.js pieceJeton) : disque doré, logo de WIMS brun foncé, centré sur le cercle invisible du logo. */
+.nova-piece { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; box-sizing: border-box;
+  background: #F4B63F; border: 2px solid #A86B0C; color: #6B3F00; }
+.nova-piece svg { display: block; width: 84%; height: 84%; overflow: visible; }
+/* Compteur de la barre : pastille translucide, pièce + nombre ; lien vers Mon avatar. */
+#wimstopbox a.nova-jetons-barre { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 36px; min-height: 36px;
+  padding: 0 12px 0 4px; border-radius: 99px; background: rgba(255, 255, 255, .16); color: var(--nova-sur-accent);
+  font-weight: 700; font-size: 1.05rem; line-height: 1; font-variant-numeric: tabular-nums; text-decoration: none; }
+#wimstopbox a.nova-jetons-barre::before { content: none; }
+#wimstopbox a.nova-jetons-barre:hover { background: rgba(255, 255, 255, .26); }
+#wimstopbox a.nova-jetons-barre:focus-visible { outline: 3px solid var(--nova-sur-accent); outline-offset: 2px; }
+.nova-jetons-plus { position: absolute; left: 6px; top: -4px; font-size: .95rem; font-weight: 700; color: #F4B63F;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .3); opacity: 0; pointer-events: none; }
+/* Gain d'un jeton : la pièce fait deux tours, « +1 » monte, le compteur grossit un instant. Jouée même quand les
+ * animations de Nova sont coupées (utilisateur) ; jamais si l'appareil demande de réduire les animations. */
+@media (prefers-reduced-motion: no-preference) {
+  .nova-jetons-gain .nova-piece { animation: nova-jeton-tourne 1s cubic-bezier(.3, .7, .4, 1); }
+  .nova-jetons-gain .nova-jetons-plus { animation: nova-jeton-monte 1.2s ease-out; }
+  #wimstopbox a.nova-jetons-gain { animation: nova-jeton-gonfle .5s .55s ease-out; }
+  /* Exception aux animations coupées (contenu.css, html.nova-sans-animation : durées forcées en !important). */
+  html.nova-sans-animation .nova-jetons-gain .nova-piece { animation-duration: 1s !important; }
+  html.nova-sans-animation .nova-jetons-gain .nova-jetons-plus { animation-duration: 1.2s !important; }
+  html.nova-sans-animation #wimstopbox a.nova-jetons-gain { animation-duration: .5s !important; }
+}
+@keyframes nova-jeton-tourne { from { transform: rotateY(0); } to { transform: rotateY(720deg); } }
+@keyframes nova-jeton-monte { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px); } }
+@keyframes nova-jeton-gonfle { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.15); } }
+@media (max-width: 420px) { #wimstopbox .nova-avatar-zone { gap: 4px; } #wimstopbox a.nova-jetons-barre { padding-right: 9px; gap: 4px; } }

@@ -3,15 +3,7 @@
 !! ses zones), etat de chaque element du catalogue. Fichier de l'eleve garde pour la structure, comme la couleur :
 !! log/classes/<structure ou classe>/.nova_avatar_<login> (lignes "choix ..." et "ouverts ..."). L'editeur est construit
 !! par nova.js (avatarPage) d'apres #nova-avatar ; les dessins viennent de js/avatar.js (DiceBear, Avataaars).
-!set nova_cl=$wims_home/log/classes
-!set nova_ak=$wims_superclass
-!default nova_ak=!word 1 of $wims_class
-!set nova_ak=!replace internal / by , in $nova_ak
-!set nova_ak=$(nova_ak[1])
-!set nova_auj=!char 1 to 8 of $wims_now
-!set nova_av_ouvrir=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. in $nova_av_ouvrir
-!set nova_av_choix=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789., in $nova_av_choix
-!set nova_av=!sh r=$nova_cl/$nova_ak; { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#fichier'; cat "$$r/.nova_avatar_$wims_user" 2>/dev/null; echo '#stock'; find "$$r" -path "*/score/$wims_user.nova" -exec cat {} + 2>/dev/null; find "$$r" -type f \( -path "*/score/$wims_user" -o -path "*/noscore/$wims_user" \) 2>/dev/null | while read f; do echo "#zone $$(dirname "$$(dirname "$$f")")"; cat "$$f"; done; } | awk -v auj=$nova_auj -v catalogue=$wims_home/public_html/themes/$wims_theme/_procs/avatar-catalogue.txt -v ouvrir=$nova_av_ouvrir -v choix=$nova_av_choix -f $wims_home/public_html/themes/$wims_theme/_procs/avatar.awk
+!read themes/$wims_theme/_procs/avatar.proc
 !set nova_l=!line 1 of $nova_av
 !set nova_on=!word 2 of $nova_l
 !if $nova_on!=on

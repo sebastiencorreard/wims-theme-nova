@@ -276,6 +276,10 @@
     !read themes/$wims_theme/_procs/eleve.proc
     !if $nova_est_eleve=yes
       <span id="nova-eleve" hidden></span>
+      !! Nova : jetons de l'avatar a jour sur la page d'une feuille (retour d'exercice ; l'accueil passe par user.phtml).
+      !if $module=adm/sheet
+        !read themes/$wims_theme/_widgets/avatar-barre.phtml
+      !endif
     !endif
     </div>
     !distribute items li into div1

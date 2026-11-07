@@ -1,0 +1,12 @@
+!! Nova : calcul de l'avatar de l'eleve par _procs/avatar.awk (lu par _widgets/avatar.phtml et _widgets/avatar-barre.phtml).
+!! Entree : nova_av_ouvrir, nova_av_choix (vides : simple lecture). Sortie : nova_av (sortie de avatar.awk), nova_ak
+!! (structure ou classe ou est garde le fichier de l'eleve), nova_cl, nova_auj. Module de confiance seulement (home, adm/...).
+!set nova_cl=$wims_home/log/classes
+!set nova_ak=$wims_superclass
+!default nova_ak=!word 1 of $wims_class
+!set nova_ak=!replace internal / by , in $nova_ak
+!set nova_ak=$(nova_ak[1])
+!set nova_auj=!char 1 to 8 of $wims_now
+!set nova_av_ouvrir=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. in $nova_av_ouvrir
+!set nova_av_choix=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789., in $nova_av_choix
+!set nova_av=!sh r=$nova_cl/$nova_ak; { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#fichier'; cat "$$r/.nova_avatar_$wims_user" 2>/dev/null; echo '#stock'; find "$$r" -path "*/score/$wims_user.nova" -exec cat {} + 2>/dev/null; find "$$r" -type f \( -path "*/score/$wims_user" -o -path "*/noscore/$wims_user" \) 2>/dev/null | while read f; do echo "#zone $$(dirname "$$(dirname "$$f")")"; cat "$$f"; done; } | awk -v auj=$nova_auj -v catalogue=$wims_home/public_html/themes/$wims_theme/_procs/avatar-catalogue.txt -v ouvrir=$nova_av_ouvrir -v choix=$nova_av_choix -f $wims_home/public_html/themes/$wims_theme/_procs/avatar.awk

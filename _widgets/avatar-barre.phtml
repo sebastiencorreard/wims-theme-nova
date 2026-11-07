@@ -1,0 +1,20 @@
+!! Nova : avatar et jetons de l'eleve pour la barre (nova.js avatarBarre ; demande de l'utilisateur, 2026-11-07).
+!! Lu par user.phtml (accueil) et header.phtml (page d'une feuille, adm/sheet) : seules pages ou le theme peut compter
+!! les jetons (module de confiance) ; ailleurs nova.js garde le dernier etat connu (localStorage). Eleves seulement, hors examen.
+!if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session and yes notin $user_supervisable
+  !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+  !reset nova_avc nova_avj
+  !if $nova_avb=oui
+    !reset nova_av_ouvrir nova_av_choix
+    !read themes/$wims_theme/_procs/avatar.proc
+    !set nova_avj=!line 2 of $nova_av
+    !set nova_avj=!word 4 of $nova_avj
+    !set nova_avc=!line 4 of $nova_av
+    !set nova_avc=!word 2 of $nova_avc
+    !if $nova_avc=-
+      !reset nova_avc
+    !endif
+  !endif
+<div id="nova-avatar-barre" hidden data-actif="$nova_avb" data-choix="$nova_avc" data-jetons="$nova_avj" data-script="themes/$wims_theme/js/avatar.js" data-titre="$nova_av_mon" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"></div>
+  !reset nova_cl nova_ak nova_auj nova_av nova_avb nova_avc nova_avj
+!endif

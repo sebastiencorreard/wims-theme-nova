@@ -12,7 +12,8 @@
 #   la reponse arrive au moins --nova-avatar-secondes (15) apres l'ouverture de l'exercice (ligne « new » de la meme
 #   session, de la meme feuille et du meme exercice) ;
 #   et au plus --nova-avatar-max-jour (10) exercices comptent par jour.
-# Jetons : un par palier de --nova-avatar-paliers (« 3 10 20 30 40 »), puis un tous les --nova-avatar-pas (10) exercices.
+# Jetons : --nova-avatar-depart (1) offerts au depart (2026-11-07, utilisateur : personnaliser tout de suite), puis
+#   un par palier de --nova-avatar-paliers (« 3 10 20 30 40 »), puis un tous les --nova-avatar-pas (10) exercices.
 # Un element ouvert le reste toujours (meme si son prix change) ; un element de badge s'ouvre au niveau du catalogue,
 # badges actifs seulement.
 #
@@ -111,6 +112,7 @@ END {
   delai = int(nombre(conf["avatar-secondes"], 0, 600, 15))
   maxj = int(nombre(conf["avatar-max-jour"], 1, 100, 10))
   pas = int(nombre(conf["avatar-pas"], 1, 100, 10))
+  depart = int(nombre(conf["avatar-depart"], 0, 20, 1))
   liste = conf["avatar-paliers"]; if (liste == "") liste = "3 10 20 30 40"
   m = split(liste, brut, /[ ,]+/); np = 0
   for (i = 1; i <= m && np < 20; i++) {
@@ -133,7 +135,7 @@ END {
     if (c[1] == auj) ajd++
   }
   # Jetons gagnes et prochain seuil.
-  gagnes = 0
+  gagnes = depart
   for (i = 1; i <= np; i++) if (total >= pal[i]) gagnes++
   if (total >= pal[np]) { g = int((total - pal[np]) / pas); gagnes += g; avant = pal[np] + g * pas; apres = avant + pas }
   else { avant = 0; for (i = 1; i <= np; i++) { if (total >= pal[i]) avant = pal[i]; else { apres = pal[i]; break } } }

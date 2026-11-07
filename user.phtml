@@ -22,21 +22,8 @@
 </div><!--wimspagebox-->
   !goto nova_menu
 !endif
-!! Nova : avatar de l'eleve (2026-11-07, utilisateur) : reglage et choix enregistre, pour la barre et le menu Profil
-!! (nova.js avatarBarre, gardes dans localStorage pour les autres pages) ; puis la page Mon avatar (nova_avatar=1).
-!if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session and yes notin $user_supervisable
-  !set nova_ak=$wims_superclass
-  !default nova_ak=!word 1 of $wims_class
-  !set nova_ak=!replace internal / by , in $nova_ak
-  !set nova_ak=$(nova_ak[1])
-  !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
-  !reset nova_avc
-  !if $nova_avb=oui
-    !set nova_avc=!sh sed -n 's/^choix //p' $wims_home/log/classes/$nova_ak/.nova_avatar_$wims_user 2>/dev/null | tr -cd 'A-Za-z0-9.,'
-  !endif
-<div id="nova-avatar-barre" hidden data-actif="$nova_avb" data-choix="$nova_avc" data-script="themes/$wims_theme/js/avatar.js" data-titre="$nova_av_mon"></div>
-  !reset nova_ak nova_avb nova_avc
-!endif
+!! Nova : avatar et jetons de l'eleve pour la barre ; puis la page Mon avatar (nova_avatar=1).
+!read themes/$wims_theme/_widgets/avatar-barre.phtml
 !read themes/$wims_theme/_widgets/avatar-entree.phtml
 !if $nova_avatar_page=1
 </div><!--wimsbody-->

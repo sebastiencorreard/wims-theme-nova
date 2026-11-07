@@ -3791,30 +3791,83 @@
     if (document.body.classList.contains('nova-examen') || document.body.classList.contains('nova-examen-session')) return false;
     return !barre.querySelector('.menuitem.chrono, #chrono_exam, a.endexam, .nova-terminer, .nova-examencours');
   }
-  function poserAvatarBarre(memo) {
+  // Pièce des jetons : logo de WIMS (img/logo-wims-blanc-v2.svg) cadré sur le centre de son cercle invisible
+  // (93,24 ; 153,74), pour qu'il tombe au centre du disque (demande de l'utilisateur, 2026-11-07, maquette A : pièce dorée).
+  var PIECE_SVG = '<svg viewBox="33.24 93.74 120 120" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="m 68.398532,197.05166 c 15.058946,8.57956 34.389228,-15.02121 34.822798,-43.94077 0.41266,-27.52561 -17.133498,-51.43258 -34.718402,-42.12108 -17.584914,9.31149 -4.468906,36.96212 20.148988,52.58723 23.724794,15.05825 52.099204,11.57787 53.173974,-7.95129 1.07477,-19.52916 -30.77363,-24.11146 -55.82547,-9.84162 -25.624939,14.59628 -32.660849,42.68797 -17.601888,51.26753 z"/></svg>';
+  function pieceJeton() {
+    var p = document.createElement('span');
+    p.className = 'nova-piece';
+    p.setAttribute('aria-hidden', 'true');
+    p.innerHTML = PIECE_SVG;
+    return p;
+  }
+  function texteJetons(memo, n) { return ((n === 1 ? memo.tJeton : memo.tJetons) || '%n').replace('%n', n); }
+  // Barre : compteur de jetons puis avatar, à droite. Gain depuis le dernier affichage (memo.vu) : animation A de la
+  // maquette (la pièce tourne, « +1 » monte), jouée même si les animations de Nova sont coupées (récompense ponctuelle,
+  // utilisateur), jamais si l'appareil demande de réduire les animations (CSS).
+  function poserAvatarBarre(memo, gain) {
     var barre = document.getElementById('wimstopbox');
-    var ancien = document.querySelector('.nova-avatar-barre');
-    if (!barre || !memo || !memo.uri || !barreOrdinaire(barre)) { if (ancien) ancien.remove(); return; }
-    var a = ancien || document.createElement('a');
-    a.className = 'nova-avatar-barre';
-    a.href = lienMonAvatar();
-    a.title = memo.titre || '';
-    a.setAttribute('aria-label', memo.titre || '');
-    var img = a.querySelector('img') || a.appendChild(document.createElement('img'));
-    img.src = memo.uri;
-    img.alt = '';
-    if (!ancien) barre.appendChild(a);
+    var ancien = document.querySelector('.nova-avatar-zone');
+    if (!barre || !memo || !memo.actif || !barreOrdinaire(barre) || (!memo.uri && typeof memo.jetons !== 'number')) { if (ancien) ancien.remove(); return; }
+    var zone = ancien || document.createElement('span');
+    zone.className = 'nova-avatar-zone';
+    zone.textContent = '';
+    if (typeof memo.jetons === 'number') {
+      var c = document.createElement('a');
+      c.className = 'nova-jetons-barre';
+      c.href = lienMonAvatar();
+      c.setAttribute('aria-label', texteJetons(memo, memo.jetons) + ' \u2013 ' + (memo.titre || ''));
+      c.title = texteJetons(memo, memo.jetons);
+      c.appendChild(pieceJeton());
+      var nb = document.createElement('span');
+      nb.className = 'nova-jetons-nb';
+      nb.textContent = gain ? memo.jetons - gain : memo.jetons;
+      c.appendChild(nb);
+      if (gain) {
+        var plus = document.createElement('span');
+        plus.className = 'nova-jetons-plus';
+        plus.setAttribute('aria-hidden', 'true');
+        plus.textContent = '+' + gain;
+        c.appendChild(plus);
+        c.classList.add('nova-jetons-gain');
+        setTimeout(function () { nb.textContent = memo.jetons; }, 550);
+        setTimeout(function () { c.classList.remove('nova-jetons-gain'); if (plus.parentNode) plus.remove(); }, 1600);
+      }
+      zone.appendChild(c);
+    }
+    if (memo.uri) {
+      var a = document.createElement('a');
+      a.className = 'nova-avatar-barre';
+      a.href = lienMonAvatar();
+      a.title = memo.titre || '';
+      a.setAttribute('aria-label', memo.titre || '');
+      var img = document.createElement('img');
+      img.src = memo.uri;
+      img.alt = '';
+      a.appendChild(img);
+      zone.appendChild(a);
+    }
+    if (!ancien) barre.appendChild(zone);
   }
   function avatarBarre() {
     if (!document.getElementById('nova-eleve') || !cleAvatar()) return;
     var source = document.getElementById('nova-avatar-barre');
     var memo = lireAvatar();
+    var gain = 0;
     if (source) {
       var actif = source.getAttribute('data-actif') === 'oui';
       var choix = source.getAttribute('data-choix') || '';
       if (!actif) { memo = null; garderAvatar(null); }
       else {
-        memo = { actif: 1, choix: choix, titre: source.getAttribute('data-titre') || '', uri: memo && memo.choix === choix ? memo.uri : '' };
+        var j = source.getAttribute('data-jetons');
+        var ancien = memo || {};
+        memo = { actif: 1, choix: choix, titre: source.getAttribute('data-titre') || '', uri: ancien.choix === choix ? ancien.uri : '',
+          tJeton: source.getAttribute('data-t-jeton') || '', tJetons: source.getAttribute('data-t-jetons') || '',
+          jetons: /^[0-9]+$/.test(j || '') ? +j : ancien.jetons, vu: ancien.vu };
+        if (typeof memo.jetons === 'number') {
+          if (typeof memo.vu === 'number' && memo.jetons > memo.vu) gain = memo.jetons - memo.vu;
+          memo.vu = memo.jetons;
+        }
         garderAvatar(memo);
         if (choix && !memo.uri) chargerAvatar(source.getAttribute('data-script')).then(function (dessin) {
           memo.uri = dessin(optionsAvatar(choix));
@@ -3824,7 +3877,7 @@
       }
     }
     if (!memo || !memo.actif) return;
-    poserAvatarBarre(memo);
+    poserAvatarBarre(memo, gain);
     // Menu Profil : « Mon avatar » après le nom.
     var profil = document.querySelector('#wimsmenumodubox .nova-profil');
     if (profil && !profil.querySelector('.profil_avatar')) {
@@ -3832,7 +3885,7 @@
       d.className = 'menuitem profil_avatar';
       var a = document.createElement('a');
       a.href = lienMonAvatar();
-      a.className = 'smile-o';   // Font_Awesome : visage (\f118) ; « user » perdait contre le tiret générique
+      a.className = 'account';   // Font_Awesome : silhouette (\f007, « .menuitem .account ») ; « user » perdait contre le tiret générique
       var span = document.createElement('span');
       span.textContent = memo.titre;
       a.appendChild(span);
@@ -3901,8 +3954,7 @@
     portrait.appendChild(grand);
     cote.appendChild(portrait);
     var ligneJetons = el('p', 'nova-avatar-jetons');
-    var jeton = el('span', 'nova-avatar-jeton', 'J');
-    jeton.setAttribute('aria-hidden', 'true');
+    var jeton = pieceJeton();
     var nbJetons = el('span', 'nova-avatar-nb');
     ligneJetons.appendChild(jeton);
     ligneJetons.appendChild(nbJetons);
@@ -4065,6 +4117,8 @@
       envoyer('&nova_avatar_ouvrir=' + a.k + '.' + a.v).then(function (m) {
         enAttente = null;
         if (m === 'ouvert') { choix[a.k] = a.v; if (a.k === 'clothingGraphic') choix.clothing = 'graphicShirt'; dire(t('ouvert')); }
+        var mj = lireAvatar();
+        if (mj) { mj.jetons = mj.vu = etat.jetons.dispo; garderAvatar(mj); poserAvatarBarre(mj); }
         else dire(t('refus'));
         dessiner();
       }).catch(function () { dire(t('refus')); });
@@ -4075,7 +4129,9 @@
       envoyer('&nova_avatar_choix=' + c).then(function (m) {
         if (m !== 'choix' && etat.enregistre !== c) { dire(t('refus')); return; }
         dire(t('enregistre'));
-        var memo = { actif: 1, choix: etat.enregistre, titre: (lireAvatar() || {}).titre || t('titre') || '', uri: rendu(choix) };
+        var memo = lireAvatar() || {};
+        memo.actif = 1; memo.choix = etat.enregistre; memo.titre = memo.titre || t('titre') || ''; memo.uri = rendu(choix);
+        memo.jetons = memo.vu = etat.jetons.dispo;
         garderAvatar(memo);
         poserAvatarBarre(memo);
       }).catch(function () { dire(t('refus')); });

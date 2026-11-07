@@ -399,3 +399,5 @@
 !set nova_bdg_av_paliers_aide=Nombre d'exercices réussis qu'il faut pour chaque jeton (par défaut : 3 10 20 30 40).
 !set nova_bdg_av_pas1=Ensuite, un jeton tous les
 !set nova_bdg_av_pas2=exercices réussis.
+!set nova_bdg_av_depart1=Chaque élève commence avec
+!set nova_bdg_av_depart2=jeton(s) offert(s), pour personnaliser son avatar tout de suite.

@@ -89,3 +89,5 @@
 /* Élément débloqué par un badge : image du badge (niveau qui l'a ouvert) en bas à droite de la tuile (2026-11-07, utilisateur). */
 .nova-avatar-tuile img.nova-avatar-badge { position: absolute; right: 2px; bottom: 2px; width: 26px; height: 26px; border-radius: 0;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)); }
+/* Pas assez de jetons : « Débloquer » désactivé, et qui en a l'air. */
+.nova-avatar-confirmer .wims_button:disabled { opacity: .45; cursor: not-allowed; }

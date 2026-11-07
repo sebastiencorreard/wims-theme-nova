@@ -364,7 +364,7 @@
 !set nova_av_motif=Choosing a print switches to the printed T-shirt.
 !set nova_av_lunettes=Also choose glasses (Glasses tab) to see this colour on your avatar.
 !set nova_av_aucun=None
-!set nova_av_ouvrir=Unlock
+!set nova_av_debloquer=Unlock
 !set nova_av_annuler=Cancel
 !set nova_av_question=Unlock it for %n token? It stays unlocked for ever.
 !set nova_av_question2=Unlock it for %n tokens? It stays unlocked for ever.

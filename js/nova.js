@@ -2848,6 +2848,12 @@
       var k = c.getAttribute('data-cle'), v = valeur(zone.value, k);
       var h = herite.getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
       if (c.type === 'checkbox') c.checked = (v || h || 'oui') !== 'non';
+      else if (c.tagName === 'SELECT') {
+        // Liste (couleur personnelle, 2026-11-07) : première option = valeur héritée, nommée d'après elle.
+        c.value = v;
+        var oh = h && c.querySelector('option[value="' + h + '"]'), o0 = c.options[0];
+        if (o0 && o0.value === '' && oh) o0.textContent = (o0.getAttribute('data-texte') || '%s').replace('%s', oh.textContent);
+      }
       else { c.value = v; c.placeholder = h; }
     });
     // Interrupteur général (page Apparence) : rappelé en tête, avec le lien.
@@ -2875,6 +2881,7 @@
       champs.forEach(function (c) {
         var k = c.getAttribute('data-cle');
         if (c.type === 'checkbox') { decl += ' --nova-' + k + ': ' + (c.checked ? 'oui' : 'non') + ';'; return; }
+        if (c.tagName === 'SELECT') { if (/^[a-z0-9]+$/.test(c.value)) decl += ' --nova-' + k + ': ' + c.value + ';'; return; }
         // Listes de mots (titres des DM d'Échauffement, 2026-11-06) : lettres, chiffres, espaces, virgules.
         if (c.classList.contains('nova-app-mots')) {
           var mots = c.value.split(',').map(function (m) { return m.replace(/[^0-9A-Za-z\u00c0-\u00ff' -]+/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean).join(', ');
@@ -2891,7 +2898,7 @@
       if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -3446,6 +3453,9 @@
    * ?session= sans compteur ouvre l'accueil du contexte. */
   function lienAccueil(suite) {
     var m = /[?&]session=([^&.]+)/.exec(location.search), session = m ? m[1] : '';
+    // Juste après la connexion, l'adresse porte « session=new.… », qui ne vaut plus rien (vu le 2026-11-07) : la vraie
+    // session est dans les liens de la page.
+    if (session === 'new') session = '';
     if (!session) {
       var champ = document.querySelector('input[name="session"]');
       if (champ) session = champ.value.split('.')[0];
@@ -3645,6 +3655,84 @@
   }
   // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
   // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
+  /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 6:1),
+   * débloquée par le niveau d'un badge choisi par l'enseignant (--nova-couleur-badge, --nova-couleur-niveau). Choix gardé
+   * pour toute la structure sur le serveur (.nova_couleur_<login>, header.phtml) et, pour l'appliquer avant l'affichage de
+   * chaque page (htmlheader.phtml), dans localStorage sous nova-couleur|<structure ou classe>|<login>. */
+  var PALETTE = [['prune', '#7A3B69'], ['framboise', '#B0244F'], ['fuchsia', '#A3267A'], ['violet', '#5B3FA8'], ['nuit', '#1F4E8C'],
+    ['bleu', '#0B63B5'], ['petrole', '#0E6E6E'], ['sapin', '#2E6B3A'], ['orange', '#A84300'], ['graphite', '#3F4A57']];
+  function cleCouleur() {
+    var meta = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.content : ''; };
+    var racine = meta('nova-structure') || meta('nova-classe').split('/')[0], u = meta('nova-utilisateur');
+    return racine && u ? 'nova-couleur|' + racine + '|' + u : '';
+  }
+  function poserCouleur(nom) {
+    var c = PALETTE.filter(function (p) { return p[0] === nom; })[0], cle = cleCouleur();
+    if (c) document.documentElement.style.setProperty('--nova-accent', c[1]);
+    else document.documentElement.style.removeProperty('--nova-accent');
+    try { if (cle) { if (c) localStorage.setItem(cle, c[1]); else localStorage.removeItem(cle); } } catch (e) { /* sans stockage : cette page seulement */ }
+  }
+  // Accueil de l'élève (#nova-couleur, user.phtml) : la valeur du serveur fait foi (vide : badges ou réglage coupés).
+  function couleurPerso() {
+    var source = document.getElementById('nova-couleur');
+    if (source) poserCouleur(source.getAttribute('data-couleur') || '');
+  }
+  // Carte « Ta récompense » dans l'onglet du badge qui débloque la couleur.
+  function carteCouleur(d, niveau, requis, nomNiveau) {
+    var a = function (n) { return d.getAttribute('data-' + n) || ''; };
+    var carte = document.createElement('div');
+    carte.className = 'nova-couleur-carte' + (niveau >= requis ? '' : ' nova-couleur-verrou');
+    var h = document.createElement('p');
+    h.className = 'nova-couleur-titre';
+    h.textContent = a('coul-titre');
+    carte.appendChild(h);
+    var aide = document.createElement('p');
+    aide.className = 'nova-couleur-aide';
+    carte.appendChild(aide);
+    if (niveau < requis) { aide.textContent = a('coul-verrou').replace('%s', nomNiveau); return carte; }
+    aide.textContent = a('coul-aide');
+    var noms = a('coul-noms').split(',');
+    var actuelle = (document.getElementById('nova-couleur') || d).getAttribute('data-couleur') || '';
+    var etat = document.createElement('p');
+    etat.className = 'nova-couleur-etat';
+    etat.setAttribute('aria-live', 'polite');
+    var liste = document.createElement('div');
+    liste.className = 'nova-couleur-liste';
+    var boutons = [];
+    var choisir = function (nom, envoyer) {
+      actuelle = nom;
+      boutons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-couleur') === nom ? 'true' : 'false'); });
+      var i = PALETTE.findIndex(function (p) { return p[0] === nom; });
+      etat.textContent = i >= 0 ? a('coul-choisie').replace('%s', noms[i] || nom) : '';
+      poserCouleur(nom);
+      var source = document.getElementById('nova-couleur');
+      if (source) source.setAttribute('data-couleur', nom === 'classe' ? '' : nom);
+      if (envoyer) { var u = lienAccueil('&nova_couleur=' + nom); if (u) fetch(u, { credentials: 'same-origin' }).catch(function () {}); }
+    };
+    PALETTE.forEach(function (p, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'nova-couleur-pastille';
+      b.style.background = p[1];
+      b.setAttribute('data-couleur', p[0]);
+      b.setAttribute('aria-label', noms[i] || p[0]);
+      b.title = noms[i] || p[0];
+      b.addEventListener('click', function () { choisir(p[0], true); });
+      boutons.push(b);
+      liste.appendChild(b);
+    });
+    carte.appendChild(liste);
+    var classe = document.createElement('button');
+    classe.type = 'button';
+    classe.className = 'nova-couleur-classe';
+    classe.textContent = a('coul-classe');
+    classe.addEventListener('click', function () { choisir('classe', true); });
+    carte.appendChild(classe);
+    carte.appendChild(etat);
+    choisir(actuelle, false);
+    return carte;
+  }
+
   function fenetreBadges(d) {
     var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
     var el = function (balise, classe, texte) {
@@ -3795,6 +3883,15 @@
       panneaux.push(['top', a('top-nom'), panneau('top', a('top-nom'), nivT, npT, palT, mt[6],
         a('top-regle').replace('%s', virgule(seuilT)), chiffresT, etatT, texteT, '', a('top-aide'), a('images-top'))]);
     }
+    // Couleur personnelle : carte dans l'onglet du badge choisi par l'enseignant (reglages : 9e champ badge, 10e niveau).
+    var badgeCoul = reg[9] || 'aucun', requisCoul = +reg[10] || 2;
+    var lignesNiv = { fidelite: mf, perseverance: mp, echauffement: mh, top: mt };
+    panneaux.forEach(function (p) {
+      if (p[0] !== badgeCoul) return;
+      var detail = p[2], aide = detail.querySelector('.nova-badge-aide');
+      var carte = carteCouleur(d, +lignesNiv[p[0]][2] || 0, requisCoul, noms[requisCoul - 1] || String(requisCoul));
+      detail.insertBefore(carte, detail.querySelector('.nova-badge-niveaux') || aide);
+    });
     // Onglets, s'il y a plus d'un badge.
     var onglets = null;
     f.choisir = function (cle) {
@@ -3858,7 +3955,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

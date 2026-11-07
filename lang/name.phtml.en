@@ -327,6 +327,22 @@
 !set nova_bdg_top_paliers_aide=Top homework, for each of the 8 levels, separated by spaces. Empty: inherited value. 0: level given at once, for testing (the student keeps it).
 !set nova_bdg_top_seuil1=Count a homework when the kept score on the graded test reaches at least
 !set nova_bdg_top_seuil2=out of 10.
+!! Student's own colour (2026-11-07).
+!set nova_coul_titre=Your reward: the colour of your WIMS
+!set nova_coul_aide=Choose your colour: it applies to all your pages, tests included.
+!set nova_coul_verrou=Reach level %s of this badge to choose the colour of your WIMS.
+!set nova_coul_classe=Class colour
+!set nova_coul_noms=Plum,Raspberry,Fuchsia,Purple,Navy,Blue,Teal,Fir green,Orange,Graphite
+!set nova_coul_choisie=Chosen colour: %s.
+!set nova_bdg_coul_titre=Students' own colour
+!set nova_bdg_coul_aide=A reward: the student chooses the colour of their interface from a readable palette, in the tab of the chosen badge. Once chosen, it applies throughout the class, group or portal, tests included.
+!set nova_bdg_coul_phrase1=Unlock the choice at level
+!set nova_bdg_coul_phrase2=of the badge
+!set nova_bdg_coul_niveau=Level that unlocks the colour
+!set nova_bdg_coul_badge=Badge that unlocks the colour
+!set nova_bdg_coul_aucun=nobody (off)
+!set nova_bdg_coul_herite=%s (inherited)
+!set nova_bdg_coul_herite_vide=inherited value
 !! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
 !set nova_bdg_reglages=Settings
 !set nova_app_fil=Fixed breadcrumb

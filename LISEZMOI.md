@@ -128,6 +128,12 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
   `--nova-echauffement-note` sans entraînement trouvé (un examen « Test : … » compte donc). La fenêtre donne la note du
   DM noté ouvert le plus récent.
 
+**Couleur personnelle** (récompense) : à partir d'un niveau d'un badge (`--nova-couleur-badge`, Régularité par défaut ;
+`--nova-couleur-niveau`, Bois par défaut ; « aucun » coupe), l'élève choisit la couleur de son interface dans une palette
+de 10 teintes lisibles (texte blanc, contraste ≥ 6:1), dans l'onglet de ce badge. Réglage dans « Badges Nova ». Le choix
+vaut pour toute la classe, le groupement ou le portail, examens compris : `log/classes/<structure ou
+classe>/.nova_couleur_<login>`, recopié dans le navigateur pour être posé avant l'affichage de chaque page.
+
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
 
 Portail ou groupement : les réglages d'une zone l'emportent sur ceux de la structure. Pour les recopier dans les zones :

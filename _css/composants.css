@@ -1116,3 +1116,19 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-ecarts .nova-ecarts-actions > * { margin: 0; }
 .nova-ecarts a.wims_button:not([href]) { opacity: .5; pointer-events: none; }
 .nova-ecarts .nova-ecarts-attente { margin: var(--nova-e2) 0 0; font-weight: 600; }
+
+/* Couleur personnelle de l'élève (2026-11-07) : carte « Ta récompense » dans l'onglet du badge qui la débloque (nova.js
+   carteCouleur) ; pastilles rondes, la choisie cerclée ; verrouillée : texte seul, grisé. */
+.nova-couleur-carte { display: grid; gap: var(--nova-e2); padding: var(--nova-e3); border: 1px solid var(--nova-bord); border-radius: 12px; background: var(--nova-accent-doux); }
+.nova-couleur-carte.nova-couleur-verrou { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+.nova-couleur-carte.nova-couleur-verrou .nova-couleur-titre::before { content: "\1F512\00A0"; }
+.nova-couleur-carte p { margin: 0; }
+.nova-couleur-titre { font-weight: 700; }
+.nova-couleur-liste { display: flex; flex-wrap: wrap; gap: 10px; }
+.wimsbody .nova-couleur-pastille, .nova-couleur-pastille { all: unset; box-sizing: border-box; width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--nova-bord-fort); cursor: pointer; }
+.nova-couleur-pastille[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--nova-texte); }
+.nova-couleur-pastille:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 3px; }
+.wimsbody .nova-couleur-classe, .nova-couleur-classe { all: unset; box-sizing: border-box; justify-self: start; min-height: 40px; padding: 0 var(--nova-e3); border: 2px solid var(--nova-accent); border-radius: 999px; color: var(--nova-accent); background: var(--nova-surface); font-weight: 700; cursor: pointer; }
+.nova-couleur-classe:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 2px; }
+.nova-couleur-etat:empty { display: none; }
+.nova-bdg-couleur select.nova-app-choix { min-height: 40px; margin: 0 .25rem; max-width: 100%; }

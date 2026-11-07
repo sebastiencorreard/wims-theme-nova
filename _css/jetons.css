@@ -121,6 +121,8 @@
   --nova-echauffement-note: "note, test, graded";
   --nova-top-seuil: 9;
   --nova-top-paliers: 1 3 5 8 12 16 21 26;
+  --nova-couleur-badge: fidelite;
+  --nova-couleur-niveau: 2;
   --nova-fidelite-paliers: 2 4 6 9 12 16 20 25;
   --nova-vacances: aucune;
 }

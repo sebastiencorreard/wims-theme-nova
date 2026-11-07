@@ -161,6 +161,29 @@
         </div></details>
       </div>
     </fieldset>
+    <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-couleur">
+      <legend>$nova_bdg_coul_titre</legend>
+      <div class="nova-app-ligne nova-app-texte">
+        <p class="nova-app-aide">$nova_bdg_coul_aide</p>
+        <p class="nova-app-phrase">$nova_bdg_coul_phrase1
+          <select class="nova-app-choix" data-cle="couleur-niveau" aria-label="$nova_bdg_coul_niveau">
+            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+!set nova_k=!itemcnt $nova_fid_niveaux
+!for nova_i=1 to $nova_k
+            <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
+!next
+          </select>
+          $nova_bdg_coul_phrase2
+          <select class="nova-app-choix" data-cle="couleur-badge" aria-label="$nova_bdg_coul_badge">
+            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+            <option value="fidelite">$nova_fid_nom</option>
+            <option value="perseverance">$nova_per_nom</option>
+            <option value="echauffement">$nova_ech_nom</option>
+            <option value="top">$nova_top_nom</option>
+            <option value="aucun">$nova_bdg_coul_aucun</option>
+          </select>.</p>
+      </div>
+    </fieldset>
     <p class="nova-app-note">$nova_bdg_note</p>
     <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>
   </div>

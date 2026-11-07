@@ -82,6 +82,7 @@ $wims_CSS
 </script>
 <meta name="nova-structure" content="$wims_superclass">
 <meta name="nova-classe" content="$wims_class">
+<meta name="nova-utilisateur" content="$wims_user">
 <script>/* Nova : reglages pour rapprocher du theme standard (html.nova-std-...), poses avant l'affichage. La feuille
    de la classe est deja chargee (valeur calculee) ; site et structure : copie gardee par nova.js (sessionStorage,
    reglagesStructure). nova.js (reglagesStandard) recalcule ensuite. Pas de signe dollar ici. */
@@ -114,11 +115,19 @@ $wims_CSS
     }
     if (sans) d.classList.add('nova-sans-' + r);
   });
+  /* Couleur personnelle d'un eleve (2026-11-07) : gardee par nova.js (couleurPerso) sous nova-couleur|<structure ou
+     classe>|<login>, posee ici avant l'affichage, examens compris. */
+  try {
+    var mu = document.querySelector('meta[name="nova-utilisateur"]');
+    var racine = (m && m.content) || (mc ? mc.content.split('/')[0] : '');
+    var coul = mu && mu.content && racine ? localStorage.getItem('nova-couleur|' + racine + '|' + mu.content) : '';
+    if (coul && /^#[0-9a-fA-F]{6}/.test(coul)) d.style.setProperty('--nova-accent', coul);
+  } catch (e) {}
   /* Menu enseignant complet par defaut : seulement si l'enseignant n'a rien choisi lui-meme. */
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=18b7a53772" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=8438424e76" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

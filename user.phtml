@@ -101,6 +101,24 @@
     !if $nova_fo=on or $nova_po=on or $nova_ho=on or $nova_to=on
       !set nova_bdg=on
     !endif
+    !! Couleur personnelle (2026-11-07, utilisateur) : choisie par l'eleve une fois le niveau requis atteint (badge et
+    !! niveau regles par l'enseignant, --nova-couleur-badge/-niveau), gardee pour toute la structure (portail,
+    !! groupement) dans log/classes/<structure ou classe>/.nova_couleur_<login> (ecrite par header.phtml) ; appliquee
+    !! par nova.js (couleurPerso) et, sur chaque page, par le script de tete (htmlheader.phtml, localStorage).
+    !! Reglage coupe (« personne ») : valeur vide, nova.js retire la couleur gardee. Badges coupes dans cette zone : rien,
+    !! la couleur choisie ailleurs dans la structure reste.
+    !set nova_cb=!word 10 of $nova_lr
+    !set nova_cv=
+    !if $nova_bdg=on and $nova_cb!=aucun and $nova_cb!=$empty
+      !set nova_ck=$wims_superclass
+      !default nova_ck=!word 1 of $wims_class
+      !set nova_ck=!replace internal / by , in $nova_ck
+      !set nova_ck=$(nova_ck[1])
+      !set nova_cv=!sh cat $nova_cl/$nova_ck/.nova_couleur_$wims_user 2>/dev/null | tr -cd 'a-z'
+    !endif
+    !if $nova_bdg=on
+    <div id="nova-couleur" hidden data-couleur="$nova_cv"></div>
+    !endif
     !! Exercice « en cours » de Perseverance (assez de notes faibles, pas encore de reussite) : son titre.
     !reset nova_ct
     !set nova_cx=!word 2 of $nova_lc
@@ -251,10 +269,12 @@
       data-ech-suite1="$nova_ech_suite1" data-ech-aide="$nova_ech_aide"
       data-top-nom="$nova_top_nom" data-top-regle="$nova_top_regle" data-top-total="$nova_top_total" data-top-afaire="$nova_top_afaire"
       data-top-reussi="$nova_top_reussi" data-top-encore="$nova_top_encore" data-top-suite="$nova_top_suite" data-top-suite1="$nova_top_suite1"
-      data-top-aide="$nova_top_aide"></div>
+      data-top-aide="$nova_top_aide" data-couleur="$nova_cv"
+      data-coul-titre="$nova_coul_titre" data-coul-aide="$nova_coul_aide" data-coul-verrou="$nova_coul_verrou"
+      data-coul-classe="$nova_coul_classe" data-coul-noms="$nova_coul_noms" data-coul-choisie="$nova_coul_choisie"></div>
   !endif
 !endif
-!reset nova_bdg nova_lf nova_lp nova_lc nova_lr nova_fo nova_po nova_ct nova_n nova_i nova_nv nova_bnom nova_bp nova_bm nova_lt nova_lu nova_to nova_xc nova_xs nova_xn nova_k nova_v
+!reset nova_bdg nova_lf nova_lp nova_lc nova_lr nova_fo nova_po nova_ct nova_n nova_i nova_nv nova_bnom nova_bp nova_bm nova_lt nova_lu nova_to nova_xc nova_xs nova_xn nova_k nova_v nova_cb nova_ck nova_cv
 !read classlogo.phtml
 !if $class_logo!=$empty
   <div id="classlogo" class="float_$class_logoside">

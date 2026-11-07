@@ -327,6 +327,22 @@
 !set nova_bdg_top_paliers_aide=DM au top, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_bdg_top_seuil1=Compter un DM quand la note retenue au DM noté atteint au moins
 !set nova_bdg_top_seuil2=sur 10.
+!! Couleur personnelle de l'eleve (2026-11-07).
+!set nova_coul_titre=Ta récompense : la couleur de ton WIMS
+!set nova_coul_aide=Choisis ta couleur : elle s'applique sur toutes tes pages, examens compris.
+!set nova_coul_verrou=Atteins le niveau %s de ce badge pour choisir la couleur de ton WIMS.
+!set nova_coul_classe=Couleur de la classe
+!set nova_coul_noms=Prune,Framboise,Fuchsia,Violet,Bleu nuit,Bleu,Pétrole,Sapin,Orange,Graphite
+!set nova_coul_choisie=Couleur choisie : %s.
+!set nova_bdg_coul_titre=Couleur personnelle des élèves
+!set nova_bdg_coul_aide=Une récompense : l'élève choisit la couleur de son interface dans une palette lisible, dans l'onglet du badge choisi. Une fois choisie, elle vaut dans toute la classe, le groupement ou le portail, examens compris.
+!set nova_bdg_coul_phrase1=Débloquer le choix au niveau
+!set nova_bdg_coul_phrase2=du badge
+!set nova_bdg_coul_niveau=Niveau qui débloque la couleur
+!set nova_bdg_coul_badge=Badge qui débloque la couleur
+!set nova_bdg_coul_aucun=personne (désactivé)
+!set nova_bdg_coul_herite=%s (valeur héritée)
+!set nova_bdg_coul_herite_vide=valeur héritée
 !! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
 !set nova_bdg_reglages=Réglages
 !set nova_app_fil=Fil d'Ariane fixe

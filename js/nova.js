@@ -3781,10 +3781,20 @@
   function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
   // Suivi en salle (js/suivi.js) : dessin d'un avatar d'élève d'après son choix enregistré.
   window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(optionsAvatar(choix)); }); };
+  // Avatar de la barre : fenêtres ordinaires seulement (demande de l'utilisateur, 2026-11-07 : la place manque à côté
+  // de « Terminer » et du chronomètre). Pas en examen (session _exam, chronomètre, Terminer, pastille « Examen en
+  // cours »), ni dans une fenêtre d'aide, d'outil ou allégée.
+  function barreOrdinaire(barre) {
+    var session = (location.search.match(/[?&]session=([^&]*)/) || [])[1] || '';
+    if (/_(exam|tool|help|mhelp|light)/.test(session)) return false;
+    if (document.getElementById('wimsexam') || document.getElementById('wimsmhelp') || document.getElementById('wimslightpopup')) return false;
+    if (document.body.classList.contains('nova-examen') || document.body.classList.contains('nova-examen-session')) return false;
+    return !barre.querySelector('.menuitem.chrono, #chrono_exam, a.endexam, .nova-terminer, .nova-examencours');
+  }
   function poserAvatarBarre(memo) {
     var barre = document.getElementById('wimstopbox');
     var ancien = document.querySelector('.nova-avatar-barre');
-    if (!barre || !memo || !memo.uri || barre.querySelector('.menuitem.chrono')) { if (ancien) ancien.remove(); return; }
+    if (!barre || !memo || !memo.uri || !barreOrdinaire(barre)) { if (ancien) ancien.remove(); return; }
     var a = ancien || document.createElement('a');
     a.className = 'nova-avatar-barre';
     a.href = lienMonAvatar();

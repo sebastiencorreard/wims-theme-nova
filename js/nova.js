@@ -4006,6 +4006,29 @@
     var droite = el('div', 'nova-avatar-choix');
     var onglets = el('div', 'nova-avatar-onglets');
     onglets.setAttribute('role', 'tablist');
+    // Rangée des catégories défilante : fondu et flèche du côté où il reste des onglets (utilisateur, 2026-11-07).
+    // Flèches pour la souris et le doigt seulement (le clavier passe d'un onglet à l'autre).
+    var defile = el('div', 'nova-avatar-defile');
+    var flecheG = el('button', 'nova-avatar-fleche nova-avatar-fleche-g', '\u2039');
+    var flecheD = el('button', 'nova-avatar-fleche nova-avatar-fleche-d', '\u203a');
+    [flecheG, flecheD].forEach(function (f, i) {
+      f.type = 'button';
+      f.tabIndex = -1;
+      f.setAttribute('aria-hidden', 'true');
+      f.addEventListener('click', function () {
+        onglets.scrollBy({ left: (i ? 1 : -1) * Math.max(120, onglets.clientWidth * 0.7), behavior: animationsCoupees() ? 'auto' : 'smooth' });
+      });
+    });
+    defile.appendChild(flecheG);
+    defile.appendChild(onglets);
+    defile.appendChild(flecheD);
+    var bordsOnglets = function () {
+      var g = onglets.scrollLeft > 2, dr = onglets.scrollLeft + onglets.clientWidth < onglets.scrollWidth - 2;
+      defile.classList.toggle('nova-avatar-a-gauche', g);
+      defile.classList.toggle('nova-avatar-a-droite', dr);
+    };
+    onglets.addEventListener('scroll', bordsOnglets, { passive: true });
+    window.addEventListener('resize', bordsOnglets);
     var note = el('p', 'nova-avatar-note');
     var grille = el('div', 'nova-avatar-grille');
     grille.setAttribute('role', 'tabpanel');
@@ -4026,7 +4049,7 @@
       s.appendChild(document.createTextNode(' ' + l[2]));
       legende.appendChild(s);
     });
-    [onglets, note, grille, confirmer, legende].forEach(function (x) { droite.appendChild(x); });
+    [defile, note, grille, confirmer, legende].forEach(function (x) { droite.appendChild(x); });
     page.appendChild(droite);
 
     var aide = el('div', 'nova-avatar-regles');
@@ -4122,6 +4145,12 @@
         grille.appendChild(b);
       });
       confirmer.hidden = !enAttente;
+      // Onglet choisi visible dans la rangée, puis fondus et flèches à jour.
+      var actif = onglets.querySelector('[aria-selected="true"]');
+      if (actif && (actif.offsetLeft < onglets.scrollLeft || actif.offsetLeft + actif.offsetWidth > onglets.scrollLeft + onglets.clientWidth)) {
+        onglets.scrollLeft = actif.offsetLeft - (onglets.clientWidth - actif.offsetWidth) / 2;
+      }
+      bordsOnglets();
     };
     var cliquer = function (k, v, uri) {
       var e = k + '.' + v, s = etat.elements[e] || '';

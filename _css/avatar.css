@@ -112,3 +112,17 @@
 /* Fond transparent : damier sous la vignette (2026-11-07). */
 .nova-avatar-tuile.nova-avatar-transparent img { background-color: var(--nova-surface);
   background-image: conic-gradient(var(--nova-piste) 25%, transparent 0 50%, var(--nova-piste) 0 75%, transparent 0); background-size: 12px 12px; }
+/* Rangée des catégories défilante : fondu et flèche du côté où il reste des onglets (nova.js, bordsOnglets). */
+.nova-avatar-defile { position: relative; min-width: 0; }
+.nova-avatar-defile::before, .nova-avatar-defile::after { content: ""; position: absolute; top: 0; bottom: 6px; width: 56px; pointer-events: none;
+  opacity: 0; transition: opacity .15s; z-index: 1; }
+.nova-avatar-defile::before { left: 0; background: linear-gradient(to right, var(--nova-surface) 35%, transparent); }
+.nova-avatar-defile::after { right: 0; background: linear-gradient(to left, var(--nova-surface) 35%, transparent); }
+.nova-avatar-defile.nova-avatar-a-gauche::before, .nova-avatar-defile.nova-avatar-a-droite::after { opacity: 1; }
+.nova-avatar-fleche { position: absolute; top: calc(50% - 3px); transform: translateY(-50%); z-index: 2; display: none; place-items: center;
+  width: 32px; height: 32px; padding: 0 0 3px; border-radius: 50%; border: 1.5px solid var(--nova-bord); background: var(--nova-surface);
+  color: var(--nova-lien); font: 700 1.4rem/1 var(--nova-police, inherit); cursor: pointer; box-shadow: 0 1px 4px rgba(0, 0, 0, .15); }
+.nova-avatar-fleche-g { left: 0; }
+.nova-avatar-fleche-d { right: 0; }
+.nova-avatar-a-gauche .nova-avatar-fleche-g, .nova-avatar-a-droite .nova-avatar-fleche-d { display: grid; }
+.nova-avatar-fleche:hover { border-color: var(--nova-accent); }

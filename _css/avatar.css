@@ -64,6 +64,12 @@
 .nova-avatar-confirmer[hidden], .nova-avatar-confirmer [hidden] { display: none; }   /* .wims_button l'emportait sur hidden (bouton Ouvrir vide, élément de badge) */
 .nova-avatar-confirmer img { width: 56px; height: 56px; border-radius: 10px; background: var(--nova-surface); }
 .nova-avatar-confirmer p { flex: 1; min-width: 12rem; margin: 0; }
+/* Téléphone : le grand portrait est hors de l'écran pendant un essai ; l'aperçu du bandeau passe en grand (2026-11-07, utilisateur). */
+@media (max-width: 760px) {
+  .nova-avatar-confirmer { justify-content: center; }
+  .nova-avatar-confirmer img { width: 128px; height: 128px; margin-inline: auto; }
+  .nova-avatar-confirmer p { flex-basis: 100%; text-align: center; }
+}
 .nova-avatar-legende { display: flex; flex-wrap: wrap; gap: var(--nova-e4); margin: var(--nova-e3) 0 0; font-size: .85rem; color: var(--nova-texte-2); }
 .nova-avatar-regles { margin-top: var(--nova-e5); padding: var(--nova-e5); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; }
 .nova-avatar-regles h2 { margin: 0 0 var(--nova-e2); font-size: 1.05rem; }

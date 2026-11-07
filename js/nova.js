@@ -3802,7 +3802,9 @@
     p.innerHTML = PIECE_SVG;
     return p;
   }
-  function texteJetons(memo, n) { return ((n === 1 ? memo.tJeton : memo.tJetons) || '%n').replace('%n', n); }
+  // Singulier pour 1, et pour 0 en français (« 0 pièce »).
+  function singulier(n) { return n === 1 || (n === 0 && /^fr/.test(document.documentElement.lang || 'fr')); }
+  function texteJetons(memo, n) { return ((singulier(n) ? memo.tJeton : memo.tJetons) || '%n').replace('%n', n); }
   // Barre : compteur de jetons puis avatar, à droite. Gain depuis le dernier affichage (memo.vu) : animation A de la
   // maquette (la pièce tourne, « +1 » monte), jouée même si les animations de Nova sont coupées (récompense ponctuelle,
   // utilisateur), jamais si l'appareil demande de réduire les animations (CSS).
@@ -4038,7 +4040,7 @@
     var nbOuverts = function (k) { return (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); }).length; };
     var dessiner = function () {
       var j = etat.jetons;
-      nbJetons.textContent = (j.dispo === 1 ? t('jeton') : t('jetons')).replace('%n', j.dispo);
+      nbJetons.textContent = (singulier(j.dispo) ? t('jeton') : t('jetons')).replace('%n', j.dispo);
       barreJauge.style.width = Math.max(0, Math.min(100, j.pc)) + '%';
       prochain.textContent = j.reste === 1 ? t('prochain1') : t('prochain').replace('%n', j.reste);
       jour.textContent = t('jour').replace('%n', j.jour).replace('%m', j.max);

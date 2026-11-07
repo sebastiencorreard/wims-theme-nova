@@ -3740,7 +3740,7 @@
    * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
    * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
    * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
-  var AVATAR_CATEGORIES = ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'facialHair',
+  var AVATAR_CATEGORIES = ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
     'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
   function cleAvatar() {
     var cle = cleCouleur();
@@ -3761,6 +3761,7 @@
       if (c[k]) o[k] = [c[k]];
     });
     if (c.clothesColor) o.hatColor = [c.clothesColor];
+    if (c.accessoriesColor) o.accessoriesColor = [c.accessoriesColor];
     if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
     if (!c.facialHair || c.facialHair === 'aucun') o.facialHairProbability = 0;
     else { o.facialHair = [c.facialHair]; o.facialHairProbability = 100; if (c.hairColor) o.facialHairColor = [c.hairColor]; }
@@ -3944,6 +3945,17 @@
     (d.getAttribute('data-niveaux') || '').split(' ').slice(1).forEach(function (x) { var p = x.split(':'); badgesAvatar[p[0]] = [+p[1] || 0, p[2] === '1']; });
     var noms = t('categories').split(',');
     var niveaux = t('niveaux').split(',');
+    var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
+    // Élément de badge débloqué : image du badge au niveau qui l'a ouvert (dossiers d'images des badges, voir CLAUDE.md)
+    // et phrase « Débloqué grâce à ton badge … » (demande de l'utilisateur, 2026-11-07).
+    var IMAGES_BADGES = { fidelite: 'regularite/coeur', perseverance: 'perseverance/flamme', echauffement: 'entrainement/halteres', top: 'etoile/etoile' };
+    var baseTheme = (d.getAttribute('data-script') || '').replace(/js\/avatar\.js$/, '');
+    var badgeObtenu = function (s) { return /^badge-[a-z]+-[0-9]+-1$/.test(s); };
+    var texteBadge = function (s) { var p = s.split('-'); return t('badge-ok').replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])); };
+    var imageBadge = function (s) {
+      var p = s.split('-'), dossier = IMAGES_BADGES[p[1]], n = Math.max(1, Math.min(8, +p[2] || 1));
+      return dossier ? baseTheme + 'img/badges/' + dossier + '_0' + n + '.webp' : '';
+    };
 
     // Squelette.
     var page = el('div', 'nova-avatar-editeur');
@@ -4043,12 +4055,15 @@
       var k = AVATAR_CATEGORIES[catActive];
       var valeurs = etat.ordre[k] || [];
       note.textContent = k === 'clothingGraphic' ? t('motif') : t('ouverts').replace('%n', nbOuverts(k)).replace('%m', valeurs.length);
+      if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) note.textContent += ' ' + t('lunettes');
       grille.textContent = '';
       valeurs.forEach(function (v) {
         var e = k + '.' + v, s = etat.elements[e] || '';
         var essai = Object.assign({}, choix);
         essai[k] = v;
         if (k === 'clothingGraphic') essai.clothing = 'graphicShirt';
+        // Couleur des lunettes : aperçu sur des lunettes, même si l'élève n'en porte pas.
+        if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) essai.accessories = 'prescription02';
         var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
         var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : ''));
         b.type = 'button';
@@ -4059,6 +4074,13 @@
         img.src = rendu(essai);
         b.appendChild(img);
         if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }
+        else if (badgeObtenu(s) && imageBadge(s)) {
+          var mini = el('img', 'nova-avatar-badge');
+          mini.src = imageBadge(s);
+          mini.alt = '';
+          b.appendChild(mini);
+          nomV += ' (' + texteBadge(s) + ')';
+        }
         else if (/^badge-/.test(s)) { b.appendChild(el('span', 'nova-avatar-prix nova-avatar-etoile', '\u2605')); nomV += ' (' + t('leg3') + ')'; }
         b.title = nomV;
         b.setAttribute('aria-label', nomV);
@@ -4074,6 +4096,7 @@
         choix[k] = v;
         if (k === 'clothingGraphic') choix.clothing = 'graphicShirt';
         enAttente = null;
+        if (badgeObtenu(s)) dire(texteBadge(s));
         dessiner();
         return;
       }
@@ -4082,7 +4105,6 @@
       if (/^badge-/.test(s)) {
         // badge-<clé>-<niveau requis>-<0|1> ; niveau atteint et badge proposé : data-niveaux (« clé:niveau:1|0 »).
         var p = s.split('-'), b = badgesAvatar[p[1]] || [0, 0];
-        var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
         confTexte.textContent = (b[1] ? t('badge') : t('badge-off')).replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])).replace('%m', nomNiv(b[0]));
         confOui.hidden = true;
       } else {

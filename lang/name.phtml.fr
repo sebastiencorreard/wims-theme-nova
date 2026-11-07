@@ -359,9 +359,10 @@
 !set nova_av_enregistre=Avatar enregistré : il apparaît en haut de tes pages.
 !set nova_av_tire=Tiré parmi tes éléments ouverts. Enregistre-le s'il te plaît.
 !set nova_av_premier=Choisis ton avatar, puis enregistre-le : il apparaîtra en haut de tes pages.
-!set nova_av_categories=Coiffure,Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond
+!set nova_av_categories=Coiffure,Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Lunettes (couleur),Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond
 !set nova_av_ouverts=%n sur %m ouverts.
 !set nova_av_motif=Choisir un motif met le tee-shirt à motif.
+!set nova_av_lunettes=Choisis aussi des lunettes (onglet Lunettes) pour voir cette couleur sur ton avatar.
 !set nova_av_aucun=Aucun
 !set nova_av_ouvrir=Ouvrir
 !set nova_av_annuler=Annuler
@@ -371,6 +372,7 @@
 !set nova_av_manque1=Il te faut 1 jeton. Réussis encore quelques exercices !
 !set nova_av_badge=Réservé au badge %b, niveau %n. Tu en es au niveau %m.
 !set nova_av_badge_off=Réservé au badge %b, qui n'est pas proposé dans ta classe.
+!set nova_av_badge_ok=Débloqué grâce à ton badge %b, niveau %n.
 !set nova_av_ouvert=Élément ouvert !
 !set nova_av_refus=Ce n'est pas possible pour l'instant : recharge la page.
 !set nova_av_erreur=Les dessins n'ont pas pu se charger : recharge la page.

@@ -359,9 +359,10 @@
 !set nova_av_enregistre=Avatar saved: it appears at the top of your pages.
 !set nova_av_tire=Picked from your unlocked items. Save it if you like it.
 !set nova_av_premier=Choose your avatar, then save it: it will appear at the top of your pages.
-!set nova_av_categories=Hair,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Beard,Clothes,T-shirt print,Clothes colour,Background
+!set nova_av_categories=Hair,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Glasses colour,Beard,Clothes,T-shirt print,Clothes colour,Background
 !set nova_av_ouverts=%n of %m unlocked.
 !set nova_av_motif=Choosing a print switches to the printed T-shirt.
+!set nova_av_lunettes=Also choose glasses (Glasses tab) to see this colour on your avatar.
 !set nova_av_aucun=None
 !set nova_av_ouvrir=Unlock
 !set nova_av_annuler=Cancel
@@ -371,6 +372,7 @@
 !set nova_av_manque1=You need 1 token. Pass a few more exercises!
 !set nova_av_badge=Reserved for the %b badge, level %n. You are at level %m.
 !set nova_av_badge_off=Reserved for the %b badge, which your class does not offer.
+!set nova_av_badge_ok=Unlocked by your %b badge, level %n.
 !set nova_av_ouvert=Unlocked!
 !set nova_av_refus=Not possible right now: reload the page.
 !set nova_av_erreur=The drawings could not load: reload the page.

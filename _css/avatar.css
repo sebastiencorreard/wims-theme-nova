@@ -86,3 +86,6 @@
 @keyframes nova-jeton-monte { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px); } }
 @keyframes nova-jeton-gonfle { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.15); } }
 @media (max-width: 420px) { #wimstopbox .nova-avatar-zone { gap: 4px; } #wimstopbox a.nova-jetons-barre { padding-right: 9px; gap: 4px; } }
+/* Élément débloqué par un badge : image du badge (niveau qui l'a ouvert) en bas à droite de la tuile (2026-11-07, utilisateur). */
+.nova-avatar-tuile img.nova-avatar-badge { position: absolute; right: 2px; bottom: 2px; width: 26px; height: 26px; border-radius: 0;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .25)); }

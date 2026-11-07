@@ -146,4 +146,4 @@ html.nova-sans-animation .nova-suivi-segment > strong { transition: none; }
 #wimsmenumodubox .menuitem.nova_suivi > a:not(.eye)::before { content: none; }
 
 /* Avatar de l'eleve (2026-11-07) : rond devant le nom. */
-#nova-suivi-table .nova-suivi-avatar { width: 28px; height: 28px; margin-right: 8px; border-radius: 50%; vertical-align: middle; background: var(--nova-accent-doux); }
+#nova-suivi-table .nova-suivi-avatar { width: 28px; height: 28px; margin-right: 8px; border-radius: 50%; vertical-align: middle; }

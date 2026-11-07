@@ -38,8 +38,11 @@ de classe, menus choisis (`.nova_menu_<login>`), badges (`score/<élève>.nova`)
 navigateur. Une version plus ancienne ignore les réglages qu'elle ne connaît pas.
 
 La version installée s'affiche en bas de la carte « Réglages de Nova » (page Apparence du site, d'une
-classe, d'un portail ou d'un groupement) : « Nova 1.0 · 7 novembre 2026 · 1d7155f » (numéro, date de la
+classe, d'un portail ou d'un groupement) : « Nova 1.2 · 7 novembre 2026 · 1d7155f » (numéro, date de la
 livraison, commit). Elle est lue dans le fichier `VERSION` du thème.
+
+Versions : 1.0, première version ; 1.1, badges des élèves ; 1.2, avatar des élèves, couleur personnelle
+(« Ma couleur ») et deux nouveaux badges (Échauffement, Au top).
 
 Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossiers qui contiennent un
 `visitor.phtml`). Aucune recompilation, aucun redémarrage.

@@ -84,7 +84,8 @@ d'examen lisible. Installation : voir `INSTALLER.md`.
 Le lien « Mon activité » du menu des élèves mène à une page Nova simple (au lieu des graphiques de WIMS, toujours
 accessibles par un lien en bas de page) : trois cartes, pour des élèves de 11 à 18 ans.
 
-- **Ma régularité** : jours de travail de la semaine (lundi-dimanche), un rond par jour. Sous le seuil
+- **Ma régularité** : jours de travail de la semaine (lundi-dimanche), un rond par jour ; un jour compte quand
+  l'élève y envoie au moins une réponse (comme le badge Régularité). Sous le seuil
   d'encouragement, un message et le bouton « Faire un exercice » ; entre le seuil et l'objectif, « C'est bien,
   encore N jours » ; objectif atteint, « Bravo ». Pendant les vacances, pas d'objectif.
 - **Mon temps de travail** : durée de la semaine, barre avec un repère au seuil de pause ; au-delà, invitation à

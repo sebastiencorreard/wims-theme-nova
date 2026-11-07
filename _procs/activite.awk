@@ -10,8 +10,9 @@
 #   jours <nombre> <masque lundi..dimanche, 0/1> <aujourd'hui 0..6> <vacances 0/1>
 #   minutes <minutes de la semaine> <barre en %, repère à 80 %> <trop 0/1> <heures> <minutes, 2 chiffres>
 #   note <note> <niveau 0..10> <écart en jours> <jour 0..6> <JJ/MM> <feuille> <exercice>   (la plus récente d'abord)
-# Un jour compte s'il porte une session (ccaccount, jusqu'à la veille) ou une action sur un exercice (journaux,
-# aujourd'hui compris). Semaine du lundi au dimanche. Notes des feuilles seulement (pas des examens).
+# Un jour compte si l'élève y a envoyé au moins une réponse (ligne « score » des journaux, examens compris, aujourd'hui
+# compris), comme pour le badge Régularité (2026-11-07, utilisateur ; avant : toute session ccaccount ou action).
+# ccaccount ne sert plus qu'au temps de travail. Semaine du lundi au dimanche. Notes des feuilles seulement (pas des examens).
 
 function jours(s,    y, m, d, era, yoe, doy, doe) {
   y = substr(s, 1, 4) + 0; m = substr(s, 5, 2) + 0; d = substr(s, 7, 2) + 0
@@ -49,7 +50,7 @@ section == "cc" {
   if (!jour8(s) || $2 !~ /^[0-9]+$/) next
   d = jours(s) - lundi
   if (d < 0 || d > 6) next
-  actif[d] = 1; minutes += $2
+  minutes += $2
   next
 }
 section == "score" {
@@ -57,7 +58,7 @@ section == "score" {
   s = $1; sub(/^E/, "", s); s = substr(s, 1, 8)
   if (!jour8(s)) next
   d = jours(s) - lundi
-  if (d >= 0 && d <= 6) actif[d] = 1
+  if (d >= 0 && d <= 6 && $5 == "score") actif[d] = 1
   if (examen || $5 != "score" || $6 !~ /^[0-9]+(\.[0-9]+)?$/ || $3 !~ /^[0-9]+$/ || $4 !~ /^[0-9]+$/) next
   if ($6 + 0 > 10) next
   # Même réponse dans score/ et noscore/ : une seule fois.

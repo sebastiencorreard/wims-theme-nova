@@ -3967,6 +3967,16 @@
   // Coiffures qui sont des chapeaux : seules à montrer l'onglet « Chapeau (couleur) » (hatColor).
   var AVATAR_CHAPEAUX = ['hat', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04'];
   function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0; }
+  function porteLunettes(c) { return !!c.accessories && c.accessories !== 'aucun' && c.accessories !== 'eyepatch'; }
+  function porteBarbe(c) { return !!c.facialHair && c.facialHair !== 'aucun'; }
+  // Onglets de couleur montrés seulement quand ils changent quelque chose (2026-11-07, utilisateur) : chapeau porté,
+  // lunettes portées ; cheveux cachés par un chapeau, sauf barbe (elle prend la couleur des cheveux).
+  function ongletUtile(k, c) {
+    if (k === 'hatColor') return porteChapeau(c);
+    if (k === 'accessoriesColor') return porteLunettes(c);
+    if (k === 'hairColor') return !porteChapeau(c) || porteBarbe(c);
+    return true;
+  }
   var AVATAR_DEGRADES = { coucher: ['ff6b6b', 'ffd60a'], ocean: ['00b4d8', '3a86ff'], aurore: ['06d6a0', '8338ec'],
     bonbon: ['ff006e', 'ffafcc'], lagon: ['9ef01a', '00b4d8'], galaxie: ['1d3557', '8338ec'] };
   // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
@@ -4308,10 +4318,10 @@
       boutonEnr.disabled = !!enAttente || occupe;
       boutonEnr.title = enAttente ? t('enr-bloque') : '';
       onglets.textContent = '';
-      if (AVATAR_CATEGORIES[catActive] === 'hatColor' && !porteChapeau(choix)) catActive = 0;
+      if (!ongletUtile(AVATAR_CATEGORIES[catActive], choix)) catActive = 0;
       AVATAR_CATEGORIES.forEach(function (k, i) {
         if (!etat.ordre[k]) return;
-        if (k === 'hatColor' && !porteChapeau(choix)) return;   // chapeau porté (pas seulement essayé)
+        if (!ongletUtile(k, choix)) return;   // d'après ce qui est porté (pas seulement essayé)
         var b = el('button', 'nova-avatar-onglet');
         b.type = 'button';
         b.setAttribute('role', 'tab');

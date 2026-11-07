@@ -332,7 +332,7 @@
 !set nova_coul_aide=Choose your colour: it applies to all your pages, tests included.
 !set nova_coul_verrou=Reach level %s of this badge to choose the colour of your WIMS.
 !set nova_coul_classe=Class colour
-!set nova_coul_noms=Plum,Raspberry,Fuchsia,Purple,Navy,Blue,Teal,Fir green,Orange,Graphite
+!set nova_coul_noms=Coral,Orange,Amber,Green,Fir green,Turquoise,Azure,Navy,Purple,Pink
 !set nova_coul_choisie=Chosen colour: %s.
 !set nova_bdg_coul_titre=Students' own colour
 !set nova_bdg_coul_aide=A reward: the student chooses the colour of their interface from a readable palette, in the tab of the chosen badge. Once chosen, it applies throughout the class, group or portal, tests included.

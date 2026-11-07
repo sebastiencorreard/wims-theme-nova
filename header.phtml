@@ -194,7 +194,7 @@
       !default nova_ck=!word 1 of $wims_class
       !set nova_ck=!replace internal / by , in $nova_ck
       !set nova_ck=$(nova_ck[1])
-      !if $nova_cv isitemof prune,framboise,fuchsia,violet,nuit,bleu,petrole,sapin,orange,graphite
+      !if $nova_cv isitemof corail,orange,ambre,vert,sapin,turquoise,azur,nuit,violet,rose
         !writefile wimshome/log/classes/$nova_ck/.nova_couleur_$wims_user $nova_cv
       !endif
       !if $nova_cv=classe

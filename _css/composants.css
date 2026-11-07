@@ -1124,8 +1124,8 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-couleur-carte.nova-couleur-verrou .nova-couleur-titre::before { content: "\1F512\00A0"; }
 .nova-couleur-carte p { margin: 0; }
 .nova-couleur-titre { font-weight: 700; }
-.nova-couleur-liste { display: flex; flex-wrap: wrap; gap: 10px; }
-.wimsbody .nova-couleur-pastille, .nova-couleur-pastille { all: unset; box-sizing: border-box; width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--nova-bord-fort); cursor: pointer; }
+.nova-couleur-liste { display: flex; flex-wrap: nowrap; gap: clamp(3px, 1.2vw, 8px); }   /* une seule ligne (utilisateur, 2026-11-07) */
+.wimsbody .nova-couleur-pastille, .nova-couleur-pastille { all: unset; box-sizing: border-box; flex: 1 1 0; min-width: 0; max-width: 40px; aspect-ratio: 1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--nova-bord-fort); cursor: pointer; }
 .nova-couleur-pastille[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--nova-texte); }
 .nova-couleur-pastille:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 3px; }
 .wimsbody .nova-couleur-classe, .nova-couleur-classe { all: unset; box-sizing: border-box; justify-self: start; min-height: 40px; padding: 0 var(--nova-e3); border: 2px solid var(--nova-accent); border-radius: 999px; color: var(--nova-accent); background: var(--nova-surface); font-weight: 700; cursor: pointer; }

@@ -3655,12 +3655,13 @@
   }
   // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
   // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
-  /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 6:1),
+  /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 3,5:1),
    * débloquée par le niveau d'un badge choisi par l'enseignant (--nova-couleur-badge, --nova-couleur-niveau). Choix gardé
    * pour toute la structure sur le serveur (.nova_couleur_<login>, header.phtml) et, pour l'appliquer avant l'affichage de
    * chaque page (htmlheader.phtml), dans localStorage sous nova-couleur|<structure ou classe>|<login>. */
-  var PALETTE = [['prune', '#7A3B69'], ['framboise', '#B0244F'], ['fuchsia', '#A3267A'], ['violet', '#5B3FA8'], ['nuit', '#1F4E8C'],
-    ['bleu', '#0B63B5'], ['petrole', '#0E6E6E'], ['sapin', '#2E6B3A'], ['orange', '#A84300'], ['graphite', '#3F4A57']];
+  // Palette (2026-11-07, utilisateur : 10 couleurs, du spectre entier, claires et foncées, texte blanc lisible ≥ 3,5:1).
+  var PALETTE = [['corail', '#E0442E'], ['orange', '#D35400'], ['ambre', '#B87400'], ['vert', '#1E9447'], ['sapin', '#2E6B3A'],
+    ['turquoise', '#008C95'], ['azur', '#0A7BD6'], ['nuit', '#1F3A6E'], ['violet', '#7B1FE0'], ['rose', '#D1106B']];
   function cleCouleur() {
     var meta = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.content : ''; };
     var racine = meta('nova-structure') || meta('nova-classe').split('/')[0], u = meta('nova-utilisateur');

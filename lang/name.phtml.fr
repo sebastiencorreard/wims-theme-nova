@@ -332,7 +332,7 @@
 !set nova_coul_aide=Choisis ta couleur : elle s'applique sur toutes tes pages, examens compris.
 !set nova_coul_verrou=Atteins le niveau %s de ce badge pour choisir la couleur de ton WIMS.
 !set nova_coul_classe=Couleur de la classe
-!set nova_coul_noms=Prune,Framboise,Fuchsia,Violet,Bleu nuit,Bleu,Pétrole,Sapin,Orange,Graphite
+!set nova_coul_noms=Corail,Orange,Ambre,Vert,Sapin,Turquoise,Azur,Bleu nuit,Violet,Rose
 !set nova_coul_choisie=Couleur choisie : %s.
 !set nova_bdg_coul_titre=Couleur personnelle des élèves
 !set nova_bdg_coul_aide=Une récompense : l'élève choisit la couleur de son interface dans une palette lisible, dans l'onglet du badge choisi. Une fois choisie, elle vaut dans toute la classe, le groupement ou le portail, examens compris.

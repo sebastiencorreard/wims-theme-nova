@@ -38,7 +38,9 @@ mkdir -p "$sortie"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp/$DOSSIER"
 git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh --exclude=maj-vacances.py
-printf '%s\n' "$commit" > "$tmp/$DOSSIER/VERSION"
+# VERSION : numéro choisi par l'utilisateur (fichier du dépôt), commit, date (lus par _procs/version.sh ; 2026-11-07).
+numero=$(git show "$commit:VERSION" 2>/dev/null | sed -n 1p)
+printf '%s\n%s\n%s\n' "${numero:-?}" "$commit" "$date" > "$tmp/$DOSSIER/VERSION"
 # Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08). Le dossier
 # img/badges/etoile, exclu jusqu'au 2026-11-07, sert au badge Au top.
 rm -f "$tmp/$DOSSIER/local.phtml.template" "$tmp/$DOSSIER"/img/badges/*.png "$tmp/$DOSSIER"/img/badges/*/*.png

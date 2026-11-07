@@ -1,0 +1,22 @@
+!! Nova : ligne de version en bas des cartes « Réglages de Nova » (apparence.phtml, apparence-classe.phtml), 2026-11-07.
+!! Numéro choisi par l'utilisateur (fichier VERSION du dépôt) ; commit et date ajoutés par livrer.sh (_procs/version.sh).
+!set nova_vr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/version.sh $wims_home/public_html/themes/$wims_theme
+!set nova_vn=!word 1 of $nova_vr
+!set nova_vc=!word 2 of $nova_vr
+!set nova_vj=!word 3 of $nova_vr
+!if $nova_vj=dev or $nova_vj=?
+  !set nova_vd=$nova_version_dev
+!else
+  !set nova_vm=!char 6 to 7 of $nova_vj
+  !set nova_vm=!item $[$nova_vm] of $nova_mois
+  !set nova_vjj=!char 9 to 10 of $nova_vj
+  !set nova_vjj=$[$nova_vjj]
+  !set nova_va=!char 1 to 4 of $nova_vj
+  !if $lang=fr
+    !set nova_vd=$nova_vjj $nova_vm $nova_va
+  !else
+    !set nova_vd=$nova_vm $nova_vjj, $nova_va
+  !endif
+!endif
+<p class="nova-app-version">Nova $nova_vn &middot; $nova_vd &middot; <span class="nova-app-commit">$nova_vc</span></p>
+!reset nova_vr nova_vn nova_vc nova_vj nova_vd nova_vm nova_vjj nova_va

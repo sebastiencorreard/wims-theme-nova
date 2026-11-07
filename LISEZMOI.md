@@ -239,6 +239,7 @@ par défaut et la cadence d'actualisation avec un DOM en mémoire, sans navigate
 | `lang/name.phtml.{fr,en,nl}` | textes propres au thème (**latin-1**) |
 | `htmlheader.phtml` | variables `--wims_*` reliées aux jetons, `nova.js` (HTML seulement : lu par le C) |
 | `_widgets/accent.phtml` | accent = couleur des barres de la classe, sauf le gris par défaut |
+| `VERSION`, `_procs/version.sh`, `_widgets/version.phtml` | numéro de version (choisi à la main dans `VERSION` ; `livrer.sh` y ajoute commit et date), affiché en bas des cartes « Réglages de Nova » |
 
 Après toute modification de `_css/` : `./construire-css.sh`.
 

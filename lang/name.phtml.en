@@ -126,7 +126,7 @@
 !set nova_fid_aide=A level once earned is never lost. You can also move forward during the holidays, if you wish.
 !set nova_fid_regle1=Every week in which you use WIMS at least 1 day counts. A week without WIMS makes you lose nothing.
 !set nova_fid_regle=Every week in which you use WIMS at least %e days counts. A week without WIMS makes you lose nothing.
-!set nova_fid_niveaux=Paper,Wood,Stone,Iron,Copper,Gold,Diamond,Cosmic
+!set nova_fid_niveaux=Paper,Wood,Stone,Iron,Bronze,Gold,Diamond,Cosmic
 !set nova_fid_etat_fait=This week already counts.
 !set nova_fid_etat_attente1=This week does not count yet: use WIMS at least 1 day.
 !set nova_fid_etat_attente=This week does not count yet: use WIMS at least %e days.

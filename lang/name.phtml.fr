@@ -126,7 +126,7 @@
 !set nova_fid_aide=Un niveau obtenu ne se perd jamais. Tu peux aussi avancer pendant les vacances, sans obligation.
 !set nova_fid_regle1=Chaque semaine où tu fais du WIMS au moins 1 jour compte. Une semaine sans WIMS ne te fait rien perdre.
 !set nova_fid_regle=Chaque semaine où tu fais du WIMS au moins %e jours compte. Une semaine sans WIMS ne te fait rien perdre.
-!set nova_fid_niveaux=Papier,Bois,Pierre,Fer,Cuivre,Or,Diamant,Cosmique
+!set nova_fid_niveaux=Papier,Bois,Pierre,Fer,Bronze,Or,Diamant,Cosmique
 !set nova_fid_etat_fait=Cette semaine compte déjà.
 !set nova_fid_etat_attente1=Cette semaine ne compte pas encore : fais du WIMS au moins 1 jour.
 !set nova_fid_etat_attente=Cette semaine ne compte pas encore : fais du WIMS au moins %e jours.

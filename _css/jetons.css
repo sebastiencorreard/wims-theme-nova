@@ -123,6 +123,7 @@
   --nova-top-paliers: 1 3 5 8 12 16 21 26;
   --nova-couleur-badge: fidelite;
   --nova-couleur-niveau: 2;
+  --nova-couleur-degrade: 4;   /* dégradés pré-établis (2026-11-07), même badge */
   --nova-fidelite-paliers: 2 4 6 9 12 16 20 25;
   --nova-vacances: aucune;
   /* Avatar des élèves (2026-11-07, utilisateur) : coupé par défaut ; mêmes valeurs par défaut que _procs/avatar.awk. */

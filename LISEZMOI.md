@@ -130,7 +130,10 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
 
 **Couleur personnelle** (récompense) : à partir d'un niveau d'un badge (`--nova-couleur-badge`, Régularité par défaut ;
 `--nova-couleur-niveau`, Bois par défaut ; « aucun » coupe), l'élève choisit la couleur de son interface dans une palette
-de 10 teintes lisibles (texte blanc, contraste ≥ 3,5:1 ; une ligne), dans l'onglet de ce badge. Réglage dans « Badges Nova ». Le choix
+de 10 teintes lisibles (texte blanc, contraste ≥ 3,5:1), dans la fenêtre « Ma couleur » du menu Profil (pastille « nouveau »
+quand une récompense vient d'être débloquée). À un niveau plus élevé du même badge (`--nova-couleur-degrade`, Fer par
+défaut), 8 dégradés pré-établis (≥ 3,8:1) : barre du haut, boutons principaux, titres des fenêtres, onglet actif, note
+retenue, barres de progression, retour en haut ; sa première couleur sert d'accent (`_css/couleur.css`). Réglages dans « Badges Nova ». Le choix
 vaut pour toute la classe, le groupement ou le portail, examens compris : `log/classes/<structure ou
 classe>/.nova_couleur_<login>`, recopié dans le navigateur pour être posé avant l'affichage de chaque page.
 

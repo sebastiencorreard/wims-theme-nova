@@ -121,13 +121,19 @@ $wims_CSS
     var mu = document.querySelector('meta[name="nova-utilisateur"]');
     var racine = (m && m.content) || (mc ? mc.content.split('/')[0] : '');
     var coul = mu && mu.content && racine ? localStorage.getItem('nova-couleur|' + racine + '|' + mu.content) : '';
-    if (coul && /^#[0-9a-fA-F]{6}/.test(coul)) d.style.setProperty('--nova-accent', coul);
+    var cs = (coul || '').split(' '), hex = function (x) { return !!x && x.length === 7 && /^#[0-9a-fA-F]{6}/.test(x); };
+    if (hex(cs[0])) d.style.setProperty('--nova-accent', cs[0]);
+    /* Degrade (2026-11-07) : << #accent #seconde >>, html.nova-degrade et --nova-degrade (_css/couleur.css). */
+    if (hex(cs[0]) && hex(cs[1])) {
+      d.style.setProperty('--nova-degrade', 'linear-gradient(90deg, ' + cs[0] + ', ' + cs[1] + ')');
+      d.classList.add('nova-degrade');
+    }
   } catch (e) {}
   /* Menu enseignant complet par defaut : seulement si l'enseignant n'a rien choisi lui-meme. */
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=5817ddfca3" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=35f13b6bf2" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

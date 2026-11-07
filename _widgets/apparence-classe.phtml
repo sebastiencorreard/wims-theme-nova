@@ -181,6 +181,12 @@
             <option value="echauffement">$nova_ech_nom</option>
             <option value="top">$nova_top_nom</option>
             <option value="aucun">$nova_bdg_coul_aucun</option>
+          </select>$nova_bdg_coul_phrase3
+          <select class="nova-app-choix" data-cle="couleur-degrade" aria-label="$nova_bdg_coul_degrade">
+            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+!for nova_i=1 to $nova_k
+            <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
+!next
           </select>.</p>
       </div>
     </fieldset>

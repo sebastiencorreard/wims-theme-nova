@@ -1,0 +1,59 @@
+/* Nova — « Ma couleur » de l'élève (2026-11-07, maquette v2 validée par l'utilisateur).
+ * Fenêtre de choix (nova.js fenetreCouleur), entrée du menu Profil, et dégradé choisi : html.nova-degrade et
+ * --nova-degrade, posés par le script de tête (htmlheader.phtml) ou par nova.js (poserCouleur). L'accent (--nova-accent)
+ * vaut alors la première couleur du dégradé : liens, contours, focus et textes en couleur restent unis.
+ * Endroits en dégradé (validés) : barre du haut, boutons principaux, titres des fenêtres, onglet actif, note retenue,
+ * barres de progression, retour en haut. Jamais : liens et textes, couleurs des notes, chrono et alertes, champs. */
+
+/* ---------- Entrée du menu ---------- */
+#wimsmenumodubox .profil_couleur a { display: flex; align-items: center; gap: var(--nova-e2); }
+.nova-couleur-nouveau { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: #F4B63F; color: #5a3500; font-size: .72rem; font-weight: 700; line-height: 1.5; }
+
+/* ---------- Fenêtre « Ma couleur » ---------- */
+dialog.nova-couleur-fenetre { width: min(28rem, calc(100vw - 24px)); }
+.nova-couleur-corps { display: grid; gap: var(--nova-e4); padding: var(--nova-e4); }
+.nova-couleur-bloc { display: grid; gap: var(--nova-e2); }
+.nova-couleur-bloc h3 { margin: 0; font-size: 1rem; }
+.nova-couleur-bloc p { margin: 0; }
+.nova-couleur-fenetre .nova-couleur-aide { color: var(--nova-texte-2); font-size: .9rem; }
+.nova-couleur-fenetre .nova-couleur-verrou { display: flex; gap: var(--nova-e2); align-items: center; padding: var(--nova-e2) var(--nova-e3); border-radius: 10px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: .9rem; }
+.nova-couleur-fenetre .nova-couleur-verrou::before { content: "\1F512"; }
+.nova-couleur-fenetre .nova-couleur-liste { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.nova-couleur-fenetre .nova-couleur-pastille { max-width: none; border-width: 3px; }
+.nova-couleur-fenetre .nova-couleur-pastille[aria-pressed="true"], .nova-couleur-degrade[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--nova-texte); }
+.nova-couleur-fenetre .nova-couleur-pastille[aria-pressed="true"]::after { content: "\2713"; display: grid; place-items: center; height: 100%; color: #fff; font-weight: 700; font-size: 1.1rem; }
+.nova-couleur-degrades { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nova-e2); }
+.wimsbody .nova-couleur-degrade, .nova-couleur-degrade { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--nova-e3);
+  border: 3px solid #fff; border-radius: 10px; box-shadow: 0 0 0 1px var(--nova-bord-fort); color: #fff; font-weight: 700; font-size: .9rem; cursor: pointer; overflow: hidden; }
+.nova-couleur-degrade[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
+.nova-couleur-degrade:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 3px; }
+/* Carte de rappel dans la fenêtre des badges */
+.nova-couleur-carte .nova-couleur-acquis::before { content: "\2713\00A0"; font-weight: 700; color: var(--nova-lien); }
+.nova-couleur-carte a.nova-couleur-choisir { justify-self: start; display: inline-flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e4); border-radius: 999px;
+  background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; text-decoration: none; }
+
+/* ---------- Dégradé de l'élève ---------- */
+html.nova-degrade #wimstopbox { background-image: var(--nova-degrade); }
+/* Boutons principaux (les secondaires, à contour, et les boutons d'aide restent tels quels) */
+html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, :disabled, .disabled),
+html.nova-degrade .ui-dialog .ui-dialog-buttonpane .ui-button:first-child,
+html.nova-degrade :is(.nova-mes-notes a.nova-mes-notes-bouton, .nova-fin-session .nova-fin-session-bouton, .nova-couleur-carte a.nova-couleur-choisir) {
+  background-image: var(--nova-degrade);
+  border-color: transparent;
+}
+html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, :disabled, .disabled):hover,
+html.nova-degrade .ui-dialog .ui-dialog-buttonpane .ui-button:first-child:hover { filter: brightness(.9); }
+/* Titres des fenêtres : en-tête plein (fenêtres de Nova), bande en haut des dialogues au titre sur fond clair */
+html.nova-degrade .nova-badges-entete { background-image: var(--nova-degrade); }
+html.nova-degrade :is(.ui-dialog.ui-widget.ui-widget-content, .nova-dialogue) { background-image: var(--nova-degrade); background-size: 100% 6px; background-repeat: no-repeat; }
+/* Onglet actif */
+html.nova-degrade .nova-avatar-onglet[aria-selected="true"] { background-image: var(--nova-degrade); border-color: transparent; }
+html.nova-degrade .nova-badges-onglet.nova-actif { background-image: var(--nova-degrade); background-size: 100% 4px; background-repeat: no-repeat; }
+html.nova-degrade .wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor::after { background-image: var(--nova-degrade); }
+/* Note retenue */
+html.nova-degrade :is(li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_sheet_score) { background-image: var(--nova-degrade); }
+/* Barres de progression */
+html.nova-degrade :is(.nova-avatar-jauge span, .nova-barre-reussite > span, .nova-parcours .wims_seed_item.nova-fait, ul.wims_serie_bar > li.wims_exo_todo) { background-image: var(--nova-degrade); }
+html.nova-degrade .oefstatement .wims_score_bar .wims_seed_item[title="done"] { background-image: var(--nova-degrade) !important; }
+/* Retour en haut (pictogramme masqué : le dégradé passe dans la flèche) */
+html.nova-degrade .wims_topback a::before { background-image: var(--nova-degrade); }

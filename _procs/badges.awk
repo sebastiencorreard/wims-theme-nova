@@ -16,7 +16,7 @@
 #   topdm - | topdm <note retenue sur 10, ou - si pas commencé> <seuil> <titre> : DM noté ouvert le plus récent.
 #   dm - | dm <sessions faites> <sessions demandées> <titre du DM noté> : DM noté ouvert, pas encore commencé (le plus récent).
 #   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> 0 <sessions d'Échauffement>
-#     <seuil d'Au top> <badge de la couleur personnelle | aucun> <niveau qui la débloque> (6e champ : anciennes vacances, gardé pour la place)
+#     <seuil d'Au top> <badge de la couleur personnelle | aucun> <niveau qui la débloque> <niveau des dégradés> (6e champ : anciennes vacances, gardé pour la place)
 #   ecrire 1|0 (score/<élève>.nova à réécrire), puis son nouveau contenu.
 #
 # Régularité (« fidelite » dans les clés et le stock ; renommé le 2026-11-04) : une semaine (lundi-dimanche) compte si
@@ -371,7 +371,10 @@ END {
   # Couleur personnelle (2026-11-07, utilisateur) : badge (clé) et niveau qui débloquent le choix ; « aucun » = coupé.
   cbadge = conf["couleur-badge"]; if (cbadge !~ /^(fidelite|perseverance|echauffement|top|aucun)$/) cbadge = "fidelite"
   cniveau = int(nombre(conf["couleur-niveau"], 1, 8, 2))
-  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " 0 " (nsess ? nsess : 2) " " (seuilT != "" ? seuilT : 9) " " cbadge " " cniveau
+  # Dégradés (2026-11-07, utilisateur) : niveau du même badge, jamais sous celui de la couleur (défaut : deux au-dessus).
+  cdegrade = int(nombre(conf["couleur-degrade"], 1, 8, (cniveau + 2 > 8 ? 8 : cniveau + 2)))
+  if (cdegrade < cniveau) cdegrade = cniveau
+  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " 0 " (nsess ? nsess : 2) " " (seuilT != "" ? seuilT : 9) " " cbadge " " cniveau " " cdegrade
   # Badges coupés : leur ligne de stock est gardée telle quelle (rien n'est perdu).
   if (!actif("fidelite") && ancien["fidelite"] != "") stock = stock ancien["fidelite"] "\n"
   if (!actif("perseverance") && ancien["perseverance"] != "") stock = stock ancien["perseverance"] "\n"

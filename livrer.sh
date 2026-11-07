@@ -39,10 +39,9 @@ tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp/$DOSSIER"
 git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh --exclude=maj-vacances.py
 printf '%s\n' "$commit" > "$tmp/$DOSSIER/VERSION"
-# Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08), badges
-# pas encore codés (dossier img/badges/etoile, 2026-10-09 : à retirer de cette liste quand il servira).
+# Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08). Le dossier
+# img/badges/etoile, exclu jusqu'au 2026-11-07, sert au badge Au top.
 rm -f "$tmp/$DOSSIER/local.phtml.template" "$tmp/$DOSSIER"/img/badges/*.png "$tmp/$DOSSIER"/img/badges/*/*.png
-rm -rf "$tmp/$DOSSIER/img/badges/etoile"
 tar -czf "$sortie/$nom.tgz" -C "$tmp" "$DOSSIER"
 echo "Livraison : $(cd "$sortie" && pwd)/$nom.tgz ($(du -h "$sortie/$nom.tgz" | cut -f1), commit $commit)"
 # Dernière version seulement : les archives précédentes partent (chacune se reconstruit par ./livrer.sh <commit>).

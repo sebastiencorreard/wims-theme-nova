@@ -57,30 +57,48 @@
 !! gardes dans score/<eleve>.nova (jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
 !! 2026-10-09), fenetre a onglets (nova.js fenetreBadges). Pas dans l'accueil d'un portail ou d'un groupement (le
 !! travail est dans ses zones), ni en examen.
-!reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr
+!reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr nova_lt nova_lu nova_xn
 !if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session
   !ifval 0$class_type<2
     !set nova_cl=$wims_home/log/classes
     !set nova_auj=!char 1 to 8 of $wims_now
-    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
+    !! Au top (2026-11-07) : note retenue (sur 10, calculee par WIMS) de chaque examen commence, « n:note ».
+    !set nova_xc=!sh f="$nova_cl/$wims_class/score/$wims_user.exam"; [ -f "$$f" ] && awk '$$2=="00" {print $$1}' "$$f" | sort -un | tr '\n' ' '
+    !set nova_xn=
+    !if $nova_xc!=$empty
+      !set nova_xs=!examscore user=$wims_user
+      !set nova_xs=!line 1 of $nova_xs
+      !set nova_k=!wordcnt $nova_xs
+      !for nova_i=1 to $nova_k
+        !if $nova_i iswordof $nova_xc
+          !set nova_v=!word $nova_i of $nova_xs
+          !set nova_xn=$nova_xn $nova_i:$nova_v
+        !endif
+      !next
+    !endif
+    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -v "notes=$nova_xn" -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
     !set nova_lf=!line 1 of $nova_bd
     !set nova_lp=!line 2 of $nova_bd
     !set nova_lh=!line 3 of $nova_bd
-    !set nova_ld=!line 4 of $nova_bd
-    !set nova_lc=!line 5 of $nova_bd
-    !set nova_lr=!line 6 of $nova_bd
-    !set nova_le=!line 7 of $nova_bd
+    !set nova_lt=!line 4 of $nova_bd
+    !set nova_lu=!line 5 of $nova_bd
+    !set nova_ld=!line 6 of $nova_bd
+    !set nova_lc=!line 7 of $nova_bd
+    !set nova_lr=!line 8 of $nova_bd
+    !set nova_le=!line 9 of $nova_bd
     !set nova_le=!word 2 of $nova_le
     !if $nova_le=1
-      !set nova_st=!line 8 to -1 of $nova_bd
+      !set nova_st=!line 10 to -1 of $nova_bd
       !writefile wimshome/log/classes/$wims_class/score/$wims_user.nova $nova_st
     !endif
     !set nova_fo=!word 2 of $nova_lf
     !set nova_po=!word 2 of $nova_lp
     !set nova_ho=!word 2 of $nova_lh
+    !set nova_to=!word 2 of $nova_lt
+    !set nova_lu=!replace internal " by ' in $nova_lu
     !! Echauffement : DM note ouvert, pas encore commence (sessions faites, demandees, titre).
     !set nova_ld=!replace internal " by ' in $nova_ld
-    !if $nova_fo=on or $nova_po=on or $nova_ho=on
+    !if $nova_fo=on or $nova_po=on or $nova_ho=on or $nova_to=on
       !set nova_bdg=on
     !endif
     !! Exercice « en cours » de Perseverance (assez de notes faibles, pas encore de reussite) : son titre.
@@ -134,6 +152,14 @@
         !set nova_i=1
       !endif
       <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/entrainement/halteres_0$nova_i.webp" alt="" width="36" height="36">
+    !endif
+    !if $nova_to=on
+      !set nova_n=!word 3 of $nova_lt
+      !set nova_i=$nova_n
+      !if $nova_i<1
+        !set nova_i=1
+      !endif
+      <img class="nova-badge-niv-$nova_n" src="themes/$wims_theme/img/badges/etoile/etoile_0$nova_i.webp" alt="" width="36" height="36">
     !endif
     <span>$nova_badges_court</span>
     </a>
@@ -191,9 +217,27 @@
       </div>
       !endif
     !endif
-    <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-encours="$nova_ct" data-reglages="$nova_lr"
+    !if $nova_to=on
+      !set nova_nv=!word 6 of $nova_lt
+      !if $nova_nv=1
+        !set nova_n=!word 3 of $nova_lt
+        !set nova_bnom=!item $nova_n of $nova_fid_niveaux
+        !set nova_bp=!word 4 of $nova_lt
+        !if $nova_bp=1
+          !set nova_bm=$nova_top_bravo1
+        !else
+          !set nova_bm=!replace internal %n by $nova_bp in $nova_top_bravo
+        !endif
+      <div class="nova-badge-annonce" role="status">
+        <img src="themes/$wims_theme/img/badges/etoile/etoile_0$nova_n.webp" alt="" width="72" height="72">
+        <div><b>$nova_fid_nouveau $nova_top_nom $nova_bnom&nbsp;!</b><p>$nova_bm</p></div>
+        <p class="nova-badge-annonce-liens"><a href="#nova-badges" data-badge="top">$nova_badges_voir</a><button type="button" class="nova-badge-masquer">$nova_badges_masquer</button></p>
+      </div>
+      !endif
+    !endif
+    <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-top="$nova_lt" data-topdm="$nova_lu" data-encours="$nova_ct" data-reglages="$nova_lr"
       data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/regularite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
-      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0"
+      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0" data-images-top="themes/$wims_theme/img/badges/etoile/etoile_0"
       data-titre="$nova_badges_titre" data-niveau="$nova_badges_niveau" data-obtenu="$nova_badges_obtenu"
       data-serie="$nova_badges_serie" data-record="$nova_badges_record" data-avant="$nova_badges_avant" data-max="$nova_badges_max"
       data-aucun="$nova_badges_aucun" data-sem="$nova_badges_sem" data-fermer="$nova_badges_fermer"
@@ -204,10 +248,13 @@
       data-per-suite="$nova_per_suite" data-per-suite1="$nova_per_suite1" data-per-examens-oui="$nova_per_examens_oui" data-per-examens-non="$nova_per_examens_non"
       data-ech-nom="$nova_ech_nom" data-ech-regle="$nova_ech_regle" data-ech-regle1="$nova_ech_regle1" data-ech-total="$nova_ech_total"
       data-ech-dm="$nova_ech_dm" data-ech-dm1="$nova_ech_dm1" data-ech-pret="$nova_ech_pret" data-ech-suite="$nova_ech_suite"
-      data-ech-suite1="$nova_ech_suite1" data-ech-aide="$nova_ech_aide"></div>
+      data-ech-suite1="$nova_ech_suite1" data-ech-aide="$nova_ech_aide"
+      data-top-nom="$nova_top_nom" data-top-regle="$nova_top_regle" data-top-total="$nova_top_total" data-top-afaire="$nova_top_afaire"
+      data-top-reussi="$nova_top_reussi" data-top-encore="$nova_top_encore" data-top-suite="$nova_top_suite" data-top-suite1="$nova_top_suite1"
+      data-top-aide="$nova_top_aide"></div>
   !endif
 !endif
-!reset nova_bdg nova_lf nova_lp nova_lc nova_lr nova_fo nova_po nova_ct nova_n nova_i nova_nv nova_bnom nova_bp nova_bm
+!reset nova_bdg nova_lf nova_lp nova_lc nova_lr nova_fo nova_po nova_ct nova_n nova_i nova_nv nova_bnom nova_bp nova_bm nova_lt nova_lu nova_to nova_xc nova_xs nova_xn nova_k nova_v
 !read classlogo.phtml
 !if $class_logo!=$empty
   <div id="classlogo" class="float_$class_logoside">

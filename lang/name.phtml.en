@@ -310,6 +310,23 @@
 !set nova_bdg_ech_mots_aide=When the two exams do not have the same content: words that tell the titles apart, separated by commas, the rest of the title identical ("DM 02 (practice)", "DM 02 (graded)"). Accents and case ignored. Empty: inherited value.
 !set nova_bdg_ech_mots_t=Practice
 !set nova_bdg_ech_mots_n=Graded
+!! Top badge (2026-11-07): graded WIMS homework passed (kept score >= threshold).
+!set nova_top_nom=Top
+!set nova_top_regle=A WIMS homework counts when your kept score on the graded test (your best session) reaches at least %s/10.
+!set nova_top_total=homework at the top
+!set nova_top_afaire="%t": your turn! Aim for %s/10.
+!set nova_top_reussi="%t": %n/10, well done!
+!set nova_top_encore="%t": %n/10 so far. If you have attempts left, aim for %s/10.
+!set nova_top_suite=%n more top homework for level %s.
+!set nova_top_suite1=1 more top homework for level %s.
+!set nova_top_aide=Your best score on the graded test counts, even at the last attempt. A level once earned is never lost.
+!set nova_top_bravo1=Your first homework at the top, well done!
+!set nova_top_bravo=%n homework at the top: you stay at the summit, well done!
+!set nova_bdg_top_desc=Succeed in graded homework: kept score of at least 9/10 (adjustable). Homework found as for Warm-up, or by the word "graded" in the title. 8 levels, never lost.
+!set nova_bdg_top_paliers=Top badge thresholds
+!set nova_bdg_top_paliers_aide=Top homework, for each of the 8 levels, separated by spaces. Empty: inherited value. 0: level given at once, for testing (the student keeps it).
+!set nova_bdg_top_seuil1=Count a homework when the kept score on the graded test reaches at least
+!set nova_bdg_top_seuil2=out of 10.
 !! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
 !set nova_bdg_reglages=Settings
 !set nova_app_fil=Fixed breadcrumb

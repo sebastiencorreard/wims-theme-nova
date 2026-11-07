@@ -868,6 +868,10 @@ dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
 @media (max-width: 32rem) {
   .nova-badges-onglets { gap: 4px; padding-inline: var(--nova-e2); }
   .nova-badges-onglet { flex-direction: column; gap: 2px; padding: 6px 4px; font-size: .8125rem; }
+  /* Quatre badges ou plus (Au top, 2026-11-07) : les noms ne tiennent plus ; onglets inactifs en icône seule (nom en
+     info-bulle et pour les lecteurs d'écran), l'onglet actif garde son nom et prend plus de place. */
+  .nova-badges-onglets:has(> :nth-child(4)) .nova-badges-onglet:not(.nova-actif) .nova-badges-onglet-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .nova-badges-onglets:has(> :nth-child(4)) .nova-badges-onglet.nova-actif { flex-grow: 2.2; }
 }
 .nova-badges-onglets ~ .nova-badge-detail { background: var(--nova-surface); }
 .nova-badge-detail[hidden] { display: none; }

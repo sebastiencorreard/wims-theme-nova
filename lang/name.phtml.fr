@@ -310,6 +310,23 @@
 !set nova_bdg_ech_mots_aide=Quand les deux examens n'ont pas le même contenu : mots qui distinguent les titres, séparés par des virgules, le reste du titre identique (« DMWIMS 02 (entraînement) », « DMWIMS 02 (noté) »). Accents et majuscules ignorés. Vide : valeur héritée.
 !set nova_bdg_ech_mots_t=Entraînement
 !set nova_bdg_ech_mots_n=DM noté
+!! Badge Au top (2026-11-07) : DM WIMS notes reussis (note retenue >= seuil).
+!set nova_top_nom=Au top
+!set nova_top_regle=Un DM WIMS compte quand ta note retenue au DM noté (ta meilleure session) atteint au moins %s/10.
+!set nova_top_total=DM au top
+!set nova_top_afaire=« %t » : à toi de jouer ! Vise %s/10.
+!set nova_top_reussi=« %t » : %n/10, bravo !
+!set nova_top_encore=« %t » : %n/10 pour l'instant. S'il te reste des essais, vise %s/10.
+!set nova_top_suite=Encore %n DM au top pour le niveau %s.
+!set nova_top_suite1=Encore 1 DM au top pour le niveau %s.
+!set nova_top_aide=C'est ta meilleure note au DM noté qui compte, même au dernier essai. Un niveau obtenu ne se perd jamais.
+!set nova_top_bravo1=Ton premier DM au top, bravo !
+!set nova_top_bravo=%n DM au top : tu restes au sommet, bravo !
+!set nova_bdg_top_desc=Réussir les DM notés : note retenue d'au moins 9/10 (réglable). DM repérés comme pour Échauffement, ou par le mot « noté » du titre. 8 niveaux, jamais perdus.
+!set nova_bdg_top_paliers=Paliers du badge Au top
+!set nova_bdg_top_paliers_aide=DM au top, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
+!set nova_bdg_top_seuil1=Compter un DM quand la note retenue au DM noté atteint au moins
+!set nova_bdg_top_seuil2=sur 10.
 !! Page Badges Nova : details de chaque badge replies (2026-11-07, utilisateur).
 !set nova_bdg_reglages=Réglages
 !set nova_app_fil=Fil d'Ariane fixe

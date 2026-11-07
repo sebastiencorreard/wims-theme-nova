@@ -122,6 +122,11 @@ Cosmique), jamais perdus. Réglages dans la rubrique « Badges Nova » de la con
   sinon par leur titre : un mot de `--nova-echauffement-entrainement` ou de `--nova-echauffement-note` (« note, test,
   graded »), le reste du titre identique (« DMWIMS 02 (entraînement) » / « DMWIMS 02 (noté) »), accents et majuscules
   ignorés. La fenêtre rappelle le prochain DM noté ouvert et les sessions qui manquent.
+- **Au top** (DM WIMS réussis, images `img/badges/etoile`) : un DM compte quand la note retenue de son examen noté
+  (meilleure session, calculée par WIMS) atteint `--nova-top-seuil` (9/10) ; paliers `--nova-top-paliers`
+  (`1 3 5 8 12 16 21 26`). DM notés repérés comme pour Échauffement, plus les examens dont le titre porte un mot de
+  `--nova-echauffement-note` sans entraînement trouvé (un examen « Test : … » compte donc). La fenêtre donne la note du
+  DM noté ouvert le plus récent.
 
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
 

@@ -150,6 +150,16 @@
           <label class="nova-app-phrase nova-bdg-mots">$nova_bdg_ech_mots_n <input type="text" class="nova-app-mots" data-cle="echauffement-note" autocomplete="off" spellcheck="false"></label>
         </div></details>
       </div>
+      <div class="nova-app-ligne nova-bdg-badge">
+        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="top"> <img src="themes/$wims_theme/img/badges/etoile/etoile_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_top_nom<span class="nova-app-aide">$nova_bdg_top_desc</span></span></label>
+      </div>
+      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="top">
+        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+          <label class="nova-app-nom" for="nova-app-paliers-top">$nova_bdg_top_paliers<span class="nova-app-aide">$nova_bdg_top_paliers_aide</span></label>
+          <input type="text" id="nova-app-paliers-top" class="nova-app-paliers" data-cle="top-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+          <p class="nova-app-phrase">$nova_bdg_top_seuil1 <input type="number" class="nova-app-nombre" data-cle="top-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_top_seuil1"> $nova_bdg_top_seuil2</p>
+        </div></details>
+      </div>
     </fieldset>
     <p class="nova-app-note">$nova_bdg_note</p>
     <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>

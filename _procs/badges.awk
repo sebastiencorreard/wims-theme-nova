@@ -12,9 +12,11 @@
 #   encours - | encours <examen 0/1> <feuille ou examen> <exercice> <échecs> : exercice le plus récent avec assez
 #     d'échecs et pas encore de réussite (Persévérance : « une réussite et il compte »).
 #   echauffement off | echauffement on niveau total prochain nouveau obtenu np palier1 … palierN
+#   top off | top on niveau total prochain nouveau obtenu np palier1 … palierN  (Au top : DM notés réussis)
+#   topdm - | topdm <note retenue sur 10, ou - si pas commencé> <seuil> <titre> : DM noté ouvert le plus récent.
 #   dm - | dm <sessions faites> <sessions demandées> <titre du DM noté> : DM noté ouvert, pas encore commencé (le plus récent).
 #   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> 0 <sessions d'Échauffement>
-#     (6e champ : anciennes vacances, gardé pour la place)
+#     <seuil d'Au top> (6e champ : anciennes vacances, gardé pour la place)
 #   ecrire 1|0 (score/<élève>.nova à réécrire), puis son nouveau contenu.
 #
 # Régularité (« fidelite » dans les clés et le stock ; renommé le 2026-11-04) : une semaine (lundi-dimanche) compte si
@@ -111,6 +113,41 @@ function actif(nom) {
   return conf["badges-actifs"] == "" || conf["badges-actifs"] ~ ("(^|[ ,])(" nom "|tous)([ ,]|$)")
 }
 
+# DM WIMS (Échauffement, Au top) : DM notés (estN[k] = 1) et leurs examens d'entraînement (nt[k], tr[k, i]). Mots des
+# titres : réglages d'Échauffement. Une seule fois par appel du script.
+function apparier(    k, g, i, b, e, mx, mn, kn, kt, cT, cN, m, lst) {
+  if (apparie) return
+  apparie = 1
+  motsT = conf["echauffement-entrainement"]; if (motsT == "") motsT = "entrainement, practice, training"
+  motsN = conf["echauffement-note"]; if (motsN == "") motsN = "note, test, graded"
+  lireExamens()
+  # (1) Même contenu, deux examens exactement : le plus d'essais = entraînement, l'autre = noté. Trois ou plus (un ancien
+  # examen recopié, par exemple) : laissés aux titres (vu au banc, 2026-11-06).
+  for (k = 1; k <= ne; k++) if (xsig[k] != "") { g = xsig[k]; gn[g]++; gm[g, gn[g]] = k }
+  for (g in gn) {
+    if (gn[g] != 2) continue
+    mx = -1; mn = 1e9
+    for (i = 1; i <= gn[g]; i++) { e = xessais[gm[g, i]]; if (e > mx) mx = e; if (e < mn) mn = e }
+    if (mx <= mn) continue
+    for (i = 1; i <= gn[g]; i++) if (xessais[gm[g, i]] == mn) {
+      kn = gm[g, i]; estN[kn] = 1
+      for (b = 1; b <= gn[g]; b++) if (xessais[gm[g, b]] == mx) { kt = gm[g, b]; nt[kn]++; tr[kn, nt[kn]] = kt; pris[kt] = 1 }
+      pris[kn] = 1
+    }
+  }
+  # (2) Titres, pour les examens que le contenu n'a pas appariés.
+  for (k = 1; k <= ne; k++) {
+    if (k in pris) continue
+    rt = " " plat(xtitre[k]) " "
+    if (role(motsT)) { cT = rt; gsub(/ +/, " ", cT); clT[cT] = clT[cT] " " k }
+    else if (role(motsN)) { cN = rt; gsub(/ +/, " ", cN); cleN[k] = cN }
+  }
+  for (kn in cleN) {
+    m = split(clT[cleN[kn]], lst, " ")
+    for (i = 1; i <= m; i++) { estN[kn] = 1; nt[kn]++; tr[kn, nt[kn]] = lst[i] + 0 }
+  }
+}
+
 /^#conf$/ { section = "conf"; next }
 /^#stock$/ { section = "stock"; next }
 /^#score$/ { section = "score"; next }
@@ -126,7 +163,7 @@ section == "conf" {
   next
 }
 section == "stock" {
-  if ($1 == "fidelite" || $1 == "perseverance" || $1 == "echauffement") { ancien[$1] = $0; for (i = 2; i <= NF; i++) { split($i, kv, "="); st[$1, kv[1]] = kv[2] } }
+  if ($1 == "fidelite" || $1 == "perseverance" || $1 == "echauffement" || $1 == "top") { ancien[$1] = $0; for (i = 2; i <= NF; i++) { split($i, kv, "="); st[$1, kv[1]] = kv[2] } }
   else if (NF) autres = autres $0 "\n"
   next
 }
@@ -137,6 +174,7 @@ section == "score" && $1 ~ /^E[0-9]/ {
   s = substr($1, 2); n = $3 + 0
   if (!(n in xdeb) || s < xdeb[n]) xdeb[n] = s
   if ($5 == "score") {
+    if (s > xder[n]) xder[n] = s
     if (!((n, $2) in xnx)) { xns[n]++; xses[n, xns[n]] = $2 }
     if (!((n, $2, $4 + 0) in xexo)) { xexo[n, $2, $4 + 0] = 1; xnx[n, $2]++; if (s > xfin[n, $2]) xfin[n, $2] = s }
   }
@@ -252,34 +290,7 @@ END {
   else {
     np = paliers(conf["echauffement-paliers"], "1 3 5 8 12 16 21 26", pal)
     nsess = int(nombre(conf["echauffement-sessions"], 1, 50, 2))
-    motsT = conf["echauffement-entrainement"]; if (motsT == "") motsT = "entrainement, practice, training"
-    motsN = conf["echauffement-note"]; if (motsN == "") motsN = "note, test, graded"
-    lireExamens()
-    # (1) Même contenu, deux examens exactement : le plus d'essais = entraînement, l'autre = noté. Trois ou plus (un ancien
-    # examen recopié, par exemple) : laissés aux titres (vu au banc, 2026-11-06).
-    for (k = 1; k <= ne; k++) if (xsig[k] != "") { g = xsig[k]; gn[g]++; gm[g, gn[g]] = k }
-    for (g in gn) {
-      if (gn[g] != 2) continue
-      mx = -1; mn = 1e9
-      for (i = 1; i <= gn[g]; i++) { e = xessais[gm[g, i]]; if (e > mx) mx = e; if (e < mn) mn = e }
-      if (mx <= mn) continue
-      for (i = 1; i <= gn[g]; i++) if (xessais[gm[g, i]] == mn) {
-        kn = gm[g, i]; estN[kn] = 1
-        for (b = 1; b <= gn[g]; b++) if (xessais[gm[g, b]] == mx) { kt = gm[g, b]; nt[kn]++; tr[kn, nt[kn]] = kt; pris[kt] = 1 }
-        pris[kn] = 1
-      }
-    }
-    # (2) Titres, pour les examens que le contenu n'a pas appariés.
-    for (k = 1; k <= ne; k++) {
-      if (k in pris) continue
-      rt = " " plat(xtitre[k]) " "
-      if (role(motsT)) { cT = rt; gsub(/ +/, " ", cT); clT[cT] = clT[cT] " " k }
-      else if (role(motsN)) { cN = rt; gsub(/ +/, " ", cN); cleN[k] = cN }
-    }
-    for (kn in cleN) {
-      m = split(clT[cleN[kn]], lst, " ")
-      for (i = 1; i <= m; i++) { estN[kn] = 1; nt[kn]++; tr[kn, nt[kn]] = lst[i] + 0 }
-    }
+    apparier()
     # Chaque DM noté : sessions d'entraînement (avec une réponse) avant sa première ouverture.
     total = 0; nd = 0; dmk = 0
     for (kn in estN) {
@@ -313,13 +324,56 @@ END {
     if (s != ancien["echauffement"]) ecrire = 1
     stock = stock s "\n"
   }
+  # ---------- Au top (2026-11-07, utilisateur) ----------
+  # Un DM WIMS compte (une fois) quand la note retenue de son examen noté (meilleure session, calculée par WIMS :
+  # !examscore, transmise par user.phtml en -v notes="<examen>:<note sur 10> …", examens commencés seulement) atteint
+  # --nova-top-seuil (9). DM notés : ceux d'Échauffement (paire entraînement + noté), plus les examens dont le titre
+  # porte un mot « noté » sans entraînement trouvé. Date d'un niveau : dernière réponse à l'examen qui l'a fait passer.
+  topdm = "-"
+  if (!actif("top")) print "top off"
+  else {
+    np = paliers(conf["top-paliers"], "1 3 5 8 12 16 21 26", pal)
+    seuilT = nombre(conf["top-seuil"], 0, 10, 9)
+    apparier()
+    m = split(notes, brut, " ")
+    for (i = 1; i <= m; i++) if (split(brut[i], kv, ":") == 2 && kv[1] ~ /^[0-9]+$/ && kv[2] ~ /^[0-9]+(\.[0-9]+)?$/) xnote[kv[1] + 0] = kv[2] + 0
+    for (k in estN) estT[k + 0] = 1
+    for (k in cleN) estT[k + 0] = 1
+    total = 0; nd = 0; dk = 0
+    for (k in estT) {
+      k += 0
+      if ((k in xnote) && xnote[k] >= seuilT) { total++; nd++; qt[nd] = (k in xder) ? substr(xder[k], 1, 8) : auj }
+      if (xetat[k] == 1 && k > dk) dk = k
+    }
+    for (a = 2; a <= nd; a++) { tt = qt[a]; for (b = a - 1; b >= 1 && qt[b] > tt; b--) qt[b + 1] = qt[b]; qt[b + 1] = tt }
+    niveau = 0; obtenu = ""
+    while (niveau < np && total >= pal[niveau + 1]) { niveau++; obtenu = qt[pal[niveau]] }
+    if (st["top", "niveau"] + 0 > niveau) { niveau = st["top", "niveau"] + 0; obtenu = st["top", "obtenu"] }
+    else if (st["top", "niveau"] + 0 == niveau && st["top", "obtenu"] != "") obtenu = st["top", "obtenu"]
+    if (st["top", "total"] + 0 > total) total = st["top", "total"] + 0
+    if (niveau > np) niveau = np
+    prochain = 0
+    if (niveau < np) { prochain = pal[niveau + 1] - total; if (prochain < 1) prochain = 1 }
+    nouveau = niveau > st["top", "vu"] + 0 ? 1 : 0
+    if (obtenu == "") obtenu = "-"
+    ligne = "top on " niveau " " total " " prochain " " nouveau " " obtenu " " np
+    for (i = 1; i <= np; i++) ligne = ligne " " pal[i]
+    print ligne
+    # DM noté ouvert le plus récent : sa note retenue (« - » : pas commencé), le seuil, son titre.
+    if (dk) { t = xtitre[dk]; gsub(/[ \t]+/, " ", t); topdm = ((dk in xnote) ? xnote[dk] : "-") " " seuilT " " t }
+    s = "top niveau=" niveau " obtenu=" obtenu " vu=" niveau " total=" total
+    if (s != ancien["top"]) ecrire = 1
+    stock = stock s "\n"
+  }
+  print "topdm " topdm
   print "dm " dm
   print "encours " encours
-  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " 0 " (nsess ? nsess : 2)
+  print "reglages " parsem " " reussite " " echec " " nechecs " " examens " 0 " (nsess ? nsess : 2) " " (seuilT != "" ? seuilT : 9)
   # Badges coupés : leur ligne de stock est gardée telle quelle (rien n'est perdu).
   if (!actif("fidelite") && ancien["fidelite"] != "") stock = stock ancien["fidelite"] "\n"
   if (!actif("perseverance") && ancien["perseverance"] != "") stock = stock ancien["perseverance"] "\n"
   if (!actif("echauffement") && ancien["echauffement"] != "") stock = stock ancien["echauffement"] "\n"
+  if (!actif("top") && ancien["top"] != "") stock = stock ancien["top"] "\n"
   print "ecrire " ecrire
   printf "%s%s", autres, stock
 }

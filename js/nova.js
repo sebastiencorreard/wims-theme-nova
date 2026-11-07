@@ -2891,7 +2891,7 @@
       if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -3773,6 +3773,28 @@
         (nsess === 1 ? a('ech-regle1') : a('ech-regle')).replace('%n', nsess), chiffresH, etatH, texteH, '',
         a('ech-aide'), a('images-echauffement'))]);
     }
+    // Au top (DM WIMS notés réussis, 2026-11-07) : top on niveau total prochain nouveau obtenu np paliers… ;
+    // data-topdm = « topdm <note retenue | -> <seuil> <titre> » du DM noté ouvert le plus récent, ou « topdm - ».
+    var mt = a('top').split(/\s+/);
+    if (mt[1] === 'on') {
+      var nivT = +mt[2], totalT = +mt[3], prochT = +mt[4], npT = +mt[7];
+      var palT = mt.slice(8, 8 + npT).map(Number);
+      var chiffresT = [[totalT, a('top-total')]];
+      if (nivT < npT) chiffresT.push([prochT, a('avant').replace('%s', noms[nivT])]);
+      var td = /^topdm (\S+) (\S+) (.+)$/.exec(a('topdm')), etatT, texteT;
+      var virgule = function (n) { return String(Math.round(n * 10) / 10).replace('.', racineLangue() === 'fr' ? ',' : '.'); };
+      var seuilT = +reg[8] || (td ? +td[2] : 9);
+      if (td && td[1] === '-') { etatT = 'attente'; texteT = a('top-afaire'); }
+      else if (td && +td[1] >= seuilT) { etatT = 'fait'; texteT = a('top-reussi'); }
+      else if (td) { etatT = 'attente'; texteT = a('top-encore'); }
+      if (td) texteT = texteT.replace('%t', td[3]).replace('%n', virgule(+td[1])).replace('%s', virgule(seuilT));
+      else {
+        etatT = 'fait';
+        texteT = nivT < npT ? (prochT === 1 ? a('top-suite1') : a('top-suite')).replace('%n', prochT).replace('%s', noms[nivT]) : a('max');
+      }
+      panneaux.push(['top', a('top-nom'), panneau('top', a('top-nom'), nivT, npT, palT, mt[6],
+        a('top-regle').replace('%s', virgule(seuilT)), chiffresT, etatT, texteT, '', a('top-aide'), a('images-top'))]);
+    }
     // Onglets, s'il y a plus d'un badge.
     var onglets = null;
     f.choisir = function (cle) {
@@ -3791,11 +3813,12 @@
         b.setAttribute('role', 'tab');
         b.id = 'nova-onglet-' + p[0];
         var im = el('img');
-        var niv = +({ fidelite: mf, perseverance: mp, echauffement: mh }[p[0]][2]);
+        var niv = +({ fidelite: mf, perseverance: mp, echauffement: mh, top: mt }[p[0]][2]);
         im.src = a('images-' + p[0]) + Math.max(1, niv) + '.webp'; im.alt = ''; im.width = 28; im.height = 28;
         if (!niv) im.className = 'nova-badge-verrou';
         b.appendChild(im);
-        b.appendChild(document.createTextNode(p[1]));
+        b.appendChild(el('span', 'nova-badges-onglet-nom', p[1]));
+        b.title = p[1];
         b.addEventListener('click', function () { f.choisir(p[0]); });
         p[2].setAttribute('role', 'tabpanel');
         p[2].setAttribute('aria-labelledby', b.id);

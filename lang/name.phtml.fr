@@ -419,3 +419,5 @@
 !set nova_bdg_av_depart2=pièce(s) offerte(s), pour personnaliser son avatar tout de suite.
 !set nova_mois=janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre
 !set nova_version_dev=version de développement
+!set nova_signe_croix=session sans durée enregistrée (en cours, ou interrompue sans être terminée)
+!set nova_signe_inconnu=exercice sans note dans cette session (pas ouvert, ou ouvert sans réponse envoyée)

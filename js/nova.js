@@ -1769,6 +1769,44 @@
     });
   }
 
+  /* Signes « \u2020 » et « ?? » du Détail des examens (adm/class/userscore, examcheck.phtml), que WIMS écrit sans
+   * explication dans la case d'un exercice sans note : \u2020 = session sans durée enregistrée (en cours ou interrompue),
+   * ?? = exercice sans note d'une session qui a une durée (pas ouvert, ou sans réponse ; WIMS ne distingue pas).
+   * Info-bulle (title) sur chaque signe et légende sous le tableau, seulement pour les signes présents
+   * (proposé par Claude le 2026-10-03, accepté par l'utilisateur le 2026-11-07). */
+  function signesExamens() {
+    var textes = document.getElementById('nova-textes');
+    if (!textes) return;
+    var defs = { '\u2020': textes.getAttribute('data-texte-signe-croix'), '??': textes.getAttribute('data-texte-signe-inconnu') };
+    var tables = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td.wims_sheet_score a'), function (a) {
+      var signe = a.textContent.trim();
+      if (!defs[signe]) return;
+      a.title = defs[signe];
+      a.setAttribute('aria-label', signe + ' : ' + defs[signe]);
+      var t = a.closest('table');
+      if (!t) return;
+      var e = tables.filter(function (x) { return x.table === t; })[0];
+      if (!e) { e = { table: t, signes: {} }; tables.push(e); }
+      e.signes[signe] = true;
+    });
+    tables.forEach(function (e) {
+      var p = document.createElement('p');
+      p.className = 'nova-legende-signes';
+      ['\u2020', '??'].forEach(function (signe) {
+        if (!e.signes[signe]) return;
+        var l = document.createElement('span');
+        var b = document.createElement('b');
+        b.textContent = signe;
+        l.appendChild(b);
+        l.appendChild(document.createTextNode(' ' + defs[signe]));
+        p.appendChild(l);
+      });
+      var apres = e.table.closest('.wims_scrollable, .table-scroll') || e.table;
+      apres.parentNode.insertBefore(p, apres.nextSibling);
+    });
+  }
+
   /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types
    * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
    * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
@@ -4632,7 +4670,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

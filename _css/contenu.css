@@ -896,3 +896,7 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
   transition-delay: 0s !important;
   scroll-behavior: auto !important;
 }
+
+/* Légende des signes « † » et « ?? » du Détail des examens (nova.js signesExamens, 2026-11-07). */
+.wimsbody .nova-legende-signes { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e3); margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-legende-signes b { color: var(--nova-texte); margin-right: .2em; }

@@ -418,3 +418,5 @@
 !set nova_bdg_av_depart2=free coin(s), to customise their avatar right away.
 !set nova_mois=January,February,March,April,May,June,July,August,September,October,November,December
 !set nova_version_dev=development version
+!set nova_signe_croix=session with no recorded duration (still running, or interrupted before being finished)
+!set nova_signe_inconnu=exercise with no score in this session (not opened, or opened without an answer sent)

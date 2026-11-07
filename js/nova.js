@@ -2898,7 +2898,7 @@
       if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+|avatar(-[a-z]+)*)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
@@ -3734,6 +3734,354 @@
     return carte;
   }
 
+  /* Avatar de l'élève (demande de l'utilisateur, maquette validée le 2026-11-07) : Avataaars de DiceBear (js/avatar.js,
+   * chargé seulement quand il faut dessiner). Jetons gagnés en réussissant des exercices, éléments ouverts avec eux ou
+   * par les badges : tout est calculé et vérifié sur le serveur (_procs/avatar.awk, _widgets/avatar.phtml) ; ici,
+   * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
+   * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
+   * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
+  var AVATAR_CATEGORIES = ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'facialHair',
+    'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
+  function cleAvatar() {
+    var cle = cleCouleur();
+    return cle ? cle.replace(/^nova-couleur\|/, 'nova-avatar|') : '';
+  }
+  function lireAvatar() {
+    try { return JSON.parse(localStorage.getItem(cleAvatar()) || 'null'); } catch (e) { return null; }
+  }
+  function garderAvatar(v) {
+    try { var cle = cleAvatar(); if (!cle) return; if (v) localStorage.setItem(cle, JSON.stringify(v)); else localStorage.removeItem(cle); } catch (e) { /* sans stockage : rien */ }
+  }
+  // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
+  function optionsAvatar(choix) {
+    var c = {};
+    (choix || '').split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) c[e.slice(0, i)] = e.slice(i + 1); });
+    var o = { seed: 'nova', nose: ['default'], topProbability: 100 };
+    ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'clothing', 'clothesColor', 'clothingGraphic', 'backgroundColor'].forEach(function (k) {
+      if (c[k]) o[k] = [c[k]];
+    });
+    if (c.clothesColor) o.hatColor = [c.clothesColor];
+    if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
+    if (!c.facialHair || c.facialHair === 'aucun') o.facialHairProbability = 0;
+    else { o.facialHair = [c.facialHair]; o.facialHairProbability = 100; if (c.hairColor) o.facialHairColor = [c.hairColor]; }
+    return o;
+  }
+  var avatarScript = null;
+  function chargerAvatar(src) {
+    if (window.novaAvatar) return Promise.resolve(window.novaAvatar);
+    if (!avatarScript) avatarScript = new Promise(function (ok, ko) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = function () { if (window.novaAvatar) ok(window.novaAvatar); else ko(new Error('avatar')); };
+      s.onerror = function () { avatarScript = null; ko(new Error('avatar')); };
+      document.head.appendChild(s);
+    });
+    return avatarScript;
+  }
+  function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
+  function poserAvatarBarre(memo) {
+    var barre = document.getElementById('wimstopbox');
+    var ancien = document.querySelector('.nova-avatar-barre');
+    if (!barre || !memo || !memo.uri || barre.querySelector('.menuitem.chrono')) { if (ancien) ancien.remove(); return; }
+    var a = ancien || document.createElement('a');
+    a.className = 'nova-avatar-barre';
+    a.href = lienMonAvatar();
+    a.title = memo.titre || '';
+    a.setAttribute('aria-label', memo.titre || '');
+    var img = a.querySelector('img') || a.appendChild(document.createElement('img'));
+    img.src = memo.uri;
+    img.alt = '';
+    if (!ancien) barre.appendChild(a);
+  }
+  function avatarBarre() {
+    if (!document.getElementById('nova-eleve') || !cleAvatar()) return;
+    var source = document.getElementById('nova-avatar-barre');
+    var memo = lireAvatar();
+    if (source) {
+      var actif = source.getAttribute('data-actif') === 'oui';
+      var choix = source.getAttribute('data-choix') || '';
+      if (!actif) { memo = null; garderAvatar(null); }
+      else {
+        memo = { actif: 1, choix: choix, titre: source.getAttribute('data-titre') || '', uri: memo && memo.choix === choix ? memo.uri : '' };
+        garderAvatar(memo);
+        if (choix && !memo.uri) chargerAvatar(source.getAttribute('data-script')).then(function (dessin) {
+          memo.uri = dessin(optionsAvatar(choix));
+          garderAvatar(memo);
+          poserAvatarBarre(memo);
+        }).catch(function () {});
+      }
+    }
+    if (!memo || !memo.actif) return;
+    poserAvatarBarre(memo);
+    // Menu Profil : « Mon avatar » après le nom.
+    var profil = document.querySelector('#wimsmenumodubox .nova-profil');
+    if (profil && !profil.querySelector('.profil_avatar')) {
+      var d = document.createElement('div');
+      d.className = 'menuitem profil_avatar';
+      var a = document.createElement('a');
+      a.href = lienMonAvatar();
+      a.className = 'user';
+      var span = document.createElement('span');
+      span.textContent = memo.titre;
+      a.appendChild(span);
+      d.appendChild(a);
+      var nom = profil.querySelector('.nova-profil-nom');
+      profil.insertBefore(d, nom ? nom.nextSibling : profil.firstChild);
+    }
+  }
+
+  function avatarPage() {
+    var d = document.getElementById('nova-avatar');
+    if (!d) return;
+    var t = function (n) { return d.getAttribute('data-t-' + n) || ''; };
+    var el = function (balise, classe, texte) {
+      var e = document.createElement(balise);
+      if (classe) e.className = classe;
+      if (texte != null) e.textContent = texte;
+      return e;
+    };
+    var etat = {};
+    var lire = function (source) {
+      var j = (source.getAttribute('data-jetons') || '').split(' ');
+      etat.jetons = { dispo: +j[3] || 0, total: +j[4] || 0, jour: +j[5] || 0, max: +j[6] || 10, reste: +j[7] || 1, pc: +j[8] || 0 };
+      etat.message = (source.getAttribute('data-message') || '').split(' ')[1] || '-';
+      var c = (source.getAttribute('data-choix') || '').split(' ')[1] || '-';
+      etat.enregistre = c === '-' ? '' : c;
+      etat.elements = {};
+      etat.ordre = {};
+      (source.getAttribute('data-elements') || '').split(' ').slice(1).forEach(function (x) {
+        var p = x.split(':');
+        if (p.length !== 3) return;
+        (etat.ordre[p[0]] = etat.ordre[p[0]] || []).push(p[1]);
+        etat.elements[p[0] + '.' + p[1]] = p[2];
+      });
+    };
+    lire(d);
+    var regles = (d.getAttribute('data-regles') || '7 15 10').split(' ');
+    var ouvert = function (e) { var s = etat.elements[e] || ''; return s === 'libre' || s === 'achete' || /-1$/.test(s); };
+    // Choix courant : l'enregistré, sinon un tirage fixe parmi les éléments libres (d'après le login : chacun le sien).
+    var choix = {};
+    var graine = 0;
+    (d.getAttribute('data-utilisateur') || '').split('').forEach(function (ch) { graine = (graine * 31 + ch.charCodeAt(0)) % 100003; });
+    AVATAR_CATEGORIES.forEach(function (k, i) {
+      var libres = (etat.ordre[k] || []).filter(function (v) { return etat.elements[k + '.' + v] === 'libre'; });
+      if (k === 'accessories' || k === 'facialHair') libres = ['aucun'];
+      // Peau : tirage parmi les teintes naturelles (le jaune et l'orange restent au choix de l'élève).
+      if (k === 'skinColor') libres = libres.filter(function (v) { return v !== 'f8d25c' && v !== 'fd9841'; });
+      if (libres.length) choix[k] = libres[(graine + i * 7) % libres.length];
+    });
+    etat.enregistre.split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) choix[e.slice(0, i)] = e.slice(i + 1); });
+    if (!choix.clothingGraphic) choix.clothingGraphic = (etat.ordre.clothingGraphic || ['pizza'])[0];
+    var chaine = function (c) {
+      return AVATAR_CATEGORIES.filter(function (k) { return c[k] && ouvert(k + '.' + c[k]); }).map(function (k) { return k + '.' + c[k]; }).join(',');
+    };
+    var badgesAvatar = {};
+    (d.getAttribute('data-niveaux') || '').split(' ').slice(1).forEach(function (x) { var p = x.split(':'); badgesAvatar[p[0]] = [+p[1] || 0, p[2] === '1']; });
+    var noms = t('categories').split(',');
+    var niveaux = t('niveaux').split(',');
+
+    // Squelette.
+    var page = el('div', 'nova-avatar-editeur');
+    var cote = el('div', 'nova-avatar-apercu');
+    var portrait = el('div', 'nova-avatar-portrait');
+    var grand = el('img');
+    grand.alt = '';
+    portrait.appendChild(grand);
+    cote.appendChild(portrait);
+    var ligneJetons = el('p', 'nova-avatar-jetons');
+    var jeton = el('span', 'nova-avatar-jeton', 'J');
+    jeton.setAttribute('aria-hidden', 'true');
+    var nbJetons = el('span', 'nova-avatar-nb');
+    ligneJetons.appendChild(jeton);
+    ligneJetons.appendChild(nbJetons);
+    cote.appendChild(ligneJetons);
+    var jauge = el('div', 'nova-avatar-jauge');
+    jauge.setAttribute('aria-hidden', 'true');
+    var barreJauge = el('span');
+    jauge.appendChild(barreJauge);
+    cote.appendChild(jauge);
+    var prochain = el('p', 'nova-avatar-petit nova-avatar-prochain');
+    var jour = el('p', 'nova-avatar-petit');
+    cote.appendChild(prochain);
+    cote.appendChild(jour);
+    var actions = el('div', 'nova-avatar-actions');
+    var boutonEnr = el('button', 'wims_button nova-avatar-enregistrer', t('enregistrer'));
+    boutonEnr.type = 'button';
+    var boutonHasard = el('button', 'wims_button wims_secondary_button nova-avatar-hasard', t('hasard'));
+    boutonHasard.type = 'button';
+    actions.appendChild(boutonEnr);
+    actions.appendChild(boutonHasard);
+    cote.appendChild(actions);
+    var message = el('p', 'nova-avatar-message');
+    message.setAttribute('role', 'status');
+    cote.appendChild(message);
+    page.appendChild(cote);
+
+    var droite = el('div', 'nova-avatar-choix');
+    var onglets = el('div', 'nova-avatar-onglets');
+    onglets.setAttribute('role', 'tablist');
+    var note = el('p', 'nova-avatar-note');
+    var grille = el('div', 'nova-avatar-grille');
+    grille.setAttribute('role', 'tabpanel');
+    var confirmer = el('div', 'nova-avatar-confirmer');
+    confirmer.hidden = true;
+    var confImg = el('img');
+    confImg.alt = '';
+    var confTexte = el('p');
+    var confOui = el('button', 'wims_button', t('ouvrir'));
+    confOui.type = 'button';
+    var confNon = el('button', 'wims_button wims_secondary_button', t('annuler'));
+    confNon.type = 'button';
+    [confImg, confTexte, confOui, confNon].forEach(function (x) { confirmer.appendChild(x); });
+    var legende = el('p', 'nova-avatar-legende');
+    [['1', 'nova-avatar-prix', t('leg1')], ['2', 'nova-avatar-prix', t('leg2')], ['\u2605', 'nova-avatar-prix nova-avatar-etoile', t('leg3')]].forEach(function (l) {
+      var s = el('span');
+      s.appendChild(el('span', l[1], l[0]));
+      s.appendChild(document.createTextNode(' ' + l[2]));
+      legende.appendChild(s);
+    });
+    [onglets, note, grille, confirmer, legende].forEach(function (x) { droite.appendChild(x); });
+    page.appendChild(droite);
+
+    var aide = el('div', 'nova-avatar-regles');
+    aide.appendChild(el('h2', '', t('regles')));
+    var ul = el('ul');
+    [t('regle1').replace('%n', regles[0]), t('regle2'), t('regle3').replace('%n', regles[1]), t('regle4').replace('%n', regles[2]), t('regle5')].forEach(function (x) { ul.appendChild(el('li', '', x)); });
+    aide.appendChild(ul);
+    d.appendChild(page);
+    d.appendChild(aide);
+
+    var catActive = 0, enAttente = null, occupe = false, dessin = null;
+    var rendu = function (c) { return dessin ? dessin(optionsAvatar(AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
+    var dire = function (texte) { message.textContent = texte || ''; };
+    var nbOuverts = function (k) { return (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); }).length; };
+    var dessiner = function () {
+      var j = etat.jetons;
+      nbJetons.textContent = (j.dispo === 1 ? t('jeton') : t('jetons')).replace('%n', j.dispo);
+      barreJauge.style.width = Math.max(0, Math.min(100, j.pc)) + '%';
+      prochain.textContent = j.reste === 1 ? t('prochain1') : t('prochain').replace('%n', j.reste);
+      jour.textContent = t('jour').replace('%n', j.jour).replace('%m', j.max);
+      if (!dessin) return;
+      grand.src = rendu(choix);
+      onglets.textContent = '';
+      AVATAR_CATEGORIES.forEach(function (k, i) {
+        if (!etat.ordre[k]) return;
+        var b = el('button', 'nova-avatar-onglet');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-selected', i === catActive ? 'true' : 'false');
+        b.appendChild(document.createTextNode(noms[i] || k));
+        b.appendChild(el('span', 'nova-avatar-compte', nbOuverts(k) + '/' + etat.ordre[k].length));
+        b.addEventListener('click', function () { catActive = i; enAttente = null; dessiner(); });
+        onglets.appendChild(b);
+      });
+      var k = AVATAR_CATEGORIES[catActive];
+      var valeurs = etat.ordre[k] || [];
+      note.textContent = k === 'clothingGraphic' ? t('motif') : t('ouverts').replace('%n', nbOuverts(k)).replace('%m', valeurs.length);
+      grille.textContent = '';
+      valeurs.forEach(function (v) {
+        var e = k + '.' + v, s = etat.elements[e] || '';
+        var essai = Object.assign({}, choix);
+        essai[k] = v;
+        if (k === 'clothingGraphic') essai.clothing = 'graphicShirt';
+        var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
+        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : ''));
+        b.type = 'button';
+        b.setAttribute('aria-pressed', porte ? 'true' : 'false');
+        var nomV = v === 'aucun' ? t('aucun') : v;
+        var img = el('img');
+        img.alt = '';
+        img.src = rendu(essai);
+        b.appendChild(img);
+        if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }
+        else if (/^badge-/.test(s)) { b.appendChild(el('span', 'nova-avatar-prix nova-avatar-etoile', '\u2605')); nomV += ' (' + t('leg3') + ')'; }
+        b.title = nomV;
+        b.setAttribute('aria-label', nomV);
+        b.addEventListener('click', function () { cliquer(k, v, b.querySelector('img').src); });
+        grille.appendChild(b);
+      });
+      confirmer.hidden = !enAttente;
+    };
+    var cliquer = function (k, v, uri) {
+      var e = k + '.' + v, s = etat.elements[e] || '';
+      dire('');
+      if (ouvert(e)) {
+        choix[k] = v;
+        if (k === 'clothingGraphic') choix.clothing = 'graphicShirt';
+        enAttente = null;
+        dessiner();
+        return;
+      }
+      enAttente = { k: k, v: v, s: s };
+      confImg.src = uri;
+      if (/^badge-/.test(s)) {
+        // badge-<clé>-<niveau requis>-<0|1> ; niveau atteint et badge proposé : data-niveaux (« clé:niveau:1|0 »).
+        var p = s.split('-'), b = badgesAvatar[p[1]] || [0, 0];
+        var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
+        confTexte.textContent = (b[1] ? t('badge') : t('badge-off')).replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])).replace('%m', nomNiv(b[0]));
+        confOui.hidden = true;
+      } else {
+        var prix = +s;
+        confOui.hidden = false;
+        confOui.disabled = etat.jetons.dispo < prix;
+        confTexte.textContent = etat.jetons.dispo < prix ? (prix === 1 ? t('manque1') : t('manque').replace('%n', prix))
+          : (prix === 1 ? t('question') : t('question2')).replace('%n', prix);
+      }
+      dessiner();
+      confirmer.scrollIntoView({ block: 'nearest', behavior: animationsCoupees() ? 'auto' : 'smooth' });
+    };
+    // Envoi au serveur (accueil, module de confiance) ; sa réponse est la page à jour, dont on relit #nova-avatar.
+    var envoyer = function (suite) {
+      if (occupe) return Promise.reject(new Error('occupe'));
+      occupe = true;
+      [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = true; });
+      return fetch(lienAccueil('&nova_avatar=1' + suite), { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var source = doc.getElementById('nova-avatar');
+        if (!source) throw new Error('page');
+        lire(source);
+        return etat.message;
+      }).finally(function () {
+        occupe = false;
+        [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = false; });
+      });
+    };
+    confOui.addEventListener('click', function () {
+      if (!enAttente) return;
+      var a = enAttente;
+      envoyer('&nova_avatar_ouvrir=' + a.k + '.' + a.v).then(function (m) {
+        enAttente = null;
+        if (m === 'ouvert') { choix[a.k] = a.v; if (a.k === 'clothingGraphic') choix.clothing = 'graphicShirt'; dire(t('ouvert')); }
+        else dire(t('refus'));
+        dessiner();
+      }).catch(function () { dire(t('refus')); });
+    });
+    confNon.addEventListener('click', function () { enAttente = null; dessiner(); });
+    boutonEnr.addEventListener('click', function () {
+      var c = chaine(choix);
+      envoyer('&nova_avatar_choix=' + c).then(function (m) {
+        if (m !== 'choix' && etat.enregistre !== c) { dire(t('refus')); return; }
+        dire(t('enregistre'));
+        var memo = { actif: 1, choix: etat.enregistre, titre: (lireAvatar() || {}).titre || t('titre') || '', uri: rendu(choix) };
+        garderAvatar(memo);
+        poserAvatarBarre(memo);
+      }).catch(function () { dire(t('refus')); });
+    });
+    boutonHasard.addEventListener('click', function () {
+      AVATAR_CATEGORIES.forEach(function (k) {
+        if (k === 'clothingGraphic') return;
+        var ok = (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); });
+        if (ok.length) choix[k] = ok[Math.floor(Math.random() * ok.length)];
+      });
+      enAttente = null;
+      dire(t('tire'));
+      dessiner();
+    });
+    dessiner();
+    if (!etat.enregistre) dire(t('premier'));
+    chargerAvatar(d.getAttribute('data-script')).then(function (f) { dessin = f; dessiner(); }).catch(function () { dire(t('erreur')); });
+  }
+
   function fenetreBadges(d) {
     var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
     var el = function (balise, classe, texte) {
@@ -3956,7 +4304,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

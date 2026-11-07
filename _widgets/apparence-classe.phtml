@@ -184,6 +184,26 @@
           </select>.</p>
       </div>
     </fieldset>
+    <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-avatar">
+      <legend>$nova_bdg_av_titre</legend>
+      <div class="nova-app-ligne nova-app-texte">
+        <p class="nova-app-aide">$nova_bdg_av_aide</p>
+        <p class="nova-app-phrase">$nova_bdg_av_actif :
+          <select class="nova-app-choix" data-cle="avatar" aria-label="$nova_bdg_av_actif">
+            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+            <option value="oui">$nova_bdg_av_oui</option>
+            <option value="non">$nova_bdg_av_non</option>
+          </select></p>
+      </div>
+      <div class="nova-app-ligne nova-app-texte">
+        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+          <p class="nova-app-phrase">$nova_bdg_av_regle1 <input type="number" class="nova-app-nombre" data-cle="avatar-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_av_regle1"> $nova_bdg_av_regle2 <input type="number" class="nova-app-nombre" data-cle="avatar-secondes" min="0" max="600" step="1" aria-label="$nova_bdg_av_regle2"> $nova_bdg_av_regle3 <input type="number" class="nova-app-nombre" data-cle="avatar-max-jour" min="1" max="100" step="1" aria-label="$nova_bdg_av_regle3"> $nova_bdg_av_regle4</p>
+          <label class="nova-app-nom" for="nova-app-paliers-av">$nova_bdg_av_paliers<span class="nova-app-aide">$nova_bdg_av_paliers_aide</span></label>
+          <input type="text" id="nova-app-paliers-av" class="nova-app-paliers" data-cle="avatar-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+          <p class="nova-app-phrase">$nova_bdg_av_pas1 <input type="number" class="nova-app-nombre" data-cle="avatar-pas" min="1" max="100" step="1" aria-label="$nova_bdg_av_pas1"> $nova_bdg_av_pas2</p>
+        </div></details>
+      </div>
+    </fieldset>
     <p class="nova-app-note">$nova_bdg_note</p>
     <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>
   </div>

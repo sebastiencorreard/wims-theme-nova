@@ -125,6 +125,13 @@
   --nova-couleur-niveau: 2;
   --nova-fidelite-paliers: 2 4 6 9 12 16 20 25;
   --nova-vacances: aucune;
+  /* Avatar des élèves (2026-11-07, utilisateur) : coupé par défaut ; mêmes valeurs par défaut que _procs/avatar.awk. */
+  --nova-avatar: non;
+  --nova-avatar-seuil: 7;
+  --nova-avatar-secondes: 15;
+  --nova-avatar-max-jour: 10;
+  --nova-avatar-paliers: 3 6 10 15 20;
+  --nova-avatar-pas: 10;
 }
 
 /* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand htmlheader.phtml pose

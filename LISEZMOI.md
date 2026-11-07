@@ -141,6 +141,17 @@ Portail ou groupement : les réglages d'une zone l'emportent sur ceux de la stru
 Apparence et Badges Nova de la structure signalent les zones dont les réglages diffèrent et proposent de les mettre à jour.
 Images : `img/badges/<dossier>/` (WebP) : `regularite/coeur_0N`, `perseverance/flamme_0N`, `entrainement/halteres_0N`.
 
+**Avatar des élèves** (`--nova-avatar: oui`, page Badges Nova, bloc « Avatar des élèves » ; coupé par défaut) : entrée
+« Mon avatar » du menu Profil (page de l'accueil, `nova_avatar=1`) ; l'avatar enregistré s'affiche à droite de la
+barre, sauf en examen. Avataaars de DiceBear, dessinés dans le navigateur par `js/avatar.js` (construit, voir
+`js/avatar.LISEZMOI.txt`). Jetons : un exercice compte quand sa note atteint `--nova-avatar-seuil` (7/10), la réponse
+arrivant au moins `--nova-avatar-secondes` (15) après l'ouverture de l'exercice, une fois par jour et par exercice, au
+plus `--nova-avatar-max-jour` (10) par jour ; un jeton par palier de `--nova-avatar-paliers` (`3 6 10 15 20`), puis un
+tous les `--nova-avatar-pas` (10). Éléments (`_procs/avatar-catalogue.txt`) : libres, à 1 ou 2 jetons, ou récompenses
+des badges (niveaux fixés dans le catalogue). Tout est compté et vérifié sur le serveur (`_procs/avatar.awk`), dans
+toutes les zones de la structure ; choix et achats gardés dans `log/classes/<structure ou classe>/.nova_avatar_<login>`.
+Seuls l'élève (et, à venir, ses enseignants dans le suivi) le voient.
+
 ## Suivi en direct (salle informatique)
 
 L’entrée **Suivi en direct**, dans la rubrique **Participants** du menu latéral professeur/admin,
@@ -265,3 +276,6 @@ Nova reprend et adapte des gabarits et des feuilles de style de WIMS : il est di
 sous la **GNU General Public License, version 2 ou (à votre choix) toute version ultérieure**
 (`LICENSE`). Les polices Atkinson Hyperlegible Next et Mono (`polices/`) sont sous **SIL Open Font
 License 1.1** (`polices/OFL.txt`).
+Le paquet `js/avatar.js` contient DiceBear (licence MIT) et les dessins **Avataaars by Pablo Stanley via
+DiceBear** (« Free for personal and commercial use », https://avataaars.com/) ; textes complets dans
+`js/avatar.LISEZMOI.txt`.

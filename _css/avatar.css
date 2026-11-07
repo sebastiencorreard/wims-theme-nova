@@ -1,0 +1,58 @@
+/* Nova : avatar de l'eleve (demande de l'utilisateur, maquette validee le 2026-11-07). Page Mon avatar
+ * (_widgets/avatar.phtml, nova.js avatarPage) et pastille de la barre (avatarBarre). */
+
+/* Pastille de la barre, a droite (le compte des eleves est dans le menu Profil). Font_Awesome met un tiret devant
+ * toute entree de barre sans icone : pas ici (ce n'est pas un .menuitem), mais on le coupe quand meme. */
+#wimstopbox .nova-avatar-barre { margin-left: auto; flex: none; display: block; width: 40px; height: 40px; border-radius: 50%;
+  overflow: hidden; padding: 0; background: var(--nova-accent-doux); border: 2px solid var(--nova-sur-accent); box-sizing: border-box; }
+#wimstopbox .nova-avatar-barre::before { content: none; }
+/* Les images de la barre ont une taille fixee par cadre.css : celle-ci remplit le rond, buste agrandi. */
+#wimstopbox a.nova-avatar-barre > img { display: block; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; transform: scale(1.35) translateY(8%); }
+#wimstopbox .nova-avatar-barre:focus-visible { outline: 3px solid var(--nova-sur-accent); outline-offset: 2px; }
+
+#nova-avatar-page { max-width: 72rem; margin: 0 auto; }
+#nova-avatar-page h1 { margin: 0 0 var(--nova-e5); }
+.nova-avatar-editeur { display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: var(--nova-e5); align-items: start;
+  padding: var(--nova-e5); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; }
+@media (max-width: 760px) { .nova-avatar-editeur { grid-template-columns: minmax(0, 1fr); padding: var(--nova-e4); } }
+.nova-avatar-apercu { display: grid; gap: var(--nova-e3); justify-items: center; text-align: center; min-width: 0; }
+@media (min-width: 761px) { .nova-avatar-apercu { position: sticky; top: 80px; } }
+.nova-avatar-portrait { width: 200px; max-width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--nova-accent-doux); }
+.nova-avatar-portrait img { display: block; width: 100%; height: 100%; }
+.nova-avatar-jetons { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; font-size: 1.15rem; font-weight: 700; }
+.nova-avatar-jeton { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-size: .85rem;
+  background: var(--nova-attention-fond); border: 2px solid var(--nova-attention); color: var(--nova-attention-texte); }
+.nova-avatar-jauge { width: 100%; height: 10px; border-radius: 99px; background: var(--nova-piste); overflow: hidden; }
+.nova-avatar-jauge span { display: block; height: 100%; border-radius: 99px; background: var(--nova-accent); }
+.nova-avatar-petit { margin: 0; width: 100%; text-align: left; font-size: .88rem; color: var(--nova-texte-2); }
+.nova-avatar-prochain { font-weight: 700; }
+.nova-avatar-actions { display: flex; flex-wrap: wrap; gap: var(--nova-e2); justify-content: center; }
+.nova-avatar-message { min-height: 1.4em; margin: 0; font-weight: 700; color: var(--nova-lien); }
+.nova-avatar-choix { min-width: 0; }
+.nova-avatar-onglets { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: thin; }
+.nova-avatar-onglet { flex: none; padding: 6px 12px; border: 1.5px solid var(--nova-bord); border-radius: 99px; background: var(--nova-surface);
+  color: var(--nova-texte); font: inherit; font-size: .9rem; cursor: pointer; }
+.nova-avatar-onglet[aria-selected="true"] { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
+.nova-avatar-compte { margin-left: 4px; font-size: .75rem; opacity: .8; }
+.nova-avatar-note { margin: var(--nova-e2) 0 var(--nova-e3); font-size: .9rem; color: var(--nova-texte-2); }
+.nova-avatar-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+.nova-avatar-tuile { position: relative; aspect-ratio: 1; padding: 4px; border: 2px solid var(--nova-bord); border-radius: 12px;
+  background: var(--nova-surface); cursor: pointer; }
+.nova-avatar-tuile img { display: block; width: 100%; height: 100%; border-radius: 8px; }
+.nova-avatar-tuile.nova-avatar-porte { border-color: var(--nova-accent); box-shadow: 0 0 0 2px var(--nova-accent-doux); }
+.nova-avatar-tuile.nova-avatar-ferme img { filter: grayscale(1) opacity(.45); }
+.nova-avatar-tuile:focus-visible, .nova-avatar-onglet:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
+.nova-avatar-prix { display: inline-block; padding: 1px 6px; border-radius: 99px; font-size: .7rem; font-weight: 700; line-height: 1.4;
+  background: var(--nova-attention-fond); color: var(--nova-attention-texte); border: 1px solid var(--nova-attention); }
+.nova-avatar-prix.nova-avatar-etoile { background: var(--nova-accent-doux); color: var(--nova-lien); border-color: var(--nova-accent); }
+.nova-avatar-tuile .nova-avatar-prix { position: absolute; right: 4px; bottom: 4px; }
+.nova-avatar-confirmer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e3); margin-top: var(--nova-e3);
+  padding: var(--nova-e3) var(--nova-e4); border: 1.5px solid var(--nova-accent); border-radius: 12px; background: var(--nova-accent-doux); }
+.nova-avatar-confirmer[hidden] { display: none; }
+.nova-avatar-confirmer img { width: 56px; height: 56px; border-radius: 10px; background: var(--nova-surface); }
+.nova-avatar-confirmer p { flex: 1; min-width: 12rem; margin: 0; }
+.nova-avatar-legende { display: flex; flex-wrap: wrap; gap: var(--nova-e4); margin: var(--nova-e3) 0 0; font-size: .85rem; color: var(--nova-texte-2); }
+.nova-avatar-regles { margin-top: var(--nova-e5); padding: var(--nova-e5); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; }
+.nova-avatar-regles h2 { margin: 0 0 var(--nova-e2); font-size: 1.05rem; }
+.nova-avatar-regles ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 4px; }
+.nova-avatar-credits { margin: var(--nova-e4) 0 0; font-size: .8rem; color: var(--nova-texte-2); text-align: center; }

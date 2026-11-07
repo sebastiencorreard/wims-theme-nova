@@ -1,0 +1,51 @@
+!! Nova : page Mon avatar (lue par _widgets/avatar-entree.phtml). Calcul par _procs/avatar.awk : jetons gagnes dans
+!! TOUTE la structure (portail, groupement : toutes ses zones ; sinon la classe), niveaux des badges (le plus haut de
+!! ses zones), etat de chaque element du catalogue. Fichier de l'eleve garde pour la structure, comme la couleur :
+!! log/classes/<structure ou classe>/.nova_avatar_<login> (lignes "choix ..." et "ouverts ..."). L'editeur est construit
+!! par nova.js (avatarPage) d'apres #nova-avatar ; les dessins viennent de js/avatar.js (DiceBear, Avataaars).
+!set nova_cl=$wims_home/log/classes
+!set nova_ak=$wims_superclass
+!default nova_ak=!word 1 of $wims_class
+!set nova_ak=!replace internal / by , in $nova_ak
+!set nova_ak=$(nova_ak[1])
+!set nova_auj=!char 1 to 8 of $wims_now
+!set nova_av_ouvrir=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. in $nova_av_ouvrir
+!set nova_av_choix=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789., in $nova_av_choix
+!set nova_av=!sh r=$nova_cl/$nova_ak; { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#fichier'; cat "$$r/.nova_avatar_$wims_user" 2>/dev/null; echo '#stock'; find "$$r" -path "*/score/$wims_user.nova" -exec cat {} + 2>/dev/null; find "$$r" -type f \( -path "*/score/$wims_user" -o -path "*/noscore/$wims_user" \) 2>/dev/null | while read f; do echo "#zone $$(dirname "$$(dirname "$$f")")"; cat "$$f"; done; } | awk -v auj=$nova_auj -v catalogue=$wims_home/public_html/themes/$wims_theme/_procs/avatar-catalogue.txt -v ouvrir=$nova_av_ouvrir -v choix=$nova_av_choix -f $wims_home/public_html/themes/$wims_theme/_procs/avatar.awk
+!set nova_l=!line 1 of $nova_av
+!set nova_on=!word 2 of $nova_l
+!if $nova_on!=on
+<div class="wims_msg info">$nova_av_titre : $nova_bdg_av_non.</div>
+  !goto nova_av_fin
+!endif
+!set nova_ae=!line 6 of $nova_av
+!set nova_ae=!word 2 of $nova_ae
+!if $nova_ae=1
+  !set nova_af=!line 7 to 8 of $nova_av
+  !writefile wimshome/log/classes/$nova_ak/.nova_avatar_$wims_user $nova_af
+!endif
+!set nova_aj=!line 2 of $nova_av
+!set nova_am=!line 3 of $nova_av
+!set nova_ac=!line 4 of $nova_av
+!set nova_ax=!line 5 of $nova_av
+!set nova_ar=!line 9 of $nova_av
+!set nova_an=!line 10 of $nova_av
+<section id="nova-avatar-page" aria-labelledby="nova-avatar-titre">
+<h1 id="nova-avatar-titre">$nova_av_titre</h1>
+<div id="nova-avatar" data-jetons="$nova_aj" data-message="$nova_am" data-choix="$nova_ac" data-elements="$nova_ax" data-regles="$nova_ar" data-niveaux="$nova_an"
+  data-script="themes/$wims_theme/js/avatar.js" data-utilisateur="$wims_user"
+  data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons" data-t-prochain="$nova_av_prochain" data-t-prochain1="$nova_av_prochain1"
+  data-t-jour="$nova_av_jour" data-t-enregistrer="$nova_av_enregistrer" data-t-hasard="$nova_av_hasard" data-t-enregistre="$nova_av_enregistre"
+  data-t-tire="$nova_av_tire" data-t-premier="$nova_av_premier" data-t-categories="$nova_av_categories" data-t-ouverts="$nova_av_ouverts"
+  data-t-motif="$nova_av_motif" data-t-aucun="$nova_av_aucun" data-t-ouvrir="$nova_av_ouvrir" data-t-annuler="$nova_av_annuler"
+  data-t-question="$nova_av_question" data-t-question2="$nova_av_question2" data-t-manque="$nova_av_manque" data-t-manque1="$nova_av_manque1"
+  data-t-badge="$nova_av_badge" data-t-badge-off="$nova_av_badge_off" data-t-ouvert="$nova_av_ouvert" data-t-refus="$nova_av_refus"
+  data-t-erreur="$nova_av_erreur" data-t-regles="$nova_av_regles" data-t-regle1="$nova_av_regle1" data-t-regle2="$nova_av_regle2"
+  data-t-regle3="$nova_av_regle3" data-t-regle4="$nova_av_regle4" data-t-regle5="$nova_av_regle5"
+  data-t-leg1="$nova_av_leg1" data-t-leg2="$nova_av_leg2" data-t-leg3="$nova_av_leg3"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom"
+  data-t-niveaux="$nova_fid_niveaux"></div>
+<p class="nova-avatar-credits">$nova_av_credits</p>
+</section>
+:nova_av_fin
+!reset nova_cl nova_ak nova_auj nova_av nova_l nova_on nova_ae nova_af nova_aj nova_am nova_ac nova_ax nova_ar nova_an

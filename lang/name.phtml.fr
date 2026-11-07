@@ -421,3 +421,4 @@
 !set nova_version_dev=version de développement
 !set nova_signe_croix=session sans durée enregistrée (en cours, ou interrompue sans être terminée)
 !set nova_signe_inconnu=exercice sans note dans cette session (pas ouvert, ou ouvert sans réponse envoyée)
+!set nova_version_lien=Nouveautés de chaque version (nouvel onglet)

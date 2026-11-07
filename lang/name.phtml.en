@@ -420,3 +420,4 @@
 !set nova_version_dev=development version
 !set nova_signe_croix=session with no recorded duration (still running, or interrupted before being finished)
 !set nova_signe_inconnu=exercise with no score in this session (not opened, or opened without an answer sent)
+!set nova_version_lien=What is new in each version (new tab)

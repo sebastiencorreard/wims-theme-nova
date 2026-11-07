@@ -43,6 +43,7 @@ livraison, commit). Elle est lue dans le fichier `VERSION` du thème.
 
 Versions : 1.0, première version ; 1.1, badges des élèves ; 1.2, avatar des élèves, couleur personnelle
 (« Ma couleur ») et deux nouveaux badges (Échauffement, Au top).
+Le détail est dans `CHANGELOG.md`, affiché en cliquant sur le numéro de version.
 
 Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossiers qui contiennent un
 `visitor.phtml`). Aucune recompilation, aucun redémarrage.

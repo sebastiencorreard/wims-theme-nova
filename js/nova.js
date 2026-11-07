@@ -3964,7 +3964,11 @@
     var grand = el('img');
     grand.alt = '';
     portrait.appendChild(grand);
-    cote.appendChild(portrait);
+    // Aperçu d'un élément pas encore débloqué sur le grand portrait (maquette validée le 2026-11-07, utilisateur).
+    var cadre = el('div', 'nova-avatar-cadre');
+    cadre.appendChild(portrait);
+    cadre.appendChild(el('span', 'nova-avatar-pastille', t('apercu')));
+    cote.appendChild(cadre);
     var ligneJetons = el('p', 'nova-avatar-jetons');
     var jeton = pieceJeton();
     var nbJetons = el('span', 'nova-avatar-nb');
@@ -4039,7 +4043,17 @@
       prochain.textContent = j.reste === 1 ? t('prochain1') : t('prochain').replace('%n', j.reste);
       jour.textContent = t('jour').replace('%n', j.jour).replace('%m', j.max);
       if (!dessin) return;
-      grand.src = rendu(choix);
+      // Aperçu : le choix courant avec l'élément en attente ; « Enregistrer » désactivé tant qu'il est affiché.
+      var vu = Object.assign({}, choix);
+      if (enAttente) {
+        vu[enAttente.k] = enAttente.v;
+        if (enAttente.k === 'clothingGraphic') vu.clothing = 'graphicShirt';
+        if (enAttente.k === 'accessoriesColor' && (!vu.accessories || vu.accessories === 'aucun' || vu.accessories === 'eyepatch')) vu.accessories = 'prescription02';
+      }
+      grand.src = rendu(vu);
+      cadre.classList.toggle('nova-avatar-essai', !!enAttente);
+      boutonEnr.disabled = !!enAttente || occupe;
+      boutonEnr.title = enAttente ? t('enr-bloque') : '';
       onglets.textContent = '';
       AVATAR_CATEGORIES.forEach(function (k, i) {
         if (!etat.ordre[k]) return;
@@ -4065,7 +4079,8 @@
         // Couleur des lunettes : aperçu sur des lunettes, même si l'élève n'en porte pas.
         if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) essai.accessories = 'prescription02';
         var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
-        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : ''));
+        var essaye = enAttente && enAttente.k === k && enAttente.v === v;
+        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : '') + (essaye ? ' nova-avatar-essaye' : ''));
         b.type = 'button';
         b.setAttribute('aria-pressed', porte ? 'true' : 'false');
         var nomV = v === 'aucun' ? t('aucun') : v;
@@ -4073,6 +4088,12 @@
         img.alt = '';
         img.src = rendu(essai);
         b.appendChild(img);
+        if (!ouvert(e)) {
+          var cad = el('span', 'nova-avatar-cadenas');
+          cad.setAttribute('aria-hidden', 'true');
+          cad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+          b.appendChild(cad);
+        }
         if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }
         else if (badgeObtenu(s) && imageBadge(s)) {
           var mini = el('img', 'nova-avatar-badge');
@@ -4139,9 +4160,10 @@
       envoyer('&nova_avatar_ouvrir=' + a.k + '.' + a.v).then(function (m) {
         enAttente = null;
         if (m === 'ouvert') { choix[a.k] = a.v; if (a.k === 'clothingGraphic') choix.clothing = 'graphicShirt'; dire(t('ouvert')); }
+        else dire(t('refus'));
+        // Compteur de la barre à jour, sans animation (une dépense n'est pas un gain).
         var mj = lireAvatar();
         if (mj) { mj.jetons = mj.vu = etat.jetons.dispo; garderAvatar(mj); poserAvatarBarre(mj); }
-        else dire(t('refus'));
         dessiner();
       }).catch(function () { dire(t('refus')); });
     });

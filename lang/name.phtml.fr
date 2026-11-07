@@ -357,6 +357,8 @@
 !set nova_av_enregistrer=Enregistrer
 !set nova_av_hasard=Au hasard
 !set nova_av_enregistre=Avatar enregistré : il apparaît en haut de tes pages.
+!set nova_av_apercu=Aperçu
+!set nova_av_enr_bloque=Débloque d'abord l'élément en aperçu, ou clique sur Annuler.
 !set nova_av_tire=Tiré parmi tes éléments débloqués. Enregistre-le s'il te plaît.
 !set nova_av_premier=Choisis ton avatar, puis enregistre-le : il apparaîtra en haut de tes pages.
 !set nova_av_categories=Coiffure,Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Lunettes (couleur),Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond

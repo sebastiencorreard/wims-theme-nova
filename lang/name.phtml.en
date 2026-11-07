@@ -357,6 +357,8 @@
 !set nova_av_enregistrer=Save
 !set nova_av_hasard=Random
 !set nova_av_enregistre=Avatar saved: it appears at the top of your pages.
+!set nova_av_apercu=Preview
+!set nova_av_enr_bloque=Unlock the previewed item first, or click Cancel.
 !set nova_av_tire=Picked from your unlocked items. Save it if you like it.
 !set nova_av_premier=Choose your avatar, then save it: it will appear at the top of your pages.
 !set nova_av_categories=Hair,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Glasses colour,Beard,Clothes,T-shirt print,Clothes colour,Background

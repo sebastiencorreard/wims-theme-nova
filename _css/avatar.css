@@ -41,7 +41,19 @@
   background: var(--nova-surface); cursor: pointer; }
 .nova-avatar-tuile img { display: block; width: 100%; height: 100%; border-radius: 8px; }
 .nova-avatar-tuile.nova-avatar-porte { border-color: var(--nova-accent); box-shadow: 0 0 0 2px var(--nova-accent-doux); }
-.nova-avatar-tuile.nova-avatar-ferme img { filter: grayscale(1) opacity(.45); }
+.nova-avatar-tuile.nova-avatar-ferme img { opacity: .62; }   /* fermé : en couleur, un peu effacé (maquette A, 2026-11-07) */
+.nova-avatar-cadenas { position: absolute; left: 4px; top: 4px; display: grid; place-items: center; width: 20px; height: 20px;
+  border-radius: 50%; background: rgba(35, 29, 38, .72); color: #fff; }
+.nova-avatar-cadenas svg { width: 12px; height: 12px; }
+.nova-avatar-tuile.nova-avatar-essaye { border-style: dashed; border-color: var(--nova-accent); }
+/* Aperçu sur le grand portrait : pointillé et pastille « Aperçu ». */
+.nova-avatar-cadre { position: relative; width: 200px; max-width: 100%; margin-bottom: 10px; }
+.nova-avatar-cadre .nova-avatar-portrait { border: 3px solid transparent; box-sizing: border-box; }
+.nova-avatar-cadre.nova-avatar-essai .nova-avatar-portrait { border: 3px dashed var(--nova-accent); }
+.nova-avatar-pastille { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); display: none; padding: 3px 12px;
+  border-radius: 99px; background: var(--nova-accent); color: var(--nova-sur-accent); font-size: .82rem; font-weight: 700; white-space: nowrap; }
+.nova-avatar-cadre.nova-avatar-essai .nova-avatar-pastille { display: inline-block; }
+.nova-avatar-enregistrer:disabled { opacity: .45; cursor: not-allowed; }
 .nova-avatar-tuile:focus-visible, .nova-avatar-onglet:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
 .nova-avatar-prix { display: inline-block; padding: 1px 6px; border-radius: 99px; font-size: .7rem; font-weight: 700; line-height: 1.4;
   background: var(--nova-attention-fond); color: var(--nova-attention-texte); border: 1px solid var(--nova-attention); }

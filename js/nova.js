@@ -3729,7 +3729,9 @@
     item.className = 'menuitem profil_couleur';
     var a = document.createElement('a');
     a.className = 'tint';   // Font_Awesome : goutte (« .menuitem .tint »), rien avec le jeu « default »
-    a.href = d ? '#nova-ma-couleur' : lienAccueil('') + '#nova-ma-couleur';
+    // Toujours une adresse wims.cgi : « Liens externes masqués aux élèves » (--nova-masques-eleves) cache toute rubrique qui
+    // contient un lien hors de wims.cgi ; un simple « #… » y faisait disparaître tout le Profil (vécu, portail, 2026-11-07).
+    a.href = lienAccueil('') + '#nova-ma-couleur';
     var span = document.createElement('span');
     span.textContent = memo.titre;
     a.appendChild(span);

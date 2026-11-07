@@ -3958,7 +3958,8 @@
     var aide = el('div', 'nova-avatar-regles');
     aide.appendChild(el('h2', '', t('regles')));
     var ul = el('ul');
-    [t('regle1').replace('%n', regles[0]), t('regle2'), t('regle3').replace('%n', regles[1]), t('regle4').replace('%n', regles[2]), t('regle5')].forEach(function (x) { ul.appendChild(el('li', '', x)); });
+    // regle3 (délai) retirée de l'affichage le 2026-11-07 (utilisateur) ; le délai compte toujours.
+    [t('regle1').replace('%n', regles[0]), t('regle2'), t('regle4').replace('%n', regles[2]), t('regle5')].forEach(function (x) { ul.appendChild(el('li', '', x)); });
     aide.appendChild(ul);
     d.appendChild(page);
     d.appendChild(aide);

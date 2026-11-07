@@ -48,7 +48,7 @@
 .nova-avatar-tuile .nova-avatar-prix { position: absolute; right: 4px; bottom: 4px; }
 .nova-avatar-confirmer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e3); margin-top: var(--nova-e3);
   padding: var(--nova-e3) var(--nova-e4); border: 1.5px solid var(--nova-accent); border-radius: 12px; background: var(--nova-accent-doux); }
-.nova-avatar-confirmer[hidden] { display: none; }
+.nova-avatar-confirmer[hidden], .nova-avatar-confirmer [hidden] { display: none; }   /* .wims_button l'emportait sur hidden (bouton Ouvrir vide, élément de badge) */
 .nova-avatar-confirmer img { width: 56px; height: 56px; border-radius: 10px; background: var(--nova-surface); }
 .nova-avatar-confirmer p { flex: 1; min-width: 12rem; margin: 0; }
 .nova-avatar-legende { display: flex; flex-wrap: wrap; gap: var(--nova-e4); margin: var(--nova-e3) 0 0; font-size: .85rem; color: var(--nova-texte-2); }

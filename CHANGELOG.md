@@ -20,6 +20,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 ### Enseignants
 - **Réglages de Nova** : une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
 - **Réglages de « Mon activité »** (onglet Élèves) : affichés d'office quand la page est activée, masqués sinon.
+- **Couleur personnelle** : deux lignes, couleur puis dégradés, chacune avec son niveau et son badge ; la fenêtre des badges de l'élève montre chaque palier dans l'onglet de son badge.
 - **Persévérance** : la règle dit « notes strictement inférieures à » (élèves : « de moins de ») ; DM WIMS : « noté » (avec accent) et « test » par défaut.
 - **DM WIMS** : mots-clés en étiquettes ; un DM n'est reconnu que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté »/« test » ou « entraînement ».
 - **Désactiver quand même** (à permettre dans Réglages de Nova, onglet Réglages avancés, « Désactiver malgré le partage », avec avertissement) : quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes (ou une feuille utilisée dans un examen), un bouton sous le refus le permet, après une alerte sur les conséquences (désactivé dans toutes les classes du partage, notes gardées).

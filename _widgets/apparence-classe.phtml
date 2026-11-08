@@ -187,10 +187,11 @@
         <legend>$nova_bdg_coul_titre</legend>
         <div class="nova-app-ligne nova-app-texte">
           <p class="nova-app-aide">$nova_bdg_coul_aide</p>
-          <p class="nova-app-phrase">$nova_bdg_coul_phrase1
+!! Deux paliers, chacun avec son niveau et son badge (2026-11-08, utilisateur) : couleur, puis degrades.
+!set nova_k=!itemcnt $nova_fid_niveaux
+          <p class="nova-app-phrase nova-bdg-coul-ligne"><strong>$nova_bdg_coul_ligne1</strong> $nova_bdg_coul_au_niveau
             <select class="nova-app-choix" data-cle="couleur-niveau" aria-label="$nova_bdg_coul_niveau">
               <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
-!set nova_k=!itemcnt $nova_fid_niveaux
 !for nova_i=1 to $nova_k
               <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
@@ -203,13 +204,24 @@
               <option value="echauffement">$nova_ech_nom</option>
               <option value="top">$nova_top_nom</option>
               <option value="aucun">$nova_bdg_coul_aucun</option>
-            </select>$nova_bdg_coul_phrase3
+            </select>.</p>
+          <p class="nova-app-phrase nova-bdg-coul-ligne"><strong>$nova_bdg_coul_ligne2</strong> $nova_bdg_coul_au_niveau
             <select class="nova-app-choix" data-cle="couleur-degrade" aria-label="$nova_bdg_coul_degrade">
               <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
 !for nova_i=1 to $nova_k
               <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
+            </select>
+            $nova_bdg_coul_phrase2
+            <select class="nova-app-choix" data-cle="couleur-degrade-badge" aria-label="$nova_bdg_coul_badge_deg">
+              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_meme_badge</option>
+              <option value="fidelite">$nova_fid_nom</option>
+              <option value="perseverance">$nova_per_nom</option>
+              <option value="echauffement">$nova_ech_nom</option>
+              <option value="top">$nova_top_nom</option>
+              <option value="aucun">$nova_bdg_coul_aucun</option>
             </select>.</p>
+          <p class="nova-app-aide">$nova_bdg_coul_ordre</p>
         </div>
       </fieldset>
       <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-avatar">

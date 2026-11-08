@@ -347,7 +347,7 @@
 !set nova_bdg_coul_degrade=Level that unlocks gradients
 !set nova_coul_choisie=Chosen colour: %s.
 !set nova_bdg_coul_titre=Students' own colour
-!set nova_bdg_coul_aide=A reward: the student chooses the colour of their interface from a readable palette (profile menu, "My colour"), then, at a higher level, a gradient (top bar, buttons, window titles). Once chosen, it applies throughout the class, group or portal, tests included.
+!set nova_bdg_coul_aide=A reward: the student chooses the colour of their interface from a readable palette (profile menu, "My colour"), then, a gradient (top bar, buttons, window titles). Once chosen, it applies throughout the class, group or portal, tests included.
 !set nova_bdg_coul_phrase1=Unlock the choice at level
 !set nova_bdg_coul_phrase2=of the badge
 !set nova_bdg_coul_niveau=Level that unlocks the colour
@@ -479,3 +479,11 @@
 !set nova_rg_mots_placeholder=New word
 !set nova_rg_mots_retablir=Back to the default value
 !set nova_ecart_quoi_tout=of Nova
+!set nova_bdg_coul_ligne1=Colour:
+!set nova_bdg_coul_ligne2=Gradients:
+!set nova_bdg_coul_au_niveau=at level
+!set nova_bdg_coul_badge_deg=Badge that unlocks gradients
+!set nova_bdg_coul_meme_badge=same badge as the colour
+!set nova_bdg_coul_ordre=Gradients only open once the colour is unlocked.
+!set nova_coul_recompense_deg2=At level %s: gradients, once your colour is unlocked.
+!set nova_coul_verrou_degrade2=Reach level %s of the %b badge for gradients (after the colour).

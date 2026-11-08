@@ -347,7 +347,7 @@
 !set nova_bdg_coul_degrade=Niveau qui débloque les dégradés
 !set nova_coul_choisie=Couleur choisie : %s.
 !set nova_bdg_coul_titre=Couleur personnelle des élèves
-!set nova_bdg_coul_aide=Une récompense : l'élève choisit la couleur de son interface dans une palette lisible (menu du profil, « Ma couleur »), puis, à un niveau plus élevé, un dégradé (barre du haut, boutons, titres des fenêtres). Une fois choisie, elle vaut dans toute la classe, le groupement ou le portail, examens compris.
+!set nova_bdg_coul_aide=Une récompense : l'élève choisit la couleur de son interface dans une palette lisible (menu du profil, « Ma couleur »), puis un dégradé (barre du haut, boutons, titres des fenêtres). Une fois choisie, elle vaut dans toute la classe, le groupement ou le portail, examens compris.
 !set nova_bdg_coul_phrase1=Débloquer le choix au niveau
 !set nova_bdg_coul_phrase2=du badge
 !set nova_bdg_coul_niveau=Niveau qui débloque la couleur
@@ -480,3 +480,11 @@
 !set nova_rg_mots_placeholder=Nouveau mot
 !set nova_rg_mots_retablir=Revenir à la valeur par défaut
 !set nova_ecart_quoi_tout=de Nova
+!set nova_bdg_coul_ligne1=Couleur :
+!set nova_bdg_coul_ligne2=Dégradés :
+!set nova_bdg_coul_au_niveau=au niveau
+!set nova_bdg_coul_badge_deg=Badge qui débloque les dégradés
+!set nova_bdg_coul_meme_badge=même badge que la couleur
+!set nova_bdg_coul_ordre=Les dégradés ne s'ouvrent qu'une fois la couleur débloquée.
+!set nova_coul_recompense_deg2=Au niveau %s : les dégradés, une fois ta couleur débloquée.
+!set nova_coul_verrou_degrade2=Atteins le niveau %s du badge %b pour les dégradés (après la couleur).

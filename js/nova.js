@@ -3309,7 +3309,7 @@
       if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+|avatar(-[a-z]+)*|dm-[a-z-]+)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z-]+|avatar(-[a-z]+)*|dm-[a-z-]+)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
     return { ecrire: ecrire, touche: function () { return touche; } };
@@ -4239,10 +4239,18 @@
     if (badge === 'aucun') return null;
     var ligne = (d.getAttribute('data-' + badge) || '').split(/\s+/);
     if (ligne[1] !== 'on') return null;
-    var niveau = +ligne[2] || 0, requis = +reg[10] || 2, requisDeg = Math.max(requis, +reg[11] || requis + 2);
-    var court = { fidelite: 'fid', perseverance: 'per', echauffement: 'ech', top: 'top' }[badge];
-    return { badge: badge, nomBadge: d.getAttribute('data-' + court + '-nom') || badge, niveau: niveau, requis: requis, requisDeg: requisDeg,
-      etat: niveau >= requisDeg ? 2 : niveau >= requis ? 1 : 0 };
+    var niveau = +ligne[2] || 0, requis = +reg[10] || 2, requisDeg = +reg[11] || requis + 2;
+    var court = { fidelite: 'fid', perseverance: 'per', echauffement: 'ech', top: 'top' };
+    // Dégradés : badge à part (12e champ, 2026-11-08 ; absent = celui de la couleur, aucun = pas de dégradés). Ils ne
+    // s'ouvrent qu'une fois la couleur débloquée.
+    var badgeDeg = reg[12] || badge;
+    if (badgeDeg === badge) requisDeg = Math.max(requis, requisDeg);
+    var ligneDeg = badgeDeg === badge ? ligne : (d.getAttribute('data-' + badgeDeg) || '').split(/\s+/);
+    var niveauDeg = badgeDeg !== 'aucun' && ligneDeg[1] === 'on' ? +ligneDeg[2] || 0 : -1;
+    var degOk = niveauDeg >= 0 && niveauDeg >= requisDeg;
+    return { badge: badge, nomBadge: d.getAttribute('data-' + court[badge] + '-nom') || badge, niveau: niveau, requis: requis, requisDeg: requisDeg,
+      badgeDeg: niveauDeg >= 0 ? badgeDeg : 'aucun', nomBadgeDeg: d.getAttribute('data-' + court[badgeDeg] + '-nom') || badgeDeg,
+      etat: niveau >= requis ? (degOk ? 2 : 1) : 0 };
   }
   function cleMenuCouleur() { var c = cleCouleur(); return c ? c + '|menu' : ''; }
   function lireMenuCouleur() { try { var c = cleMenuCouleur(); return c ? JSON.parse(localStorage.getItem(c) || 'null') : null; } catch (e) { return null; } }
@@ -4340,8 +4348,8 @@
     f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
     var corps = el('div', 'nova-couleur-corps');
     f.appendChild(corps);
-    var verrou = function (texte, n) {
-      var v = el('p', 'nova-couleur-verrou', texte.replace('%s', nomNiv(n)).replace('%b', dr.nomBadge));
+    var verrou = function (texte, n, nomBadge) {
+      var v = el('p', 'nova-couleur-verrou', texte.replace('%s', nomNiv(n)).replace('%b', nomBadge || dr.nomBadge));
       return v;
     };
     var actuelle = (document.getElementById('nova-couleur') || d).getAttribute('data-couleur') || '';
@@ -4394,7 +4402,7 @@
     var b2 = el('section', 'nova-couleur-bloc');
     b2.appendChild(el('h3', '', a('coul-degrades')));
     b2.appendChild(el('p', 'nova-couleur-aide', a('coul-degrades-aide')));
-    if (dr.etat < 2) b2.appendChild(verrou(a('coul-verrou-degrade'), dr.requisDeg));
+    if (dr.etat < 2) b2.appendChild(dr.badgeDeg && dr.badgeDeg !== dr.badge ? verrou(a('coul-verrou-degrade2') || a('coul-verrou-degrade'), dr.requisDeg, dr.nomBadgeDeg) : verrou(a('coul-verrou-degrade'), dr.requisDeg));
     else {
       var grille = el('div', 'nova-couleur-degrades');
       DEGRADES.forEach(function (g, i) {
@@ -4416,7 +4424,8 @@
     return f;
   }
   // Fenêtre des badges, onglet du badge qui débloque la couleur : rappel de la récompense et lien vers « Ma couleur ».
-  function carteCouleur(d) {
+  // cle : badge de l'onglet ; la carte n'y montre que ses paliers (couleur, dégradés : badges à part depuis le 2026-11-08).
+  function carteCouleur(d, cle) {
     var a = function (n) { return d.getAttribute('data-' + n) || ''; };
     var dr = droitsCouleur(d);
     var niveaux = a('niveaux').split(',');
@@ -4428,7 +4437,10 @@
     h.textContent = a('coul-titre');
     carte.appendChild(h);
     if (!dr) return carte;
-    [[a('coul-recompense'), dr.requis, dr.etat >= 1], [a('coul-recompense-deg'), dr.requisDeg, dr.etat >= 2]].forEach(function (x) {
+    var paliers = [];
+    if (!cle || cle === dr.badge) paliers.push([a('coul-recompense'), dr.requis, dr.etat >= 1]);
+    if (dr.badgeDeg !== 'aucun' && (!cle || cle === dr.badgeDeg)) paliers.push([dr.badgeDeg === dr.badge ? a('coul-recompense-deg') : (a('coul-recompense-deg2') || a('coul-recompense-deg')), dr.requisDeg, dr.etat >= 2]);
+    paliers.forEach(function (x) {
       var p = document.createElement('p');
       p.className = 'nova-couleur-aide' + (x[2] ? ' nova-couleur-acquis' : '');
       p.textContent = x[0].replace('%s', nomNiv(x[1]));
@@ -5116,12 +5128,11 @@
         a('top-regle').replace('%s', virgule(seuilT)), chiffresT, etatT, texteT, '', a('top-aide'), a('images-top'))]);
     }
     // Couleur personnelle : carte dans l'onglet du badge choisi par l'enseignant (reglages : 9e champ badge, 10e niveau).
-    var badgeCoul = reg[9] || 'aucun', requisCoul = +reg[10] || 2;
-    var lignesNiv = { fidelite: mf, perseverance: mp, echauffement: mh, top: mt };
+    var drC = droitsCouleur(d);
     panneaux.forEach(function (p) {
-      if (p[0] !== badgeCoul) return;
+      if (!drC || (p[0] !== drC.badge && p[0] !== drC.badgeDeg)) return;
       var detail = p[2], aide = detail.querySelector('.nova-badge-aide');
-      var carte = carteCouleur(d);
+      var carte = carteCouleur(d, p[0]);
       detail.insertBefore(carte, detail.querySelector('.nova-badge-niveaux') || aide);
     });
     // Onglets, s'il y a plus d'un badge.

@@ -12,7 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
-- **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « Nouveau ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
+- **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « New ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
 - **DM WIMS** : onglet à part ; un examen n'est un DM que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté » ou « test » (DM noté) ou « entraînement » ; mots-clés en étiquettes, faciles à ajouter ou retirer.
 - **Créer le DM noté** : bouton sur l'accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
 - **Désactiver quand même** un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont partagés (aussi dans un programme de portail), ou une feuille utilisée dans un examen : bouton sous le refus, après une alerte sur les conséquences. À permettre dans Réglages de Nova, onglet Réglages avancés (désactivé par défaut). Refusé si des élèves ont déjà commencé l'examen.

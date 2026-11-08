@@ -1895,6 +1895,12 @@
     placer(p);
   }
 
+  // Valeur texte d'une variable CSS : guillemets retirés, échappements CSS décodés (« not\\e9 » → « noté » ; Chrome rend
+  // le texte tel qu'écrit, et les jetons de Nova sont en ASCII). 2026-11-08.
+  function texteCss(v) {
+    return (v || '').replace(/["']/g, '').replace(/\\([0-9a-fA-F]{1,6})\s?/g, function (m, h) { return String.fromCodePoint(parseInt(h, 16)); }).trim();
+  }
+
   function dmNote() {
     var textes = document.getElementById('nova-textes');
     var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-texte-' + cle)) || defaut; };
@@ -1902,9 +1908,9 @@
     var ecrireSS = function (k, v) { try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
     var plat = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
     var cs = getComputedStyle(document.documentElement);
-    var mots = function (v, defaut) { return (cs.getPropertyValue(v).replace(/["']/g, '').trim() || defaut).split(',').map(plat).filter(Boolean); };
+    var mots = function (v, defaut) { return (texteCss(cs.getPropertyValue(v)) || defaut).split(',').map(plat).filter(Boolean); };
     var motsT = mots('--nova-echauffement-entrainement', 'entrainement');
-    var motsN = mots('--nova-echauffement-note', 'note, test');
+    var motsN = mots('--nova-echauffement-note', 'not\u00e9, test');
     // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
     var motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
     var estDM = function (titre) {
@@ -3256,7 +3262,7 @@
     var champs = Array.prototype.slice.call(carte.querySelectorAll('[data-cle]'));
     champs.forEach(function (c) {
       var k = c.getAttribute('data-cle'), v = valeur(zone.value, k);
-      var h = herite.getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
+      var h = texteCss(herite.getPropertyValue('--nova-' + k));
       if (c.type === 'checkbox') c.checked = (v || h || 'oui') !== 'non';
       else if (c.tagName === 'SELECT') {
         // Liste (couleur personnelle, 2026-11-07) : première option = valeur héritée, nommée d'après elle.

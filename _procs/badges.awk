@@ -129,7 +129,7 @@ function apparier(    k, g, i, b, e, mx, mn, kn, kt, cT, cN, m, lst) {
   if (apparie) return
   apparie = 1
   motsT = conf["echauffement-entrainement"]; if (motsT == "") motsT = "entrainement"
-  motsN = conf["echauffement-note"]; if (motsN == "") motsN = "note, test"
+  motsN = conf["echauffement-note"]; if (motsN == "") motsN = "noté, test"
   motsD = conf["dm-mots"]; if (motsD == "") motsD = "DMWIMS, DM"
   lireExamens()
   # (1) Même contenu, deux examens exactement : le plus d'essais = entraînement, l'autre = noté. Trois ou plus (un ancien

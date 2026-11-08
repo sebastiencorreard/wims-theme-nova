@@ -270,9 +270,9 @@
 !! Badge Persévérance (2026-10-09) : %r note de réussite, %e note faible, %n nombre, %t titre, %s niveau.
 !set nova_badges_court=Badges
 !set nova_per_nom=Persévérance
-!set nova_per_regle=Réussis (%r/10 ou plus) un exercice sur lequel tu avais d'abord eu au moins %n notes sous %e/10.
+!set nova_per_regle=Réussis (%r/10 ou plus) un exercice sur lequel tu avais d'abord eu au moins %n notes de moins de %e/10.
 !set nova_per_total=exercices réussis après des difficultés
-!set nova_per_encours=En cours : « %t », %n notes sous %e/10. Une réussite et il compte !
+!set nova_per_encours=En cours : « %t », %n notes de moins de %e/10. Une réussite et il compte !
 !set nova_per_suite=Encore %n exercices pour le niveau %s.
 !set nova_per_suite1=Encore 1 exercice pour le niveau %s.
 !set nova_per_examens_oui=Un niveau obtenu ne se perd jamais. Les exercices des examens comptent aussi.
@@ -285,7 +285,7 @@
 !set nova_bdg_per_paliers_aide=Exercices réussis après des difficultés, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_bdg_per_regle1=Compter un exercice quand l'élève y obtient au moins
 !set nova_bdg_per_regle2=/10 après au moins
-!set nova_bdg_per_regle3=notes sous
+!set nova_bdg_per_regle3=notes strictement inférieures à
 !set nova_bdg_per_regle4=/10.
 !set nova_bdg_per_examens=Inclure les notes d'examens
 !! Badge Echauffement (2026-11-06, DM WIMS) : %n nombre, %t titre du DM note, %s niveau.

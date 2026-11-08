@@ -1835,6 +1835,19 @@
     if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
     // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
     if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
+    var placer = function (el) {
+      var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
+      if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);
+      else corps.insertBefore(el, corps.firstChild);
+    };
+    // Refus de Nova aussi (examen déjà commencé) : dit, plutôt que rien (2026-11-08).
+    if (f.getAttribute('data-refus')) {
+      var r = document.createElement('p');
+      r.className = 'nova-forcer-ligne nova-forcer-refus';
+      r.textContent = f.getAttribute('data-refus');
+      placer(r);
+      return;
+    }
     var n = f.getAttribute('data-n');
     var b = document.createElement('button');
     b.type = 'button';
@@ -1879,9 +1892,7 @@
     var p = document.createElement('p');
     p.className = 'nova-forcer-ligne';
     p.appendChild(b);
-    var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
-    if (msg) msg.parentNode.insertBefore(p, msg.nextSibling);
-    else corps.insertBefore(p, corps.firstChild);
+    placer(p);
   }
 
   function dmNote() {

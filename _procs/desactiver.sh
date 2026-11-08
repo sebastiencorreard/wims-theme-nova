@@ -5,7 +5,9 @@
 # Le partage relie les classes par lien symbolique (scripts/adm/class/addshare) : un seul fichier pour toutes.
 # Réservé aux classes qui l'ont permis (2026-11-08, utilisateur) : --nova-desactivation-forcee: oui dans la feuille de
 # style de la classe ou, à défaut, de la structure la plus proche (log/classes/<c>/css ; la plus proche décide).
-# Refus de WIMS gardé (choix de l'utilisateur) : examen déjà commencé par un élève (comme adm/class/exam/var.proc).
+# Refus de WIMS gardé (choix de l'utilisateur) : examen déjà commencé par un élève (comme adm/class/exam/var.proc), cherché
+# aussi dans les classes du partage (sharable_exam de neighbors : les cours d'un programme de portail, où les élèves
+# travaillent ; vu le 2026-11-08, portail 1496713).
 # Contourné aussi (2026-11-08, utilisateur) : feuille dont des exercices sont dans un examen (signalé : « ok examen »).
 # Usage : desactiver.sh <wims_home> <classe> exam|sheet <numéro> [verifier]
 # Sortie : ok | ok examen | reglage (non permis) | statut (pas actif) | commence | erreur. « verifier » : rien n'est écrit.
@@ -30,13 +32,16 @@ done
 st=$(awk -v n="$N" '/^:/ { k++; if (k == n) { print substr($0, 2); exit } }' "$F")
 [ "$st" = 1 ] || { echo statut; exit; }
 if [ "$T" = exam ]; then
-  if [ -d noscore ]; then
-    for f in noscore/*; do
+  classes=". $(sed -n 's/^sharable_exam=//p' neighbors 2>/dev/null | tr ',' ' ')"
+  for c in $classes; do
+    case "$c" in .) d=. ;; *[!0-9/]*|'') continue ;; *) d="$H/log/classes/$c" ;; esac
+    [ -d "$d/noscore" ] || continue
+    for f in "$d"/noscore/*; do
       [ -f "$f" ] || continue
       [ "${f##*/}" = supervisor ] && continue
       if awk -v e="$N" 'length($1) == 18 && $3 == e { t = 1; exit } END { exit !t }' "$f"; then echo commence; exit; fi
     done
-  fi
+  done
 else
   dans=''
   for e in exams/.exam[0-9]*; do

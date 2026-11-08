@@ -448,6 +448,7 @@
 !set nova_desact_refus_reglage=Nothing was deactivated: deactivating despite sharing is not allowed in this class (Appearance page).
 !set nova_desact_refus_erreur=Nothing was deactivated (error).
 !set nova_forcer_point_examen=Exercises of this sheet are used in an exam: changing them also changes that exam, and its students' scores.
+!set nova_forcer_refus_commence=Nova cannot deactivate it either: students have already started this exam.
 !set nova_app_desact=Deactivate despite sharing
 !set nova_app_desact_aide=Adds a "Deactivate anyway..." button when WIMS refuses to deactivate an exam or sheet shared with other classes.
 !set nova_app_desact_danger=Dangerous: the exam or sheet is deactivated in every sharing class, and its content can be changed again; any change puts the recorded scores out of step, in all those classes. WIMS forbids it for these reasons. Only turn this on if you know what you are doing.

@@ -449,6 +449,7 @@
 !set nova_desact_refus_reglage=Rien n'a été désactivé : la désactivation malgré le partage n'est pas permise dans cette classe (page Apparence).
 !set nova_desact_refus_erreur=Rien n'a été désactivé (erreur).
 !set nova_forcer_point_examen=Des exercices de cette feuille sont utilisés dans un examen : les modifier change aussi cet examen, et les notes de ses élèves.
+!set nova_forcer_refus_commence=Nova ne peut pas le désactiver non plus : des élèves ont déjà commencé cet examen.
 !set nova_app_desact=Désactiver malgré le partage
 !set nova_app_desact_aide=Ajoute un bouton « Désactiver quand même... » quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes.
 !set nova_app_desact_danger=Dangereux : l'examen ou la feuille est désactivé dans toutes les classes du partage, et son contenu redevient modifiable ; un changement désaccorde les notes déjà enregistrées, dans toutes ces classes. WIMS l'interdit pour ces raisons. À n'activer qu'en connaissance de cause.

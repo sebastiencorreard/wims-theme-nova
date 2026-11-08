@@ -1140,3 +1140,4 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-dialogue.nova-forcer ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--nova-e2); }
 /* Réglage dangereux de la carte Apparence (« Désactiver malgré le partage », 2026-11-08) : avertissement en rouge. */
 .nova-app-ligne.nova-app-danger .nova-app-alerte { display: block; margin-top: var(--nova-e1); padding: var(--nova-e2) var(--nova-e3); border-left: 3px solid var(--nova-erreur); border-radius: 6px; background: var(--nova-erreur-fond); color: var(--nova-erreur); font-size: .8125rem; font-weight: 600; }
+.wimsbody .nova-forcer-refus { color: var(--nova-texte-2); font-size: var(--nova-petit); }

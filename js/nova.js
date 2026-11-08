@@ -2303,6 +2303,18 @@
       p.setAttribute('role', 'img');
       p.setAttribute('aria-label', texte('choix-' + etat, { juste: 'chosen, correct', faux: 'chosen, wrong', oublie: 'missed', pris: 'chosen' }[etat]));
       champ.appendChild(p);
+      // Choix « image » (figure, photo) : cadre collé à l'image. Une formule rendue en image par WIMS (formules en mode
+      // image, réglage de l'élève ou du site) reste un choix « texte » : petite image, de la hauteur d'une ligne
+      // (vu le 2026-11-08 : texte coupé par le cadre). Seuil : 40 px.
+      var imgs = [].slice.call(champ.querySelectorAll('img'));
+      var texteSeul = champ.textContent.replace(/\s+/g, '').length;
+      if (!imgs.length || texteSeul) return;
+      var classer = function () {
+        if (imgs.some(function (i) { return !i.complete; })) return;
+        if (imgs.some(function (i) { return Math.max(i.naturalHeight || 0, i.getBoundingClientRect().height) >= 40; })) champ.classList.add('nova-choix-image');
+      };
+      imgs.forEach(function (i) { if (!i.complete) i.addEventListener('load', classer); });
+      classer();
     });
     // Le verdict ne répète plus les choix (demande de l'utilisateur, 2026-11-08) : « il manque n réponses »,
     // « n réponses choisies à tort ».

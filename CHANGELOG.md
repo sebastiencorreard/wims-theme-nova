@@ -20,6 +20,9 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
 - Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
+### Corrections
+- Exercices à cases dont les choix sont des formules affichées en image : le cadre ne coupe plus la formule et la pastille ne la cache plus.
+
 ## 1.2 — 7 novembre 2026
 
 ### Élèves

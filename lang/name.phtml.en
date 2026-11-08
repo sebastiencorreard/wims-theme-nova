@@ -429,4 +429,9 @@
 !set nova_choix_a_torts=%1 answers chosen by mistake
 !set nova_choix_manque=%1 answer missing
 !set nova_choix_manques=%1 answers missing
+!set nova_dm_note=Create the graded homework
+!set nova_dm_note_aide=Copy of this exam, same exercises, %1 sessions, kept in preparation
+!set nova_dm_note_encours=Creating...
+!set nova_dm_note_mot=graded
+!set nova_dm_note_fait=Graded homework created: "%1". It stays in preparation: check it, then activate it.
 !set nova_version_lien=What is new in each version (new tab)

@@ -430,4 +430,9 @@
 !set nova_choix_a_torts=%1 réponses choisies à tort
 !set nova_choix_manque=il manque %1 réponse
 !set nova_choix_manques=il manque %1 réponses
+!set nova_dm_note=Créer le DM noté
+!set nova_dm_note_aide=Copie de cet examen, mêmes exercices, %1 sessions, laissée en préparation
+!set nova_dm_note_encours=Création...
+!set nova_dm_note_mot=noté
+!set nova_dm_note_fait=DM noté créé : « %1 ». Il reste en préparation : vérifiez-le, puis activez-le.
 !set nova_version_lien=Nouveautés de chaque version (nouvel onglet)

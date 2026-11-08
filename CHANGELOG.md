@@ -18,6 +18,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Fenêtre des badges : onglets en icône ; niveau « Cuivre » renommé « Bronze ».
 
 ### Enseignants
+- **DM WIMS** : bouton « Créer le DM noté » sur l'accueil, à côté d'un examen d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
 - Accueil : moteur de recherche sous les feuilles et les examens.
 - modtool : menu latéral personnalisable ; choix de la langue sur une ligne dépliable.
 - Rubrique **Badges Nova** accessible depuis le menu, réglages de chaque badge repliés ; paliers à 0 permis (pour tester).

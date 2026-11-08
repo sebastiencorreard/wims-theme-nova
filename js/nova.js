@@ -1815,6 +1815,130 @@
    * (b) En-têtes « Examen k » : titre de l'examen, lu dans la liste de choix de la page (option E<k>,
    *     « Examen k: titre ») ; « Examen k : titre » en info-bulle. Réglage « Textes du thème standard » : en-têtes
    *     d'origine. */
+  /* « Créer le DM noté » (demande de l'utilisateur, 2026-11-08 ; DM WIMS = examen d'entraînement + examen noté au même
+   * contenu, cf. badge Échauffement). Accueil de l'enseignant (#TABLE_supervisor_exam) : bouton dans la colonne Action
+   * d'un examen dont le titre porte un mot de --nova-echauffement-entrainement, s'il n'existe pas d'examen au même titre
+   * avec un mot de --nova-echauffement-note. Le clic lit la description du dernier DM noté (dernier examen « noté » dont
+   * un entraînement porte le même titre : fiche de l'examen, textarea desc), puis ouvre la duplication de WIMS
+   * (adm/class/exam, job=duplicate : copie « En préparation », sa fiche ouverte). Nova y remplit titre (mot
+   * d'entraînement remplacé par celui du dernier DM noté, sinon « noté »), description (celle du dernier DM noté, sinon
+   * celle de l'entraînement, mot remplacé), sessions (--nova-dm-note-essais, 3), et enregistre. La copie reste en
+   * préparation (choix de l'utilisateur). Plan gardé en sessionStorage (nova-dm-note) deux minutes. */
+  function dmNote() {
+    var textes = document.getElementById('nova-textes');
+    var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-texte-' + cle)) || defaut; };
+    var lireSS = function (k) { try { return JSON.parse(sessionStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+    var ecrireSS = function (k, v) { try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+    var plat = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
+    var cs = getComputedStyle(document.documentElement);
+    var mots = function (v, defaut) { return (cs.getPropertyValue(v).replace(/["']/g, '').trim() || defaut).split(',').map(plat).filter(Boolean); };
+    var motsT = mots('--nova-echauffement-entrainement', 'entrainement, practice, training');
+    var motsN = mots('--nova-echauffement-note', 'note, test, graded');
+    // Mot du titre (tel qu'écrit) qui appartient à la liste, et reste du titre (plat) sans lui.
+    var role = function (titre, liste) {
+      var mot = null;
+      (titre.match(/[\p{L}\p{N}]+/gu) || []).some(function (m) { if (liste.indexOf(plat(m)) >= 0) { mot = m; return true; } return false; });
+      if (!mot) return null;
+      var reste = (' ' + plat(titre) + ' ').replace(' ' + plat(mot) + ' ', ' ').trim();
+      return { mot: mot, reste: reste };
+    };
+    var remplacer = function (t, mot, par) {
+      return t.replace(/[\p{L}\p{N}]+/gu, function (m) { return plat(m) === plat(mot) ? par : m; });
+    };
+
+    // 3. Page qui suit l'enregistrement : message.
+    var fait = lireSS('nova-dm-note-fait');
+    if (fait && Date.now() - fait.quand < 120000) {
+      ecrireSS('nova-dm-note-fait', null);
+      var corps = document.querySelector('.wimsbody');
+      if (corps) {
+        var msg = document.createElement('p');
+        msg.className = 'wims_msg success nova-dm-note-fait';
+        msg.setAttribute('role', 'status');
+        msg.textContent = texte('dm-note-fait', 'Graded homework created: \u00ab %1 \u00bb. It stays in preparation: check it, then activate it.').replace('%1', fait.titre);
+        var h = corps.querySelector('h1');
+        if (h) h.parentNode.insertBefore(msg, h.nextSibling); else corps.insertBefore(msg, corps.firstChild);
+      }
+    }
+
+    // 2. Fiche de la copie (adm/class/exam après job=duplicate) : remplir et enregistrer.
+    var plan = lireSS('nova-dm-note');
+    var titreChamp = document.querySelector('.wimsbody form input[name="title"]');
+    if (plan && titreChamp) {
+      ecrireSS('nova-dm-note', null);
+      var form = titreChamp.form;
+      var essais = form.querySelector('input[name="tries"]');
+      var desc = form.querySelector('textarea[name="desc"]');
+      var enregistrer = form.querySelector('input[type="submit"][name="save"]');
+      // Garde-fous : plan récent, copie en préparation (sessions modifiables), titre encore celui de l'entraînement.
+      if (Date.now() - plan.quand > 120000 || !essais || essais.readOnly || !enregistrer || titreChamp.value.trim() !== plan.source.trim()) return;
+      titreChamp.value = plan.titre;
+      essais.value = plan.essais;
+      var description = plan.desc !== null ? plan.desc : (desc ? remplacer(desc.value, plan.motT, plan.motN) : null);
+      var envoyer = function () {
+        if (desc && description !== null) {
+          desc.value = description;
+          var ed = window.tinymce && window.tinymce.get && window.tinymce.get(desc.id);
+          if (ed) ed.setContent(description);
+        }
+        ecrireSS('nova-dm-note-fait', { titre: plan.titre, quand: Date.now() });
+        if (form.requestSubmit) form.requestSubmit(enregistrer); else enregistrer.click();
+      };
+      // L'éditeur de WIMS (TinyMCE) recopie son contenu dans le textarea à l'envoi : attendre qu'il soit prêt (3 s au plus).
+      var n = 0;
+      var attendre = function () {
+        var ed = desc && window.tinymce && window.tinymce.get && window.tinymce.get(desc.id);
+        if ((ed && ed.initialized) || !window.tinymce || ++n > 30) envoyer(); else setTimeout(attendre, 100);
+      };
+      if (document.readyState === 'complete') attendre(); else window.addEventListener('load', attendre);
+      return;
+    }
+
+    // 1. Accueil de l'enseignant : boutons.
+    var table = document.getElementById('TABLE_supervisor_exam');
+    if (!table || table.querySelector('.nova-dm-note')) return;
+    var examens = [];
+    Array.prototype.forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
+      var a = tr.querySelector('a[href*="module=adm%2Fclass%2Fexam"][href*="exam="]:not([href*="job="])');
+      var m = a && /[?&+]exam=(\d+)/.exec(a.getAttribute('href'));
+      if (!m) return;
+      var titre = a.textContent.replace(/\s+/g, ' ').trim();
+      examens.push({ n: +m[1], titre: titre, lien: a.href, action: tr.lastElementChild, t: role(titre, motsT), note: role(titre, motsN) });
+    });
+    var restesT = {}, restesN = {};
+    examens.forEach(function (e) { if (e.t) restesT[e.t.reste] = true; else if (e.note) restesN[e.note.reste] = true; });
+    // Dernier DM noté : le plus grand numéro parmi les « notés » qui ont leur entraînement.
+    var modele = examens.filter(function (e) { return !e.t && e.note && restesT[e.note.reste]; }).sort(function (x, y) { return y.n - x.n; })[0] || null;
+    examens.forEach(function (e) {
+      if (!e.t || restesN[e.t.reste] || !e.action) return;
+      var b = document.createElement('a');
+      b.className = 'wims_button nova-dm-note';
+      b.setAttribute('role', 'button');
+      b.textContent = texte('dm-note', 'Create the graded homework');
+      b.title = texte('dm-note-aide', 'Copy of this exam with the same exercises, %1 sessions, kept in preparation').replace('%1', 3);
+      b.href = e.lien + '&+cmd=new&+job=duplicate';
+      b.addEventListener('click', function (ev) {
+        var motN = modele ? modele.note.mot : texte('dm-note-mot', 'graded');
+        var essaisN = parseInt(cs.getPropertyValue('--nova-dm-note-essais').replace(/["']/g, ''), 10) || 3;
+        var p = { source: e.titre, titre: remplacer(e.titre, e.t.mot, motN), motT: e.t.mot, motN: motN, essais: essaisN, desc: null, quand: Date.now() };
+        if (!ecrireSS('nova-dm-note', p)) return;   // sans stockage : la duplication de WIMS seule
+        ev.preventDefault();
+        b.classList.add('disabled');
+        b.setAttribute('aria-disabled', 'true');
+        b.textContent = texte('dm-note-encours', 'Creating\u2026');
+        var suite = function () { setTimeout(function () { location.href = b.href; }, 1500); };   // 2 requêtes à < 1 s : la 2e est mal servie
+        if (!modele) { suite(); return; }
+        fetch(modele.lien, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+          var html = new TextDecoder('windows-1252').decode(buf);
+          var d = new DOMParser().parseFromString(html, 'text/html').querySelector('textarea[name="desc"]');
+          if (d) { p.desc = d.value; ecrireSS('nova-dm-note', p); }
+        }).catch(function () { /* description de l'entraînement */ }).then(suite);
+      });
+      e.action.appendChild(document.createTextNode(' '));
+      e.action.appendChild(b);
+    });
+  }
+
   function notesColonnes() {
     var mm = document.querySelector('meta[name="nova-module"]');
     var table = document.getElementById('TABLE_userlist');
@@ -4825,7 +4949,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

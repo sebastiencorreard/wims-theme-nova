@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 ## 1.2 — 7 novembre 2026
 
 ### Élèves
+- **Exercices à cases** : sur la page de réponse, chaque choix est marqué dans l'énoncé (✓ juste, ✕ coché à tort, ! en pointillé s'il fallait le cocher) ; l'encadré dit « il manque 1 réponse » au lieu de répéter toutes les réponses.
 - **Avatar personnalisable** (Avataaars) : l'élève gagne des pièces en réussissant des exercices et les dépense pour débloquer des éléments ; certains sont réservés à des niveaux de badges. Compteur de pièces dans la barre. Vu seulement par l'élève et ses enseignants. Désactivé par défaut.
 - **Ma couleur** (menu Profil) : une couleur d'interface parmi 10, puis un dégradé parmi 8 (barre, boutons, titres des fenêtres), débloqués par un niveau de badge choisi par l'enseignant.
 - **Badge Échauffement** : récompense l'élève qui fait les sessions de l'examen d'entraînement avant d'ouvrir le DM noté.
@@ -29,6 +30,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Le dossier du thème peut porter un autre nom : deux versions côte à côte possibles (pas de point dans le nom).
 
 ### Corrections
+- Réponse fausse à un exercice à cases : les choix justes ne sont plus entourés de rouge.
 - Exercice chronométré : le bandeau « Temps écoulé » dit que la note baisse avec le retard (ou vaut 0).
 - La note des examens ne disparaît plus des cartes au bout de quelques jours.
 - Configuration d'une feuille : boutons radio et ligne Date / Poids / Règle de calcul remis en forme.

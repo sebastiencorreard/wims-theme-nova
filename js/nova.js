@@ -2037,15 +2037,77 @@
     if (!lignes.length || (inconnues && !conditions)) { reponse.classList.add('nova-retour-pret'); noteSeule(reponse); return; }
 
     // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
+    var renvoiDe = function (el) { var r = el.nextElementSibling; return r && r.tagName === 'SUP' ? r.textContent.trim() : ''; };
     document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
       var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
       if (!m) return;
-      var renvoi = champ.nextElementSibling;
-      var nom = renvoi && renvoi.tagName === 'SUP' ? renvoi.textContent.trim() : '';
+      var nom = renvoiDe(champ);
       var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
-      var etat = ligne ? ligne.etat : { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[1]];
       if (ligne) ligne.champs.push(champ);
-      if (etat === 'mauvaise') champ.classList.add('nova-faux');
+      else if (m[1] === 'bad') champ.classList.add('nova-faux');
+    });
+    // Réponses à choix (cases à cocher, mots à marquer, choix unique réaffichés en liste : scripts/oef/embed.phtml ;
+    // variante A choisie par l'utilisateur le 2026-11-08) : chaque choix est marqué dans l'énoncé — cadre et
+    // pastille ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié : oef_indforget), choix non retenus
+    // pâlis ; sans bonne réponse montrée (presentgood=0), seulement « choisi », en couleur d'accent. Une ligne est
+    // « à choix » si elle a plusieurs champs, ou si des choix non retenus (sans renvoi) sont à côté de son champ.
+    // Réponse partiellement juste : WIMS marque tous les choix « partial » ; le bon est retrouvé dans sa liste
+    // « la bonne réponse est … » (même image, ou même texte).
+    var nonRetenus = Array.prototype.filter.call(document.querySelectorAll('.oefstatement div.inline[class*="oef_"]'), function (d) {
+      return /\boef_(indforget|indneutral|empty)\b/.test(d.className) && !renvoiDe(d);
+    });
+    var voisin = function (champ) {
+      var zone = champ.parentElement && champ.parentElement.parentElement;
+      return zone && nonRetenus.some(function (d) { return zone.contains(d); });
+    };
+    var cleChoix = function (el) {
+      var img = el.querySelector('img');
+      return img ? 'img:' + img.getAttribute('src') : 'txt:' + el.textContent.replace(/\s+/g, ' ').trim();
+    };
+    var oublies = 0, aTort = 0, choixVus = false;
+    lignes.forEach(function (ligne) {
+      if (!ligne.champs.length || !(ligne.champs.length > 1 || ligne.champs.some(voisin))) return;
+      ligne.choix = true;
+      choixVus = true;
+      var bons = null;
+      if (ligne.juste) {
+        bons = {};
+        Array.prototype.forEach.call(ligne.juste.querySelectorAll('img'), function (i) { bons['img:' + i.getAttribute('src')] = true; });
+        ligne.juste.textContent.split(',').forEach(function (t) { t = t.replace(/\s+/g, ' ').trim(); if (t) bons['txt:' + t] = true; });
+      }
+      ligne.champs.forEach(function (champ) {
+        var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
+        var etat = m[1] === 'good' ? 'juste' : m[1] === 'bad' ? 'faux' : 'pris';
+        if (etat === 'pris' && m[1] !== 'neutral' && bons) etat = bons[cleChoix(champ)] ? 'juste' : 'faux';
+        if (etat === 'faux') aTort++;
+        champ.classList.add('nova-choix', 'nova-choix-' + etat);
+      });
+    });
+    if (choixVus) nonRetenus.forEach(function (d) {
+      if (/\boef_indforget\b/.test(d.className)) { d.classList.add('nova-choix', 'nova-choix-oublie'); oublies++; }
+      else if (/\boef_indneutral\b/.test(d.className)) d.classList.add('nova-choix-neutre');
+    });
+    // Pastilles et noms des états, pour les lecteurs d'écran (pastille dessinée en CSS).
+    document.querySelectorAll('.oefstatement .nova-choix').forEach(function (champ) {
+      var etat = /nova-choix-(juste|faux|oublie|pris)/.exec(champ.className)[1];
+      var p = document.createElement('span');
+      p.className = 'nova-choix-pastille';
+      p.setAttribute('role', 'img');
+      p.setAttribute('aria-label', texte('choix-' + etat, { juste: 'chosen, correct', faux: 'chosen, wrong', oublie: 'missed', pris: 'chosen' }[etat]));
+      champ.appendChild(p);
+    });
+    // Le verdict ne répète plus les choix (demande de l'utilisateur, 2026-11-08) : « il manque n réponses »,
+    // « n réponses choisies à tort ».
+    var pluriel = function (n, cle, un, plusieurs) { return texte(cle + (n > 1 ? 's' : ''), n > 1 ? plusieurs : un).replace('%1', n); };
+    lignes.forEach(function (ligne) {
+      if (!ligne.choix || !ligne.juste || ligne.etat === 'bonne') return;
+      var r = [];
+      if (aTort) r.push(pluriel(aTort, 'choix-a-tort', '%1 answer chosen by mistake', '%1 answers chosen by mistake'));
+      if (oublies) r.push(pluriel(oublies, 'choix-manque', '%1 answer missing', '%1 answers missing'));
+      if (r.length) { ligne.resume = r.join(', '); ligne.juste = null; }
+    });
+    lignes.forEach(function (ligne) {
+      if (ligne.etat === 'mauvaise' && !ligne.choix) ligne.champs.forEach(function (champ) { champ.classList.add('nova-faux'); });
     });
 
     var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
@@ -2068,6 +2130,7 @@
     };
     // « …, la bonne réponse était X » : la bonne réponse de WIMS est déplacée (MathJax compris).
     var completer = function (el, ligne) {
+      if (ligne.resume) el.appendChild(document.createTextNode(', ' + ligne.resume));
       if (!ligne.juste) return;
       el.appendChild(document.createTextNode(', ' + texte('bonne-etait', 'the correct answer was') + ' '));
       ligne.juste.classList.add('nova-verdict-juste');
@@ -2138,7 +2201,8 @@
           contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' \u2192 ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
           ligne.juste.classList.add('nova-verdict-juste');
           contenu.appendChild(ligne.juste);
-        } else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
+        } else if (ligne.resume) contenu.appendChild(document.createTextNode(' \u2192 ' + ligne.resume));
+        else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
         listeRevoir.appendChild(li);
       });
       corps.appendChild(colonnes);

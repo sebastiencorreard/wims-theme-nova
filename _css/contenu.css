@@ -905,3 +905,25 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 .wimsbody #TABLE_userlist .nova-col-masquee { display: none; }
 .wimsbody #TABLE_userlist th.name_exam .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; white-space: normal; overflow-wrap: anywhere; }
 .wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); }
+/* Réponses à choix marquées dans l'énoncé (nova.js retourReponse, variante A, 2026-11-08) : cadre et pastille
+ * ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié), accent (choisi, sans bonne réponse montrée) ;
+ * choix non retenus pâlis. Le [k] de WIMS est inutile à côté. */
+.oefstatement .nova-choix { position: relative; display: inline-block; border: 3px solid var(--nova-bord-fort); border-radius: 10px; padding: 2px 6px; background: var(--nova-surface); }
+.oefstatement .nova-choix:has(img) { padding: 0; line-height: 0; }
+.oefstatement .nova-choix:has(img) img { border-radius: 7px; }
+.oefstatement .nova-choix + sup { display: none; }
+.oefstatement .nova-choix-juste { border-color: var(--nova-succes); }
+.oefstatement .nova-choix-faux { border-color: var(--nova-erreur); }
+.oefstatement .nova-choix-oublie { border-style: dashed; border-color: var(--nova-attention); }
+.oefstatement .nova-choix-pris { border-color: var(--nova-accent); }
+.oefstatement .nova-choix-neutre { opacity: .55; }
+.oefstatement .nova-choix-pastille { position: absolute; top: -10px; right: -10px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 14px/1 var(--nova-police, inherit); box-shadow: 0 0 0 2px var(--nova-surface); }
+.oefstatement .nova-choix:not(:has(img)) .nova-choix-pastille { top: -9px; right: -9px; width: 18px; height: 18px; font-size: 11px; }
+.oefstatement .nova-choix-juste .nova-choix-pastille { background: var(--nova-succes); }
+.oefstatement .nova-choix-juste .nova-choix-pastille::before { content: "\2713"; }
+.oefstatement .nova-choix-faux .nova-choix-pastille { background: var(--nova-erreur); }
+.oefstatement .nova-choix-faux .nova-choix-pastille::before { content: "\2715"; }
+.oefstatement .nova-choix-oublie .nova-choix-pastille { background: var(--nova-attention); }
+.oefstatement .nova-choix-oublie .nova-choix-pastille::before { content: "!"; }
+.oefstatement .nova-choix-pris .nova-choix-pastille { background: var(--nova-accent); }
+.oefstatement .nova-choix-pris .nova-choix-pastille::before { content: "\2022"; }

@@ -464,7 +464,11 @@
 !set nova_rg_dm=WIMS homework
 !set nova_rg_badges=Badges and rewards
 !set nova_rg_avances=Advanced settings
-!set nova_rg_dm_aide=A WIMS homework is a practice exam (many sessions) and a graded exam (few sessions) with the same content. These settings are used by the "Create the graded homework" button of the home page and by the Warm-up and Top badges. Accents and capitals are ignored.
+!set nova_rg_dm_aide=A WIMS homework is a practice exam (many sessions) and a graded exam (few sessions) with the same content. Nova recognizes them by their title. Accents and capitals are ignored.
+!set nova_rg_dm_usage=These settings are used by:
+!set nova_rg_dm_usage1=<strong>"Create the graded homework"</strong>: button on your home page, next to a practice homework that has no graded homework yet; it makes a copy "In preparation", titled with a graded keyword and set to the number of sessions below.
+!set nova_rg_dm_usage2=<strong>Warm-up badge</strong>: a homework counts when the student has done enough complete practice sessions before opening the graded one.
+!set nova_rg_dm_usage3=<strong>Top badge</strong>: graded homework passed (kept score at least the badge threshold).
 !set nova_rg_dm_mots=Keywords of a WIMS homework
 !set nova_rg_dm_mots_aide=Required: the title of a WIMS homework, practice or graded, contains one of these words, possibly followed by a number (DMWIMS03).
 !set nova_rg_dm_note=Keywords of a graded homework

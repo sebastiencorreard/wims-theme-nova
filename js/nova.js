@@ -1881,6 +1881,14 @@
     ok.className = 'wims_button wims_warning';
     ok.setAttribute('role', 'button');
     ok.href = lienAccueil('&nova_desactiver=' + f.getAttribute('data-type') + ':' + n);
+    // Sans passer par l'accueil (2026-11-09) : retour à la page de l'examen ou de la feuille, avec le message.
+    ok.addEventListener('click', function (e) {
+      e.preventDefault();
+      ok.setAttribute('aria-disabled', 'true');
+      ok.classList.add('disabled');
+      var t = f.getAttribute('data-type');
+      actionAccueil('&nova_desactiver=' + t + ':' + n, lienSession('&cmd=new&module=adm%2Fclass%2F' + t + '&' + t + '=' + n));
+    });
     ok.textContent = f.getAttribute('data-ok') || 'Deactivate anyway';
     actions.appendChild(annuler);
     actions.appendChild(ok);
@@ -4036,6 +4044,38 @@
     }
     return 'wims.cgi?session=' + encodeURIComponent(session) + '&lang=' + encodeURIComponent(racineLangue()) + '&module=home' + suite;
   }
+  // Lien de la session vers un autre module (cmd=new : valable depuis n'importe quelle page ; 2026-11-09).
+  function lienSession(suite) { return lienAccueil('').replace('&module=home', '') + suite; }
+
+  /* Action faite sur l'accueil (module de confiance) SANS y aller (2026-11-09, utilisateur : « je me retrouve sur la page
+   * de mon portail ») : requête en arrière-plan, message de #nova-propage gardé pour la page suivante (messageReporte),
+   * puis page de retour, ouverte par cmd=new (après une requête à l'accueil, les liens cmd=reply de la page ne valent
+   * plus) et au moins 1,5 s après (deux requêtes à moins d'1 s : la seconde est mal servie). Sans fetch : l'accueil. */
+  function actionAccueil(suite, retour) {
+    var accueil = lienAccueil(suite);
+    if (!window.fetch || !window.TextDecoder) { location.href = accueil; return; }
+    var debut = Date.now();
+    fetch(accueil, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+      var html = new TextDecoder('windows-1252').decode(buf);
+      var m = new DOMParser().parseFromString(html, 'text/html').getElementById('nova-propage');
+      if (m && m.textContent.trim()) {
+        try { sessionStorage.setItem('nova-message', JSON.stringify({ texte: m.textContent.trim(), etat: m.getAttribute('data-etat') || '', quand: Date.now() })); } catch (e) { /* message perdu */ }
+      }
+      setTimeout(function () { location.href = retour; }, Math.max(0, 1500 - (Date.now() - debut)));
+    }).catch(function () { location.href = accueil; });
+  }
+  // Message d'une action faite en arrière-plan (actionAccueil), en tête de la page de retour.
+  function messageReporte() {
+    var v = null;
+    try { v = JSON.parse(sessionStorage.getItem('nova-message') || 'null'); sessionStorage.removeItem('nova-message'); } catch (e) { v = null; }
+    var corps = document.querySelector('.wimsbody');
+    if (!v || !v.texte || Date.now() - v.quand > 60000 || !corps) return;
+    var msg = document.createElement('div');
+    msg.className = 'wims_msg ' + (v.etat === 'erreur' ? 'alert' : 'success');
+    msg.setAttribute('role', 'status');
+    msg.textContent = v.texte;
+    corps.insertBefore(msg, corps.firstChild);
+  }
 
   /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : cases « Apparence du thème
    * Nova » et « Badges Nova » (séparées le 2026-11-07, utilisateur) ajoutées à la liste de WIMS. Cochées, l'envoi envoie
@@ -4071,18 +4111,17 @@
     form.addEventListener('submit', function (e) {
       var choisies = nova.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
       if (!choisies.length) return;
-      e.preventDefault();
-      var accueil = lienAccueil('&nova_propager=' + (choisies.length > 1 ? 'tout' : choisies[0]));
-      var suite = function () { location.href = accueil; };
-      if (![].some.call(cases, function (c) { return c.checked; })) { suite(); return; }
-      var donnees = new FormData(form);
-      var bouton = form.querySelector('input[type="submit"][name="confirm"]');
-      if (bouton) donnees.append('confirm', bouton.value);
-      var methode = (form.getAttribute('method') || 'get').toLowerCase();
-      var cible = form.getAttribute('action') || location.pathname;
-      var envoi = methode === 'post' ? fetch(cible, { method: 'POST', body: donnees, credentials: 'same-origin' })
-        : fetch(cible + (cible.indexOf('?') < 0 ? '?' : '&') + new URLSearchParams(donnees).toString(), { credentials: 'same-origin' });
-      envoi.then(suite, suite);
+      // Propagation faite par header.phtml dans la requête même du formulaire (2026-11-09 ; avant : par l'accueil, où
+      // l'enseignant restait) : paramètre dans l'adresse (lue par QUERY_STRING), le formulaire part normalement.
+      var p = 'nova_propager=' + (choisies.length > 1 ? 'tout' : choisies[0]);
+      if ((form.getAttribute('method') || 'get').toLowerCase() === 'post') {
+        var cible = (form.getAttribute('action') || 'wims.cgi').replace(/[?&]nova_propager=[a-z]+/, '');
+        form.setAttribute('action', cible + (cible.indexOf('?') < 0 ? '?' : '&') + p);
+      } else {
+        var cache = form.querySelector('input[name="nova_propager"]') || document.createElement('input');
+        cache.type = 'hidden'; cache.name = 'nova_propager'; cache.value = p.split('=')[1];
+        form.appendChild(cache);
+      }
     });
   }
 
@@ -4127,7 +4166,9 @@
       alerte.appendChild(details);
       var actions = el('p', 'nova-ecarts-actions');
       var appliquer = el('a', 'wims_button', t('appliquer'));
-      appliquer.href = lienAccueil('&nova_propager=' + partie);
+      // Propagation faite par header.phtml sur la page même (2026-11-09) : lien de la rubrique + nova_propager.
+      var rubrique = document.querySelector('#wimsmenumodubox .nova_reglages > a');
+      appliquer.href = rubrique ? rubrique.href.split('#')[0] + '&nova_propager=' + partie + '#nova-reglages' : lienAccueil('&nova_propager=' + partie);
       var plusTard = el('button', 'nova-ecarts-plus-tard wims_button wims_secondary_button', t('plus-tard'));
       plusTard.type = 'button';
       plusTard.addEventListener('click', function () { alerte.remove(); });
@@ -5232,7 +5273,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

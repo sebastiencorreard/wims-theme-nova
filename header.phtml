@@ -82,7 +82,9 @@
 !! structure seulement (types 2, 3, 4, comme propagate.proc) ; _procs/propager.sh recopie les blocs Nova de sa feuille
 !! dans celles des zones. Message affiche par nova.js (#nova-propage). 2026-11-07 (utilisateur) : apparence et badges
 !! separes : nova_propager=apparence, badges ou tout (1 = tout, ancien lien).
-!if $module=home and $wims_user=supervisor and $wims_class!=$empty
+!! 2026-11-09 (utilisateur) : aussi sur adm/class/config (page Reglages de Nova, Zones dependantes), ou l'enseignant
+!! reste : propager.sh n'ecrit que par !sh, permis la aussi. L'accueil reste accepte (anciens liens).
+!if ($module=home or $module=adm/class/config) and $wims_user=supervisor and $wims_class!=$empty
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
   !set nova_q=!replace internal + by $ $ in $nova_q

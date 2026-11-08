@@ -21,6 +21,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ### Corrections
+- « Appliquer » (zones dépendantes), la case Nova de « Zones dépendantes » et « Désactiver quand même » ne renvoient plus à l'accueil du portail : on reste sur la page (ou on revient à l'examen, à la feuille), avec le message.
 - Après « Enregistrer les réglages de Nova », on reste sur la page des réglages (même onglet), avec « Réglages de Nova enregistrés », au lieu d'arriver sur la page Apparence.
 - Exercices à cases dont les choix sont des formules affichées en image : le cadre ne coupe plus la formule et la pastille ne la cache plus.
 

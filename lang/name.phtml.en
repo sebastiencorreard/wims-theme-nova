@@ -488,3 +488,4 @@
 !set nova_coul_recompense_deg2=At level %s: gradients, once your colour is unlocked.
 !set nova_coul_verrou_degrade2=Reach level %s of the %b badge for gradients (after the colour).
 !set nova_tag_nouveau=New
+!set nova_rg_enregistre=Nova settings saved.

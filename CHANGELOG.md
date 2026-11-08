@@ -21,6 +21,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ### Corrections
+- Après « Enregistrer les réglages de Nova », on reste sur la page des réglages (même onglet), avec « Réglages de Nova enregistrés », au lieu d'arriver sur la page Apparence.
 - Exercices à cases dont les choix sont des formules affichées en image : le cadre ne coupe plus la formule et la pastille ne la cache plus.
 
 ## 1.2 — 7 novembre 2026

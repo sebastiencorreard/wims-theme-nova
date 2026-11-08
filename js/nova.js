@@ -3060,6 +3060,16 @@
     }
     formWims.parentNode.insertBefore(modele.content.cloneNode(true), formWims);
     var carte = formWims.previousElementSibling;
+    // Retour d'un enregistrement (script de tête) : ancre remise sans recharger, message.
+    if (racine.classList.contains('nova-reglages-retour')) {
+      try { sessionStorage.removeItem('nova-reglages-enregistre'); } catch (e) { /* rien */ }
+      try { history.replaceState(null, '', location.href.split('#')[0] + '#nova-reglages'); } catch (e) { /* adresse gardée */ }
+      var ok = document.createElement('p');
+      ok.className = 'wims_msg success nova-rg-enregistre';
+      ok.setAttribute('role', 'status');
+      ok.textContent = modele.getAttribute('data-enregistre') || 'Saved.';
+      carte.insertBefore(ok, carte.firstChild);
+    }
     var nom = modele.getAttribute('data-titre');
     var titre = document.querySelector('.wimsbody h1.wims_title');
     if (titre) titre.textContent = nom;
@@ -3095,6 +3105,7 @@
       if ((!actDetail || activiteOui()) && app.erreurs()) { onglets.montrer('eleves'); app.montrer(); return; }   // dates non comprises : rien d'envoyé
       if (app.touche()) app.ecrire();
       if (bdg.touche()) bdg.ecrire();
+      try { sessionStorage.setItem('nova-reglages-enregistre', JSON.stringify({ quand: Date.now() })); } catch (e) { /* page Apparence au retour */ }
       envoi.click();
     });
     racine.classList.add('nova-reglages-prete');

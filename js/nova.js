@@ -1903,8 +1903,14 @@
     var plat = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
     var cs = getComputedStyle(document.documentElement);
     var mots = function (v, defaut) { return (cs.getPropertyValue(v).replace(/["']/g, '').trim() || defaut).split(',').map(plat).filter(Boolean); };
-    var motsT = mots('--nova-echauffement-entrainement', 'entrainement, practice, training');
-    var motsN = mots('--nova-echauffement-note', 'note, test, graded');
+    var motsT = mots('--nova-echauffement-entrainement', 'entrainement');
+    var motsN = mots('--nova-echauffement-note', 'note, test');
+    // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
+    var motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
+    var estDM = function (titre) {
+      var p = ' ' + plat(titre) + ' ';
+      return motsD.some(function (d) { return new RegExp(' ' + d + '[0-9]* ').test(p); });
+    };
     // Mot du titre (tel qu'écrit) qui appartient à la liste, et reste du titre (plat) sans lui.
     var role = function (titre, liste) {
       var mot = null;
@@ -1974,7 +1980,8 @@
       var m = a && /[?&+]exam=(\d+)/.exec(a.getAttribute('href'));
       if (!m) return;
       var titre = a.textContent.replace(/\s+/g, ' ').trim();
-      examens.push({ n: +m[1], titre: titre, lien: a.href, action: tr.lastElementChild, t: role(titre, motsT), note: role(titre, motsN) });
+      var dm = estDM(titre);
+      examens.push({ n: +m[1], titre: titre, lien: a.href, action: tr.lastElementChild, t: dm ? role(titre, motsT) : null, note: dm ? role(titre, motsN) : null });
     });
     var restesT = {}, restesN = {};
     examens.forEach(function (e) { if (e.t) restesT[e.t.reste] = true; else if (e.note) restesN[e.note.reste] = true; });
@@ -2993,17 +3000,79 @@
    * feuille de style de la classe (#pr_cssfile), en un bloc « html:root { --nova-… } » (pas de « : » en début
    * de ligne : WIMS lit cette feuille par !record, qui y couperait), enregistré par le bouton de WIMS. La zone
    * reçoit d'abord la feuille complète (#nova-css-classe-complete) : WIMS la tronque au premier « :root ». */
+  /* Page « Réglages de Nova » (demande de l'utilisateur, 2026-11-08, maquette B : onglets) : rubrique de la configuration
+   * d'une classe, d'un groupement ou d'un portail (local.phtml, rubriqueReglages). C'est la page Apparence de WIMS
+   * (job=present#nova-reglages, html.nova-page-reglages posée par le script de tête), dont le formulaire est masqué : il
+   * sert à enregistrer la feuille de style (#pr_cssfile, WIMS : scripts/setdefr.proc). Deux blocs, propagés à part :
+   * « Nova : reglages de la page Apparence » (champs nova_c_…, reglagesApparence) et « Nova : badges » (champs data-cle,
+   * DM WIMS compris, reglagesBadges). Chaque bloc n'est réécrit que si l'un de ses champs a changé : sinon la classe
+   * garderait toutes les valeurs en dur et ne suivrait plus le portail ou le site (vu le 2026-10-09).
+   * Sur la page Apparence elle-même : réglages de WIMS seulement, et un lien vers cette page. */
   function apparenceClasse() {
-    var modele = document.getElementById('nova-apparence-classe');
+    var racine = document.documentElement;
+    var modele = document.getElementById('nova-reglages-classe');
     var zone = document.getElementById('pr_cssfile');
-    if (!modele || !modele.content || !zone || !zone.form) return;
+    if (!modele || !modele.content || !zone || !zone.form) { racine.classList.remove('nova-page-reglages'); return; }
     var formWims = zone.form;
     var complet = document.getElementById('nova-css-classe-complete');
     var texteComplet = complet ? complet.textContent.trim() : '';
     if (texteComplet && zone.value.trim() !== texteComplet) zone.value = texteComplet;
-    var bloc = modele.content.cloneNode(true);
-    formWims.parentNode.insertBefore(bloc, formWims);
+    // Même adresse, autre ancre (lien de la page, menu) : le navigateur ne recharge pas. Recharger pour changer de page.
+    window.addEventListener('hashchange', function () {
+      if (/^#nova(-|%2D)(badges(-|%2D))?reglages$/i.test(location.hash) !== racine.classList.contains('nova-page-reglages')) location.reload();
+    });
+    if (!racine.classList.contains('nova-page-reglages')) {
+      var menu = document.querySelector('#wimsmenumodubox .nova_reglages > a');
+      var p = document.createElement('p');
+      p.className = 'wims_msg info nova-rg-lien';
+      p.appendChild(document.createTextNode(modele.getAttribute('data-lien') + ' '));
+      var a = document.createElement('a');
+      a.href = menu ? menu.href : location.href.split('#')[0] + '#nova-reglages';
+      a.textContent = modele.getAttribute('data-lien-texte');
+      p.appendChild(a);
+      formWims.parentNode.insertBefore(p, formWims);
+      pageApparence(formWims, modele);
+      var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
+      // « Transférer un fichier css » partage son cadre avec la zone de texte (où Nova écrit) : seul son
+      // paragraphe est replié (data-sans-effet-ligne ; demande de l'utilisateur, 2026-10-07).
+      var lignesSeules = (modele.getAttribute('data-sans-effet-ligne') || '').split(',').filter(Boolean);
+      replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); })
+        .concat(lignesSeules.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('p'); })), modele);
+      return;
+    }
+    formWims.parentNode.insertBefore(modele.content.cloneNode(true), formWims);
     var carte = formWims.previousElementSibling;
+    var nom = modele.getAttribute('data-titre');
+    var titre = document.querySelector('.wimsbody h1.wims_title');
+    if (titre) titre.textContent = nom;
+    document.title = nom;
+    // Fil d'Ariane : dernier élément (« * » sur la page Apparence de WIMS) au nom de la page.
+    var fil = document.querySelector('ul.breadcrumbs > li:last-child');
+    if (fil) {
+      var marche = document.createTreeWalker(fil, NodeFilter.SHOW_TEXT);
+      for (var mot = marche.nextNode(); mot; mot = marche.nextNode()) {
+        if (!mot.nodeValue.trim() || mot.parentNode.closest('.show-for-sr')) continue;
+        mot.nodeValue = nom;
+        break;
+      }
+    }
+    var app = reglagesApparence(carte, zone, modele);
+    var bdg = reglagesBadges(carte, zone);
+    motsCles(carte, modele);
+    var onglets = ongletsReglages(carte, nom);
+    var enregistrer = carte.querySelector('.nova-app-enregistrer');
+    var envoi = formWims.querySelector('input[name="save"]');
+    if (enregistrer && envoi) enregistrer.addEventListener('click', function () {
+      if (app.erreurs()) { onglets.montrer('eleves'); app.montrer(); return; }   // dates non comprises : rien d'envoyé
+      if (app.touche()) app.ecrire();
+      if (bdg.touche()) bdg.ecrire();
+      envoi.click();
+    });
+    racine.classList.add('nova-reglages-prete');
+  }
+
+  // Bloc « Nova : reglages de la page Apparence » : champs nova_c_… (affichage, élèves, interrupteur des badges, avancés).
+  function reglagesApparence(carte, zone, modele) {
     var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'desactivation-forcee'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
@@ -3060,28 +3129,9 @@
         .replace(/\s*--nova-vacances\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
-    // Bloc réécrit seulement si le prof a touché à la carte, ou si un bloc présent au chargement a disparu : sinon la
-    // classe garderait toutes les valeurs en dur et ne suivrait plus le portail ou le site (vu le 2026-10-09).
-    var touche = false, blocAuChargement = !!bloc();
-    carte.addEventListener('change', function () { touche = true; ecrire(); });
-    // Surcharge réécrite à la volée (demande de l'utilisateur, 2026-10-08) : zone de texte modifiée à la main, bloc
-    // Nova présent → la carte suit la zone ; bloc effacé (par inadvertance) → aussitôt réécrit d'après la carte.
-    // Et à l'enregistrement par le bouton de WIMS, dans les mêmes cas.
-    zone.addEventListener('change', function () { if (bloc()) lire(); else if (touche || blocAuChargement) ecrire(); });
-    formWims.addEventListener('submit', function (e) {
-      if (vac.erreurs()) { e.preventDefault(); vac.montrer(); return; }   // dates non comprises : rien d'envoyé
-      if (touche || (blocAuChargement && !bloc())) ecrire();
-    });
-    var enregistrer = carte.querySelector('.nova-app-enregistrer');
-    var envoi = formWims.querySelector('input[name="save"]');
-    if (enregistrer && envoi) enregistrer.addEventListener('click', function () { touche = true; ecrire(); envoi.click(); });
-    pageApparence(formWims, modele);
-    var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
-    // « Transférer un fichier css » partage son cadre avec la zone de texte (où Nova écrit) : seul son
-    // paragraphe est replié (data-sans-effet-ligne ; demande de l'utilisateur, 2026-10-07).
-    var lignesSeules = (modele.getAttribute('data-sans-effet-ligne') || '').split(',').filter(Boolean);
-    replierSansEffet(sans.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('.field, li'); })
-      .concat(lignesSeules.map(function (n) { var c = formWims.querySelector('[name="' + n + '"]'); return c && c.closest('p'); })), modele);
+    var touche = false;
+    carte.addEventListener('change', function (e) { if (/^nova_c_/.test(e.target.name || '')) touche = true; });
+    return { ecrire: ecrire, touche: function () { return touche; }, erreurs: vac.erreurs, montrer: vac.montrer };
   }
 
   /* Vacances de « Mon activité » (demande de l'utilisateur, 2026-11-07, maquette validée) : héritées (portail, groupement),
@@ -3182,45 +3232,16 @@
     return marque + '\nhtml:root {\n' + lignes.map(function (d) { return '  ' + d + ';'; }).join('\n') + '\n}';
   }
 
-  /* Page « Badges Nova » (demande de l'utilisateur, 2026-10-07) : rubrique de la configuration d'une classe,
-   * d'un groupement ou d'un portail (rubriqueBadges). C'est la page Apparence (job=present#nova-badges-reglages,
-   * repérée par le script de tête : html.nova-page-badges) : sa carte et le formulaire de WIMS sont masqués ;
-   * la carte « Badges Nova » (template#nova-badges-classe) écrit le bloc « Nova : badges » dans la feuille de
-   * style (#pr_cssfile), enregistrée par le bouton de WIMS. Badges proposés (--nova-badges-actifs), paliers de
-   * chaque badge, vacances ; vides = valeur héritée (portail, groupement, site). L'interrupteur général
-   * (--nova-badges) reste dans la carte Apparence. */
-  function badgesClasse() {
-    var racine = document.documentElement;
-    if (!racine.classList.contains('nova-page-badges')) return;
-    var modele = document.getElementById('nova-badges-classe');
-    var zone = document.getElementById('pr_cssfile');
-    if (!modele || !modele.content || !zone || !zone.form) { racine.classList.remove('nova-page-badges'); return; }
-    var formWims = zone.form;
-    var bloc = modele.content.cloneNode(true);
-    formWims.parentNode.insertBefore(bloc, formWims);
-    var carte = formWims.previousElementSibling;
-    var titre = document.querySelector('.wimsbody h1.wims_title');
-    if (titre) titre.textContent = modele.getAttribute('data-titre');
-    document.title = modele.getAttribute('data-titre');
-    // Fil d'Ariane : dernier élément (« * » sur la page Apparence de WIMS) au nom de la page.
-    var fil = document.querySelector('ul.breadcrumbs > li:last-child');
-    if (fil) {
-      var marche = document.createTreeWalker(fil, NodeFilter.SHOW_TEXT);
-      for (var mot = marche.nextNode(); mot; mot = marche.nextNode()) {
-        if (!mot.nodeValue.trim() || mot.parentNode.closest('.show-for-sr')) continue;
-        mot.nodeValue = modele.getAttribute('data-titre');
-        break;
-      }
-    }
-    // Badges (2026-10-07) : paliers et vacances de la feuille de la classe ; vides = valeur héritée (portail,
-    // groupement, site), montrée en exemple dans le champ.
+  /* Bloc « Nova : badges » (2026-10-07 ; page Réglages de Nova depuis le 2026-11-08) : badges proposés
+   * (--nova-badges-actifs), un champ par réglage nommé par data-cle (paliers, règles, couleur, avatar, DM WIMS) ; vide =
+   * valeur héritée (portail, groupement, site), montrée en exemple. L'interrupteur général (--nova-badges) est dans
+   * l'autre bloc. */
+  function reglagesBadges(carte, zone) {
     var valeur = function (texte, cle) {
       var m = new RegExp('--nova-' + cle + '\\s*:\\s*([^;}\\n]*)').exec(texte);
       return m ? m[1].trim().replace(/["']/g, '') : '';
     };
     var herite = getComputedStyle(document.documentElement);
-    // Champs des badges (paliers, exercices par semaine, règle de Persévérance, examens ; 2026-10-09) : un champ par
-    // réglage, nommé par data-cle ; vide = valeur héritée (portail, groupement, site), montrée en exemple.
     var champs = Array.prototype.slice.call(carte.querySelectorAll('[data-cle]'));
     champs.forEach(function (c) {
       var k = c.getAttribute('data-cle'), v = valeur(zone.value, k);
@@ -3234,13 +3255,6 @@
       }
       else { c.value = v; c.placeholder = h; }
     });
-    // Interrupteur général (page Apparence) : rappelé en tête, avec le lien.
-    var actif = valeur(zone.value, 'badges') || herite.getPropertyValue('--nova-badges').trim().replace(/["']/g, '');
-    var etat = carte.querySelector('.nova-bdg-etat-texte');
-    if (etat) etat.textContent = modele.getAttribute(actif === 'oui' ? 'data-etat-oui' : 'data-etat-non');
-    var lienApp = carte.querySelector('.nova-bdg-apparence');
-    if (lienApp) lienApp.href = location.href.split('#')[0];
-    if (lienApp) lienApp.addEventListener('click', function () { racine.classList.remove('nova-page-badges'); });
     // Badges proposés : liste de la feuille, sinon héritée, sinon tous.
     var proposes = (valeur(zone.value, 'badges-actifs') || herite.getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') || 'tous').split(/[\s,]+/);
     var cases = Array.prototype.slice.call(carte.querySelectorAll('.nova-bdg-actif'));
@@ -3252,6 +3266,9 @@
     };
     cases.forEach(function (c) { c.checked = proposes.indexOf('tous') >= 0 || proposes.indexOf(c.value) >= 0; c.addEventListener('change', suivre); });
     suivre();
+    var touche = false;
+    carte.addEventListener('change', function (e) { if (e.target.hasAttribute('data-cle') || e.target.classList.contains('nova-bdg-actif')) touche = true; });
+    carte.addEventListener('input', function (e) { if (e.target.hasAttribute('data-cle')) touche = true; });
     var marque = '/* Nova : badges */';
     var ecrire = function () {
       var choisis = cases.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
@@ -3260,7 +3277,7 @@
         var k = c.getAttribute('data-cle');
         if (c.type === 'checkbox') { decl += ' --nova-' + k + ': ' + (c.checked ? 'oui' : 'non') + ';'; return; }
         if (c.tagName === 'SELECT') { if (/^[a-z0-9]+$/.test(c.value)) decl += ' --nova-' + k + ': ' + c.value + ';'; return; }
-        // Listes de mots (titres des DM d'Échauffement, 2026-11-06) : lettres, chiffres, espaces, virgules.
+        // Listes de mots (mots-clés des DM WIMS, 2026-11-06 et 2026-11-08) : lettres, chiffres, espaces, virgules.
         if (c.classList.contains('nova-app-mots')) {
           var mots = c.value.split(',').map(function (m) { return m.replace(/[^0-9A-Za-z\u00c0-\u00ff' -]+/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean).join(', ');
           if (mots) decl += ' --nova-' + k + ': ' + mots + ';';
@@ -3269,56 +3286,179 @@
         var v = c.classList.contains('nova-app-paliers') ? (c.value.match(/\d+/g) || []).slice(0, 8).join(' ') : c.value.trim().replace(',', '.');
         if (v && (c.classList.contains('nova-app-paliers') || /^\d+(\.\d+)?$/.test(v))) decl += ' --nova-' + k + ': ' + v + ';';
       });
-      // Vacances (2026-11-07) : réglées sur la page Apparence (« Mon activité ») ; celles d'un ancien bloc des badges sont
-      // gardées telles quelles jusqu'au prochain enregistrement de la page Apparence, qui les reprend.
+      // Vacances d'un ancien bloc des badges : gardées telles quelles jusqu'au prochain enregistrement de l'autre bloc.
       var ancienBloc = /\/\* Nova : badges \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
       var vacAncienne = ancienBloc && /--nova-vacances\s*:\s*([^;}\n]*)/.exec(ancienBloc[1]);
       if (vacAncienne && vacAncienne[1].trim()) decl += ' --nova-vacances: ' + vacAncienne[1].trim() + ';';
       // Ancien bloc retiré, et ces réglages retirés des autres blocs (écrits là avant cette page).
       var reste = zone.value.replace(/\/\* Nova : badges \*\/\s*html:root\s*\{[^}]*\}\s*/g, '')
-        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+|avatar(-[a-z]+)*)\s*:[^;}]*;?/g, '').trim();
+        .replace(/\s*--nova-(badges-actifs|fidelite-[a-z]+|perseverance-[a-z]+|echauffement-[a-z]+|top-[a-z]+|couleur-[a-z]+|avatar(-[a-z]+)*|dm-[a-z-]+)\s*:[^;}]*;?/g, '').trim();
       zone.value = (reste ? reste + '\n\n' : '') + blocCss(marque, decl);
     };
-    var enregistrer = carte.querySelector('.nova-app-enregistrer');
-    var envoi = formWims.querySelector('input[name="save"]');
-    if (enregistrer && envoi) enregistrer.addEventListener('click', function () {
-      ecrire();
-      envoi.click();
-    });
-    racine.classList.add('nova-badges-prete');
+    return { ecrire: ecrire, touche: function () { return touche; } };
   }
 
-  // Rubrique « Badges Nova » dans la page Configuration et maintenance d'une classe, d'un groupement ou d'un
-  // portail, juste après « Apparence » (demande de l'utilisateur, 2026-10-07).
-  /* Page Apparence d'une classe : dans l'aide de l'interrupteur des badges, « Badges Nova » devient un lien vers la
-   * rubrique (adresse de l'entrée du menu, local.phtml ; demande de l'utilisateur, 2026-11-04). */
-  function lienRubriqueBadges() {
-    var aide = document.querySelector('#nova-app-c4 .nova-app-aide'), cible = document.querySelector('#wimsmenumodubox .nova_badges > a');
-    if (!aide || !cible || aide.querySelector('a') || aide.childNodes.length !== 1 || aide.firstChild.nodeType !== 3) return;
-    var textes = document.getElementById('nova-textes');
-    var nom = (textes && textes.getAttribute('data-texte-rubrique-badges')) || 'Badges Nova';
-    var texte = aide.firstChild.nodeValue, i = texte.indexOf(nom);
-    if (i < 0) return;
-    var lien = document.createElement('a');
-    lien.href = cible.href;
-    lien.textContent = nom;
-    aide.textContent = '';
-    aide.appendChild(document.createTextNode(texte.slice(0, i)));
-    aide.appendChild(lien);
-    aide.appendChild(document.createTextNode(texte.slice(i + nom.length)));
+  /* Mots-clés (DM WIMS, 2026-11-08, maquette) : étiquettes avec × pour retirer, champ et « Ajouter ». Le champ d'origine
+   * (input.nova-app-mots, data-cle) garde la valeur, « mot, mot » ; vide = valeur héritée, montrée telle quelle avec la
+   * mention « valeur par défaut ». Le dernier mot ne se retire pas (une liste vide reviendrait à la valeur héritée). */
+  function motsCles(carte, modele) {
+    var t = function (n) { return modele.getAttribute('data-mots-' + n) || ''; };
+    var plat = function (m) { return (m || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };
+    var liste = function (v) { return (v || '').split(',').map(function (m) { return m.replace(/\s+/g, ' ').trim(); }).filter(Boolean); };
+    [].forEach.call(carte.querySelectorAll('input.nova-app-mots'), function (champ) {
+      var boite = document.createElement('div');
+      boite.className = 'nova-puces';
+      champ.classList.add('nova-puces-source');
+      champ.parentNode.insertBefore(boite, champ.nextSibling);
+      var nomChamp = (carte.querySelector('label[for="' + champ.id + '"]') || {}).firstChild;
+      nomChamp = nomChamp && nomChamp.nodeType === 3 ? nomChamp.nodeValue.trim() : '';
+      var poser = function (mots, focus) {
+        champ.value = mots.join(', ');
+        champ.dispatchEvent(new Event('change', { bubbles: true }));
+        dessiner(focus);
+      };
+      var dessiner = function (focus) {
+        boite.textContent = '';
+        var propres = liste(champ.value), mots = propres.length ? propres : liste(champ.placeholder);
+        mots.forEach(function (m) {
+          var p = document.createElement('span');
+          p.className = 'nova-puce';
+          p.appendChild(document.createTextNode(m));
+          if (mots.length > 1) {
+            var x = document.createElement('button');
+            x.type = 'button';
+            x.className = 'nova-puce-retirer';
+            x.textContent = '\u00d7';
+            x.setAttribute('aria-label', t('retirer') + ' ' + m);
+            x.addEventListener('click', function () { poser(mots.filter(function (y) { return y !== m; }), 'ajout'); });
+            p.appendChild(x);
+          }
+          boite.appendChild(p);
+        });
+        if (!propres.length && mots.length) {
+          var d = document.createElement('span');
+          d.className = 'nova-puces-defaut';
+          d.textContent = t('defaut');
+          boite.appendChild(d);
+        }
+        var ajout = document.createElement('span');
+        ajout.className = 'nova-puces-ajout';
+        var saisie = document.createElement('input');
+        saisie.type = 'text';
+        saisie.autocomplete = 'off';
+        saisie.spellcheck = false;
+        saisie.placeholder = t('placeholder');
+        saisie.setAttribute('aria-label', t('placeholder') + (nomChamp ? ' (' + nomChamp + ')' : ''));
+        var bouton = document.createElement('button');
+        bouton.type = 'button';
+        bouton.className = 'wims_button wims_secondary_button';
+        bouton.textContent = t('ajouter');
+        var ajouter = function () {
+          var nouveaux = liste(saisie.value.replace(/[^0-9A-Za-z\u00c0-\u00ff' ,-]+/g, ' '));
+          if (!nouveaux.length) { saisie.focus(); return; }
+          var tous = mots.slice();
+          nouveaux.forEach(function (n) { if (!tous.some(function (y) { return plat(y) === plat(n); })) tous.push(n); });
+          poser(tous, 'ajout');
+        };
+        bouton.addEventListener('click', ajouter);
+        saisie.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ajouter(); } });
+        ajout.appendChild(saisie);
+        ajout.appendChild(bouton);
+        boite.appendChild(ajout);
+        if (propres.length && champ.placeholder) {
+          var retour = document.createElement('button');
+          retour.type = 'button';
+          retour.className = 'nova-puces-retablir';
+          retour.textContent = t('retablir');
+          retour.addEventListener('click', function () { poser([], 'ajout'); });
+          boite.appendChild(retour);
+        }
+        if (focus === 'ajout') saisie.focus();
+      };
+      dessiner();
+    });
   }
-  function rubriqueBadges() {
+
+  /* Onglets de la page Réglages de Nova (maquette B, utilisateur, 2026-11-08) : un panneau par section.nova-onglet
+   * (data-onglet, data-titre), boutons role=tab (flèches, Début, Fin), liste déroulante au téléphone (comme
+   * ongletsCompacts). Onglet ouvert gardé pour la session (sessionStorage). Tous les champs restent dans la page : un
+   * seul enregistrement. */
+  function ongletsReglages(carte, nom) {
+    var panneaux = [].slice.call(carte.querySelectorAll('section.nova-onglet'));
+    var cleOf = function (p) { return p.getAttribute('data-onglet'); };
+    var barre = document.createElement('div');
+    barre.className = 'nova-onglets';
+    barre.setAttribute('role', 'tablist');
+    barre.setAttribute('aria-label', nom);
+    var choix = document.createElement('select');
+    choix.className = 'nova-onglets-liste';
+    choix.setAttribute('aria-label', nom);
+    var boutons = panneaux.map(function (p) {
+      var cle = cleOf(p), id = 'nova-onglet-' + cle;
+      p.id = id + '-panneau';
+      p.setAttribute('role', 'tabpanel');
+      p.setAttribute('aria-labelledby', id);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.id = id;
+      b.className = 'nova-onglet-bouton' + (p.classList.contains('nova-onglet-avances') ? ' nova-onglet-danger' : '');
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-controls', p.id);
+      b.setAttribute('data-onglet', cle);
+      b.textContent = p.getAttribute('data-titre');
+      barre.appendChild(b);
+      var o = document.createElement('option');
+      o.value = cle;
+      o.textContent = p.getAttribute('data-titre');
+      choix.appendChild(o);
+      return b;
+    });
+    var montrer = function (cle, focus) {
+      if (!panneaux.some(function (p) { return cleOf(p) === cle; })) cle = cleOf(panneaux[0]);
+      panneaux.forEach(function (p) { p.hidden = cleOf(p) !== cle; });
+      boutons.forEach(function (b) {
+        var oui = b.getAttribute('data-onglet') === cle;
+        b.setAttribute('aria-selected', oui ? 'true' : 'false');
+        b.tabIndex = oui ? 0 : -1;
+        b.classList.toggle('nova-actif', oui);
+        if (oui && focus) b.focus();
+      });
+      choix.value = cle;
+      try { sessionStorage.setItem('nova-reglages-onglet', cle); } catch (e) { /* sans stockage : premier onglet */ }
+    };
+    boutons.forEach(function (b, i) {
+      b.addEventListener('click', function () { montrer(b.getAttribute('data-onglet')); });
+      b.addEventListener('keydown', function (e) {
+        var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? boutons.length - 1 : null;
+        if (j === null) return;
+        e.preventDefault();
+        j = (j + boutons.length) % boutons.length;
+        montrer(boutons[j].getAttribute('data-onglet'), true);
+      });
+    });
+    choix.addEventListener('change', function () { montrer(choix.value); });
+    carte.insertBefore(choix, carte.firstChild);
+    carte.insertBefore(barre, carte.firstChild);
+    var garde = null;
+    try { garde = sessionStorage.getItem('nova-reglages-onglet'); } catch (e) { garde = null; }
+    montrer(garde);
+    return { montrer: montrer };
+  }
+
+  // Rubrique « Réglages de Nova » dans la page Configuration et maintenance d'une classe, d'un groupement ou d'un
+  // portail, juste après « Apparence » (2026-10-07 : « Badges Nova » ; 2026-11-08, utilisateur : tous les réglages).
+  function rubriqueReglages() {
     var app = document.querySelector('.wimsbody ul.wims_nopuce li > a[href*="job=present"]');
-    if (!app || !/module=adm%2Fclass%2Fconfig|module=adm\/class\/config/.test(app.href) || document.querySelector('.nova-rubrique-badges')) return;
+    if (!app || !/module=adm%2Fclass%2Fconfig|module=adm\/class\/config/.test(app.href) || document.querySelector('.nova-rubrique-reglages')) return;
     var textes = document.getElementById('nova-textes');
     var t = function (nom, defaut) { return (textes && textes.getAttribute('data-texte-' + nom)) || defaut; };
     var li = document.createElement('li');
-    li.className = 'nova-rubrique-badges';
+    li.className = 'nova-rubrique-reglages';
     var a = document.createElement('a');
-    a.href = app.href.split('#')[0] + '#nova-badges-reglages';
-    a.textContent = t('rubrique-badges', 'Badges Nova');
+    a.href = app.href.split('#')[0] + '#nova-reglages';
+    a.textContent = t('rubrique-reglages', 'Nova settings');
     li.appendChild(a);
-    li.appendChild(document.createTextNode(' ' + t('rubrique-badges-aide', '')));
+    li.appendChild(document.createTextNode(' ' + t('rubrique-reglages-aide', '')));
     var apres = app.closest('li');
     apres.parentNode.insertBefore(li, apres.nextSibling);
   }
@@ -3895,7 +4035,7 @@
     });
   }
 
-  /* Pages Apparence et Badges Nova d'un portail ou d'un groupement (demande de l'utilisateur, 2026-11-07) : alerte en
+  /* Page Réglages de Nova d'un portail ou d'un groupement (demande de l'utilisateur, 2026-11-07) : alerte en
    * tête de la carte quand des zones dépendantes ont d'autres réglages Nova (#nova-ecarts, header.phtml), avec la liste
    * repliée, « Appliquer ces réglages à toutes les zones » (propagation par l'accueil, réglages ENREGISTRÉS : bouton
    * désactivé dès qu'un champ de la page change) et « Plus tard » (referme jusqu'à la prochaine visite). */
@@ -3903,11 +4043,20 @@
     var src = document.getElementById('nova-ecarts');
     if (!src) return;
     var t = function (n) { return src.getAttribute('data-' + n) || ''; };
-    var cibles = { apparence: '.wimsbody .nova-app:not(.nova-badges-reglages)', badges: '.wimsbody .nova-badges-reglages' };
-    Object.keys(cibles).forEach(function (partie) {
-      var zones = src.querySelectorAll('li[data-partie="' + partie + '"]');
-      var bloc = document.querySelector(cibles[partie]);
-      if (!zones.length || !bloc || bloc.querySelector('.nova-ecarts')) return;
+    // Page Réglages de Nova (2026-11-08) : une seule alerte pour ses deux blocs ; « Appliquer » propage ce qui diffère.
+    var bloc = document.querySelector('.wimsbody .nova-reglages');
+    if (!bloc || bloc.querySelector('.nova-ecarts')) return;
+    var parties = ['apparence', 'badges'].filter(function (p) { return src.querySelector('li[data-partie="' + p + '"]'); });
+    if (!parties.length) return;
+    var partie = parties.length > 1 ? 'tout' : parties[0];
+    var vus = {};
+    var zones = [].filter.call(src.querySelectorAll('li[data-partie]'), function (z) {
+      var k = z.textContent.trim();
+      if (vus[k]) return false;
+      vus[k] = true;
+      return true;
+    });
+    (function () {
       var el = function (balise, classe, texte) {
         var e = document.createElement(balise);
         if (classe) e.className = classe;
@@ -3945,7 +4094,7 @@
       };
       bloc.addEventListener('input', modifie);
       bloc.addEventListener('change', modifie);
-    });
+    })();
   }
 
   /* Pied de page (demande de l'utilisateur, 2026-10-08) : CGU et Aide (_widgets/footer.phtml, barre .nova-pied au format
@@ -3965,8 +4114,9 @@
     if (menu) {
       var suivi = menu.querySelector('.nova_suivi > a');
       if (suivi) suivi.classList.add('eye');
-      var badgesNova = menu.querySelector('.nova_badges > a');
-      if (badgesNova) badgesNova.classList.add('heart');
+      // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
+      var reglagesNova = menu.querySelector('.nova_reglages > a');
+      if (reglagesNova) reglagesNova.classList.add('config_module');
     }
     var corps = document.getElementById('wimsbodybox');
     if (!menu || !corps || menu.parentElement === corps) return;
@@ -5020,7 +5170,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

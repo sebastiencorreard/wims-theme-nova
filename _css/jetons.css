@@ -118,8 +118,9 @@
    * (DM préparés), mots des titres pour reconnaître une paire quand le contenu diffère (virgules). _procs/badges.awk. */
   --nova-echauffement-sessions: 2;
   --nova-echauffement-paliers: 1 3 5 8 12 16 21 26;
-  --nova-echauffement-entrainement: "entrainement, practice, training";
-  --nova-echauffement-note: "note, test, graded";
+  --nova-echauffement-entrainement: "entrainement";   /* DM WIMS (page Réglages de Nova, 2026-11-08) : mots d'un entraînement, */
+  --nova-echauffement-note: "note, test";             /* d'un DM noté, et mots obligatoires d'un DM WIMS */
+  --nova-dm-mots: "DMWIMS, DM";
   --nova-dm-note-essais: 3;          /* sessions du DM noté créé par « Créer le DM noté » (nova.js dmNote) */
   --nova-top-seuil: 9;
   --nova-top-paliers: 1 3 5 8 12 16 21 26;

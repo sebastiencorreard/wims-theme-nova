@@ -175,7 +175,7 @@
     !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
     !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
     !set nova_ez=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" apparence,badges ecarts
-<ul id="nova-ecarts" hidden data-titre="$nova_ecart_titre" data-titre1="$nova_ecart_titre1" data-texte="$nova_ecart_texte" data-texte1="$nova_ecart_texte1" data-quoi-apparence="$nova_ecart_quoi_apparence" data-quoi-badges="$nova_ecart_quoi_badges" data-voir="$nova_ecart_voir" data-appliquer="$nova_ecart_appliquer" data-plus-tard="$nova_ecart_plus_tard" data-attente="$nova_ecart_attente">$nova_ez</ul>
+<ul id="nova-ecarts" hidden data-titre="$nova_ecart_titre" data-titre1="$nova_ecart_titre1" data-texte="$nova_ecart_texte" data-texte1="$nova_ecart_texte1" data-quoi-apparence="$nova_ecart_quoi_apparence" data-quoi-badges="$nova_ecart_quoi_badges" data-quoi-tout="$nova_ecart_quoi_tout" data-voir="$nova_ecart_voir" data-appliquer="$nova_ecart_appliquer" data-plus-tard="$nova_ecart_plus_tard" data-attente="$nova_ecart_attente">$nova_ez</ul>
   !endif
   !reset nova_ct nova_tn nova_sup nova_ez
 !endif

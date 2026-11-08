@@ -103,7 +103,7 @@
 !set nova_app_masques=réglages sans effet avec le thème Nova, ou rarement utiles, sont masqués.
 !set nova_app_afficher=Les afficher
 !set nova_app_masquer=Les masquer
-!set nova_app_note_classe=Ces réglages valent pour ce portail, ce groupement ou cette classe (et leurs zones), et l'emportent sur ceux du site. Ils sont écrits dans la feuille de style ci-dessous.
+!set nova_app_note_classe=Ces réglages valent pour ce portail, ce groupement ou cette classe (et leurs zones), et l'emportent sur ceux du site. Ils sont écrits dans la feuille de style de la page Apparence.
 !set nova_app_couleur_theme=Couleur du thème
 
 !! Badges (demande de l'utilisateur, 2026-10-07) : premier badge, Fidélité (Régularité depuis le 2026-11-04).
@@ -170,7 +170,7 @@
 !set nova_bdg_vacances_titre=Semaines de vacances
 !set nova_bdg_note=Ces réglages valent pour ce portail, ce groupement ou cette classe (et leurs zones). Ils sont écrits dans la feuille de style de la page Apparence.
 !set nova_bdg_enregistrer=Enregistrer
-!set nova_app_badges_aide=Interrupteur général. Badges proposés et paliers : rubrique « Badges Nova » de la configuration.
+!set nova_app_badges_aide=Interrupteur général : sur « Non », rien n'est montré aux élèves.
 !! Rapprocher du theme standard (page Apparence, demande de l'utilisateur, 2026-10-07).
 !set nova_std_titre=Rapprocher du thème standard
 !set nova_std_aide=Réglage par réglage, retrouver l'affichage du thème standard là où Nova masque, change ou déplace quelque chose. Couleurs, police et cartes restent celles de Nova.
@@ -245,18 +245,18 @@
 !set nova_app_act_notes2=dernières notes.
 !set nova_app_act_herite=Champ vide : valeur du portail, du groupement ou du site.
 !set nova_app_act_reglages=Réglages de la page
-!set nova_propage_case_apparence=Apparence du thème Nova (réglages Nova de la page Apparence)
-!set nova_propage_case_badges=Badges Nova (badges proposés et leurs réglages)
+!set nova_propage_case_apparence=Réglages de Nova : affichage, élèves, réglages avancés
+!set nova_propage_case_badges=Réglages de Nova : DM WIMS, badges et récompenses
 !set nova_propage_1=Réglages propagés à 1 zone dépendante : %2.
 !set nova_propage_n=Réglages propagés à %1 zones dépendantes : %2.
-!set nova_propage_quoi_tout=apparence du thème Nova et badges Nova
-!set nova_propage_quoi_apparence=apparence du thème Nova
-!set nova_propage_quoi_badges=badges Nova
+!set nova_propage_quoi_tout=réglages de Nova
+!set nova_propage_quoi_apparence=réglages de Nova (affichage, élèves, réglages avancés)
+!set nova_propage_quoi_badges=réglages de Nova (DM WIMS, badges et récompenses)
 !! Pages Apparence et Badges Nova d'une structure (2026-11-07) : zones aux reglages differents. %n nombre, %q quoi.
 !set nova_ecart_titre=%n zones dépendantes n'utilisent pas ces réglages %q
 !set nova_ecart_titre1=1 zone dépendante n'utilise pas ces réglages %q
-!set nova_ecart_quoi_apparence=d'apparence de Nova
-!set nova_ecart_quoi_badges=des badges
+!set nova_ecart_quoi_apparence=de Nova (affichage, élèves, réglages avancés)
+!set nova_ecart_quoi_badges=de Nova (DM WIMS, badges)
 !set nova_ecart_texte=Elles ont leurs propres réglages : une copie plus ancienne, ou un réglage fait dans la zone.
 !set nova_ecart_texte1=Elle a ses propres réglages : une copie plus ancienne, ou un réglage fait dans la zone.
 !set nova_ecart_voir=Voir les zones
@@ -322,7 +322,7 @@
 !set nova_top_aide=C'est ta meilleure note au DM noté qui compte, même au dernier essai. Un niveau obtenu ne se perd jamais.
 !set nova_top_bravo1=Ton premier DM au top, bravo !
 !set nova_top_bravo=%n DM au top : tu restes au sommet, bravo !
-!set nova_bdg_top_desc=Réussir les DM notés : note retenue d'au moins 9/10 (réglable). DM repérés comme pour Échauffement, ou par le mot « noté » du titre. 8 niveaux, jamais perdus.
+!set nova_bdg_top_desc=Réussir les DM notés : note retenue d'au moins 9/10 (réglable). DM notés reconnus d'après l'onglet DM WIMS. 8 niveaux, jamais perdus.
 !set nova_bdg_top_paliers=Paliers du badge Au top
 !set nova_bdg_top_paliers_aide=DM au top, pour chacun des 8 niveaux, séparés par des espaces. Vide : valeur héritée. 0 : niveau obtenu d'office, pour tester (il reste acquis par l'élève).
 !set nova_bdg_top_seuil1=Compter un DM quand la note retenue au DM noté atteint au moins
@@ -454,3 +454,29 @@
 !set nova_app_desact_aide=Ajoute un bouton « Désactiver quand même... » quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes.
 !set nova_app_desact_danger=Dangereux : l'examen ou la feuille est désactivé dans toutes les classes du partage, et son contenu redevient modifiable ; un changement désaccorde les notes déjà enregistrées, dans toutes ces classes. WIMS l'interdit pour ces raisons. À n'activer qu'en connaissance de cause.
 !set nova_version_lien=Nouveautés de chaque version (nouvel onglet)
+!! Page « Réglages de Nova » (2026-11-08, utilisateur : onglets, maquette B)
+!set nova_rg_titre=Réglages de Nova
+!set nova_rg_rubrique=Réglages de Nova
+!set nova_rg_rubrique_aide=(thème Nova : affichage, élèves, DM WIMS, badges, réglages avancés)
+!set nova_rg_lien=Les réglages du thème Nova (affichage, élèves, DM WIMS, badges...) ont leur propre page :
+!set nova_rg_lien_texte=Réglages de Nova
+!set nova_rg_affichage=Affichage
+!set nova_rg_eleves=Élèves
+!set nova_rg_dm=DM WIMS
+!set nova_rg_badges=Badges et récompenses
+!set nova_rg_avances=Réglages avancés
+!set nova_rg_dm_aide=Un DM WIMS, c'est un examen d'entraînement (beaucoup de sessions) et un examen noté (peu de sessions) au même contenu. Ces réglages servent au bouton « Créer le DM noté » de l'accueil et aux badges Échauffement et Au top. Les accents et les majuscules ne comptent pas.
+!set nova_rg_dm_mots=Mots-clés d'un DM WIMS
+!set nova_rg_dm_mots_aide=Obligatoire : le titre d'un DM WIMS, d'entraînement comme noté, contient l'un de ces mots, éventuellement suivi d'un numéro (DMWIMS03).
+!set nova_rg_dm_note=Mots-clés d'un DM noté
+!set nova_rg_dm_note_aide=Le titre d'un DM noté contient en plus l'un de ces mots.
+!set nova_rg_dm_ent=Mots-clés d'un DM d'entraînement
+!set nova_rg_dm_ent_aide=Le titre d'un DM d'entraînement contient en plus l'un de ces mots. Un entraînement et son DM noté ont le même contenu, ou le même titre à ce mot près.
+!set nova_rg_dm_essais1=« Créer le DM noté » lui donne
+!set nova_rg_dm_essais2=sessions.
+!set nova_rg_mots_defaut=valeur par défaut
+!set nova_rg_mots_retirer=Retirer
+!set nova_rg_mots_ajouter=Ajouter
+!set nova_rg_mots_placeholder=Nouveau mot
+!set nova_rg_mots_retablir=Revenir à la valeur par défaut
+!set nova_ecart_quoi_tout=de Nova

@@ -78,6 +78,16 @@ function plat(t) {
   t = tolower(t); gsub(/[^a-z0-9]+/, " ", t); gsub(/^ +| +$/, "", t)
   return t
 }
+# Titre d'un DM WIMS (2026-11-08, utilisateur) : un mot de --nova-dm-mots (« DMWIMS, DM »), éventuellement suivi d'un numéro.
+function estDM(titre,    t, m, mots, i, w) {
+  t = " " plat(titre) " "
+  m = split(motsD, mots, ",")
+  for (i = 1; i <= m; i++) {
+    w = plat(mots[i]); if (w == "") continue
+    if (t ~ (" " w "[0-9]* ")) return 1
+  }
+  return 0
+}
 # Le titre (plat, entouré d'espaces) contient-il un des mots de la liste (séparés par des virgules) ? Le retire alors.
 function role(liste,    m, mots, i, w) {
   m = split(liste, mots, ",")
@@ -114,12 +124,13 @@ function actif(nom) {
 }
 
 # DM WIMS (Échauffement, Au top) : DM notés (estN[k] = 1) et leurs examens d'entraînement (nt[k], tr[k, i]). Mots des
-# titres : réglages d'Échauffement. Une seule fois par appel du script.
+# titres : section DM WIMS de la page Réglages de Nova (clés echauffement-*, dm-mots) ; titre sans mot de DM : ignoré. Une seule fois par appel du script.
 function apparier(    k, g, i, b, e, mx, mn, kn, kt, cT, cN, m, lst) {
   if (apparie) return
   apparie = 1
-  motsT = conf["echauffement-entrainement"]; if (motsT == "") motsT = "entrainement, practice, training"
-  motsN = conf["echauffement-note"]; if (motsN == "") motsN = "note, test, graded"
+  motsT = conf["echauffement-entrainement"]; if (motsT == "") motsT = "entrainement"
+  motsN = conf["echauffement-note"]; if (motsN == "") motsN = "note, test"
+  motsD = conf["dm-mots"]; if (motsD == "") motsD = "DMWIMS, DM"
   lireExamens()
   # (1) Même contenu, deux examens exactement : le plus d'essais = entraînement, l'autre = noté. Trois ou plus (un ancien
   # examen recopié, par exemple) : laissés aux titres (vu au banc, 2026-11-06).
@@ -129,6 +140,7 @@ function apparier(    k, g, i, b, e, mx, mn, kn, kt, cT, cN, m, lst) {
     mx = -1; mn = 1e9
     for (i = 1; i <= gn[g]; i++) { e = xessais[gm[g, i]]; if (e > mx) mx = e; if (e < mn) mn = e }
     if (mx <= mn) continue
+    if (!estDM(xtitre[gm[g, 1]]) || !estDM(xtitre[gm[g, 2]])) continue   # titre sans « DM » : pas un DM WIMS
     for (i = 1; i <= gn[g]; i++) if (xessais[gm[g, i]] == mn) {
       kn = gm[g, i]; estN[kn] = 1
       for (b = 1; b <= gn[g]; b++) if (xessais[gm[g, b]] == mx) { kt = gm[g, b]; nt[kn]++; tr[kn, nt[kn]] = kt; pris[kt] = 1 }
@@ -138,6 +150,7 @@ function apparier(    k, g, i, b, e, mx, mn, kn, kt, cT, cN, m, lst) {
   # (2) Titres, pour les examens que le contenu n'a pas appariés.
   for (k = 1; k <= ne; k++) {
     if (k in pris) continue
+    if (!estDM(xtitre[k])) continue
     rt = " " plat(xtitre[k]) " "
     if (role(motsT)) { cT = rt; gsub(/ +/, " ", cT); clT[cT] = clT[cT] " " k }
     else if (role(motsN)) { cN = rt; gsub(/ +/, " ", cN); cleN[k] = cN }

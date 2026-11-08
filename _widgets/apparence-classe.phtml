@@ -16,211 +16,239 @@
   !set nova_vs=!trim $nova_vs
   !default nova_vs=aucune
 !endif
-!! Repliés aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
+!! Page « Reglages de Nova » (demande de l'utilisateur, 2026-11-08, maquette : onglets B) : rubrique de la configuration
+!! (local.phtml, nova.js rubriqueReglages), c'est la page Apparence (job=present#nova-reglages, html.nova-page-reglages) dont
+!! le formulaire de WIMS est masque et sert a enregistrer la feuille de style. Deux blocs y sont ecrits par nova.js
+!! (apparenceClasse) : « Nova : reglages de la page Apparence » (name=nova_c_...) et « Nova : badges » (data-cle, DM WIMS
+!! compris), propages separement. Sur la page Apparence elle-meme : un lien vers cette page seulement.
+!! Replies aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
 !! par Nova), feuille de style (css). « Couleur de fond des menus » (couleur d'accent de Nova) : « Couleur du theme ».
-<template id="nova-apparence-classe" data-vac-noms="$nova_app_vac_noms" data-vac-ete="$nova_app_vac_ete" data-vac-manque="$nova_app_vac_manque" data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="$nova_app_vac_resume_aucune" data-vac-herite-de="$nova_app_vac_herite_de" data-erreur-vacances="$nova_app_vacances_erreur" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
-  <div class="nova-app">
-    <fieldset class="property_fields blockcenter nova-app-carte">
-      <legend>$nova_app_titre <span class="nova-app-pastille">$nova_app_pastille</span></legend>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c1">$nova_app_animations<span class="nova-app-aide">$nova_app_animations_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c1">
-          <label><input type="radio" name="nova_c_animations" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_animations" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c2">$nova_app_entree<span class="nova-app-aide">$nova_app_entree_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c2">
-          <label><input type="radio" name="nova_c_entree-directe" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_entree-directe" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c3">$nova_app_clavier<span class="nova-app-aide">$nova_app_clavier_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c3">
-          <label><input type="radio" name="nova_c_clavier-maths" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_clavier-maths" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c4">$nova_app_badges<span class="nova-app-aide">$nova_app_badges_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c4">
-          <label><input type="radio" name="nova_c_badges" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_badges" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c5">$nova_app_masques_eleves<span class="nova-app-aide">$nova_app_masques_eleves_aide</span></span>
-        <span class="nova-app-cases" role="group" aria-labelledby="nova-app-c5">
-          <label><input type="checkbox" name="nova_c_masque" value="communication"> $nova_app_masque_communication</label>
-          <label><input type="checkbox" name="nova_c_masque" value="liens"> $nova_app_masque_liens</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne">
-        <span class="nova-app-nom" id="nova-app-c7">$nova_app_fil<span class="nova-app-aide">$nova_app_fil_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c7">
-          <label><input type="radio" name="nova_c_fil-fixe" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_fil-fixe" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne nova-app-danger">
-        <span class="nova-app-nom" id="nova-app-c8">$nova_app_desact<span class="nova-app-aide">$nova_app_desact_aide</span><span class="nova-app-alerte">$nova_app_desact_danger</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c8">
-          <label><input type="radio" name="nova_c_desactivation-forcee" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_desactivation-forcee" value="non"> $nova_app_non</label>
-        </span>
-      </div>
-      <div class="nova-app-ligne nova-app-activite">
-        <span class="nova-app-nom" id="nova-app-c6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
-        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c6">
-          <label><input type="radio" name="nova_c_activite" value="oui"> $nova_app_oui</label>
-          <label><input type="radio" name="nova_c_activite" value="non"> $nova_app_non</label>
-        </span>
-        <details class="nova-app-detail"><summary>$nova_app_act_reglages</summary>
-        <div class="nova-app-phrases">
-          <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_c_activite-seuil" min="1" max="7" step="1"> $nova_app_act_seuil2</label>
-          <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_c_activite-objectif" min="1" max="7" step="1"> $nova_app_act_objectif2</label>
-          <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_c_activite-heures" min="1" max="80" step="1"> $nova_app_act_heures2</label>
-          <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_c_activite-notes" min="1" max="20" step="1"> $nova_app_act_notes2</label>
-          <p class="nova-app-aide">$nova_app_act_herite</p>
-          <div class="nova-app-vac" role="radiogroup" aria-labelledby="nova-app-vac-titre" data-herite="$nova_vs">
-            <p class="nova-app-nom" id="nova-app-vac-titre">$nova_app_vac_titre<span class="nova-app-aide">$nova_app_vac_aide</span></p>
-            <div class="nova-app-vac-choix">
-!if $nova_vs!=$empty
-              <label class="nova-app-vac-herite"><input type="radio" name="nova_c_vacances" value=""> <span>$nova_app_vac_herite</span></label>
-!endif
-              <label><input type="radio" name="nova_c_vacances" value="aucune"> $nova_app_vac_aucune</label>
-              <label><input type="radio" name="nova_c_vacances" value="zone-a"> $nova_app_vac_zone A</label>
-              <label><input type="radio" name="nova_c_vacances" value="zone-b"> $nova_app_vac_zone B</label>
-              <label><input type="radio" name="nova_c_vacances" value="zone-c"> $nova_app_vac_zone C</label>
-              <label><input type="radio" name="nova_c_vacances" value="dates"> $nova_app_vac_dates</label>
-            </div>
-            <p class="nova-app-aide nova-app-vac-resume" aria-live="polite"></p>
-            <label class="nova-app-vac-saisie" hidden><span class="nova-app-aide">$nova_app_vacances_aide</span>
-              <textarea class="nova-app-vac-dates" rows="5" spellcheck="false"></textarea></label>
-            <p class="wims_msg warning nova-app-vac-erreur" role="alert" hidden></p>
-          </div>
+<template id="nova-reglages-classe" data-titre="$nova_rg_titre" data-lien="$nova_rg_lien" data-lien-texte="$nova_rg_lien_texte" data-erreur-vacances="$nova_app_vacances_erreur" data-mots-defaut="$nova_rg_mots_defaut" data-mots-retirer="$nova_rg_mots_retirer" data-mots-ajouter="$nova_rg_mots_ajouter" data-mots-placeholder="$nova_rg_mots_placeholder" data-mots-retablir="$nova_rg_mots_retablir" data-vac-noms="$nova_app_vac_noms" data-vac-ete="$nova_app_vac_ete" data-vac-manque="$nova_app_vac_manque" data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="$nova_app_vac_resume_aucune" data-vac-herite-de="$nova_app_vac_herite_de" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+  <div class="nova-app nova-reglages">
+    <section class="nova-onglet" data-onglet="affichage" data-titre="$nova_rg_affichage">
+      <fieldset class="property_fields blockcenter nova-app-carte">
+        <legend>$nova_rg_affichage</legend>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c1">$nova_app_animations<span class="nova-app-aide">$nova_app_animations_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c1">
+            <label><input type="radio" name="nova_c_animations" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_animations" value="non"> $nova_app_non</label>
+          </span>
         </div>
-        </details>
-      </div>
-      !set nova_std_nom=nova_c_std-
-      !set nova_std_sep=-
-      !reset nova_std_site
-      !read themes/$wims_theme/_widgets/apparence-standard.phtml
-      !reset nova_std_nom nova_std_sep
-      <p class="nova-app-note">$nova_app_note_classe</p>
-      <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_app_enregistrer</button></div>
-      !read themes/$wims_theme/_widgets/version.phtml
-    </fieldset>
-  </div>
-</template>
-!! Page « Badges Nova » (demande de l'utilisateur, 2026-10-07) : rubrique ajoutee par nova.js (rubriqueBadges) a
-!! la configuration de la classe ; c'est la page Apparence (job=present#nova-badges-reglages), dont le formulaire
-!! de WIMS est masque et sert a enregistrer la feuille de style, ou nova.js (badgesClasse) ecrit le bloc
-!! « Nova : badges ». L'interrupteur general des badges reste dans la carte de la page Apparence.
-<template id="nova-badges-classe" data-titre="$nova_bdg_titre" data-erreur-vacances="$nova_app_vacances_erreur" data-etat-oui="$nova_bdg_etat_oui" data-etat-non="$nova_bdg_etat_non">
-  <div class="nova-app nova-badges-reglages">
-    <fieldset class="property_fields blockcenter nova-app-carte">
-      <legend>$nova_bdg_choix</legend>
-      <p class="nova-bdg-etat"><span class="nova-bdg-etat-texte"></span> <a class="nova-bdg-apparence" href="#">$nova_bdg_apparence</a>).</p>
-      <div class="nova-app-ligne nova-bdg-badge">
-        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/$wims_theme/img/badges/regularite/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
-      </div>
-      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="fidelite">
-        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
-          <label class="nova-app-nom" for="nova-app-paliers">$nova_app_paliers<span class="nova-app-aide">$nova_app_paliers_aide</span></label>
-          <input type="text" id="nova-app-paliers" class="nova-app-paliers" data-cle="fidelite-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-          <label class="nova-app-phrase">$nova_bdg_fid_exercices <input type="number" class="nova-app-nombre" data-cle="fidelite-jours" min="1" max="7" step="1"></label>
-        </div></details>
-      </div>
-      <div class="nova-app-ligne nova-bdg-badge">
-        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="perseverance"> <img src="themes/$wims_theme/img/badges/perseverance/flamme_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_per_nom<span class="nova-app-aide">$nova_bdg_per_desc</span></span></label>
-      </div>
-      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="perseverance">
-        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
-          <label class="nova-app-nom" for="nova-app-paliers-per">$nova_bdg_per_paliers<span class="nova-app-aide">$nova_bdg_per_paliers_aide</span></label>
-          <input type="text" id="nova-app-paliers-per" class="nova-app-paliers" data-cle="perseverance-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-          <p class="nova-app-phrase">$nova_bdg_per_regle1 <input type="number" class="nova-app-nombre" data-cle="perseverance-reussite" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle1"> $nova_bdg_per_regle2 <input type="number" class="nova-app-nombre" data-cle="perseverance-echecs" min="1" max="20" step="1" aria-label="$nova_bdg_per_regle2"> $nova_bdg_per_regle3 <input type="number" class="nova-app-nombre" data-cle="perseverance-echec" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle3"> $nova_bdg_per_regle4</p>
-          <label class="nova-bdg-examens"><input type="checkbox" data-cle="perseverance-examens"> $nova_bdg_per_examens</label>
-        </div></details>
-      </div>
-      <div class="nova-app-ligne nova-bdg-badge">
-        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="echauffement"> <img src="themes/$wims_theme/img/badges/entrainement/halteres_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_ech_nom<span class="nova-app-aide">$nova_bdg_ech_desc</span></span></label>
-      </div>
-      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="echauffement">
-        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
-          <label class="nova-app-nom" for="nova-app-paliers-ech">$nova_bdg_ech_paliers<span class="nova-app-aide">$nova_bdg_ech_paliers_aide</span></label>
-          <input type="text" id="nova-app-paliers-ech" class="nova-app-paliers" data-cle="echauffement-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-          <p class="nova-app-phrase">$nova_bdg_ech_sessions1 <input type="number" class="nova-app-nombre" data-cle="echauffement-sessions" min="1" max="50" step="1" aria-label="$nova_bdg_ech_sessions1"> $nova_bdg_ech_sessions2</p>
-          <p class="nova-app-nom">$nova_bdg_ech_mots<span class="nova-app-aide">$nova_bdg_ech_mots_aide</span></p>
-          <label class="nova-app-phrase nova-bdg-mots">$nova_bdg_ech_mots_t <input type="text" class="nova-app-mots" data-cle="echauffement-entrainement" autocomplete="off" spellcheck="false"></label>
-          <label class="nova-app-phrase nova-bdg-mots">$nova_bdg_ech_mots_n <input type="text" class="nova-app-mots" data-cle="echauffement-note" autocomplete="off" spellcheck="false"></label>
-        </div></details>
-      </div>
-      <div class="nova-app-ligne nova-bdg-badge">
-        <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="top"> <img src="themes/$wims_theme/img/badges/etoile/etoile_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_top_nom<span class="nova-app-aide">$nova_bdg_top_desc</span></span></label>
-      </div>
-      <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="top">
-        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
-          <label class="nova-app-nom" for="nova-app-paliers-top">$nova_bdg_top_paliers<span class="nova-app-aide">$nova_bdg_top_paliers_aide</span></label>
-          <input type="text" id="nova-app-paliers-top" class="nova-app-paliers" data-cle="top-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-          <p class="nova-app-phrase">$nova_bdg_top_seuil1 <input type="number" class="nova-app-nombre" data-cle="top-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_top_seuil1"> $nova_bdg_top_seuil2</p>
-        </div></details>
-      </div>
-    </fieldset>
-    <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-couleur">
-      <legend>$nova_bdg_coul_titre</legend>
-      <div class="nova-app-ligne nova-app-texte">
-        <p class="nova-app-aide">$nova_bdg_coul_aide</p>
-        <p class="nova-app-phrase">$nova_bdg_coul_phrase1
-          <select class="nova-app-choix" data-cle="couleur-niveau" aria-label="$nova_bdg_coul_niveau">
-            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c3">$nova_app_clavier<span class="nova-app-aide">$nova_app_clavier_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c3">
+            <label><input type="radio" name="nova_c_clavier-maths" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_clavier-maths" value="non"> $nova_app_non</label>
+          </span>
+        </div>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c7">$nova_app_fil<span class="nova-app-aide">$nova_app_fil_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c7">
+            <label><input type="radio" name="nova_c_fil-fixe" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_fil-fixe" value="non"> $nova_app_non</label>
+          </span>
+        </div>
+        !set nova_std_nom=nova_c_std-
+        !set nova_std_sep=-
+        !reset nova_std_site
+        !read themes/$wims_theme/_widgets/apparence-standard.phtml
+        !reset nova_std_nom nova_std_sep
+      </fieldset>
+    </section>
+    <section class="nova-onglet" data-onglet="eleves" data-titre="$nova_rg_eleves">
+      <fieldset class="property_fields blockcenter nova-app-carte">
+        <legend>$nova_rg_eleves</legend>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c2">$nova_app_entree<span class="nova-app-aide">$nova_app_entree_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c2">
+            <label><input type="radio" name="nova_c_entree-directe" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_entree-directe" value="non"> $nova_app_non</label>
+          </span>
+        </div>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c5">$nova_app_masques_eleves<span class="nova-app-aide">$nova_app_masques_eleves_aide</span></span>
+          <span class="nova-app-cases" role="group" aria-labelledby="nova-app-c5">
+            <label><input type="checkbox" name="nova_c_masque" value="communication"> $nova_app_masque_communication</label>
+            <label><input type="checkbox" name="nova_c_masque" value="liens"> $nova_app_masque_liens</label>
+          </span>
+        </div>
+        <div class="nova-app-ligne nova-app-activite">
+          <span class="nova-app-nom" id="nova-app-c6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c6">
+            <label><input type="radio" name="nova_c_activite" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_activite" value="non"> $nova_app_non</label>
+          </span>
+          <details class="nova-app-detail"><summary>$nova_app_act_reglages</summary>
+          <div class="nova-app-phrases">
+            <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_c_activite-seuil" min="1" max="7" step="1"> $nova_app_act_seuil2</label>
+            <label class="nova-app-phrase">$nova_app_act_objectif <input type="number" class="nova-app-nombre" name="nova_c_activite-objectif" min="1" max="7" step="1"> $nova_app_act_objectif2</label>
+            <label class="nova-app-phrase">$nova_app_act_heures <input type="number" class="nova-app-nombre" name="nova_c_activite-heures" min="1" max="80" step="1"> $nova_app_act_heures2</label>
+            <label class="nova-app-phrase">$nova_app_act_notes <input type="number" class="nova-app-nombre" name="nova_c_activite-notes" min="1" max="20" step="1"> $nova_app_act_notes2</label>
+            <p class="nova-app-aide">$nova_app_act_herite</p>
+            <div class="nova-app-vac" role="radiogroup" aria-labelledby="nova-app-vac-titre" data-herite="$nova_vs">
+              <p class="nova-app-nom" id="nova-app-vac-titre">$nova_app_vac_titre<span class="nova-app-aide">$nova_app_vac_aide</span></p>
+              <div class="nova-app-vac-choix">
+!if $nova_vs!=$empty
+                <label class="nova-app-vac-herite"><input type="radio" name="nova_c_vacances" value=""> <span>$nova_app_vac_herite</span></label>
+!endif
+                <label><input type="radio" name="nova_c_vacances" value="aucune"> $nova_app_vac_aucune</label>
+                <label><input type="radio" name="nova_c_vacances" value="zone-a"> $nova_app_vac_zone A</label>
+                <label><input type="radio" name="nova_c_vacances" value="zone-b"> $nova_app_vac_zone B</label>
+                <label><input type="radio" name="nova_c_vacances" value="zone-c"> $nova_app_vac_zone C</label>
+                <label><input type="radio" name="nova_c_vacances" value="dates"> $nova_app_vac_dates</label>
+              </div>
+              <p class="nova-app-aide nova-app-vac-resume" aria-live="polite"></p>
+              <label class="nova-app-vac-saisie" hidden><span class="nova-app-aide">$nova_app_vacances_aide</span>
+                <textarea class="nova-app-vac-dates" rows="5" spellcheck="false"></textarea></label>
+              <p class="wims_msg warning nova-app-vac-erreur" role="alert" hidden></p>
+            </div>
+          </div>
+          </details>
+        </div>
+      </fieldset>
+    </section>
+    <section class="nova-onglet" data-onglet="dm" data-titre="$nova_rg_dm">
+      <fieldset class="property_fields blockcenter nova-app-carte">
+        <legend>$nova_rg_dm</legend>
+        <div class="nova-app-ligne nova-app-texte">
+          <p class="nova-app-aide">$nova_rg_dm_aide</p>
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-rg-mots">
+          <label class="nova-app-nom" for="nova-rg-dm-mots">$nova_rg_dm_mots<span class="nova-app-aide">$nova_rg_dm_mots_aide</span></label>
+          <input type="text" id="nova-rg-dm-mots" class="nova-app-mots" data-cle="dm-mots" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-rg-mots">
+          <label class="nova-app-nom" for="nova-rg-dm-note">$nova_rg_dm_note<span class="nova-app-aide">$nova_rg_dm_note_aide</span></label>
+          <input type="text" id="nova-rg-dm-note" class="nova-app-mots" data-cle="echauffement-note" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-rg-mots">
+          <label class="nova-app-nom" for="nova-rg-dm-ent">$nova_rg_dm_ent<span class="nova-app-aide">$nova_rg_dm_ent_aide</span></label>
+          <input type="text" id="nova-rg-dm-ent" class="nova-app-mots" data-cle="echauffement-entrainement" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="nova-app-ligne nova-app-texte">
+          <p class="nova-app-phrase">$nova_rg_dm_essais1 <input type="number" class="nova-app-nombre" data-cle="dm-note-essais" min="1" max="99" step="1" aria-label="$nova_rg_dm_essais1"> $nova_rg_dm_essais2</p>
+        </div>
+      </fieldset>
+    </section>
+    <section class="nova-onglet" data-onglet="badges" data-titre="$nova_rg_badges">
+      <fieldset class="property_fields blockcenter nova-app-carte">
+        <legend>$nova_rg_badges</legend>
+        <div class="nova-app-ligne">
+          <span class="nova-app-nom" id="nova-app-c4">$nova_app_badges<span class="nova-app-aide">$nova_app_badges_aide</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c4">
+            <label><input type="radio" name="nova_c_badges" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_badges" value="non"> $nova_app_non</label>
+          </span>
+        </div>
+        <div class="nova-app-ligne nova-bdg-badge">
+          <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/$wims_theme/img/badges/regularite/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="fidelite">
+          <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+            <label class="nova-app-nom" for="nova-app-paliers">$nova_app_paliers<span class="nova-app-aide">$nova_app_paliers_aide</span></label>
+            <input type="text" id="nova-app-paliers" class="nova-app-paliers" data-cle="fidelite-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <label class="nova-app-phrase">$nova_bdg_fid_exercices <input type="number" class="nova-app-nombre" data-cle="fidelite-jours" min="1" max="7" step="1"></label>
+          </div></details>
+        </div>
+        <div class="nova-app-ligne nova-bdg-badge">
+          <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="perseverance"> <img src="themes/$wims_theme/img/badges/perseverance/flamme_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_per_nom<span class="nova-app-aide">$nova_bdg_per_desc</span></span></label>
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="perseverance">
+          <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+            <label class="nova-app-nom" for="nova-app-paliers-per">$nova_bdg_per_paliers<span class="nova-app-aide">$nova_bdg_per_paliers_aide</span></label>
+            <input type="text" id="nova-app-paliers-per" class="nova-app-paliers" data-cle="perseverance-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <p class="nova-app-phrase">$nova_bdg_per_regle1 <input type="number" class="nova-app-nombre" data-cle="perseverance-reussite" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle1"> $nova_bdg_per_regle2 <input type="number" class="nova-app-nombre" data-cle="perseverance-echecs" min="1" max="20" step="1" aria-label="$nova_bdg_per_regle2"> $nova_bdg_per_regle3 <input type="number" class="nova-app-nombre" data-cle="perseverance-echec" min="0" max="10" step="0.5" aria-label="$nova_bdg_per_regle3"> $nova_bdg_per_regle4</p>
+            <label class="nova-bdg-examens"><input type="checkbox" data-cle="perseverance-examens"> $nova_bdg_per_examens</label>
+          </div></details>
+        </div>
+        <div class="nova-app-ligne nova-bdg-badge">
+          <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="echauffement"> <img src="themes/$wims_theme/img/badges/entrainement/halteres_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_ech_nom<span class="nova-app-aide">$nova_bdg_ech_desc</span></span></label>
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="echauffement">
+          <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+            <label class="nova-app-nom" for="nova-app-paliers-ech">$nova_bdg_ech_paliers<span class="nova-app-aide">$nova_bdg_ech_paliers_aide</span></label>
+            <input type="text" id="nova-app-paliers-ech" class="nova-app-paliers" data-cle="echauffement-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <p class="nova-app-phrase">$nova_bdg_ech_sessions1 <input type="number" class="nova-app-nombre" data-cle="echauffement-sessions" min="1" max="50" step="1" aria-label="$nova_bdg_ech_sessions1"> $nova_bdg_ech_sessions2</p>
+          </div></details>
+        </div>
+        <div class="nova-app-ligne nova-bdg-badge">
+          <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="top"> <img src="themes/$wims_theme/img/badges/etoile/etoile_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_top_nom<span class="nova-app-aide">$nova_bdg_top_desc</span></span></label>
+        </div>
+        <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="top">
+          <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+            <label class="nova-app-nom" for="nova-app-paliers-top">$nova_bdg_top_paliers<span class="nova-app-aide">$nova_bdg_top_paliers_aide</span></label>
+            <input type="text" id="nova-app-paliers-top" class="nova-app-paliers" data-cle="top-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <p class="nova-app-phrase">$nova_bdg_top_seuil1 <input type="number" class="nova-app-nombre" data-cle="top-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_top_seuil1"> $nova_bdg_top_seuil2</p>
+          </div></details>
+        </div>
+      </fieldset>
+      <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-couleur">
+        <legend>$nova_bdg_coul_titre</legend>
+        <div class="nova-app-ligne nova-app-texte">
+          <p class="nova-app-aide">$nova_bdg_coul_aide</p>
+          <p class="nova-app-phrase">$nova_bdg_coul_phrase1
+            <select class="nova-app-choix" data-cle="couleur-niveau" aria-label="$nova_bdg_coul_niveau">
+              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
 !set nova_k=!itemcnt $nova_fid_niveaux
 !for nova_i=1 to $nova_k
-            <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
+              <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
-          </select>
-          $nova_bdg_coul_phrase2
-          <select class="nova-app-choix" data-cle="couleur-badge" aria-label="$nova_bdg_coul_badge">
-            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
-            <option value="fidelite">$nova_fid_nom</option>
-            <option value="perseverance">$nova_per_nom</option>
-            <option value="echauffement">$nova_ech_nom</option>
-            <option value="top">$nova_top_nom</option>
-            <option value="aucun">$nova_bdg_coul_aucun</option>
-          </select>$nova_bdg_coul_phrase3
-          <select class="nova-app-choix" data-cle="couleur-degrade" aria-label="$nova_bdg_coul_degrade">
-            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+            </select>
+            $nova_bdg_coul_phrase2
+            <select class="nova-app-choix" data-cle="couleur-badge" aria-label="$nova_bdg_coul_badge">
+              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              <option value="fidelite">$nova_fid_nom</option>
+              <option value="perseverance">$nova_per_nom</option>
+              <option value="echauffement">$nova_ech_nom</option>
+              <option value="top">$nova_top_nom</option>
+              <option value="aucun">$nova_bdg_coul_aucun</option>
+            </select>$nova_bdg_coul_phrase3
+            <select class="nova-app-choix" data-cle="couleur-degrade" aria-label="$nova_bdg_coul_degrade">
+              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
 !for nova_i=1 to $nova_k
-            <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
+              <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
-          </select>.</p>
-      </div>
-    </fieldset>
-    <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-avatar">
-      <legend>$nova_bdg_av_titre</legend>
-      <div class="nova-app-ligne nova-app-texte">
-        <p class="nova-app-aide">$nova_bdg_av_aide</p>
-        <p class="nova-app-phrase">$nova_bdg_av_actif :
-          <select class="nova-app-choix" data-cle="avatar" aria-label="$nova_bdg_av_actif">
-            <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
-            <option value="oui">$nova_bdg_av_oui</option>
-            <option value="non">$nova_bdg_av_non</option>
-          </select></p>
-      </div>
-      <div class="nova-app-ligne nova-app-texte">
-        <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
-          <p class="nova-app-phrase">$nova_bdg_av_regle1 <input type="number" class="nova-app-nombre" data-cle="avatar-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_av_regle1"> $nova_bdg_av_regle2 <input type="number" class="nova-app-nombre" data-cle="avatar-secondes" min="0" max="600" step="1" aria-label="$nova_bdg_av_regle2"> $nova_bdg_av_regle3 <input type="number" class="nova-app-nombre" data-cle="avatar-max-jour" min="1" max="100" step="1" aria-label="$nova_bdg_av_regle3"> $nova_bdg_av_regle4</p>
-          <p class="nova-app-phrase">$nova_bdg_av_depart1 <input type="number" class="nova-app-nombre" data-cle="avatar-depart" min="0" max="20" step="1" aria-label="$nova_bdg_av_depart1"> $nova_bdg_av_depart2</p>
-          <label class="nova-app-nom" for="nova-app-paliers-av">$nova_bdg_av_paliers<span class="nova-app-aide">$nova_bdg_av_paliers_aide</span></label>
-          <input type="text" id="nova-app-paliers-av" class="nova-app-paliers" data-cle="avatar-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
-          <p class="nova-app-phrase">$nova_bdg_av_pas1 <input type="number" class="nova-app-nombre" data-cle="avatar-pas" min="1" max="100" step="1" aria-label="$nova_bdg_av_pas1"> $nova_bdg_av_pas2</p>
-        </div></details>
-      </div>
-    </fieldset>
-    <p class="nova-app-note">$nova_bdg_note</p>
-    <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_bdg_enregistrer</button></div>
+            </select>.</p>
+        </div>
+      </fieldset>
+      <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-avatar">
+        <legend>$nova_bdg_av_titre</legend>
+        <div class="nova-app-ligne nova-app-texte">
+          <p class="nova-app-aide">$nova_bdg_av_aide</p>
+          <p class="nova-app-phrase">$nova_bdg_av_actif :
+            <select class="nova-app-choix" data-cle="avatar" aria-label="$nova_bdg_av_actif">
+              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              <option value="oui">$nova_bdg_av_oui</option>
+              <option value="non">$nova_bdg_av_non</option>
+            </select></p>
+        </div>
+        <div class="nova-app-ligne nova-app-texte">
+          <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
+            <p class="nova-app-phrase">$nova_bdg_av_regle1 <input type="number" class="nova-app-nombre" data-cle="avatar-seuil" min="0" max="10" step="0.5" aria-label="$nova_bdg_av_regle1"> $nova_bdg_av_regle2 <input type="number" class="nova-app-nombre" data-cle="avatar-secondes" min="0" max="600" step="1" aria-label="$nova_bdg_av_regle2"> $nova_bdg_av_regle3 <input type="number" class="nova-app-nombre" data-cle="avatar-max-jour" min="1" max="100" step="1" aria-label="$nova_bdg_av_regle3"> $nova_bdg_av_regle4</p>
+            <p class="nova-app-phrase">$nova_bdg_av_depart1 <input type="number" class="nova-app-nombre" data-cle="avatar-depart" min="0" max="20" step="1" aria-label="$nova_bdg_av_depart1"> $nova_bdg_av_depart2</p>
+            <label class="nova-app-nom" for="nova-app-paliers-av">$nova_bdg_av_paliers<span class="nova-app-aide">$nova_bdg_av_paliers_aide</span></label>
+            <input type="text" id="nova-app-paliers-av" class="nova-app-paliers" data-cle="avatar-paliers" inputmode="numeric" autocomplete="off" spellcheck="false">
+            <p class="nova-app-phrase">$nova_bdg_av_pas1 <input type="number" class="nova-app-nombre" data-cle="avatar-pas" min="1" max="100" step="1" aria-label="$nova_bdg_av_pas1"> $nova_bdg_av_pas2</p>
+          </div></details>
+        </div>
+      </fieldset>
+    </section>
+    <section class="nova-onglet nova-onglet-avances" data-onglet="avances" data-titre="$nova_rg_avances">
+      <fieldset class="property_fields blockcenter nova-app-carte nova-rg-avances">
+        <legend>$nova_rg_avances</legend>
+        <div class="nova-app-ligne nova-app-danger">
+          <span class="nova-app-nom" id="nova-app-c8">$nova_app_desact<span class="nova-app-aide">$nova_app_desact_aide</span><span class="nova-app-alerte">$nova_app_desact_danger</span></span>
+          <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c8">
+            <label><input type="radio" name="nova_c_desactivation-forcee" value="oui"> $nova_app_oui</label>
+            <label><input type="radio" name="nova_c_desactivation-forcee" value="non"> $nova_app_non</label>
+          </span>
+        </div>
+      </fieldset>
+    </section>
+    <p class="nova-app-note">$nova_app_note_classe</p>
+    <div class="nova-app-actions"><button type="button" class="nova-app-enregistrer wims_button">$nova_app_enregistrer</button></div>
+!read themes/$wims_theme/_widgets/version.phtml
   </div>
 </template>
 !reset nova_cf

@@ -61,12 +61,13 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
   !endif
 !endif
 
-!! Entree << Badges Nova >> juste apres << Apparence >> dans le menu de la configuration d'une classe, d'un portail ou
-!! d'un groupement (demande de l'utilisateur, 2026-11-04) : c'est la page Apparence avec l'ancre que lit le script de
-!! tete (html.nova-page-badges, nova.js badgesClasse). Texte : lang/name.phtml (nova_bdg_rubrique) ; icone : nova.js placerMenu.
-!if $module=adm/class/config and config_present isin $wims_rm_0 and nova_badges notin $wims_rm_0
-  !default nova_bdg_rubrique=Nova badges
-  !set wims_name_nova_badges=$nova_bdg_rubrique
+!! Entree << Reglages de Nova >> juste apres << Apparence >> dans le menu de la configuration d'une classe, d'un portail
+!! ou d'un groupement (2026-11-04 : << Badges Nova >> ; 2026-11-08, utilisateur : page de tous les reglages Nova, onglets) :
+!! c'est la page Apparence avec l'ancre que lit le script de tete (html.nova-page-reglages, nova.js apparenceClasse).
+!! Texte : lang/name.phtml (nova_rg_rubrique) ; icone : nova.js placerMenu.
+!if $module=adm/class/config and config_present isin $wims_rm_0 and nova_reglages notin $wims_rm_0
+  !default nova_rg_rubrique=Nova settings
+  !set wims_name_nova_reglages=$nova_rg_rubrique
   !set nova_bc=!linecnt $wims_rm_0
   !reset nova_br
   !for nova_bi=1 to $nova_bc
@@ -74,7 +75,7 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
     !set nova_br=!append line $nova_bl to $nova_br
     !set nova_bn=!item 1 of $nova_bl
     !if $nova_bn=config_present
-      !set nova_br=!append line nova_badges,1,cmd=reply&job=present#nova-badges-reglages to $nova_br
+      !set nova_br=!append line nova_reglages,1,cmd=reply&job=present#nova-reglages to $nova_br
     !endif
   !next nova_bi
   !set wims_rm_0=$nova_br

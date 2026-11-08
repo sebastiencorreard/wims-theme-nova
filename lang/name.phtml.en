@@ -103,7 +103,7 @@
 !set nova_app_masques=settings with no effect in the Nova theme, or rarely useful, are hidden.
 !set nova_app_afficher=Show them
 !set nova_app_masquer=Hide them
-!set nova_app_note_classe=These settings apply to this portal, group or class (and their zones) and override the site settings. They are written into the style sheet below.
+!set nova_app_note_classe=These settings apply to this portal, group or class (and their zones), and override those of the site. They are written in the style sheet of the Appearance page.
 !set nova_app_couleur_theme=Theme colour
 
 !! Badges (2026-10-07): first badge, Loyalty.
@@ -170,7 +170,7 @@
 !set nova_bdg_vacances_titre=Holiday weeks
 !set nova_bdg_note=These settings apply to this portal, group or class (and their areas). They are written in the style sheet of the Appearance page.
 !set nova_bdg_enregistrer=Save
-!set nova_app_badges_aide=Main switch. Badges offered and thresholds: "Nova badges" section of the configuration.
+!set nova_app_badges_aide=Main switch: on "No", nothing is shown to students.
 !! Closer to the standard theme (Appearance page, 2026-10-07).
 !set nova_std_titre=Closer to the standard theme
 !set nova_std_aide=Setting by setting, get back the standard theme's display where Nova hides, changes or moves something. Colours, font and cards stay Nova's.
@@ -245,18 +245,18 @@
 !set nova_app_act_notes2=latest scores.
 !set nova_app_act_herite=Empty field: value of the portal, group or site.
 !set nova_app_act_reglages=Page settings
-!set nova_propage_case_apparence=Nova theme appearance (Nova settings of the Appearance page)
-!set nova_propage_case_badges=Nova badges (badges offered and their settings)
+!set nova_propage_case_apparence=Nova settings: display, students, advanced settings
+!set nova_propage_case_badges=Nova settings: WIMS homework, badges and rewards
 !set nova_propage_1=Settings propagated to 1 dependent zone: %2.
 !set nova_propage_n=Settings propagated to %1 dependent zones: %2.
-!set nova_propage_quoi_tout=Nova theme appearance and Nova badges
-!set nova_propage_quoi_apparence=Nova theme appearance
-!set nova_propage_quoi_badges=Nova badges
+!set nova_propage_quoi_tout=Nova settings
+!set nova_propage_quoi_apparence=Nova settings (display, students, advanced)
+!set nova_propage_quoi_badges=Nova settings (WIMS homework, badges)
 !! Appearance and Nova badges pages of a structure (2026-11-07): zones with different settings. %n number, %q what.
 !set nova_ecart_titre=%n dependent zones do not use these %q settings
 !set nova_ecart_titre1=1 dependent zone does not use these %q settings
-!set nova_ecart_quoi_apparence=Nova appearance
-!set nova_ecart_quoi_badges=badge
+!set nova_ecart_quoi_apparence=of Nova (display, students, advanced)
+!set nova_ecart_quoi_badges=of Nova (WIMS homework, badges)
 !set nova_ecart_texte=They have their own settings: an older copy, or a setting made in the zone.
 !set nova_ecart_texte1=It has its own settings: an older copy, or a setting made in the zone.
 !set nova_ecart_voir=Show the zones
@@ -322,7 +322,7 @@
 !set nova_top_aide=Your best score on the graded test counts, even at the last attempt. A level once earned is never lost.
 !set nova_top_bravo1=Your first homework at the top, well done!
 !set nova_top_bravo=%n homework at the top: you stay at the summit, well done!
-!set nova_bdg_top_desc=Succeed in graded homework: kept score of at least 9/10 (adjustable). Homework found as for Warm-up, or by the word "graded" in the title. 8 levels, never lost.
+!set nova_bdg_top_desc=Succeed in graded homework: kept score of at least 9/10 (adjustable). Graded homework recognised from the WIMS homework tab. 8 levels, never lost.
 !set nova_bdg_top_paliers=Top badge thresholds
 !set nova_bdg_top_paliers_aide=Top homework, for each of the 8 levels, separated by spaces. Empty: inherited value. 0: level given at once, for testing (the student keeps it).
 !set nova_bdg_top_seuil1=Count a homework when the kept score on the graded test reaches at least
@@ -453,3 +453,29 @@
 !set nova_app_desact_aide=Adds a "Deactivate anyway..." button when WIMS refuses to deactivate an exam or sheet shared with other classes.
 !set nova_app_desact_danger=Dangerous: the exam or sheet is deactivated in every sharing class, and its content can be changed again; any change puts the recorded scores out of step, in all those classes. WIMS forbids it for these reasons. Only turn this on if you know what you are doing.
 !set nova_version_lien=What is new in each version (new tab)
+!! "Nova settings" page (2026-11-08)
+!set nova_rg_titre=Nova settings
+!set nova_rg_rubrique=Nova settings
+!set nova_rg_rubrique_aide=(Nova theme: display, students, WIMS homework, badges, advanced settings)
+!set nova_rg_lien=The Nova theme settings (display, students, WIMS homework, badges...) have their own page:
+!set nova_rg_lien_texte=Nova settings
+!set nova_rg_affichage=Display
+!set nova_rg_eleves=Students
+!set nova_rg_dm=WIMS homework
+!set nova_rg_badges=Badges and rewards
+!set nova_rg_avances=Advanced settings
+!set nova_rg_dm_aide=A WIMS homework is a practice exam (many sessions) and a graded exam (few sessions) with the same content. These settings are used by the "Create the graded homework" button of the home page and by the Warm-up and Top badges. Accents and capitals are ignored.
+!set nova_rg_dm_mots=Keywords of a WIMS homework
+!set nova_rg_dm_mots_aide=Required: the title of a WIMS homework, practice or graded, contains one of these words, possibly followed by a number (DMWIMS03).
+!set nova_rg_dm_note=Keywords of a graded homework
+!set nova_rg_dm_note_aide=The title of a graded homework also contains one of these words.
+!set nova_rg_dm_ent=Keywords of a practice homework
+!set nova_rg_dm_ent_aide=The title of a practice homework also contains one of these words. A practice exam and its graded homework have the same content, or the same title except for this word.
+!set nova_rg_dm_essais1="Create the graded homework" gives it
+!set nova_rg_dm_essais2=sessions.
+!set nova_rg_mots_defaut=default value
+!set nova_rg_mots_retirer=Remove
+!set nova_rg_mots_ajouter=Add
+!set nova_rg_mots_placeholder=New word
+!set nova_rg_mots_retablir=Back to the default value
+!set nova_ecart_quoi_tout=of Nova

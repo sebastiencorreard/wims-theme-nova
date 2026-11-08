@@ -18,7 +18,9 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Fenêtre des badges : onglets en icône ; niveau « Cuivre » renommé « Bronze ».
 
 ### Enseignants
-- **Désactiver quand même** (à permettre sur la page Apparence de la classe, réglage « Désactiver malgré le partage », avec avertissement) : quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes (ou une feuille utilisée dans un examen), un bouton sous le refus le permet, après une alerte sur les conséquences (désactivé dans toutes les classes du partage, notes gardées).
+- **Réglages de Nova** : une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
+- **DM WIMS** : mots-clés en étiquettes ; un DM n'est reconnu que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté »/« test » ou « entraînement ».
+- **Désactiver quand même** (à permettre dans Réglages de Nova, onglet Réglages avancés, « Désactiver malgré le partage », avec avertissement) : quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes (ou une feuille utilisée dans un examen), un bouton sous le refus le permet, après une alerte sur les conséquences (désactivé dans toutes les classes du partage, notes gardées).
 - **DM WIMS** : bouton « Créer le DM noté » sur l'accueil, à côté d'un examen d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
 - Accueil : moteur de recherche sous les feuilles et les examens.
 - modtool : menu latéral personnalisable ; choix de la langue sur une ligne dépliable.

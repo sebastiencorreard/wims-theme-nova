@@ -1825,13 +1825,16 @@
    * celle de l'entraînement, mot remplacé), sessions (--nova-dm-note-essais, 3), et enregistre. La copie reste en
    * préparation (choix de l'utilisateur). Plan gardé en sessionStorage (nova-dm-note) deux minutes. */
   /* « Désactiver quand même » (demande de l'utilisateur, 2026-11-08) : page où WIMS refuse de désactiver un examen ou
-   * une feuille partagés avec d'autres classes. header.phtml pose #nova-forcer quand seul le partage bloque ; bouton sous
+   * une feuille partagés avec d'autres classes, si la classe l'a permis (--nova-desactivation-forcee). header.phtml pose
+   * #nova-forcer quand seuls le partage (ou, pour une feuille, son usage dans un examen) bloquent ; bouton sous
    * le message de WIMS, alerte (conséquences) dans un <dialog class="nova-dialogue">, puis l'accueil fait la
    * désactivation (nova_desactiver=exam:N ou sheet:N, _procs/desactiver.sh) et affiche le résultat (#nova-propage). */
   function forcerDesactivation() {
     var f = document.getElementById('nova-forcer');
     var corps = document.querySelector('.wimsbody');
     if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
+    // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
+    if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
     var n = f.getAttribute('data-n');
     var b = document.createElement('button');
     b.type = 'button';
@@ -1845,7 +1848,10 @@
     d.setAttribute('aria-labelledby', h.id);
     d.appendChild(h);
     var ul = document.createElement('ul');
-    (f.getAttribute('data-points') || '').split('|').forEach(function (t) {
+    var points = (f.getAttribute('data-points') || '').split('|');
+    // Feuille dont des exercices sont dans un examen (contourné aussi, 2026-11-08) : un point de plus, en deuxième.
+    if (/examen/.test(f.getAttribute('data-examen') || '') && f.getAttribute('data-point-examen')) points.splice(1, 0, f.getAttribute('data-point-examen'));
+    points.forEach(function (t) {
       if (!t.trim()) return;
       var li = document.createElement('li');
       li.textContent = t.trim();
@@ -2987,7 +2993,7 @@
     var bloc = modele.content.cloneNode(true);
     formWims.parentNode.insertBefore(bloc, formWims);
     var carte = formWims.previousElementSibling;
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'desactivation-forcee'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';

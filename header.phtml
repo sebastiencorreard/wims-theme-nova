@@ -116,7 +116,7 @@
 !! Desactiver malgre le partage (2026-11-08, utilisateur) : WIMS refuse de desactiver un examen ou une feuille partages
 !! avec d'autres classes (adm/class/exam : error=nodeactivate, deactivate=sharing ; adm/class/sheet : error=sharing_sheet).
 !! Sur cette page de refus, #nova-forcer (nova.js forcerDesactivation : bouton, alerte) si les AUTRES refus de WIMS ne
-!! s'appliquent pas (structure de la classe ici ; statut, examen commence, feuille dans un examen : _procs/desactiver.sh).
+!! s'appliquent pas (structure de la classe ici ; statut, examen commence, reglage --nova-desactivation-forcee : _procs/desactiver.sh).
 !! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
 !if $wims_user=supervisor and $wims_class!=$empty and (($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty))
   !reset nova_fs
@@ -133,8 +133,8 @@
   !if $nova_fs=$empty
     !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
   !endif
-  !if $nova_fs=ok
-<span id="nova-forcer" hidden data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler"></span>
+  !if $nova_fs=ok or $nova_fs=ok examen
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler"></span>
   !endif
   !reset nova_ft nova_fn nova_fs
 !endif
@@ -154,7 +154,7 @@
         !set nova_fe=succes
         !set wims_class_log=deactivate $nova_ft $nova_fn (Nova, partage) by $wims_realuser
       !else
-        !if $nova_fr notitemof statut,commence,examen
+        !if $nova_fr notitemof statut,commence,reglage
           !set nova_fr=erreur
         !endif
         !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_refus_$nova_fr)

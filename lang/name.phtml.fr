@@ -422,6 +422,8 @@
 !set nova_signe_croix=session sans durée enregistrée (en cours, ou interrompue sans être terminée)
 !set nova_signe_inconnu=exercice sans note dans cette session (pas ouvert, ou ouvert sans réponse envoyée)
 !set nova_masquer_moyenne=Masquer la moyenne
+!set nova_txt_titres_examens=Examens : afficher le titre au lieu du numéro
+!set nova_txt_titres_feuilles=Feuilles : afficher le titre au lieu du numéro
 !set nova_choix_juste=choisi, juste
 !set nova_choix_faux=choisi à tort
 !set nova_choix_oublie=oublié : il fallait le choisir

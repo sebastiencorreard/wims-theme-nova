@@ -19,7 +19,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Désactiver quand même** un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont partagés (aussi dans un programme de portail), ou une feuille utilisée dans un examen : bouton sous le refus, après une alerte sur les conséquences. À permettre dans Réglages de Nova, onglet Réglages avancés (désactivé par défaut). Refusé si des élèves ont déjà commencé l'examen.
 - **Couleur personnelle** : deux paliers, couleur puis dégradés, chacun avec son niveau et son badge.
 - **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
-- Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
+- Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
 ### Corrections
 - « Appliquer » (zones dépendantes), la case Nova de « Zones dépendantes » et « Désactiver quand même » ne renvoient plus à l'accueil du portail : on reste sur la page (ou on revient à l'examen, à la feuille), avec le message.

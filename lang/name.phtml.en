@@ -421,6 +421,8 @@
 !set nova_signe_croix=session with no recorded duration (still running, or interrupted before being finished)
 !set nova_signe_inconnu=exercise with no score in this session (not opened, or opened without an answer sent)
 !set nova_masquer_moyenne=Hide the average
+!set nova_txt_titres_examens=Exams: show the title instead of the number
+!set nova_txt_titres_feuilles=Worksheets: show the title instead of the number
 !set nova_choix_juste=chosen, correct
 !set nova_choix_faux=chosen by mistake
 !set nova_choix_oublie=missed: it should have been chosen

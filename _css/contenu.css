@@ -903,7 +903,7 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 /* Page « Notes » de l'enseignant (adm/class/userscore ; nova.js notesColonnes, 2026-11-08) : colonne de la moyenne
  * masquée sur demande ; titre de l'examen en en-tête, deux lignes au plus, « … » au-delà (titre entier en info-bulle). */
 .wimsbody #TABLE_userlist .nova-col-masquee { display: none; }
-.wimsbody #TABLE_userlist th.name_exam .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; white-space: normal; overflow-wrap: anywhere; }
+.wimsbody #TABLE_userlist th .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; white-space: normal; overflow-wrap: anywhere; }
 .wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); }
 /* Réponses à choix marquées dans l'énoncé (nova.js retourReponse, variante A, 2026-11-08) : cadre et pastille
  * ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié), accent (choisi, sans bonne réponse montrée) ;

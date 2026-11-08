@@ -2,12 +2,27 @@
 
 Thème WIMS moderne et adapté au téléphone. Les versions les plus récentes sont en haut.
 Ce qui est réservé aux élèves (badges, avatar, couleur personnelle) reste **désactivé** tant que
-l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova »).
+l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la configuration).
+
+## 1.3 — 8 novembre 2026
+
+### Élèves
+- **Exercices à cases** : sur la page de réponse, chaque choix est marqué dans l'énoncé (✓ juste, ✕ coché à tort, ! en pointillé s'il fallait le cocher) ; l'encadré dit « il manque 1 réponse » au lieu de répéter toutes les réponses.
+- **Persévérance** : la règle dit clairement « notes de moins de 5/10 » (la note doit être strictement inférieure au seuil).
+- Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
+
+### Enseignants
+- **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « Nouveau ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
+- **DM WIMS** : onglet à part ; un examen n'est un DM que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté » ou « test » (DM noté) ou « entraînement » ; mots-clés en étiquettes, faciles à ajouter ou retirer.
+- **Créer le DM noté** : bouton sur l'accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
+- **Désactiver quand même** un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont partagés (aussi dans un programme de portail), ou une feuille utilisée dans un examen : bouton sous le refus, après une alerte sur les conséquences. À permettre dans Réglages de Nova, onglet Réglages avancés (désactivé par défaut). Refusé si des élèves ont déjà commencé l'examen.
+- **Couleur personnelle** : deux paliers, couleur puis dégradés, chacun avec son niveau et son badge.
+- **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
+- Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ## 1.2 — 7 novembre 2026
 
 ### Élèves
-- **Exercices à cases** : sur la page de réponse, chaque choix est marqué dans l'énoncé (✓ juste, ✕ coché à tort, ! en pointillé s'il fallait le cocher) ; l'encadré dit « il manque 1 réponse » au lieu de répéter toutes les réponses.
 - **Avatar personnalisable** (Avataaars) : l'élève gagne des pièces en réussissant des exercices et les dépense pour débloquer des éléments ; certains sont réservés à des niveaux de badges. Compteur de pièces dans la barre. Vu seulement par l'élève et ses enseignants. Désactivé par défaut.
 - **Ma couleur** (menu Profil) : une couleur d'interface parmi 10, puis un dégradé parmi 8 (barre, boutons, titres des fenêtres), débloqués par un niveau de badge choisi par l'enseignant.
 - **Badge Échauffement** : récompense l'élève qui fait les sessions de l'examen d'entraînement avant d'ouvrir le DM noté.
@@ -18,20 +33,12 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Fenêtre des badges : onglets en icône ; niveau « Cuivre » renommé « Bronze ».
 
 ### Enseignants
-- **Réglages de Nova** : une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
-- **Réglages de « Mon activité »** (onglet Élèves) : affichés d'office quand la page est activée, masqués sinon.
-- **Couleur personnelle** : deux lignes, couleur puis dégradés, chacune avec son niveau et son badge ; la fenêtre des badges de l'élève montre chaque palier dans l'onglet de son badge.
-- **Persévérance** : la règle dit « notes strictement inférieures à » (élèves : « de moins de ») ; DM WIMS : « noté » (avec accent) et « test » par défaut.
-- **DM WIMS** : mots-clés en étiquettes ; un DM n'est reconnu que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté »/« test » ou « entraînement ».
-- **Désactiver quand même** (à permettre dans Réglages de Nova, onglet Réglages avancés, « Désactiver malgré le partage », avec avertissement) : quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes (ou une feuille utilisée dans un examen), un bouton sous le refus le permet, après une alerte sur les conséquences (désactivé dans toutes les classes du partage, notes gardées).
-- **DM WIMS** : bouton « Créer le DM noté » sur l'accueil, à côté d'un examen d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
 - Accueil : moteur de recherche sous les feuilles et les examens.
 - modtool : menu latéral personnalisable ; choix de la langue sur une ligne dépliable.
 - Rubrique **Badges Nova** accessible depuis le menu, réglages de chaque badge repliés ; paliers à 0 permis (pour tester).
 - Portails et groupements : propagation séparée de l'apparence et des badges aux zones ; alerte quand des zones n'utilisent pas les réglages de la structure, avec « Appliquer ».
 - Détail des examens : les signes « † » et « ?? » sont expliqués (info-bulle et légende).
 - Numéro de version et page des nouveautés (en bas de la carte « Réglages de Nova »).
-- Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ### Installation
 - Le dossier du thème peut porter un autre nom : deux versions côte à côte possibles (pas de point dans le nom).

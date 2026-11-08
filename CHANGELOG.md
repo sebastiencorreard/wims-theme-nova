@@ -23,6 +23,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Portails et groupements : propagation séparée de l'apparence et des badges aux zones ; alerte quand des zones n'utilisent pas les réglages de la structure, avec « Appliquer ».
 - Détail des examens : les signes « † » et « ?? » sont expliqués (info-bulle et légende).
 - Numéro de version et page des nouveautés (en bas de la carte « Réglages de Nova »).
+- Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ### Installation
 - Le dossier du thème peut porter un autre nom : deux versions côte à côte possibles (pas de point dans le nom).

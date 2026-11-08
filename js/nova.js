@@ -1807,6 +1807,79 @@
     });
   }
 
+  /* Page « Notes » de l'enseignant (adm/class/userscore, main.phtml, tableau #TABLE_userlist ; demande de
+   * l'utilisateur, 2026-11-08).
+   * (a) Case « Masquer la moyenne », décochée par défaut, dans le cadre du choix des colonnes ; choix gardé par le
+   *     navigateur (localStorage nova-notes-sans-moyenne). Colonne repérée par th.average (affichage « notes », sans
+   *     notes manuelles) : la cellule de même rang de chaque ligne, pied du tableau compris, est cachée.
+   * (b) En-têtes « Examen k » : titre de l'examen, lu dans la liste de choix de la page (option E<k>,
+   *     « Examen k: titre ») ; « Examen k : titre » en info-bulle. Réglage « Textes du thème standard » : en-têtes
+   *     d'origine. */
+  function notesColonnes() {
+    var mm = document.querySelector('meta[name="nova-module"]');
+    var table = document.getElementById('TABLE_userlist');
+    if (!mm || mm.content !== 'adm/class/userscore' || !table || table.hasAttribute('data-nova-notes')) return;
+    table.setAttribute('data-nova-notes', '');
+    var choix = document.querySelector('select[name="showsheet"]');
+    if (choix && !standard('textes')) {
+      var titres = {};
+      Array.prototype.forEach.call(choix.options, function (o) {
+        var m = /^E(\d+)$/.exec(o.value);
+        var i = o.textContent.indexOf(':');
+        if (m && i >= 0 && o.textContent.slice(i + 1).trim()) titres[m[1]] = o.textContent.slice(i + 1).trim();
+      });
+      Array.prototype.forEach.call(table.querySelectorAll('thead th.name_exam'), function (th) {
+        var origine = th.textContent.trim();
+        var m = /(\d+)$/.exec(origine);
+        var t = m && titres[m[1]];
+        if (!t) return;
+        var s = document.createElement('span');
+        s.className = 'nova-titre-examen';
+        s.textContent = t;
+        th.textContent = '';
+        th.appendChild(s);
+        th.title = origine + ' : ' + t;
+      });
+    }
+    var moy = table.querySelector('thead th.average');
+    if (!moy) return;
+    var rang = Array.prototype.indexOf.call(moy.parentNode.children, moy);
+    var textes = document.getElementById('nova-textes');
+    var cle = 'nova-notes-sans-moyenne';
+    var masquer = function (oui) {
+      Array.prototype.forEach.call(table.rows, function (tr) {
+        var c = tr.cells[rang];
+        if (c) c.classList.toggle('nova-col-masquee', oui);
+      });
+    };
+    var actif = false;
+    try { actif = localStorage.getItem(cle) === '1'; } catch (e) { /* sans stockage : colonne visible */ }
+    var champ = document.createElement('div');
+    champ.className = 'field box nova-notes-option';
+    var caseM = document.createElement('input');
+    caseM.type = 'checkbox';
+    caseM.id = 'nova-sans-moyenne';
+    caseM.checked = actif;
+    var lib = document.createElement('label');
+    lib.htmlFor = caseM.id;
+    lib.textContent = (textes && textes.getAttribute('data-texte-masquer-moyenne')) || 'Masquer la moyenne';
+    champ.appendChild(caseM);
+    champ.appendChild(lib);
+    caseM.addEventListener('change', function () {
+      masquer(caseM.checked);
+      try { if (caseM.checked) localStorage.setItem(cle, '1'); else localStorage.removeItem(cle); } catch (e) { /* cette page seulement */ }
+    });
+    var cadre = choix && choix.closest('fieldset');
+    if (cadre) {
+      var envoi = cadre.querySelector(':scope > .wimsform');
+      cadre.insertBefore(champ, envoi || null);
+    } else {
+      var avant = table.closest('.wims_scrollable, .table-scroll') || table;
+      avant.parentNode.insertBefore(champ, avant);
+    }
+    masquer(actif);
+  }
+
   /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types
    * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
    * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
@@ -4688,7 +4761,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

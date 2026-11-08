@@ -900,3 +900,8 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 /* Légende des signes « † » et « ?? » du Détail des examens (nova.js signesExamens, 2026-11-07). */
 .wimsbody .nova-legende-signes { display: flex; flex-wrap: wrap; gap: var(--nova-e1) var(--nova-e3); margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .wimsbody .nova-legende-signes b { color: var(--nova-texte); margin-right: .2em; }
+/* Page « Notes » de l'enseignant (adm/class/userscore ; nova.js notesColonnes, 2026-11-08) : colonne de la moyenne
+ * masquée sur demande ; titre de l'examen en en-tête, deux lignes au plus, « … » au-delà (titre entier en info-bulle). */
+.wimsbody #TABLE_userlist .nova-col-masquee { display: none; }
+.wimsbody #TABLE_userlist th.name_exam .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; white-space: normal; overflow-wrap: anywhere; }
+.wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); }

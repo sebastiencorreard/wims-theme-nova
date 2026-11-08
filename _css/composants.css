@@ -1134,3 +1134,7 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-couleur-classe:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 2px; }
 .nova-couleur-etat:empty { display: none; }
 .nova-bdg-couleur select.nova-app-choix { min-height: 40px; margin: 0 .25rem; max-width: 100%; }
+/* « Désactiver quand même » (nova.js forcerDesactivation, 2026-11-08) : bouton sous le refus de WIMS, alerte. */
+.wimsbody .nova-forcer-ligne { margin: var(--nova-e2) 0 var(--nova-e3); }
+.nova-dialogue.nova-forcer { max-width: 34rem; }
+.nova-dialogue.nova-forcer ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--nova-e2); }

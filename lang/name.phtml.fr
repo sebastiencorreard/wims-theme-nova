@@ -435,4 +435,17 @@
 !set nova_dm_note_encours=Création...
 !set nova_dm_note_mot=noté
 !set nova_dm_note_fait=DM noté créé : « %1 ». Il reste en préparation : vérifiez-le, puis activez-le.
+!set nova_forcer_bouton=Désactiver quand même...
+!set nova_forcer_titre_exam=Désactiver l'examen %1 malgré le partage ?
+!set nova_forcer_titre_sheet=Désactiver la feuille %1 malgré le partage ?
+!set nova_forcer_points_exam=Il sera désactivé dans toutes les classes qui partagent vos examens : leurs élèves ne le verront plus.|Il redevient « En préparation » : son contenu est de nouveau modifiable. Changer, ajouter ou déplacer des exercices désaccorde les notes déjà enregistrées.|Les notes déjà enregistrées sont gardées.|WIMS l'interdit pour ces raisons : ne le faites qu'en connaissance de cause.
+!set nova_forcer_points_sheet=Elle sera désactivée dans toutes les classes qui partagent vos feuilles : leurs élèves ne la verront plus.|Elle redevient « En préparation » : son contenu est de nouveau modifiable. Changer, ajouter ou déplacer des exercices désaccorde les notes déjà enregistrées.|Les notes déjà enregistrées sont gardées.|WIMS l'interdit pour ces raisons : ne le faites qu'en connaissance de cause.
+!set nova_forcer_ok=Désactiver quand même
+!set nova_forcer_annuler=Annuler
+!set nova_desact_ok_exam=Examen %1 désactivé dans toutes les classes du partage : il est en préparation.
+!set nova_desact_ok_sheet=Feuille %1 désactivée dans toutes les classes du partage : elle est en préparation.
+!set nova_desact_refus_statut=Rien n'a été désactivé : l'élément %1 n'est pas actif.
+!set nova_desact_refus_commence=Rien n'a été désactivé : des élèves ont déjà commencé l'examen %1.
+!set nova_desact_refus_examen=Rien n'a été désactivé : des exercices de la feuille %1 sont utilisés dans un examen.
+!set nova_desact_refus_erreur=Rien n'a été désactivé (erreur).
 !set nova_version_lien=Nouveautés de chaque version (nouvel onglet)

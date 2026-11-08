@@ -1824,6 +1824,60 @@
    * d'entraînement remplacé par celui du dernier DM noté, sinon « noté »), description (celle du dernier DM noté, sinon
    * celle de l'entraînement, mot remplacé), sessions (--nova-dm-note-essais, 3), et enregistre. La copie reste en
    * préparation (choix de l'utilisateur). Plan gardé en sessionStorage (nova-dm-note) deux minutes. */
+  /* « Désactiver quand même » (demande de l'utilisateur, 2026-11-08) : page où WIMS refuse de désactiver un examen ou
+   * une feuille partagés avec d'autres classes. header.phtml pose #nova-forcer quand seul le partage bloque ; bouton sous
+   * le message de WIMS, alerte (conséquences) dans un <dialog class="nova-dialogue">, puis l'accueil fait la
+   * désactivation (nova_desactiver=exam:N ou sheet:N, _procs/desactiver.sh) et affiche le résultat (#nova-propage). */
+  function forcerDesactivation() {
+    var f = document.getElementById('nova-forcer');
+    var corps = document.querySelector('.wimsbody');
+    if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
+    var n = f.getAttribute('data-n');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'wims_button wims_warning nova-forcer-bouton';
+    b.textContent = f.getAttribute('data-bouton') || 'Deactivate anyway...';
+    var d = document.createElement('dialog');
+    d.className = 'nova-dialogue nova-forcer';
+    var h = document.createElement('h1');
+    h.id = 'nova-forcer-titre';
+    h.textContent = (f.getAttribute('data-titre') || 'Deactivate %1 despite sharing?').replace('%1', n);
+    d.setAttribute('aria-labelledby', h.id);
+    d.appendChild(h);
+    var ul = document.createElement('ul');
+    (f.getAttribute('data-points') || '').split('|').forEach(function (t) {
+      if (!t.trim()) return;
+      var li = document.createElement('li');
+      li.textContent = t.trim();
+      ul.appendChild(li);
+    });
+    d.appendChild(ul);
+    var actions = document.createElement('div');
+    actions.className = 'wimscenter';
+    var annuler = document.createElement('button');
+    annuler.type = 'button';
+    annuler.className = 'wims_button wims_secondary_button';
+    annuler.textContent = f.getAttribute('data-annuler') || 'Cancel';
+    var ok = document.createElement('a');
+    ok.className = 'wims_button wims_warning';
+    ok.setAttribute('role', 'button');
+    ok.href = lienAccueil('&nova_desactiver=' + f.getAttribute('data-type') + ':' + n);
+    ok.textContent = f.getAttribute('data-ok') || 'Deactivate anyway';
+    actions.appendChild(annuler);
+    actions.appendChild(ok);
+    d.appendChild(actions);
+    document.body.appendChild(d);
+    annuler.addEventListener('click', function () { d.close(); });
+    d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+    b.addEventListener('click', function () { d.showModal(); annuler.focus(); });
+    var p = document.createElement('p');
+    p.className = 'nova-forcer-ligne';
+    p.appendChild(b);
+    var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
+    if (msg) msg.parentNode.insertBefore(p, msg.nextSibling);
+    else corps.insertBefore(p, corps.firstChild);
+  }
+
   function dmNote() {
     var textes = document.getElementById('nova-textes');
     var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-texte-' + cle)) || defaut; };
@@ -3785,7 +3839,7 @@
     var corps = document.querySelector('.wimsbody');
     if (fait && fait.textContent.trim() && corps) {
       var msg = document.createElement('div');
-      msg.className = 'wims_msg success';
+      msg.className = 'wims_msg ' + (fait.getAttribute('data-etat') === 'erreur' ? 'alert' : 'success');
       msg.setAttribute('role', 'status');
       msg.textContent = fait.textContent.trim();
       corps.insertBefore(msg, corps.firstChild);
@@ -4949,7 +5003,7 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { placerMenu(); piedDePage(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); badgesClasse(); ecartsZones(); rubriqueBadges(); lienRubriqueBadges(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

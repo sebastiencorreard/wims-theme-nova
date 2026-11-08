@@ -18,6 +18,7 @@ l'enseignant ou le site ne l'active pas (page Apparence, rubrique « Badges Nova
 - Fenêtre des badges : onglets en icône ; niveau « Cuivre » renommé « Bronze ».
 
 ### Enseignants
+- **Désactiver quand même** : quand WIMS refuse de désactiver un examen ou une feuille parce qu'ils sont partagés avec d'autres classes, un bouton sous le refus le permet, après une alerte sur les conséquences (désactivé dans toutes les classes du partage, notes gardées).
 - **DM WIMS** : bouton « Créer le DM noté » sur l'accueil, à côté d'un examen d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
 - Accueil : moteur de recherche sous les feuilles et les examens.
 - modtool : menu latéral personnalisable ; choix de la langue sur une ligne dépliable.

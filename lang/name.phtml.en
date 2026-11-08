@@ -434,4 +434,17 @@
 !set nova_dm_note_encours=Creating...
 !set nova_dm_note_mot=graded
 !set nova_dm_note_fait=Graded homework created: "%1". It stays in preparation: check it, then activate it.
+!set nova_forcer_bouton=Deactivate anyway...
+!set nova_forcer_titre_exam=Deactivate exam %1 despite sharing?
+!set nova_forcer_titre_sheet=Deactivate sheet %1 despite sharing?
+!set nova_forcer_points_exam=It will be deactivated in every class sharing your exams: their students will no longer see it.|It goes back to "In preparation": its content can be changed again. Changing, adding or moving exercises puts the recorded scores out of step.|Scores already recorded are kept.|WIMS forbids it for these reasons: only do it if you know what you are doing.
+!set nova_forcer_points_sheet=It will be deactivated in every class sharing your sheets: their students will no longer see it.|It goes back to "In preparation": its content can be changed again. Changing, adding or moving exercises puts the recorded scores out of step.|Scores already recorded are kept.|WIMS forbids it for these reasons: only do it if you know what you are doing.
+!set nova_forcer_ok=Deactivate anyway
+!set nova_forcer_annuler=Cancel
+!set nova_desact_ok_exam=Exam %1 deactivated in every sharing class: it is in preparation.
+!set nova_desact_ok_sheet=Sheet %1 deactivated in every sharing class: it is in preparation.
+!set nova_desact_refus_statut=Nothing was deactivated: item %1 is not active.
+!set nova_desact_refus_commence=Nothing was deactivated: students have already started exam %1.
+!set nova_desact_refus_examen=Nothing was deactivated: exercises of sheet %1 are used in an exam.
+!set nova_desact_refus_erreur=Nothing was deactivated (error).
 !set nova_version_lien=What is new in each version (new tab)

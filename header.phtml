@@ -113,6 +113,58 @@
   !endif
   !reset nova_q nova_pr nova_pp nova_pq nova_ct nova_tn nova_sup nova_pn nova_pt
 !endif
+!! Desactiver malgre le partage (2026-11-08, utilisateur) : WIMS refuse de desactiver un examen ou une feuille partages
+!! avec d'autres classes (adm/class/exam : error=nodeactivate, deactivate=sharing ; adm/class/sheet : error=sharing_sheet).
+!! Sur cette page de refus, #nova-forcer (nova.js forcerDesactivation : bouton, alerte) si les AUTRES refus de WIMS ne
+!! s'appliquent pas (structure de la classe ici ; statut, examen commence, feuille dans un examen : _procs/desactiver.sh).
+!! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
+!if $wims_user=supervisor and $wims_class!=$empty and (($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty))
+  !reset nova_fs
+  !if $module=adm/class/exam
+    !set nova_ft=exam
+    !set nova_fn=$exam
+    !if $class_type!=0 and ($class_type!=1 or $wims_superclass!=$class_parent) and /0// notin $wims_class//
+      !set nova_fs=structure
+    !endif
+  !else
+    !set nova_ft=sheet
+    !set nova_fn=$sheet
+  !endif
+  !if $nova_fs=$empty
+    !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
+  !endif
+  !if $nova_fs=ok
+<span id="nova-forcer" hidden data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler"></span>
+  !endif
+  !reset nova_ft nova_fn nova_fs
+!endif
+!if $module=home and $wims_user=supervisor and $wims_class!=$empty
+  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_q=!replace internal + by $ $ in $nova_q
+  !set nova_dv=!getopt nova_desactiver in $nova_q
+  !if $nova_dv!=$empty
+    !set nova_dv=!replace internal : by , in $nova_dv
+    !set nova_ft=!item 1 of $nova_dv
+    !set nova_fn=!item 2 of $nova_dv
+    !if $nova_ft isitemof exam,sheet
+      !set nova_fr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn"
+      !if $nova_fr=ok
+        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_ok_$nova_ft)
+        !set nova_fe=succes
+        !set wims_class_log=deactivate $nova_ft $nova_fn (Nova, partage) by $wims_realuser
+      !else
+        !if $nova_fr notitemof statut,commence,examen
+          !set nova_fr=erreur
+        !endif
+        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_refus_$nova_fr)
+        !set nova_fe=erreur
+      !endif
+<div id="nova-propage" hidden data-etat="$nova_fe">$nova_fm</div>
+    !endif
+  !endif
+  !reset nova_q nova_dv nova_ft nova_fn nova_fr nova_fm nova_fe
+!endif
 !! Pages Apparence et Badges Nova d'une structure (2026-11-07, utilisateur) : zones dependantes dont les blocs Nova
 !! different de ceux de la structure (copie ancienne ou reglage de la zone). nova.js (ecartsZones) en fait une alerte
 !! avec un bouton qui propage (accueil, nova_propager). Memes droits que la propagation.

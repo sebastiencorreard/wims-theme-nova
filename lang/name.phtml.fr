@@ -488,3 +488,4 @@
 !set nova_bdg_coul_ordre=Les dégradés ne s'ouvrent qu'une fois la couleur débloquée.
 !set nova_coul_recompense_deg2=Au niveau %s : les dégradés, une fois ta couleur débloquée.
 !set nova_coul_verrou_degrade2=Atteins le niveau %s du badge %b pour les dégradés (après la couleur).
+!set nova_tag_nouveau=Nouveau

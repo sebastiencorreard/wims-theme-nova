@@ -3464,6 +3464,16 @@
 
   // Rubrique « Réglages de Nova » dans la page Configuration et maintenance d'une classe, d'un groupement ou d'un
   // portail, juste après « Apparence » (2026-10-07 : « Badges Nova » ; 2026-11-08, utilisateur : tous les réglages).
+  // Étiquette « Nouveau » (2026-11-08, utilisateur : Réglages de Nova, menu de gauche et liste de la configuration).
+  function tagNouveau(parent) {
+    if (parent.querySelector('.nova-tag-nouveau')) return;
+    var textes = document.getElementById('nova-textes');
+    var tag = document.createElement('span');
+    tag.className = 'nova-tag-nouveau';
+    tag.textContent = (textes && textes.getAttribute('data-texte-nouveau')) || 'New';
+    parent.appendChild(document.createTextNode(' '));
+    parent.appendChild(tag);
+  }
   function rubriqueReglages() {
     var app = document.querySelector('.wimsbody ul.wims_nopuce li > a[href*="job=present"]');
     if (!app || !/module=adm%2Fclass%2Fconfig|module=adm\/class\/config/.test(app.href) || document.querySelector('.nova-rubrique-reglages')) return;
@@ -3475,6 +3485,7 @@
     a.href = app.href.split('#')[0] + '#nova-reglages';
     a.textContent = t('rubrique-reglages', 'Nova settings');
     li.appendChild(a);
+    tagNouveau(li);
     li.appendChild(document.createTextNode(' ' + t('rubrique-reglages-aide', '')));
     var apres = app.closest('li');
     apres.parentNode.insertBefore(li, apres.nextSibling);
@@ -4133,7 +4144,7 @@
       if (suivi) suivi.classList.add('eye');
       // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
       var reglagesNova = menu.querySelector('.nova_reglages > a');
-      if (reglagesNova) reglagesNova.classList.add('config_module');
+      if (reglagesNova) { reglagesNova.classList.add('config_module'); tagNouveau(reglagesNova); }
     }
     var corps = document.getElementById('wimsbodybox');
     if (!menu || !corps || menu.parentElement === corps) return;

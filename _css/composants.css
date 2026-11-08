@@ -1179,3 +1179,6 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
  * (2026-11-08, utilisateur ; nova.js apparenceClasse). */
 .nova-reglages details.nova-rg-deplie > summary { display: none; }
 .nova-reglages details.nova-rg-deplie[hidden] { display: none; }
+/* Étiquette « Nouveau » (Réglages de Nova, 2026-11-08 ; nova.js tagNouveau). */
+.nova-tag-nouveau { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--nova-accent); color: var(--nova-sur-accent, #fff);
+  font-size: .6875rem; font-weight: 700; line-height: 1.5; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; text-transform: none; }

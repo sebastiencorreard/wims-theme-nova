@@ -1175,3 +1175,7 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 /* Réglage dangereux de la carte Apparence (« Désactiver malgré le partage », 2026-11-08) : avertissement en rouge. */
 .nova-app-ligne.nova-app-danger .nova-app-alerte { display: block; margin-top: var(--nova-e1); padding: var(--nova-e2) var(--nova-e3); border-left: 3px solid var(--nova-erreur); border-radius: 6px; background: var(--nova-erreur-fond); color: var(--nova-erreur); font-size: .8125rem; font-weight: 600; }
 .wimsbody .nova-forcer-refus { color: var(--nova-texte-2); font-size: var(--nova-petit); }
+/* Réglages de « Mon activité » sur la page Réglages de Nova : dépliés sans titre repliable, masqués sur « Non »
+ * (2026-11-08, utilisateur ; nova.js apparenceClasse). */
+.nova-reglages details.nova-rg-deplie > summary { display: none; }
+.nova-reglages details.nova-rg-deplie[hidden] { display: none; }

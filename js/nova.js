@@ -3060,10 +3060,21 @@
     var bdg = reglagesBadges(carte, zone);
     motsCles(carte, modele);
     var onglets = ongletsReglages(carte, nom);
+    // Réglages de « Mon activité » (2026-11-08, utilisateur) : dépliés d'office quand la page est sur « Oui », masqués
+    // sur « Non » (ils ne servent à rien). Ses dates de vacances ne bloquent alors plus l'enregistrement.
+    var actDetail = carte.querySelector('.nova-app-activite > details.nova-app-detail');
+    var activiteOui = function () { var r = carte.querySelector('input[name="nova_c_activite"]:checked'); return !!r && r.value === 'oui'; };
+    if (actDetail) {
+      actDetail.open = true;
+      actDetail.classList.add('nova-rg-deplie');
+      var suivreActivite = function () { actDetail.hidden = !activiteOui(); };
+      [].forEach.call(carte.querySelectorAll('input[name="nova_c_activite"]'), function (r) { r.addEventListener('change', suivreActivite); });
+      suivreActivite();
+    }
     var enregistrer = carte.querySelector('.nova-app-enregistrer');
     var envoi = formWims.querySelector('input[name="save"]');
     if (enregistrer && envoi) enregistrer.addEventListener('click', function () {
-      if (app.erreurs()) { onglets.montrer('eleves'); app.montrer(); return; }   // dates non comprises : rien d'envoyé
+      if ((!actDetail || activiteOui()) && app.erreurs()) { onglets.montrer('eleves'); app.montrer(); return; }   // dates non comprises : rien d'envoyé
       if (app.touche()) app.ecrire();
       if (bdg.touche()) bdg.ecrire();
       envoi.click();

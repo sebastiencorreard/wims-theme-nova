@@ -1,7 +1,10 @@
 # Nova — thème WIMS
 
-Thème pour WIMS 4.32, dérivé de `standard` : sobre et lumineux, adapté au téléphone, chronomètre
-d'examen lisible. Installation : voir `INSTALLER.md`.
+Thème pour WIMS 4.32, dérivé de `standard` : sobre et lumineux, adapté au téléphone.
+Nombreuses modifications de l'interface pour améliorer la clarté et la lisibilité.
+Pour les élèves : ludification de WIMS (badges, avatars, couleur personnalisée...)
+Pour les profs : suivi des élèves en direct, menu personnalisable, réglahes centralisés.
+. Installation : voir `INSTALLER.md`.
 
 ## Principes
 

@@ -5298,7 +5298,50 @@
     }
   }
 
-  function demarrer() { placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  /* Feuille perimee (2026-11-09, utilisateur) : WIMS appelle css.css a une adresse fixe (?ver=<version de WIMS>),
+   * qu'une mise a jour du theme ne change pas ; un navigateur peut garder des jours l'ancienne feuille avec le
+   * nouveau nova.js (vecu sur le serveur de l'utilisateur, version 1.3). css.css porte l'empreinte de ses sources
+   * (--nova-css, _css/empreinte.css), htmlheader.phtml celle attendue (meta nova-css), toutes deux ecrites par
+   * construire-css.sh. Si elles different : la feuille est redemandee au serveur en remplacant l'entree du cache
+   * (fetch, cache: 'reload' : les pages suivantes la trouvent a jour), puis rechargee dans cette page. Une seule
+   * redemande par session et par empreinte ; un serveur dont le css.css est lui-meme ancien (mkcss.pl lance sur un
+   * autre dossier, installation incomplete) est note et laisse tel quel, avec un message dans la console. */
+  function feuilleAJour() {
+    var m = document.querySelector('meta[name="nova-css"]');
+    var attendu = m ? m.getAttribute('content') : '';
+    if (!attendu) return;
+    var lue = function () {
+      return getComputedStyle(document.documentElement).getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
+    };
+    if (lue() === attendu) return;
+    var lien = [].filter.call(document.querySelectorAll('link[rel="stylesheet"][href]'), function (l) {
+      return /(^|\/)html\/themes\/[^\/?]+\/css\.css(\?|$)/.test(l.getAttribute('href'));
+    })[0];
+    if (!lien) return;
+    var cle = 'nova-css-recharge', deja = null;
+    try { deja = sessionStorage.getItem(cle); } catch (e) { deja = null; }
+    if (deja === attendu + ' serveur') return;
+    var href = lien.href;
+    function remplacer() {
+      var neuf = lien.cloneNode(false);
+      neuf.href = href + (href.indexOf('?') < 0 ? '?' : '&') + 'nova=' + attendu;
+      neuf.addEventListener('load', function () {
+        if (lien.parentNode) lien.parentNode.removeChild(lien);
+        if (lue() !== attendu) {
+          try { sessionStorage.setItem(cle, attendu + ' serveur'); } catch (e) { /* sans stockage : rien */ }
+          if (window.console) console.warn('Nova : css.css du serveur (' + (lue() || 'sans empreinte') + ') ne correspond pas a nova.js (' +
+            attendu + ') : reconstruire la feuille ou reinstaller le theme.');
+        }
+        window.dispatchEvent(new Event('resize'));
+      });
+      lien.parentNode.insertBefore(neuf, lien.nextSibling);
+    }
+    if (deja === attendu || !window.fetch) { remplacer(); return; }
+    try { sessionStorage.setItem(cle, attendu); } catch (e) { /* sans stockage : une redemande par page */ }
+    fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
+  }
+
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

@@ -22,6 +22,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
 ### Corrections
+- Après une mise à jour du thème, la mise en page n'est plus cassée tant que le navigateur garde l'ancienne feuille de style (onglets en simples boutons, fenêtre « Ma couleur » sans marges, page « Mon avatar » en vrac) : Nova repère la feuille périmée et la recharge tout seul.
 - « Appliquer » (zones dépendantes), la case Nova de « Zones dépendantes » et « Désactiver quand même » ne renvoient plus à l'accueil du portail : on reste sur la page (ou on revient à l'examen, à la feuille), avec le message.
 - Après « Enregistrer les réglages de Nova », on reste sur la page des réglages (même onglet), avec « Réglages de Nova enregistrés », au lieu d'arriver sur la page Apparence.
 - Exercices à cases dont les choix sont des formules affichées en image : le cadre ne coupe plus la formule et la pastille ne la cache plus.

@@ -13,6 +13,13 @@ cd "$(dirname "$0")"
 CONTENEUR=${CONTENEUR:-wims432}
 THEMES=/home/wims/public_html/themes
 tmp=$(mktemp)
+# Empreinte de la feuille (2026-11-09) : WIMS appelle css.css à une adresse fixe (?ver=<version de WIMS>), qu'une mise à
+# jour du thème ne change pas ; un navigateur garde alors l'ancienne feuille avec le nouveau nova.js. L'empreinte des
+# sources est écrite dans la feuille (_css/empreinte.css, --nova-css) et dans htmlheader.phtml (meta nova-css) :
+# nova.js (feuilleAJour) recharge la feuille quand elles diffèrent.
+empreinte_css=$(cat css.css.template $(ls _css/*.css | grep -v '_css/empreinte.css$') | sha256sum | cut -c1-10)
+printf '/* Écrit par construire-css.sh : empreinte des sources de css.css, lue par nova.js (feuilleAJour). */\n:root { --nova-css: "%s"; }\n' "$empreinte_css" > _css/empreinte.css
+sed -i "s|<meta name=\"nova-css\" content=\"[^\"]*\">|<meta name=\"nova-css\" content=\"$empreinte_css\">|" htmlheader.phtml
 trap 'rm -f "$tmp"' EXIT
 
 printf '/*! généré depuis css.css.template par construire-css.sh — ne pas modifier directement */\n' > "$tmp"

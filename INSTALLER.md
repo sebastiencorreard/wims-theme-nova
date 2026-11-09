@@ -70,8 +70,10 @@ par défaut de WIMS, Nova prend sa prune.
 - Un examen montre le chronomètre Nova (libellé « Temps restant », heure de fin).
 - Chez un élève, « Mon activité » ouvre la page Nova (régularité, temps de travail, dernières notes) ; la carte
   Nova de la page Apparence (site ou classe) propose ses réglages et les rubriques masquées aux élèves.
-- Les navigateurs gardent l'ancien `css.css` en cache (son adresse porte `?ver=<version de WIMS>`,
-  inchangée par une mise à jour du thème) : forcer le rechargement (Ctrl+Maj+R) après une mise à jour.
+- Les navigateurs peuvent garder l'ancien `css.css` en cache (son adresse porte `?ver=<version de WIMS>`,
+  inchangée par une mise à jour du thème). Nova le repère (empreinte de la feuille comparée à celle de la page) et le
+  recharge tout seul à la première page. Si la console du navigateur affiche « Nova : css.css du serveur (…) ne
+  correspond pas a nova.js », c'est le fichier du serveur qui est ancien : vérifier qu'il vient bien de l'archive.
 
 ## 5. Revenir en arrière
 

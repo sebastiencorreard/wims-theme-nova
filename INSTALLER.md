@@ -28,10 +28,14 @@ chown -R wims:wims Nova                            # le compte qui fait tourner 
 
 Le dossier peut porter un autre nom : les gabarits trouvent leurs fichiers par `$wims_theme`, le
 thème choisi par le site ou la classe. On peut donc garder deux versions côte à côte, par exemple
-`Nova` et `Nova_1_2`, et choisir l'une ou l'autre classe par classe. **Pas de point dans le nom**
-(`Nova_1.2`) : WIMS refuse alors de charger le `css.css` du thème (`src/config.c`) et les pages
-s'affichent sans style. Une archive au bon nom : `DOSSIER=Nova_1_2 ./livrer.sh` (depuis le dépôt),
-ou renommer le dossier après `tar -x`.
+`Nova` et `Nova12`, et choisir l'une ou l'autre classe par classe. **Lettres et chiffres seulement**,
+ni point, ni tiret, ni soulignement :
+- avec un point (`Nova1.2`), WIMS ne charge pas le `css.css` du thème (`src/config.c`) : pages sans style ;
+- avec un tiret ou un soulignement (`Nova-1-3`, `Nova_1_2`), l'accueil (module `home`, `main.phtml`) retire ces
+  caractères avant de lire le gabarit (`themes/Nova13/user.phtml`, introuvable) et prend celui du thème `default` :
+  accueils de l'élève, de l'enseignant et du visiteur sans Nova (ni badges, ni avatar, ni couleur), le reste en Nova.
+
+Une archive au bon nom : `DOSSIER=Nova12 ./livrer.sh` (depuis le dépôt), ou renommer le dossier après `tar -x`.
 
 Les deux versions partagent les mêmes réglages et données : `log/nova.conf`, blocs Nova des feuilles
 de classe, menus choisis (`.nova_menu_<login>`), badges (`score/<élève>.nova`), et la mémoire du

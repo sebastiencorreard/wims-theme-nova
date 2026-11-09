@@ -21,6 +21,9 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
 - Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
+### Installation
+- Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
+
 ### Corrections
 - Après une mise à jour du thème, la mise en page n'est plus cassée tant que le navigateur garde l'ancienne feuille de style (onglets en simples boutons, fenêtre « Ma couleur » sans marges, page « Mon avatar » en vrac) : Nova repère la feuille périmée et la recharge tout seul.
 - « Appliquer » (zones dépendantes), la case Nova de « Zones dépendantes » et « Désactiver quand même » ne renvoient plus à l'accueil du portail : on reste sur la page (ou on revient à l'examen, à la feuille), avec le message.

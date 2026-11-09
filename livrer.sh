@@ -4,7 +4,7 @@
 #                            le dossier ne garde que la dernière version (demande de l'utilisateur, 2026-10-08)
 #   ./livrer.sh <commit>   → reconstruit l'archive d'une ancienne version publiée (css.css versionné repris tel
 #                            quel, sans conteneur) ; n'efface rien
-#   DOSSIER=Nova_1_2 ./livrer.sh [<commit>]
+#   DOSSIER=Nova12 ./livrer.sh [<commit>]
 #                          → même archive, dossier du thème nommé autrement (deux versions côte à côte sur un
 #                            serveur, depuis le 2026-11-04) ; n'efface pas les archives de Nova. Pas de point dans le
 #                            nom : WIMS ne chargerait pas le css.css du thème (src/config.c).
@@ -19,7 +19,7 @@ set -e
 cd "$(dirname "$0")"
 DOSSIER=${DOSSIER:-Nova}
 case "$DOSSIER" in
-  *[!A-Za-z0-9_-]*|'') echo "Nom de dossier refusé : $DOSSIER (lettres, chiffres, _ et - seulement ; WIMS refuse le point)." >&2; exit 1 ;;
+  *[!A-Za-z0-9]*|'') echo "Nom de dossier refusé : $DOSSIER (lettres et chiffres seulement : WIMS refuse le point, et l'accueil retire - et _ du nom du thème)." >&2; exit 1 ;;
 esac
 sortie=../../livraisons
 if [ -n "$1" ]; then

@@ -1262,3 +1262,30 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 @keyframes nova-tourne { to { transform: rotate(360deg); } }
 html.nova-sans-animation .nova-forcer-etapes li.encours::before { animation: none; border-color: var(--nova-accent); }
 dialog.nova-forcer [hidden] { display: none !important; }
+
+/* Liens de connexion (2026-11-10, maquette A, utilisateur ; nova.js liensConnexion). Liste de WIMS masquée au plus 3 s
+   en attendant nova.js (repérée à son lien enseignant ou à un lien « enter= »). */
+html.nova-js:not(.nova-std-textes) .wimsbody ul:has(> li > a[href*="type=authsupervisor"]):not(.nova-liens-source) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-liens { max-width: 54rem; margin: var(--nova-e4) auto; display: flex; flex-direction: column; gap: var(--nova-e4); text-align: left; }
+.nova-lien-carte { background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); padding: var(--nova-e4) var(--nova-e5); display: flex; flex-direction: column; gap: var(--nova-e2); box-sizing: border-box; }
+.nova-lien-carte .nova-lien-titre { margin: 0; font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: var(--nova-e3); }
+.nova-lien-puce { width: 32px; height: 32px; border-radius: 50%; background: var(--nova-accent-doux); color: var(--nova-accent); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.nova-lien-aide { margin: 0; color: var(--nova-texte-2); line-height: 1.45; }
+.nova-lien-ligne { display: flex; gap: var(--nova-e2); align-items: stretch; flex-wrap: wrap; }
+.wimsbody .nova-lien-ligne .nova-lien-url { flex: 1 1 20rem; min-width: 0; width: auto; margin: 0; font-family: var(--nova-police-chiffres); font-size: .875rem; background: var(--nova-fond); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); padding: 10px 12px; color: var(--nova-texte); box-sizing: border-box; min-height: 44px; }
+.nova-lien-ligne .wims_button { margin: 0; min-height: 44px; flex: none; }
+.nova-lien-qr { display: flex; gap: var(--nova-e4); align-items: center; margin-top: var(--nova-e1); }
+.nova-lien-qr .wimscenter { margin: 0; flex: none; }
+.nova-lien-qr .wimscenter img { max-width: 140px; height: auto; }
+.nova-lien-carte.nova-lien-numero-carte { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--nova-e3); }
+.nova-lien-num-texte { flex: 1 1 18rem; display: flex; flex-direction: column; gap: var(--nova-e1); }
+.nova-lien-numero-carte .nova-lien-titre { font-size: 1.05rem; }
+.nova-lien-num { font-family: var(--nova-police-chiffres); margin-left: .35em; }
+.nova-lien-numero-carte .wims_button { margin: 0; min-height: 44px; }
+.nova-lien-etat { margin: 0; color: var(--nova-texte-2); min-height: 0; }
+.nova-lien-etat:empty { display: none; }
+@media (max-width: 639px) {
+  .nova-lien-carte { padding: var(--nova-e4); }
+  .nova-lien-ligne .wims_button { flex: 1 1 100%; }
+  .nova-lien-qr { flex-direction: column; align-items: flex-start; }
+}

@@ -179,7 +179,7 @@
 !set nova_std_examens_liste=<li>«Termina questa sessione d'esame» resta nel menu dell'account (o nel menu laterale) invece di un pulsante «Termina» nella barra.</li><li>Il nome dello studente, l'Aiuto e l'account restano nella barra durante l'esame.</li><li>I link di disconnessione restano visibili durante l'esame.</li><li>La frase «Il suo voto per questo esame è...» è mostrata nella pagina dell'esame.</li><li>Il messaggio «Ha già iniziato un altro esame...» resta quello standard.</li><li>Sono mostrati i titoli sopra le istruzioni e l'elenco degli esercizi.</li><li>Dopo l'avviso di «Termina», «No» torna alla pagina dei voti.</li><li>Invariato: il cronometro di Nova e la pastiglia «Esame in corso».</li>
 !set nova_std_textes=Testi standard
 !set nova_std_textes_aide=Frasi ed etichette originali dove Nova le riscrive.
-!set nova_std_textes_liste=<li>«I miei voti»: frasi standard dei voti d'esame.</li><li>Pagina di accesso: testi di introduzione mostrati.</li><li>Cambio di password: etichette standard.</li><li>Barra in alto: «Pagina iniziale» invece di «WIMS».</li><li>Pagina Aspetto: «Colore di sfondo del menu» invece di «Colore del tema».</li><li>Pagina «Voti» del docente: intestazioni «Esame n» invece del titolo dell'esame.</li><li>Restrizione d'accesso: solo il campo di WIMS, senza il modulo per orari e periodi vietati.</li>
+!set nova_std_textes_liste=<li>«I miei voti»: frasi standard dei voti d'esame.</li><li>Pagina di accesso: testi di introduzione mostrati.</li><li>Cambio di password: etichette standard.</li><li>Barra in alto: «Pagina iniziale» invece di «WIMS».</li><li>Pagina Aspetto: «Colore di sfondo del menu» invece di «Colore del tema».</li><li>Pagina «Voti» del docente: intestazioni «Esame n» invece del titolo dell'esame.</li><li>Restrizione d'accesso: solo il campo di WIMS, senza il modulo per orari e periodi vietati.</li><li>Link di accesso: l'elenco di WIMS così com'è, senza schede né pulsante Copia.</li>
 !set nova_std_listes=Fogli ed esami in elenco
 !set nova_std_listes_aide=Presentazione standard invece delle schede di Nova.
 !set nova_std_listes_liste=<li>Home dello studente: fogli, esami, documenti, strumenti e sequenze con la presentazione standard invece delle schede di Nova.</li><li>Voti di fogli ed esami come li scrive il tema standard: niente segmenti, pastiglia del voto né etichette.</li><li>Tentativi e cronologia degli esami nella forma standard.</li><li>Legenda completa dei tipi.</li><li>Pagina di un foglio: esercizi e voti standard.</li><li>Pagina di un esame: esercizi in elenco invece che in schede.</li>
@@ -624,3 +624,21 @@
 !set nova_svj_err_indispo=Rilevamento non disponibile. Aggiorna per riprovare.
 !set nova_svj_accueil=Home
 !set nova_svj_inconnue=Attività sconosciuta
+!! Liens de connexion (nova.js liensConnexion, header.phtml #nova-liens-textes), 2026-11-10.
+!set nova_lc_vous=Link per lei
+!set nova_lc_vous_aide=Apre l'accesso docente: fogli, esami, studenti e i loro voti. Lo salvi nei preferiti.
+!set nova_lc_eleves=Link per i suoi studenti
+!set nova_lc_eleves_aide=Per iscriversi alla classe o entrarvi una volta iscritti. Da condividere sul registro elettronico o alla lavagna.
+!set nova_lc_eleves_aide_s=Per iscriversi a una classe o entrarvi una volta iscritti. Da condividere sul registro elettronico o alla lavagna.
+!set nova_lc_qr=Codice QR da proiettare in classe: gli studenti lo scansionano con il telefono.
+!set nova_lc_ens=Link per i docenti
+!set nova_lc_ens_aide=Perché i docenti entrino nelle loro classi.
+!set nova_lc_insc=Iscrizione dei docenti
+!set nova_lc_insc_aide=Perché un docente crei il suo account.
+!set nova_lc_copier=Copia
+!set nova_lc_copie=Copiato
+!set nova_lc_copier_num=Copia il numero
+!set nova_lc_echec=Copia impossibile: selezioni il link e lo copi.
+!set nova_lc_numero=Numero della classe
+!set nova_lc_numero_s=Numero della struttura
+!set nova_lc_numero_aide=Da conservare anche questo: permette di ritrovarla dalla pagina iniziale di WIMS.

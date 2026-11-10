@@ -179,7 +179,7 @@
 !set nova_std_examens_liste=<li>«Terminar esta sesión de examen» queda en el menú de la cuenta (o el menú lateral) en lugar de un botón «Terminar» en la barra.</li><li>El nombre del alumno, la Ayuda y la cuenta quedan en la barra durante el examen.</li><li>Los enlaces de desconexión siguen visibles durante el examen.</li><li>La frase «Su nota en este examen es...» se muestra en la página del examen.</li><li>El mensaje «Ya ha empezado otro examen...» sigue siendo el estándar.</li><li>Se muestran los títulos sobre las instrucciones y la lista de ejercicios.</li><li>Tras el aviso de «Terminar», «No» vuelve a la página de notas.</li><li>Sin cambios: el cronómetro de Nova y la pastilla «Examen en curso».</li>
 !set nova_std_textes=Textos estándar
 !set nova_std_textes_aide=Frases y etiquetas originales allí donde Nova las reescribe.
-!set nova_std_textes_liste=<li>«Mis notas»: frases estándar de las notas de examen.</li><li>Página de conexión: se muestran los textos de introducción.</li><li>Cambio de contraseña: etiquetas estándar.</li><li>Barra superior: «Página de inicio» en lugar de «WIMS».</li><li>Página Apariencia: «Color de fondo del menú» en lugar de «Color del tema».</li><li>Página «Notas» del profesor: encabezados «Examen n» en lugar del título del examen.</li><li>Restricción de acceso: solo el campo de WIMS, sin el formulario de horas y periodos prohibidos.</li>
+!set nova_std_textes_liste=<li>«Mis notas»: frases estándar de las notas de examen.</li><li>Página de conexión: se muestran los textos de introducción.</li><li>Cambio de contraseña: etiquetas estándar.</li><li>Barra superior: «Página de inicio» en lugar de «WIMS».</li><li>Página Apariencia: «Color de fondo del menú» en lugar de «Color del tema».</li><li>Página «Notas» del profesor: encabezados «Examen n» en lugar del título del examen.</li><li>Restricción de acceso: solo el campo de WIMS, sin el formulario de horas y periodos prohibidos.</li><li>Enlaces de conexión: la lista de WIMS tal cual, sin tarjetas ni botón Copiar.</li>
 !set nova_std_listes=Hojas y exámenes en lista
 !set nova_std_listes_aide=Presentación estándar en lugar de las tarjetas de Nova.
 !set nova_std_listes_liste=<li>Inicio del alumno: hojas, exámenes, documentos, herramientas y secuencias con la presentación estándar en lugar de las tarjetas de Nova.</li><li>Notas de hojas y exámenes tal como las escribe el tema estándar: sin segmentos, pastilla de nota ni etiquetas.</li><li>Intentos e historial de exámenes en su forma estándar.</li><li>Leyenda completa de los tipos.</li><li>Página de una hoja: ejercicios y notas estándar.</li><li>Página de un examen: ejercicios en lista en lugar de tarjetas.</li>
@@ -624,3 +624,21 @@
 !set nova_svj_err_indispo=Informe no disponible. Actualiza para reintentarlo.
 !set nova_svj_accueil=Inicio
 !set nova_svj_inconnue=Actividad desconocida
+!! Liens de connexion (nova.js liensConnexion, header.phtml #nova-liens-textes), 2026-11-10.
+!set nova_lc_vous=Enlace para usted
+!set nova_lc_vous_aide=Abre la conexión de profesor: hojas, exámenes, alumnos y sus notas. Guárdelo en sus favoritos.
+!set nova_lc_eleves=Enlace para sus alumnos
+!set nova_lc_eleves_aide=Para inscribirse en la clase o entrar en ella una vez inscritos. Compártalo en la plataforma educativa o en la pizarra.
+!set nova_lc_eleves_aide_s=Para inscribirse en una clase o entrar en ella una vez inscritos. Compártalo en la plataforma educativa o en la pizarra.
+!set nova_lc_qr=Código QR para proyectar en clase: los alumnos lo escanean con su teléfono.
+!set nova_lc_ens=Enlace para los profesores
+!set nova_lc_ens_aide=Para que los profesores entren en sus clases.
+!set nova_lc_insc=Inscripción de los profesores
+!set nova_lc_insc_aide=Para que un profesor cree su cuenta.
+!set nova_lc_copier=Copiar
+!set nova_lc_copie=Copiado
+!set nova_lc_copier_num=Copiar el número
+!set nova_lc_echec=No se puede copiar: seleccione el enlace y cópielo.
+!set nova_lc_numero=Número de la clase
+!set nova_lc_numero_s=Número de la estructura
+!set nova_lc_numero_aide=Guárdelo también: permite encontrarla desde la página de inicio de WIMS.

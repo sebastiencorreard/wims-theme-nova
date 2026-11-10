@@ -1498,6 +1498,153 @@
     });
   }
 
+  /* Liens de connexion (scripts/adm/class/links.phtml, page Liens de connexion de la configuration ; 2026-11-10,
+   * maquette A, utilisateur) : une carte par lien (Lien pour vous, pour vos eleves, pour les enseignants, inscription
+   * des enseignants), le lien entier dans un champ et un bouton Copier ; QR code de WIMS dans la carte des eleves ;
+   * numero de la classe dans sa carte. Liste de WIMS reconnue a ses liens (texte = adresse) ; un lien inconnu : rien
+   * n'est change. Reglage standard : textes. Textes : header.phtml #nova-liens-textes. */
+  function liensConnexion() {
+    var t = document.getElementById('nova-liens-textes');
+    var corps = document.querySelector('.wimsbody');
+    if (!t || !corps) return;
+    var source = corps.querySelector('ul.nova-liens-source');
+    if (standard('textes')) return;
+    var tx = function (k) { return t.getAttribute('data-' + k) || ''; };
+    var dec = function (h) { try { return decodeURIComponent(h); } catch (e) { return h; } };
+    var role = function (h) {
+      h = dec(dec(h));
+      if (/type=authsupervisor/.test(h)) return 'vous';
+      if (/module=adm\/class\/reguser/.test(h)) return 'insc';
+      if (/authtype=teacher/.test(h)) return 'ens';
+      if (/type=authparticipant/.test(h)) return /subclass=yes/.test(h) ? 'eleves' : 'ens';
+      if (/[?&]enter=/.test(h)) return 'eleves';
+      return '';
+    };
+    var liste = null, items = [];
+    Array.prototype.some.call(corps.querySelectorAll('ul'), function (ul) {
+      var lis = Array.prototype.filter.call(ul.children, function (li) { return li.tagName === 'LI'; });
+      if (!lis.length || lis.length > 6) return false;
+      var res = lis.map(function (li) {
+        var a = li.querySelector('a[href]');
+        if (!a || a.textContent.trim() !== a.getAttribute('href').trim()) return null;
+        var r = role(a.getAttribute('href'));
+        return r ? { li: li, href: a.href, role: r } : null;
+      });
+      if (res.some(function (x) { return !x; }) || !res.some(function (x) { return x.role === 'vous' || x.role === 'eleves'; })) return false;
+      liste = ul; items = res;
+      return true;
+    });
+    if (!liste || source) return;
+    var structure = /^[234]$/.test(t.getAttribute('data-type') || '') || items.some(function (x) { return x.role === 'ens' || x.role === 'insc'; });
+    var icones = {
+      vous: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      eleves: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+      ens: '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',
+      insc: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
+      numero: '<path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/>'
+    };
+    var etat = null;
+    var copier = function (texte, bouton, champ) {
+      var libelle = bouton.textContent;
+      var fini = function (ok) {
+        bouton.textContent = ok ? tx('copie') + ' \u2713' : libelle;
+        if (bouton._nova) clearTimeout(bouton._nova);
+        if (ok) bouton._nova = setTimeout(function () { bouton.textContent = libelle; }, 2000);
+        else { if (champ) { champ.focus(); champ.select(); } if (etat) etat.textContent = tx('echec'); }
+      };
+      var repli = function () {
+        var z = document.createElement('textarea');
+        z.value = texte; z.setAttribute('readonly', ''); z.style.position = 'fixed'; z.style.opacity = '0';
+        document.body.appendChild(z); z.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        z.remove(); fini(ok);
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(texte).then(function () { fini(true); }, repli);
+      else repli();
+    };
+    var carte = function (cle, titre) {
+      var c = document.createElement('section');
+      c.className = 'nova-lien-carte nova-lien-' + cle;
+      var h = document.createElement('p');
+      h.className = 'nova-lien-titre';
+      var puce = document.createElement('span');
+      puce.className = 'nova-lien-puce';
+      puce.setAttribute('aria-hidden', 'true');
+      puce.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + icones[cle] + '</svg>';
+      h.appendChild(puce);
+      h.appendChild(document.createTextNode(titre));
+      c.appendChild(h);
+      return c;
+    };
+    var aide = function (c, texte) {
+      if (!texte) return;
+      var p = document.createElement('p'); p.className = 'nova-lien-aide'; p.textContent = texte; c.appendChild(p);
+    };
+    var bouton = function (texte) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'wims_button'; b.textContent = texte; return b;
+    };
+    var boite = document.createElement('div');
+    boite.className = 'nova-liens';
+    etat = document.createElement('p');
+    etat.className = 'nova-lien-etat';
+    etat.setAttribute('role', 'status');
+    items.forEach(function (x) {
+      var titre = tx(x.role);
+      var c = carte(x.role, titre);
+      aide(c, tx(x.role === 'eleves' && structure ? 'eleves-aide-s' : x.role + '-aide'));
+      var ligne = document.createElement('div');
+      ligne.className = 'nova-lien-ligne';
+      var champ = document.createElement('input');
+      champ.type = 'text'; champ.readOnly = true; champ.className = 'nova-lien-url'; champ.value = x.href;
+      champ.setAttribute('aria-label', titre);
+      champ.addEventListener('focus', function () { champ.select(); });
+      var b = bouton(tx('copier'));
+      b.addEventListener('click', function () { copier(x.href, b, champ); });
+      ligne.appendChild(champ); ligne.appendChild(b);
+      c.appendChild(ligne);
+      var qr = x.li.querySelector('.wimscenter');
+      if (qr && qr.querySelector('img, svg, canvas, table')) {
+        var bloc = document.createElement('div');
+        bloc.className = 'nova-lien-qr';
+        bloc.appendChild(qr);
+        aide(bloc, tx('qr'));
+        c.appendChild(bloc);
+      }
+      boite.appendChild(c);
+    });
+    // Numero de la classe (span.wims_code_words du dernier paragraphe) et mention Important de WIMS.
+    var code = null, n = liste.nextSibling, retirer = [];
+    while (n) {
+      if (n.nodeType === 1 && n.querySelector && n.querySelector('.wims_code_words')) { code = n.querySelector('.wims_code_words'); retirer.push(n); break; }
+      if (n.nodeType === 1 && !/^(SPAN|B|STRONG|BR|EM)$/.test(n.tagName)) break;
+      retirer.push(n); n = n.nextSibling;
+    }
+    if (code && code.textContent.trim()) {
+      var num = code.textContent.trim();
+      var c = carte('numero', tx(structure ? 'numero-s' : 'numero') + ' : ');
+      c.classList.add('nova-lien-numero-carte');
+      var m = document.createElement('span'); m.className = 'nova-lien-num'; m.textContent = num;
+      c.firstChild.appendChild(m);
+      var texte = document.createElement('div'); texte.className = 'nova-lien-num-texte';
+      texte.appendChild(c.firstChild);
+      aide(texte, tx('numero-aide'));
+      c.appendChild(texte);
+      var bn = bouton(tx('copier-num'));
+      bn.classList.add('wims_secondary_button');
+      bn.addEventListener('click', function () { copier(num, bn, null); });
+      c.appendChild(bn);
+      boite.appendChild(c);
+    } else retirer = [];
+    boite.appendChild(etat);
+    var avant = liste.previousSibling;
+    liste.parentNode.insertBefore(boite, liste);
+    liste.classList.add('nova-liens-source');
+    liste.hidden = true;
+    retirer.forEach(function (x) { if (x.parentNode) x.parentNode.removeChild(x); });
+    if (avant && avant.nodeType === 3 && /:\s*$/.test(avant.textContent)) avant.textContent = '';
+  }
+
   function retourEnHaut() {
     var lien = document.getElementById('back-to-top');
     if (!lien) {
@@ -5768,7 +5915,7 @@
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

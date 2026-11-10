@@ -189,7 +189,7 @@
 !set nova_std_examens_liste=<li>« Terminer cette session d'examen » reste dans le menu du compte (ou dans le menu latéral), au lieu d'un bouton « Terminer » dans la barre.</li><li>Le nom de l'élève, l'Aide et le compte restent dans la barre pendant l'examen.</li><li>Les liens de déconnexion restent affichés pendant l'examen.</li><li>La phrase « Votre score pour cet examen est... » est affichée sur la page de l'examen.</li><li>Le message « Vous avez déjà commencé un autre examen... » reste celui du thème standard.</li><li>Les titres au-dessus de la consigne et de la liste des exercices sont affichés.</li><li>Après l'avertissement de « Terminer », « Non » ramène à la page des notes, et non à la liste des exercices.</li><li>Sans changement : le chronomètre de Nova et la pastille « Examen en cours ».</li>
 !set nova_std_textes=Textes du thème standard
 !set nova_std_textes_aide=Phrases et libellés d'origine là où Nova les réécrit.
-!set nova_std_textes_liste=<li>« Mes notes » : phrases de la note d'examen du thème standard.</li><li>Page de connexion : textes d'introduction affichés.</li><li>Changement de mot de passe : intitulés du thème standard.</li><li>Barre du haut : « Page d'accueil » au lieu de « WIMS ».</li><li>Page Apparence : « Couleur de fond des menus » au lieu de « Couleur du thème ».</li><li>Page « Notes » de l'enseignant : en-têtes « Examen n » au lieu du titre de l'examen.</li><li>Restriction d'accès : le champ de WIMS seul, sans le formulaire des heures et des périodes interdites.</li>
+!set nova_std_textes_liste=<li>« Mes notes » : phrases de la note d'examen du thème standard.</li><li>Page de connexion : textes d'introduction affichés.</li><li>Changement de mot de passe : intitulés du thème standard.</li><li>Barre du haut : « Page d'accueil » au lieu de « WIMS ».</li><li>Page Apparence : « Couleur de fond des menus » au lieu de « Couleur du thème ».</li><li>Page « Notes » de l'enseignant : en-têtes « Examen n » au lieu du titre de l'examen.</li><li>Restriction d'accès : le champ de WIMS seul, sans le formulaire des heures et des périodes interdites.</li><li>Liens de connexion : liste de WIMS telle quelle, sans cartes ni bouton Copier.</li>
 !set nova_std_listes=Feuilles et examens en liste
 !set nova_std_listes_aide=Présentation du thème standard au lieu des cartes de Nova.
 !set nova_std_listes_liste=<li>Accueil de l'élève : feuilles, examens, documents, outils et séquences avec la présentation du thème standard, au lieu des cartes de Nova.</li><li>Score des feuilles et des examens tel que l'écrit le thème standard : plus de segments par exercice, de pastille de note ni d'étiquettes.</li><li>Essais et historique des examens sous la forme du thème standard.</li><li>Légende des types complète, même pour les types absents de l'onglet.</li><li>Page d'une feuille : exercices et scores du thème standard.</li><li>Page d'un examen : exercices en liste, au lieu de cartes.</li>
@@ -644,3 +644,21 @@
 !set nova_svj_err_indispo=Relevé indisponible. Actualisez pour réessayer.
 !set nova_svj_accueil=Accueil
 !set nova_svj_inconnue=Activité inconnue
+!! Liens de connexion (nova.js liensConnexion, header.phtml #nova-liens-textes), 2026-11-10.
+!set nova_lc_vous=Lien pour vous
+!set nova_lc_vous_aide=Ouvre la connexion enseignant : feuilles, examens, élèves et leurs notes. Gardez-le dans vos favoris.
+!set nova_lc_eleves=Lien pour vos élèves
+!set nova_lc_eleves_aide=Pour s'inscrire dans la classe ou y entrer une fois inscrits. À donner sur l'ENT ou au tableau.
+!set nova_lc_eleves_aide_s=Pour s'inscrire dans une classe ou y entrer une fois inscrits. À donner sur l'ENT ou au tableau.
+!set nova_lc_qr=QR code à projeter en classe : les élèves le scannent avec leur téléphone.
+!set nova_lc_ens=Lien pour les enseignants
+!set nova_lc_ens_aide=Pour que les enseignants entrent dans leurs classes.
+!set nova_lc_insc=Inscription des enseignants
+!set nova_lc_insc_aide=Pour qu'un enseignant crée son compte.
+!set nova_lc_copier=Copier
+!set nova_lc_copie=Copié
+!set nova_lc_copier_num=Copier le numéro
+!set nova_lc_echec=Copie impossible : sélectionnez le lien et copiez-le.
+!set nova_lc_numero=Numéro de la classe
+!set nova_lc_numero_s=Numéro de la structure
+!set nova_lc_numero_aide=À garder aussi : il permet de la retrouver depuis l'accueil de WIMS.

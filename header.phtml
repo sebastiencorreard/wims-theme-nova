@@ -134,7 +134,7 @@
     !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
   !endif
   !if $nova_fs=ok or $nova_fs=ok examen
-<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler"></span>
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler" data-sauver="$nova_forcer_sauver" data-sauver-aide="$nova_forcer_sauver_aide" data-ok-sauver="$nova_forcer_ok_sauver" data-etape1="$nova_forcer_etape1" data-etape2="$nova_forcer_etape2" data-etape3="$nova_forcer_etape3" data-echec="$nova_forcer_echec" data-reessayer="$nova_forcer_reessayer" data-sans="$nova_forcer_sans"></span>
   !endif
   !if $nova_fs=commence
 <span id="nova-forcer" hidden data-refus="$nova_forcer_refus_commence"></span>

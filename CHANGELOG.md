@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- **Désactiver quand même** : case cochée par défaut « Télécharger d'abord une sauvegarde de la classe (.zip) » ; la sauvegarde complète de WIMS est téléchargée, puis l'examen ou la feuille est désactivé. Si la sauvegarde échoue, rien n'est désactivé.
 - **Restriction d'accès d'un portail, groupement ou niveau** : après l'enregistrement, Nova propose de l'appliquer aux zones dépendantes qui ont une autre restriction (liste des zones, « Appliquer » ou « Non, seulement ici »).
 - **Restriction d'accès** (Configuration et maintenance) : formulaire pour interdire le travail à certaines heures chaque jour (« La nuit : 20 h 30 à 7 h » en un clic) ou entre deux dates, pour tout le travail ou les exercices seulement, avec un résumé en français. Les règles écrites à la main sont gardées dans « Réglage expert », une règle en double n'est écrite qu'une fois.
 - **Accueil d'un portail** : bouton « Replier les classes » à côté de chaque niveau ; replié, il ne reste que les programmes et leurs cours. Le choix est gardé sur le serveur (il vous suit d'un appareil à l'autre).

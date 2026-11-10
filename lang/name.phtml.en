@@ -542,3 +542,12 @@
 !set nova_accp_fait=Restriction applied to the %1 dependent zones.
 !set nova_accp_fait1=Restriction applied to the dependent zone.
 !set nova_accp_erreur=The restriction could not be applied to the zones. Use "Dependent zones" in the configuration.
+!set nova_forcer_sauver=Download a backup of the class first (.zip)
+!set nova_forcer_sauver_aide=Participants, scores, worksheets, exams... everything needed to restore it if necessary (Configuration, Backup and restore).
+!set nova_forcer_ok_sauver=Back up, then deactivate
+!set nova_forcer_etape1=Preparing the backup of the class...
+!set nova_forcer_etape2=Downloading: %1
+!set nova_forcer_etape3=Deactivating
+!set nova_forcer_echec=The backup failed: nothing was deactivated.
+!set nova_forcer_reessayer=Try again
+!set nova_forcer_sans=Deactivate without backup

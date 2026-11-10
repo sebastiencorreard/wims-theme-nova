@@ -1244,3 +1244,21 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-acces-propager ul { columns: 2; margin: var(--nova-e1) 0 0; }
 .wimsbody .wims_msg:has(+ .nova-acces-propager), .wimsbody .wims_msg:has(+ .nova-acces) { max-width: 54rem; margin-left: auto; margin-right: auto; box-sizing: border-box; }
 .wimsbody .nova-acces-propager details { background: none; border: 0; box-shadow: none; padding: 0; margin: 0 0 var(--nova-e2); }
+
+/* « Désactiver quand même » : sauvegarde de la classe d'abord (2026-11-10, maquette, utilisateur ; nova.js forcerDesactivation). */
+.nova-forcer-sauver { display: flex; gap: var(--nova-e3); align-items: flex-start; margin: var(--nova-e3) 0; padding: var(--nova-e3) var(--nova-e4); border-radius: var(--nova-rayon); background: var(--nova-accent-doux); cursor: pointer; text-align: left; }
+.nova-forcer-sauver input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--nova-accent); }
+.nova-forcer-sauver-aide { display: block; color: var(--nova-texte-2); font-size: .92em; margin-top: 2px; }
+.nova-forcer-etapes { list-style: none; margin: var(--nova-e3) 0; padding: 0; text-align: left; }
+.nova-forcer-etapes li { display: flex; align-items: center; gap: var(--nova-e3); padding: 6px 0; color: var(--nova-texte-2); }
+.nova-forcer-etapes li::before { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--nova-bord); box-sizing: border-box; flex: none; }
+.nova-forcer-etapes li.encours { color: var(--nova-texte); font-weight: 700; }
+.nova-forcer-etapes li.encours::before { border: 3px solid var(--nova-bord); border-top-color: var(--nova-accent); animation: nova-tourne .9s linear infinite; }
+.nova-forcer-etapes li.fait { color: var(--nova-texte); }
+.nova-forcer-etapes li.fait::before { border: 0; background: #2D7243 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E") center / 12px no-repeat; }
+.nova-forcer-etapes li.echec { color: #A12C2C; }
+.nova-forcer-etapes li.echec::before { border-color: #A12C2C; }
+.nova-forcer-echec { color: #A12C2C; font-weight: 700; margin: 0 0 var(--nova-e3); }
+@keyframes nova-tourne { to { transform: rotate(360deg); } }
+html.nova-sans-animation .nova-forcer-etapes li.encours::before { animation: none; border-color: var(--nova-accent); }
+dialog.nova-forcer [hidden] { display: none !important; }

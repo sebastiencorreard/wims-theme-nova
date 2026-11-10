@@ -2214,15 +2214,111 @@
     ok.setAttribute('role', 'button');
     ok.href = lienAccueil('&nova_desactiver=' + f.getAttribute('data-type') + ':' + n);
     // Sans passer par l'accueil (2026-11-09) : retour à la page de l'examen ou de la feuille, avec le message.
-    ok.addEventListener('click', function (e) {
-      e.preventDefault();
-      ok.setAttribute('aria-disabled', 'true');
-      ok.classList.add('disabled');
+    var desactiver = function () {
       var t = f.getAttribute('data-type');
       actionAccueil('&nova_desactiver=' + t + ':' + n, lienSession('&cmd=new&module=adm%2Fclass%2F' + t + '&' + t + '=' + n));
+    };
+    // Sauvegarde de la classe avant de désactiver (2026-11-10, utilisateur, maquette ; case cochée par défaut) : la
+    // sauvegarde complète de WIMS (adm/class/config, job=arch, job2=download, selection=all), .zip, sinon .tgz (serveur
+    // sans « zip » : pack.sh échoue, vu sur le banc). Deux requêtes (l'entrée dans le module ignore job=…), 1,5 s d'écart,
+    // puis le fichier (lien getfile de la page) récupéré et enregistré par le navigateur. Échec : rien n'est désactivé.
+    var caseSauver = document.createElement('label');
+    caseSauver.className = 'nova-forcer-sauver';
+    var cocher = document.createElement('input');
+    cocher.type = 'checkbox';
+    cocher.checked = true;
+    var libSauver = document.createElement('span');
+    var gras = document.createElement('b');
+    gras.textContent = f.getAttribute('data-sauver') || 'Download a backup of the class first (.zip)';
+    libSauver.appendChild(gras);
+    if (f.getAttribute('data-sauver-aide')) {
+      var aideSauver = document.createElement('span');
+      aideSauver.className = 'nova-forcer-sauver-aide';
+      aideSauver.textContent = f.getAttribute('data-sauver-aide');
+      libSauver.appendChild(aideSauver);
+    }
+    caseSauver.appendChild(cocher);
+    caseSauver.appendChild(libSauver);
+    d.appendChild(caseSauver);
+    var libelleOk = function () { ok.textContent = cocher.checked ? (f.getAttribute('data-ok-sauver') || 'Back up, then deactivate') : (f.getAttribute('data-ok') || 'Deactivate anyway'); };
+    cocher.addEventListener('change', libelleOk);
+    var suivi = document.createElement('ol');
+    suivi.className = 'nova-forcer-etapes';
+    suivi.hidden = true;
+    var etapes = ['etape1', 'etape2', 'etape3'].map(function (k) {
+      var li = document.createElement('li');
+      li.textContent = (f.getAttribute('data-' + k) || '').replace(/\s*:?\s*%1/, '');
+      suivi.appendChild(li);
+      return li;
     });
-    ok.textContent = f.getAttribute('data-ok') || 'Deactivate anyway';
+    d.appendChild(suivi);
+    var etape = function (i) { etapes.forEach(function (li, j) { li.className = j < i ? 'fait' : j === i ? 'encours' : ''; }); };
+    var pause = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    var sauvegarder = function () {
+      var essayer = function (formats) {
+        if (!formats.length) return Promise.reject(new Error('archive'));
+        return fetch(lienSession('&cmd=reply&job=arch&job2=download&selection=all&format=' + formats[0]), { credentials: 'same-origin' })
+          .then(function (r) { return r.text(); })
+          .then(function (html) {
+            var a = new DOMParser().parseFromString(html, 'text/html').querySelector('.wimsbody a[href*="getfile/"]');
+            if (!a) return pause(1500).then(function () { return essayer(formats.slice(1)); });
+            return a.getAttribute('href');
+          });
+      };
+      return fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fconfig'), { credentials: 'same-origin' })
+        .then(function () { return pause(1500); })
+        .then(function () { return essayer(['zip', 'tgz']); })
+        .then(function (href) {
+          var nom = decodeURIComponent((/getfile\/([^?]+)/.exec(href) || [])[1] || 'classe.zip');
+          etapes[1].textContent = (f.getAttribute('data-etape2') || '%1').replace('%1', nom);
+          etape(1);
+          return pause(1500).then(function () { return fetch(href, { credentials: 'same-origin' }); }).then(function (r) {
+            if (!r.ok) throw new Error('fichier');
+            return r.blob();
+          }).then(function (blob) {
+            if (!blob.size) throw new Error('vide');
+            var lien = document.createElement('a');
+            lien.href = URL.createObjectURL(blob);
+            lien.download = nom.replace(/~/g, '-');
+            document.body.appendChild(lien);
+            lien.click();
+            setTimeout(function () { URL.revokeObjectURL(lien.href); lien.remove(); }, 60000);
+          });
+        });
+    };
+    var echec = document.createElement('p');
+    echec.className = 'nova-forcer-echec';
+    echec.hidden = true;
+    echec.setAttribute('role', 'alert');
+    echec.textContent = f.getAttribute('data-echec') || 'The backup failed: nothing was deactivated.';
+    d.appendChild(echec);
+    var sansSauver = document.createElement('button');
+    sansSauver.type = 'button';
+    sansSauver.className = 'wims_button wims_secondary_button';
+    sansSauver.textContent = f.getAttribute('data-sans') || 'Deactivate without backup';
+    sansSauver.hidden = true;
+    sansSauver.addEventListener('click', function () { sansSauver.disabled = true; etape(2); desactiver(); });
+    ok.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (ok.getAttribute('aria-disabled') === 'true') return;
+      ok.setAttribute('aria-disabled', 'true');
+      ok.classList.add('disabled');
+      if (!cocher.checked || !window.fetch || !window.Promise) { desactiver(); return; }
+      ul.hidden = true; caseSauver.hidden = true; echec.hidden = true; sansSauver.hidden = true;
+      suivi.hidden = false;
+      libelleOk();
+      etape(0);
+      sauvegarder().then(function () { etape(2); return pause(1500); }).then(desactiver).catch(function () {
+        etapes[0].className = 'echec';
+        echec.hidden = false; sansSauver.hidden = false;
+        ok.textContent = f.getAttribute('data-reessayer') || 'Try again';
+        ok.removeAttribute('aria-disabled');
+        ok.classList.remove('disabled');
+      });
+    });
+    libelleOk();
     actions.appendChild(annuler);
+    actions.appendChild(sansSauver);
     actions.appendChild(ok);
     d.appendChild(actions);
     document.body.appendChild(d);

@@ -1302,3 +1302,7 @@ dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
 .nova-qr-grand img { display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain; image-rendering: pixelated; margin: 0 auto; }
 .nova-qr-grand .nova-qr-grand-url { margin: var(--nova-e3) 0; font-family: var(--nova-police-chiffres); font-size: .8rem; color: var(--nova-texte-2); word-break: break-all; }
 .nova-qr-grand .wims_button { margin: 0; min-height: 44px; }
+/* Flyers à imprimer (2026-11-10, utilisateur, 21 par page). */
+.nova-lien-flyers { display: flex; flex-direction: column; gap: var(--nova-e2); margin-top: var(--nova-e2); padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); }
+.nova-lien-flyers label { font-weight: 700; }
+.wimsbody .nova-lien-flyers .nova-lien-nom { flex: 1 1 14rem; min-width: 0; width: auto; margin: 0; min-height: 44px; box-sizing: border-box; border-radius: var(--nova-rayon); }

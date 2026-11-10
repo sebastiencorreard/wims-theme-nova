@@ -666,3 +666,8 @@
 !set nova_lc_telecharger=Télécharger
 !set nova_lc_fermer=Fermer
 !set nova_lc_qr_alt=QR code du lien pour vos élèves
+!set nova_lc_flyers=Flyers à imprimer (PDF)
+!set nova_lc_fl_nom=Nom de la classe sur les flyers
+!set nova_lc_fl_aide=Une page A4 de 21 flyers à découper : un par élève, à coller dans le cahier.
+!set nova_lc_fl_l1=Lien vers ma classe WIMS
+!set nova_lc_fl_l3=Scanne le QR code pour l'ouvrir.

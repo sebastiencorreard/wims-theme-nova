@@ -665,3 +665,8 @@
 !set nova_lc_telecharger=Download
 !set nova_lc_fermer=Close
 !set nova_lc_qr_alt=QR code of the link for your students
+!set nova_lc_flyers=Printable flyers (PDF)
+!set nova_lc_fl_nom=Class name on the flyers
+!set nova_lc_fl_aide=An A4 page of 21 flyers to cut out: one per student, to stick in their notebook.
+!set nova_lc_fl_l1=Link to my WIMS class
+!set nova_lc_fl_l3=Scan the QR code to open it.

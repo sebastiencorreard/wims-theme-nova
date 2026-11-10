@@ -1660,6 +1660,56 @@
           document.body.appendChild(d);
           if (d.showModal) d.showModal(); else d.setAttribute('open', '');
         });
+        // Flyers a imprimer (2026-11-10, utilisateur, format B : 21 par page A4) : js/flyers.js charge au clic ; nom de la
+        // classe modifiable, garde dans ce navigateur (localStorage nova-flyers-nom|<classe>).
+        var numero = (/[?&]class=([0-9/]+)/.exec(dec(lien)) || [])[1] || '';
+        var cleNom = 'nova-flyers-nom|' + numero;
+        var fl = document.createElement('div');
+        fl.className = 'nova-lien-flyers';
+        var lab = document.createElement('label');
+        var idNom = 'nova-flyers-nom';
+        lab.setAttribute('for', idNom);
+        lab.textContent = tx('fl-nom');
+        var lf = document.createElement('div');
+        lf.className = 'nova-lien-ligne';
+        var champNom = document.createElement('input');
+        champNom.type = 'text'; champNom.id = idNom; champNom.className = 'nova-lien-nom';
+        var nomWims = (t.getAttribute('data-nom') || '').trim();
+        var garde = null;
+        try { garde = localStorage.getItem(cleNom); } catch (e) { garde = null; }
+        champNom.value = garde || nomWims;
+        champNom.addEventListener('change', function () {
+          try {
+            var v = champNom.value.trim();
+            if (v && v !== nomWims) localStorage.setItem(cleNom, v); else localStorage.removeItem(cleNom);
+          } catch (e) { }
+        });
+        var bf = bouton(tx('flyers'));
+        lf.appendChild(champNom); lf.appendChild(bf);
+        fl.appendChild(lab); fl.appendChild(lf);
+        aide(fl, tx('fl-aide'));
+        c.appendChild(fl);
+        var flyScript = null;
+        bf.addEventListener('click', function () {
+          if (!flyScript) flyScript = new Promise(function (ok, ko) {
+            if (window.novaFlyersPdf) { ok(); return; }
+            var sc = document.createElement('script');
+            sc.src = t.getAttribute('data-script-flyers') || '';
+            sc.onload = function () { if (window.novaFlyersPdf) ok(); else ko(new Error('flyers')); };
+            sc.onerror = function () { flyScript = null; ko(new Error('flyers')); };
+            document.head.appendChild(sc);
+          });
+          flyScript.then(function () {
+            var nom = champNom.value.trim() || nomWims || numero;
+            var pdf = window.novaFlyersPdf({ qrcode: lib, lien: lien, nom: nom, ligne1: tx('fl-l1'), ligne3: tx('fl-l3'), format: 'petit', titre: tx('fl-l1') + ' : ' + nom });
+            var url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'flyers-' + (nom.normalize ? nom.normalize('NFD') : nom).replace(/[^0-9A-Za-z_-]+/g, '-').replace(/^-+|-+$/g, '') + '.pdf';
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+          }, function () { if (etat) etat.textContent = tx('echec'); });
+        });
         charger.addEventListener('click', function () {
           var cv = dessinQr(lib, lien, 16);
           var nom = 'qrcode-' + ((/[?&]class=([0-9/]+)/.exec(dec(lien)) || [])[1] || 'classe').replace(/\//g, '-') + '.png';

@@ -101,3 +101,7 @@
 !read themes/$wims_theme/_widgets/footer.phtml
 
 <!-- end of $wims_theme/tail.phtml -->
+!! Nova : listes des participants des zones apres un import CSV depuis une structure (2026-11-10).
+!if $module=adm/class/userscore and $job=csv and $processed=yes
+  !read themes/$wims_theme/_widgets/participants-zones.phtml
+!endif

@@ -1,0 +1,67 @@
+!! Nova : listes des participants des zones apres un import CSV (2026-11-10, demande de l'utilisateur).
+!! WIMS (adm/class/userscore, csv/upload.proc) ne refait la liste des participants (.userlist) que de la zone
+!! ou l'import est fait. Depuis le portail ou le groupement, un eleve inscrit par la colonne participate
+!! n'apparait donc ni dans sa classe (Gestion des participants) ni dans le compte de Gestion de la structure,
+!! tant qu'on n'a pas lance Actualiser les index > Participants.
+!! Nova refait ici, avec le script de WIMS (adm/class/mkuserlist, comme adm/class/config index.proc), la liste
+!! de chaque zone ou un eleve importe est inscrit, et de ses sous-zones (cours d'une classe) ; le niveau suit.
+!! Lu par tail.phtml, a la fin de la page : mkuserlist reprend des variables (c, u, N, user_...) que la page
+!! du module affiche peut-etre.
+!! Variables du module : processed (import lu), change et added (comptes modifies ou ajoutes).
+!if $wims_superclass=$empty
+  !exit
+!endif
+!set nova_pz_u=!listunion $change and $added
+!set nova_pz_u=!nospace $nova_pz_u
+!if $nova_pz_u=$empty
+  !exit
+!endif
+!set nova_pz_t=!defof class_type in wimshome/log/classes/$wims_superclass/.def
+!reset nova_pz_z
+!if $nova_pz_t=4
+  !for nova_pz_j in classes,courses,icourses
+    !set nova_pz_l=!record 0 of wimshome/log/classes/$wims_superclass/$nova_pz_j
+    !set nova_pz_l=!column 1 of $nova_pz_l
+    !for nova_pz_c in $nova_pz_l
+      !set nova_pz_z=!append item $wims_superclass/$nova_pz_c to $nova_pz_z
+    !next nova_pz_c
+  !next nova_pz_j
+!else
+  !set nova_pz_n=!recordcnt wimshome/log/classes/$wims_superclass/.subclasses
+  !for nova_pz_i=1 to $nova_pz_n
+    !set nova_pz_c=!record $nova_pz_i of wimshome/log/classes/$wims_superclass/.subclasses
+    !set nova_pz_c=!item 1 of $nova_pz_c
+    !set nova_pz_z=!append item $nova_pz_c to $nova_pz_z
+  !next nova_pz_i
+!endif
+!if $nova_pz_z=$empty
+  !exit
+!endif
+!! Zones des eleves importes (inscriptions completes, pas seulement celles du fichier : un ajout ne retire rien).
+!reset nova_pz_p
+!for nova_pz_x in $nova_pz_u
+  !set nova_pz_v=!defof user_participate in wimshome/log/classes/$wims_superclass/.users/$nova_pz_x
+  !set nova_pz_p=!listunion $nova_pz_p and $nova_pz_v
+!next nova_pz_x
+!set nova_pz_p=!nonempty items $nova_pz_p
+!if $nova_pz_p=$empty
+  !exit
+!endif
+!! Zone touchee = une inscription, ou une sous-zone d'une inscription (cours d'une classe). La zone de l'import
+!! a deja ete refaite par WIMS.
+!reset nova_pz_f
+!for nova_pz_c in $nova_pz_z
+  !for nova_pz_x in $nova_pz_p
+    !if $nova_pz_c=$nova_pz_x or ../$nova_pz_x/ isin ../$nova_pz_c
+      !if $nova_pz_c!=$wims_class
+        !set nova_pz_f=!append item $nova_pz_c to $nova_pz_f
+      !endif
+      !break
+    !endif
+  !next nova_pz_x
+!next nova_pz_c
+!set nova_pz_f=!listuniq $nova_pz_f
+!for nova_pz_c in $nova_pz_f
+  !! !readproc : depuis une page (tail), !read lirait le script comme du texte (affectations x=... ecrites).
+  !readproc adm/class/mkuserlist $nova_pz_c
+!next nova_pz_c

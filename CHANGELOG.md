@@ -32,6 +32,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- **Import CSV depuis un portail ou un groupement** : les élèves inscrits dans une classe par le fichier (colonne participate) apparaissent tout de suite dans la classe et dans le nombre d'élèves de « Gestion de la structure », sans passer par « Actualiser les index › Participants ».
 - **Mode « espacé »** (Préférences d'affichage, Accessibilité) : le texte est de nouveau espacé (lettres, mots, lignes) ; la police de Nova est gardée, sauf si l'appareil a OpenDyslexic.
 - **Fil d'Ariane** de la gestion de structure : plus de tiret devant « Gestion de … » avec le jeu d'icônes Font Awesome.
 - Après une mise à jour du thème, la mise en page n'est plus cassée tant que le navigateur garde l'ancienne feuille de style (onglets en simples boutons, fenêtre « Ma couleur » sans marges, page « Mon avatar » en vrac) : Nova repère la feuille périmée et la recharge tout seul.

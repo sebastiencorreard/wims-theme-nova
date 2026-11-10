@@ -1289,3 +1289,16 @@ html.nova-js:not(.nova-std-textes) .wimsbody ul:has(> li > a[href*="type=authsup
   .nova-lien-ligne .wims_button { flex: 1 1 100%; }
   .nova-lien-qr { flex-direction: column; align-items: flex-start; }
 }
+/* QR code des élèves (Nova ou WIMS), Agrandir et Télécharger (2026-11-10, utilisateur). */
+.nova-lien-qr-image { flex: none; }
+.nova-lien-qr-image img { display: block; width: 140px; height: 140px; image-rendering: pixelated; border: 1px solid var(--nova-bord); border-radius: 8px; }
+.nova-lien-qr-image .wimscenter { margin: 0; }
+.nova-lien-qr-texte { display: flex; flex-direction: column; gap: var(--nova-e2); }
+.nova-lien-qr-actions { display: flex; gap: var(--nova-e2); flex-wrap: wrap; }
+.nova-lien-qr-actions .wims_button { margin: 0; min-height: 44px; }
+dialog.nova-qr-grand { width: min(92vw, 88vh, 760px); max-width: none; box-sizing: border-box; text-align: center; padding: var(--nova-e5); }
+dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
+.nova-qr-grand .nova-qr-grand-titre { margin: 0 0 var(--nova-e3); font-weight: 700; font-size: 1.4rem; }
+.nova-qr-grand img { display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain; image-rendering: pixelated; margin: 0 auto; }
+.nova-qr-grand .nova-qr-grand-url { margin: var(--nova-e3) 0; font-family: var(--nova-police-chiffres); font-size: .8rem; color: var(--nova-texte-2); word-break: break-all; }
+.nova-qr-grand .wims_button { margin: 0; min-height: 44px; }

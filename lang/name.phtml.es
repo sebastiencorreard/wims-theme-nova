@@ -642,3 +642,7 @@
 !set nova_lc_numero=Número de la clase
 !set nova_lc_numero_s=Número de la estructura
 !set nova_lc_numero_aide=Guárdelo también: permite encontrarla desde la página de inicio de WIMS.
+!set nova_lc_agrandir=Ampliar
+!set nova_lc_telecharger=Descargar
+!set nova_lc_fermer=Cerrar
+!set nova_lc_qr_alt=Código QR del enlace para sus alumnos

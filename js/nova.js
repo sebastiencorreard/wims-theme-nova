@@ -1584,6 +1584,98 @@
     var bouton = function (texte) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'wims_button'; b.textContent = texte; return b;
     };
+    var qrScript = null;
+    var chargerQr = function () {
+      if (window.qrcode) return Promise.resolve(window.qrcode);
+      if (!qrScript) qrScript = new Promise(function (ok, ko) {
+        var sc = document.createElement('script');
+        sc.src = t.getAttribute('data-qr-script') || '';
+        sc.onload = function () { if (window.qrcode) ok(window.qrcode); else ko(new Error('qr')); };
+        sc.onerror = function () { qrScript = null; ko(new Error('qr')); };
+        document.head.appendChild(sc);
+      });
+      return qrScript;
+    };
+    // Dessin sur un canevas : modules noirs sur blanc, marge de 4 modules (norme), taille = module x echelle.
+    var dessinQr = function (lib, texte, echelle) {
+      var q = lib(0, 'M');
+      q.addData(texte);
+      q.make();
+      var n = q.getModuleCount(), marge = 4, cote = (n + 2 * marge) * echelle;
+      var cv = document.createElement('canvas');
+      cv.width = cv.height = cote;
+      var g = cv.getContext('2d');
+      g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, cote, cote);
+      g.fillStyle = '#000000';
+      for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) g.fillRect((k + marge) * echelle, (r + marge) * echelle, echelle, echelle);
+      return cv;
+    };
+    var qrCode = function (c, lien, wims) {
+      var bloc = document.createElement('div');
+      bloc.className = 'nova-lien-qr';
+      var image = document.createElement('div');
+      image.className = 'nova-lien-qr-image';
+      if (wims && wims.querySelector('img, svg, canvas')) image.appendChild(wims);
+      bloc.appendChild(image);
+      var cote = document.createElement('div');
+      cote.className = 'nova-lien-qr-texte';
+      aide(cote, tx('qr'));
+      var actions = document.createElement('div');
+      actions.className = 'nova-lien-qr-actions';
+      var grand = bouton(tx('agrandir'));
+      var charger = bouton(tx('telecharger'));
+      grand.classList.add('wims_secondary_button');
+      charger.classList.add('wims_secondary_button');
+      actions.appendChild(grand); actions.appendChild(charger);
+      cote.appendChild(actions);
+      bloc.appendChild(cote);
+      bloc.hidden = true;
+      c.appendChild(bloc);
+      chargerQr().then(function (lib) {
+        if (!image.firstChild) {
+          var img = document.createElement('img');
+          img.src = dessinQr(lib, lien, 4).toDataURL('image/png');
+          img.alt = tx('qr-alt');
+          image.appendChild(img);
+        }
+        bloc.hidden = false;
+        grand.addEventListener('click', function () {
+          var d = document.createElement('dialog');
+          d.className = 'nova-dialogue nova-qr-grand';
+          d.setAttribute('aria-label', tx('qr-alt'));
+          var h = document.createElement('p');
+          h.className = 'nova-qr-grand-titre';
+          h.textContent = tx('eleves');
+          var gi = document.createElement('img');
+          gi.src = dessinQr(lib, lien, 16).toDataURL('image/png');
+          gi.alt = tx('qr-alt');
+          var u = document.createElement('p');
+          u.className = 'nova-qr-grand-url';
+          u.textContent = lien;
+          var f = bouton(tx('fermer'));
+          f.addEventListener('click', function () { d.close(); });
+          d.addEventListener('close', function () { d.remove(); });
+          d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
+          [h, gi, u, f].forEach(function (z) { d.appendChild(z); });
+          document.body.appendChild(d);
+          if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+        });
+        charger.addEventListener('click', function () {
+          var cv = dessinQr(lib, lien, 16);
+          var nom = 'qrcode-' + ((/[?&]class=([0-9/]+)/.exec(dec(lien)) || [])[1] || 'classe').replace(/\//g, '-') + '.png';
+          var fin = function (url) {
+            var a = document.createElement('a');
+            a.href = url; a.download = nom;
+            document.body.appendChild(a); a.click(); a.remove();
+          };
+          if (cv.toBlob) cv.toBlob(function (b) { var url = URL.createObjectURL(b); fin(url); setTimeout(function () { URL.revokeObjectURL(url); }, 60000); }, 'image/png');
+          else fin(cv.toDataURL('image/png'));
+        });
+      }).catch(function () {
+        // Bibliotheque introuvable : le QR code de WIMS seul, s'il y en a un, sans les boutons.
+        if (image.firstChild) { actions.remove(); bloc.hidden = false; }
+      });
+    };
     var boite = document.createElement('div');
     boite.className = 'nova-liens';
     etat = document.createElement('p');
@@ -1603,14 +1695,10 @@
       b.addEventListener('click', function () { copier(x.href, b, champ); });
       ligne.appendChild(champ); ligne.appendChild(b);
       c.appendChild(ligne);
-      var qr = x.li.querySelector('.wimscenter');
-      if (qr && qr.querySelector('img, svg, canvas, table')) {
-        var bloc = document.createElement('div');
-        bloc.className = 'nova-lien-qr';
-        bloc.appendChild(qr);
-        aide(bloc, tx('qr'));
-        c.appendChild(bloc);
-      }
+      // QR code (2026-11-10, utilisateur) : celui de WIMS s'il en produit un (QRencode_open=yes et qrencode sur le
+      // serveur, scripts/adm/QRcode.phtml), sinon dessine par Nova (js/qrcode.js, charge a la demande) ; boutons
+      // Agrandir (projection) et Telecharger (PNG), toujours d'apres le dessin de Nova.
+      if (x.role === 'eleves') qrCode(c, x.href, x.li.querySelector('.wimscenter'));
       boite.appendChild(c);
     });
     // Numero de la classe (span.wims_code_words du dernier paragraphe) et mention Important de WIMS.

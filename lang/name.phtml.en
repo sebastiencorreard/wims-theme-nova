@@ -661,3 +661,7 @@
 !set nova_lc_numero=Class number
 !set nova_lc_numero_s=Structure number
 !set nova_lc_numero_aide=Keep it too: it lets you find it from the WIMS home page.
+!set nova_lc_agrandir=Enlarge
+!set nova_lc_telecharger=Download
+!set nova_lc_fermer=Close
+!set nova_lc_qr_alt=QR code of the link for your students

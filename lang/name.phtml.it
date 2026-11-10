@@ -642,3 +642,7 @@
 !set nova_lc_numero=Numero della classe
 !set nova_lc_numero_s=Numero della struttura
 !set nova_lc_numero_aide=Da conservare anche questo: permette di ritrovarla dalla pagina iniziale di WIMS.
+!set nova_lc_agrandir=Ingrandisci
+!set nova_lc_telecharger=Scarica
+!set nova_lc_fermer=Chiudi
+!set nova_lc_qr_alt=Codice QR del link per i suoi studenti

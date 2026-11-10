@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- **Restriction d'accès** (Configuration et maintenance) : formulaire pour interdire le travail à certaines heures chaque jour (« La nuit : 20 h 30 à 7 h » en un clic) ou entre deux dates, pour tout le travail ou les exercices seulement, avec un résumé en français. Les règles écrites à la main sont gardées dans « Réglage expert », une règle en double n'est écrite qu'une fois.
 - **Accueil d'un portail** : bouton « Replier les classes » à côté de chaque niveau ; replié, il ne reste que les programmes et leurs cours. Le choix est gardé sur le serveur (il vous suit d'un appareil à l'autre).
 - Onglet DM WIMS des Réglages de Nova : liste de ce qui utilise ces réglages (« Créer le DM noté », badges Échauffement et Au top).
 - **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « New ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.

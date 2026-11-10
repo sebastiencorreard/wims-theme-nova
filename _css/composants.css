@@ -1204,3 +1204,36 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-app-carte .nova-rg-usage-titre { margin: .5rem 0 .2rem; }
 .nova-app-carte ul.nova-rg-usage { margin: 0 0 0 1.2rem; padding: 0; list-style: disc; }
 .nova-app-carte ul.nova-rg-usage li { margin: .2rem 0; }
+
+/* Restriction d'accès d'une classe (2026-11-10, maquette A, utilisateur ; nova.js accesClasse) : cartes du formulaire
+ * (fieldset, habillés comme les autres), lignes « De … à … », champ de WIMS dans « Réglage expert » replié. */
+.nova-acces { display: flex; flex-direction: column; gap: var(--nova-e4); max-width: 54rem; margin: 0 auto var(--nova-e4); text-align: left; }
+.nova-acces .nova-acces-carte { margin: 0; }
+.nova-acces-aide { color: var(--nova-texte-2); margin: 0 0 var(--nova-e3); }
+.nova-acces-liste { display: flex; flex-direction: column; gap: var(--nova-e2); }
+.nova-acces-liste:empty { display: none; }
+.nova-acces-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); padding: var(--nova-e2) var(--nova-e3); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-fond); }
+.nova-acces-ligne label { margin: 0; }
+.nova-acces-moitie { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+.nova-acces-moitie label { min-width: 1.6em; }
+.nova-acces-ligne .nova-acces-champ { width: auto; min-height: 40px; margin: 0; }
+.nova-acces-note { font-size: .9em; color: #8A4B00; background: #FFF4E0; border-radius: 6px; padding: 1px 8px; }
+.nova-acces-retirer { margin-left: auto; width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: var(--nova-texte-2); cursor: pointer; box-shadow: none; }
+.nova-acces-retirer:hover { background: var(--nova-surface-2); color: #A12C2C; }
+.nova-acces-retirer svg, .nova-acces-actions svg { width: 18px; height: 18px; vertical-align: -3px; margin-right: 4px; }
+.nova-acces-actions { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin-top: var(--nova-e3); }
+.nova-acces-actions .wims_button { margin: 0; }
+.nova-acces-choix { display: flex; flex-wrap: wrap; gap: var(--nova-e2) var(--nova-e5); }
+.nova-acces-choix label { display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 40px; margin: 0; cursor: pointer; }
+.nova-acces-resume { margin: 0 0 var(--nova-e2); }
+.nova-acces details > summary { cursor: pointer; color: var(--nova-texte-2); min-height: 40px; display: flex; align-items: center; }
+.nova-acces-lignes pre { font-family: var(--nova-police-mono, ui-monospace, monospace); font-size: .85em; background: var(--nova-surface-2); border-radius: 8px; padding: var(--nova-e2) var(--nova-e3); margin: 0; overflow-x: auto; white-space: pre; }
+.nova-acces-expert { border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); padding: var(--nova-e2) var(--nova-e4); }
+.nova-acces-expert[open] { padding-bottom: var(--nova-e4); }
+.nova-acces-expert textarea { width: 100%; box-sizing: border-box; font-family: var(--nova-police-mono, ui-monospace, monospace); }
+.nova-acces-tete { display: flex; align-items: center; gap: var(--nova-e2); flex-wrap: wrap; margin-bottom: var(--nova-e2); }
+@media (max-width: 639px) {
+  .nova-acces-ligne { position: relative; padding-right: 48px; }
+  .nova-acces-ligne .nova-acces-retirer { position: absolute; top: 4px; right: 4px; }
+  .nova-acces-moitie .nova-acces-champ[type="time"] { margin-left: calc(1.6em + var(--nova-e2)); }
+}

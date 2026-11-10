@@ -1224,6 +1224,212 @@
     if (regle) regle.remove();
   }
 
+  /* Restriction d'accès d'une classe (adm/class/config, job=access ; 2026-11-10, utilisateur, maquette A) : formulaire au-dessus
+   * du champ de WIMS (accessdef), qui passe dans « Réglage expert » replié. Heures interdites chaque jour (une plage qui passe
+   * minuit = deux lignes), périodes entre deux dates, portée « class » ou « class exercise ». Lignes de Nova entre
+   * « # Nova : debut » et « # Nova : fin », EN TÊTE du champ (WIMS applique la première ligne qui convient) ; une règle en
+   * double n'est écrite qu'une fois (utilisateur). Au chargement, les lignes de ce format écrites à la main sont reprises
+   * dans le formulaire, sauf s'il existe une règle d'accès sans « ! » (les remonter en tête en changerait le sens).
+   * Sémantique de WIMS (src/lines.c, checkhostt) : « > » et « < » comparent la date du jour, jokers remplacés par
+   * l'heure courante, fin comprise à la minute près ; pas de jour de la semaine. Réglage « textes » : champ de WIMS seul. */
+  function accesClasse() {
+    var zone = document.getElementById('accessdef');
+    var gab = document.getElementById('nova-acces');
+    if (!zone || !gab || !zone.form || document.querySelector('.nova-acces') || standard('textes')) return;
+    var t = function (c) { return gab.getAttribute('data-' + c) || ''; };
+    var DEBUT = '# Nova : debut', FIN = '# Nova : fin';
+    var RE = /^\s*(class(?:\s+exercise)?)\s*:\s*!\s*>(\*{8}|\d{8})\.(\d\d:\d\d)\s+<(\*{8}|\d{8})\.(\d\d:\d\d)\s*$/i;
+    var etat = { plages: [], periodes: [], portee: 'class' };
+    var norm = function (l) { return l.trim().replace(/\s+/g, ' ').toLowerCase(); };
+    var dateIso = function (d) { return d.slice(0, 4) + '-' + d.slice(4, 6) + '-' + d.slice(6, 8); };
+    // Champ -> lignes de Nova (à reprendre) et lignes à la main (gardées) ; absorber : reprendre aussi les lignes à la main.
+    var lire = function (absorber) {
+      var lignes = zone.value.split(/\r?\n/), nova = [], main = [], dans = false;
+      lignes.forEach(function (l) {
+        var s = l.trim();
+        if (s === DEBUT) { dans = true; return; }
+        if (s === FIN) { dans = false; return; }
+        (dans ? nova : main).push(l);
+      });
+      var accepte = main.some(function (l) { var s = l.trim(); return s && s[0] !== '#' && /:/.test(s) && !/^[^:]*:\s*!/.test(s); });
+      var reprises = nova.filter(function (l) { return RE.test(l); });
+      var portee = reprises.length ? RE.exec(reprises[0])[1].replace(/\s+/g, ' ').toLowerCase() : null;
+      if (absorber && !accepte) {
+        main = main.filter(function (l) {
+          var m = RE.exec(l);
+          if (!m) return true;
+          var p = m[1].replace(/\s+/g, ' ').toLowerCase();
+          if (portee === null) portee = p;
+          if (p !== portee) return true;
+          reprises.push(l);
+          return false;
+        });
+      }
+      var jours = [], periodes = [];
+      reprises.forEach(function (l) {
+        var m = RE.exec(l);
+        if (m[2] === '********' && m[4] === '********') jours.push({ de: m[3], a: m[5] });
+        else if (/^\d{8}$/.test(m[2]) && /^\d{8}$/.test(m[4])) periodes.push({ d1: dateIso(m[2]), h1: m[3], d2: dateIso(m[4]), h2: m[5] });
+        else main.push(l);   // jokers mêlés : laissés tels quels
+      });
+      // Plage qui passe minuit : « de X à 23:59 » + « de 00:00 à Y » = « de X à Y ».
+      var plages = [];
+      jours.forEach(function (p) {
+        if (p.a === '23:59' && p.de !== '00:00') {
+          var suite = jours.filter(function (q) { return q.de === '00:00' && q.a !== '23:59' && !q.pris; })[0];
+          if (suite) { suite.pris = true; plages.push({ de: p.de, a: suite.a }); return; }
+        }
+        if (!p.pris) plages.push({ de: p.de, a: p.a });
+      });
+      plages = plages.filter(function (p) { return !jours.some(function (q) { return q.pris && q.de === p.de && q.a === p.a; }) || p.de !== '00:00'; });
+      etat = { plages: plages, periodes: periodes, portee: portee === 'class exercise' ? 'class exercise' : 'class' };
+      while (main.length && !main[main.length - 1].trim()) main.pop();
+      return main;
+    };
+    var main = lire(true);
+    var valide = function (p) { return p.d1 && p.d2 && (p.d1 + (p.h1 || '00:00')) < (p.d2 + (p.h2 || '23:59')); };
+    var generer = function () {
+      var pre = etat.portee + ':! ', L = [];
+      etat.plages.forEach(function (p) {
+        if (!p.de || !p.a || p.de === p.a) return;
+        if (p.de < p.a) L.push(pre + '>********.' + p.de + ' <********.' + p.a);
+        else { L.push(pre + '>********.' + p.de + ' <********.23:59'); L.push(pre + '>********.00:00 <********.' + p.a); }
+      });
+      etat.periodes.forEach(function (p) {
+        if (valide(p)) L.push(pre + '>' + p.d1.replace(/-/g, '') + '.' + (p.h1 || '00:00') + ' <' + p.d2.replace(/-/g, '') + '.' + (p.h2 || '23:59'));
+      });
+      return L;
+    };
+    // Écrit le champ : bloc Nova puis lignes à la main, chaque règle une seule fois (commentaires et lignes vides gardés).
+    var ecrire = function () {
+      var vues = {}, sortie = [];
+      var ajouter = function (l) {
+        var s = l.trim();
+        if (s && s[0] !== '#') { var k = norm(s); if (vues[k]) return; vues[k] = true; }
+        sortie.push(l);
+      };
+      var L = generer();
+      if (L.length) { sortie.push(DEBUT); L.forEach(ajouter); sortie.push(FIN); }
+      main.forEach(ajouter);
+      zone.value = sortie.join('\n');
+      return L;
+    };
+    var heure = function (h) { var m = /^(\d\d):(\d\d)$/.exec(h || ''); return m ? (+m[1]) + ' h' + (m[2] === '00' ? '' : ' ' + m[2]) : ''; };
+    var date = function (d) { return d ? d.split('-').reverse().join('/') : ''; };
+    var remplir = function (txt, v) { return v.reduce(function (s, x, i) { return s.replace('%' + (i + 1), x); }, txt); };
+
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var croix = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+    var bouton = function (classe, texte, icone) { var b = el('button', classe); b.type = 'button'; b.innerHTML = icone || ''; b.appendChild(document.createTextNode(texte)); return b; };
+    var champ = function (type, valeur, etiquette, id) {
+      var i = el('input', 'nova-acces-champ'); i.type = type; i.value = valeur || ''; if (id) i.id = id; if (etiquette) i.setAttribute('aria-label', etiquette); return i;
+    };
+    var label = function (pour, texte) { var l = el('label', '', texte); l.htmlFor = pour; return l; };
+    var carte = function (titre, aide) {
+      var f = el('fieldset', 'nova-acces-carte'); f.appendChild(el('legend', '', titre));
+      if (aide) f.appendChild(el('p', 'nova-acces-aide', aide));
+      return f;
+    };
+    var racine = el('div', 'nova-acces');
+    var cJour = carte(t('titre-jour'), t('aide-jour')), lJour = el('div', 'nova-acces-liste');
+    var bJour = el('div', 'nova-acces-actions');
+    var addPlage = bouton('wims_button wims_secondary_button', t('ajouter-plage'), plus), nuit = bouton('wims_button wims_secondary_button', t('nuit'));
+    bJour.appendChild(addPlage); bJour.appendChild(nuit);
+    cJour.appendChild(lJour); cJour.appendChild(bJour);
+    var cPer = carte(t('titre-periodes'), t('aide-periodes')), lPer = el('div', 'nova-acces-liste');
+    var addPer = bouton('wims_button wims_secondary_button', t('ajouter-periode'), plus);
+    var bPer = el('div', 'nova-acces-actions'); bPer.appendChild(addPer);
+    cPer.appendChild(lPer); cPer.appendChild(bPer);
+    var cPortee = carte(t('titre-portee')), choix = el('div', 'nova-acces-choix');
+    [['class', t('tout')], ['class exercise', t('exo')]].forEach(function (c, k) {
+      var l = el('label'), r = el('input'); r.type = 'radio'; r.name = 'nova_acces_portee'; r.value = c[0]; r.id = 'nova-acces-portee-' + k;
+      l.htmlFor = r.id; l.appendChild(r); l.appendChild(document.createTextNode(' ' + c[1])); choix.appendChild(l);
+    });
+    cPortee.appendChild(choix);
+    var cRes = carte(t('titre-resume')), resume = el('p', 'nova-acces-resume');
+    var dLignes = el('details', 'nova-acces-lignes'), pre = el('pre');
+    dLignes.appendChild(el('summary', '', t('lignes'))); dLignes.appendChild(pre);
+    cRes.appendChild(resume); cRes.appendChild(dLignes);
+    [cJour, cPer, cPortee, cRes].forEach(function (c) { racine.appendChild(c); });
+
+    // Le champ de WIMS (libellé, Aide, zone) dans « Réglage expert », replié.
+    var expert = el('details', 'nova-acces-expert'), resumeExpert = el('summary');
+    expert.appendChild(resumeExpert);
+    expert.appendChild(el('p', 'nova-acces-aide', t('expert-aide')));
+    var lab = zone.form.querySelector('label[for="accessdef"]');
+    var aideWims = zone.form.querySelector('a[href*="accessconf"]');
+    var bloc = zone.closest('.wimscenter') || zone;
+    var place = lab || bloc;
+    place.parentNode.insertBefore(racine, place);
+    if (lab) { var tete = el('div', 'nova-acces-tete'); tete.appendChild(lab); if (aideWims) tete.appendChild(aideWims); expert.appendChild(tete); }
+    expert.appendChild(bloc);
+    racine.appendChild(expert);
+
+    var afficher = function () {
+      lJour.textContent = ''; lPer.textContent = '';
+      etat.plages.forEach(function (p, i) {
+        var li = el('div', 'nova-acces-ligne');
+        var de = champ('time', p.de, '', 'nova-acces-de-' + i), a = champ('time', p.a, '', 'nova-acces-a-' + i);
+        li.appendChild(label(de.id, t('de'))); li.appendChild(de); li.appendChild(label(a.id, t('a'))); li.appendChild(a);
+        var note = el('span', 'nova-acces-note', t('lendemain')); note.hidden = !(p.de && p.a && p.de > p.a); li.appendChild(note);
+        de.addEventListener('change', function () { p.de = de.value; note.hidden = !(p.de && p.a && p.de > p.a); maj(); });
+        a.addEventListener('change', function () { p.a = a.value; note.hidden = !(p.de && p.a && p.de > p.a); maj(); });
+        var x = bouton('nova-acces-retirer', '', croix); x.setAttribute('aria-label', t('retirer-plage')); x.title = t('retirer-plage');
+        x.addEventListener('click', function () { etat.plages.splice(i, 1); afficher(); maj(); });
+        li.appendChild(x); lJour.appendChild(li);
+      });
+      etat.periodes.forEach(function (p, i) {
+        var li = el('div', 'nova-acces-ligne');
+        var d1 = champ('date', p.d1, '', 'nova-acces-du-' + i), h1 = champ('time', p.h1, t('heure-debut'));
+        var d2 = champ('date', p.d2, '', 'nova-acces-au-' + i), h2 = champ('time', p.h2, t('heure-fin'));
+        [[d1.id, t('du'), d1, h1], [d2.id, t('au'), d2, h2]].forEach(function (g) {
+          var moitie = el('span', 'nova-acces-moitie');
+          moitie.appendChild(label(g[0], g[1])); moitie.appendChild(g[2]); moitie.appendChild(g[3]);
+          li.appendChild(moitie);
+        });
+        var note = el('span', 'nova-acces-note', t('incomplet'));
+        var verifier = function () { note.hidden = valide(p); };
+        verifier(); li.appendChild(note);
+        [[d1, 'd1'], [h1, 'h1'], [d2, 'd2'], [h2, 'h2']].forEach(function (c) { c[0].addEventListener('change', function () { p[c[1]] = c[0].value; verifier(); maj(); }); });
+        var x = bouton('nova-acces-retirer', '', croix); x.setAttribute('aria-label', t('retirer-periode')); x.title = t('retirer-periode');
+        x.addEventListener('click', function () { etat.periodes.splice(i, 1); afficher(); maj(); });
+        li.appendChild(x); lPer.appendChild(li);
+      });
+      choix.querySelectorAll('input').forEach(function (r) { r.checked = r.value === etat.portee; });
+    };
+    var maj = function () {
+      var L = ecrire();
+      pre.textContent = L.join('\n');
+      dLignes.hidden = !L.length;
+      var morceaux = etat.plages.filter(function (p) { return p.de && p.a && p.de !== p.a; }).map(function (p) {
+        return remplir(t(p.de > p.a ? 'chaque-jour-lendemain' : 'chaque-jour'), [heure(p.de), heure(p.a)]);
+      }).concat(etat.periodes.filter(valide).map(function (p) {
+        return remplir(t('periode'), [date(p.d1), heure(p.h1 || '00:00'), date(p.d2), heure(p.h2 || '23:59')]);
+      }));
+      var vus = {};
+      morceaux = morceaux.filter(function (m) { if (vus[m]) return false; vus[m] = true; return true; });
+      resume.textContent = morceaux.length ? remplir(t(etat.portee === 'class' ? 'resume-tout' : 'resume-exo'), [morceaux.join(', ')]) : t('aucune');
+      var regles = {};
+      L.forEach(function (l) { regles[norm(l)] = 'nova'; });
+      main.forEach(function (l) { var s = l.trim(); if (s && s[0] !== '#' && !regles[norm(s)]) regles[norm(s)] = 'main'; });
+      var n = Object.keys(regles).filter(function (k) { return regles[k] === 'main'; }).length;
+      resumeExpert.textContent = n ? remplir(t('expert-n'), [String(n)]) : t('expert');
+    };
+    addPlage.addEventListener('click', function () { etat.plages.push({ de: '12:00', a: '14:00' }); afficher(); maj(); });
+    nuit.addEventListener('click', function () { etat.plages.push({ de: '20:30', a: '07:00' }); afficher(); maj(); });
+    addPer.addEventListener('click', function () {
+      var j = new Date(), iso = function (x) { return x.getFullYear() + '-' + ('0' + (x.getMonth() + 1)).slice(-2) + '-' + ('0' + x.getDate()).slice(-2); };
+      var fin = new Date(j.getTime() + 7 * 864e5);
+      etat.periodes.push({ d1: iso(j), h1: '00:00', d2: iso(fin), h2: '23:59' }); afficher(); maj();
+    });
+    choix.addEventListener('change', function (e) { if (e.target.name === 'nova_acces_portee') { etat.portee = e.target.value; maj(); } });
+    // Champ modifié à la main : les lignes de Nova y sont relues, le reste gardé.
+    zone.addEventListener('change', function () { main = lire(false); afficher(); maj(); });
+    zone.form.addEventListener('submit', function () { if (document.activeElement === zone) main = lire(false); ecrire(); });
+    afficher(); maj();
+  }
+
   function retourEnHaut() {
     var lien = document.getElementById('back-to-top');
     if (!lien) {
@@ -5398,7 +5604,7 @@
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

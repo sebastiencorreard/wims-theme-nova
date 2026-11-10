@@ -199,6 +199,10 @@
 !if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
   !read themes/$wims_theme/_widgets/apparence-classe.phtml
 !endif
+!! Restriction d'acces d'une classe : formulaire Nova (js/nova.js, accesClasse ; 2026-11-10).
+!if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
+  !read themes/$wims_theme/_widgets/acces-classe.phtml
+!endif
 !! Nova : menu enseignant personnalise (js/nova.js, basculeMenu), garde sur le serveur pour suivre l'enseignant
 !! d'un poste a l'autre (demande de l'utilisateur, 2026-10-07) : log/classes/<structure ou classe>/.nova_menu_<login>
 !! (supervisor pour l'enseignant d'une classe). Ecrit seulement sur l'accueil (module home : WIMS refuse wimshome/

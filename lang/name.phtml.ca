@@ -1,0 +1,3 @@
+!! Nova : textes propres au theme (ca). Pas encore traduits : anglais.
+!! Nova : textes anglais d'abord (repli : un texte absent de cette langue s'affiche en anglais, jamais vide ; 2026-11-10).
+!read themes/$wims_theme/lang/name.phtml.en

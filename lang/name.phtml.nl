@@ -1,5 +1,7 @@
 !! Nova : textes propres au thème (nl). Lu par html/headmenu*.phtml (themes/$wims_theme/lang/).
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!! Nova : textes anglais d'abord (repli : un texte absent de cette langue s'affiche en anglais, jamais vide ; 2026-11-10).
+!read themes/$wims_theme/lang/name.phtml.en
 !set nova_chrono_libelle=Resterende tijd
 !set nova_chrono_5min=Minder dan 5 minuten
 !set nova_chrono_1min=Laatste minuut

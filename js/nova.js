@@ -796,7 +796,7 @@
         var textes = document.getElementById('nova-textes');
         var titre = document.createElement('h2');
         titre.className = 'menu_title nova-deplace-titre';
-        titre.textContent = (textes && textes.getAttribute('data-plus')) || 'Plus';
+        titre.textContent = (textes && textes.getAttribute('data-plus')) || 'More';
         var groupe = document.createElement('div');
         groupe.className = 'wimsmenu menu nova-deplaces';
         items.forEach(function (item) {
@@ -1786,7 +1786,7 @@
     }
     if (!precedent) return;
     var textes = document.getElementById('nova-textes');
-    var libelle = (textes && textes.getAttribute('data-retour')) || 'Retour';
+    var libelle = (textes && textes.getAttribute('data-retour')) || 'Back';
     var item = document.createElement('span');
     item.className = 'menuitem nova-retour';
     var a = document.createElement('a');
@@ -1893,7 +1893,7 @@
     if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
     var source = document.getElementById('nova-notes-examens');
     if (!source) return;
-    var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Note';
+    var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Score';
     (source.getAttribute('data-notes') || '').trim().split(/\s+/).forEach(function (paire) {
       var m = /^(\d+):(.+)$/.exec(paire);
       if (m) notes[m[1]] = m[2];
@@ -4114,7 +4114,7 @@
     var cible = menu.querySelector('.modubox_content') || menu;
     var titre = document.createElement('h2');
     titre.className = 'menu_title nova-profil-titre';
-    titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profil';
+    titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profile';
     var groupe = document.createElement('div');
     groupe.className = 'wimsmenu menu nova-profil';
     // Chaque entrée porte une clé « profil_<classe du lien> » : le menu simplifié peut la masquer, comme les
@@ -4382,7 +4382,7 @@
         fenetre.querySelector('span').textContent = (textes && textes.getAttribute('data-texte-paysage')) || 'Turn your phone sideways.';
         var bouton = fenetre.querySelector('button');
         bouton.textContent = '\u00d7';
-        bouton.setAttribute('aria-label', (textes && textes.getAttribute('data-texte-fermer')) || 'Fermer');
+        bouton.setAttribute('aria-label', (textes && textes.getAttribute('data-texte-fermer')) || 'Close');
         bouton.addEventListener('click', function () {
           fenetre.hidden = true;
           try { sessionStorage.setItem('nova-paysage-ferme', '1'); } catch (e) { /* cette page seulement */ }
@@ -4437,7 +4437,7 @@
     var inactifs = document.querySelectorAll('#oef_helphint > span.disabled_link');
     if (!inactifs.length) return;
     var textes = document.getElementById('nova-textes');
-    var bulle = (textes && textes.getAttribute('data-texte-indisponible-examen')) || 'Non disponible pendant un examen';
+    var bulle = (textes && textes.getAttribute('data-texte-indisponible-examen')) || 'Not available during an exam';
     Array.prototype.forEach.call(inactifs, function (sp) {
       var aide = /^(aide|help|hilfe|ayuda|aiuto)$/i.test(sp.textContent.trim());
       sp.classList.add('wims_button_help', 'nova-inactif');
@@ -4698,7 +4698,7 @@
       var lien = document.createElement('a');
       lien.className = 'heart nova-mes-badges';
       lien.href = maison ? maison.href.split('#')[0] + '#nova-badges' : '#nova-badges';   // accueil : sans lien de retour
-      lien.textContent = (textes && textes.getAttribute('data-texte-mes-badges')) || 'Mes badges';
+      lien.textContent = (textes && textes.getAttribute('data-texte-mes-badges')) || 'My badges';
       item.appendChild(lien);
       notes.parentNode.parentNode.insertBefore(item, notes.parentNode.nextSibling);
     }
@@ -4796,7 +4796,7 @@
       if (!dr) { memo = null; garderMenuCouleur(null); }
       else {
         memo = { etat: dr.etat, vu: memo && typeof memo.vu === 'number' ? memo.vu : 0,
-          titre: d.getAttribute('data-coul-menu') || 'Ma couleur', nouveau: d.getAttribute('data-coul-nouveau') || '' };
+          titre: d.getAttribute('data-coul-menu') || 'My colour', nouveau: d.getAttribute('data-coul-nouveau') || '' };
         garderMenuCouleur(memo);
       }
     }

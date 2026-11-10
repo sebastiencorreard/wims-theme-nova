@@ -4,7 +4,7 @@
   !if $wims_user=supervisor or yes isin $supervisable $user_supervisable or $wims_supervise!=$empty
     !if nova_suivi notin $wims_rm_0
       !default nova_menu_participants=Participants
-      !set wims_name_nova_suivi=Suivi en direct
+      !set wims_name_nova_suivi=$nova_sv_titre
       !set nova_sp=0
       !set nova_sg=0
       !! Separateur sans titre en tete (adm/class/sequence...) : menumodubox.phtml le retire quand il est

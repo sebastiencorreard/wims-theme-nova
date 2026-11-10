@@ -35,7 +35,7 @@ sub emit {
             my $n = @{$r->{events}};
             if ($n > 5) { splice @{$r->{events}}, 0, int($n/4) || 1; $r->{historyTruncated}=JSON::PP::true; $removed++; }
         }
-        if (!$removed) { $data={error=>'Trop de sessions pour ce releve. Ouvrez le suivi depuis une classe ou un cours.'}; }
+        if (!$removed) { $data={code=>'trop', error=>'Trop de sessions pour ce releve. Ouvrez le suivi depuis une classe ou un cours.'}; }
         $json = $encoder->encode($data);
     }
     $json =~ s/</\\u003c/g; $json =~ s/>/\\u003e/g; $json =~ s/\$/\\u0024/g;
@@ -54,7 +54,7 @@ sub date_epoch {
     return eval { timelocal($6,$5,$4,$3,$2-1,$1) } // 0;
 }
 sub epoch { my ($s) = @_; return ($s // '') =~ /=(\d+)$/ ? 0+$1 : 0; }
-if ($sid !~ /^[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$/) { emit({error=>'Acces refuse.'}); exit; }
+if ($sid !~ /^[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$/) { emit({code=>'refuse', error=>'Acces refuse.'}); exit; }
 my $viewer = defs("$home/sessions/$sid/var.stat");
 my $vc = $viewer->{wims_class} // '';
 my $vu = $viewer->{wims_user} // '';
@@ -64,8 +64,8 @@ elsif ($vu ne '' && $vu !~ /^anonymous/ && valid_class($vc)) {
     # authprep stores the full, authenticated list of supervised classes in var.stat.
     @scopes = grep { valid_class($_) } split /[,\s]+/, ($viewer->{wims_supervise} // '');
 }
-if (!@scopes) { emit({error=>'Acces reserve aux enseignants et administrateurs de leurs classes.'}); exit; }
-emit({error=>'Releve indisponible. Actualisez pour reessayer.'}) if $render;
+if (!@scopes) { emit({code=>'reserve', error=>'Acces reserve aux enseignants et administrateurs de leurs classes.'}); exit; }
+emit({code=>'indispo', error=>'Releve indisponible. Actualisez pour reessayer.'}) if $render;
 sub allowed {
     my ($c) = @_;
     return 0 unless valid_class($c);

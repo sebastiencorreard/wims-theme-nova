@@ -6,6 +6,23 @@
   var dataEl = document.getElementById('nova-suivi-donnees'), data;
   var avatarEl = document.getElementById('nova-suivi-avatar-script'), avatarScript = avatarEl && avatarEl.getAttribute('data-script'), avatars = {};
   var state = document.getElementById('nova-suivi-etat');
+  // Textes traduits (lang/name.phtml.*, nova_svj_..., gabarit #nova-suivi-textes ; 2026-11-10) : %1, %2, %3 remplaces.
+  var textes = document.getElementById('nova-suivi-textes'), langue = document.documentElement.lang || 'fr';
+  function T(k) {
+    var v = (textes && textes.getAttribute('data-' + k.replace(/_/g, '-'))) || '', args = arguments;
+    return v.replace(/%([1-3])/g, function (m, n) { return args[n] !== undefined ? args[n] : m; });
+  }
+  // Regles du panneau : phrase traduite autour de ses champs (data-phrase, %n = n-ieme champ du paragraphe).
+  Array.prototype.forEach.call(root.querySelectorAll('p.nova-suivi-phrase[data-phrase]'), function (p) {
+    var champs = Array.prototype.slice.call(p.querySelectorAll('input')), morceaux = p.getAttribute('data-phrase').split(/%([1-3])/);
+    if (!champs.length) return;
+    p.textContent = '';
+    morceaux.forEach(function (m, i) {
+      if (i % 2) { if (champs[+m - 1]) p.appendChild(champs[+m - 1]); }
+      else if (m) p.appendChild(document.createTextNode(m));
+    });
+    champs.forEach(function (c) { if (!c.parentNode || c.parentNode !== p) p.appendChild(c); });
+  });
   function el(tag, text, cls) {
     var e = document.createElement(tag); if (text !== undefined) e.textContent = text;
     if (cls) e.className = cls; return e;
@@ -13,8 +30,8 @@
   document.getElementById('nova-suivi-actualiser').addEventListener('click', function () {
     if (!data || data.error || !controls) location.reload(); else refresh();
   });
-  try { data = JSON.parse(dataEl.textContent); } catch (e) { state.textContent = 'Le relev\u00e9 est indisponible. Cliquez sur Actualiser pour r\u00e9essayer.'; return; }
-  if (data.error) { state.textContent = data.error; return; }
+  try { data = JSON.parse(dataEl.textContent); } catch (e) { state.textContent = T('indispo'); return; }
+  if (data.error) { state.textContent = (data.code && T('err_' + data.code)) || data.error; return; }
   var rows = data.students || [], snapshot = Date.now(), timer, refreshing = false;
   var defaults = {fenetre:60, inactivite:5, intervalle:30, resultats:5, erreurs:3,
     'note-faible':5, reussites:3, 'note-reussite':9, reprises:4, attente:8};
@@ -49,10 +66,10 @@
     Object.keys(defaults).forEach(function (id) { controls[id].value = number(id); });
   }
   normalize();
-  function clock(t) { return new Date(t * 1000).toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+  function clock(t) { return new Date(t * 1000).toLocaleTimeString(langue, { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
   function ago(t) {
     var age = Math.max(0, data.now - t);
-    return age < 60 ? 'Il y a ' + Math.floor(age) + ' s' : 'Il y a ' + Math.floor(age / 60) + ' min';
+    return age < 60 ? T('ily_s', Math.floor(age)) : T('ily_min', Math.floor(age / 60));
   }
   function same(e, r) { return e.exam === r.exam && e.sheet === r.sheet && e.exo === r.exo; }
   function inspect(r) {
@@ -71,23 +88,23 @@
     var starts = current.filter(function(e){return /^(new|renew)$/.test(e.kind);});
     var started = starts.length ? starts[starts.length-1].at : r.started;
     var exercise = r.sheet > 0 && r.exo > 0 && !/^(home|adm\/)/.test(r.module);
-    var signal = 'normal', why = 'Aucun signal sur cet exercice';
+    var signal = 'normal', why = T('aucun_signal');
     if (exercise && bad >= number('erreurs')) {
-      signal = 'difficulte'; why = bad + ' r\u00e9sultats < ' + number('note-faible') + '/10 parmi les ' + lastResults.length + ' derniers';
+      signal = 'difficulte'; why = T('why_difficulte', bad, number('note-faible'), lastResults.length);
     } else if (exercise && repeats >= number('reprises')) {
-      signal = 'repetition'; why = repeats + ' reprises apr\u00e8s ' + number('reussites') + ' r\u00e9sultats \u2265 ' + number('note-reussite') + '/10';
+      signal = 'repetition'; why = T('why_repetition', repeats, number('reussites'), number('note-reussite'));
     } else if (exercise && started && data.now-started >= number('attente')*60 &&
         !current.some(function (e) { return e.kind === 'score' && e.at >= started; })) {
-      signal = 'attente'; why = 'Aucun r\u00e9sultat enregistr\u00e9 depuis ' + Math.floor((data.now-started)/60) + ' min : \u00e0 v\u00e9rifier';
+      signal = 'attente'; why = T('why_attente', Math.floor((data.now-started)/60));
     }
     return {r:r, recent:recent, scores:scores, active:active, inSession:inSession, signal:signal, why:why,
       priority:(!inSession ? 10 : ({difficulte:0, attente:1, repetition:2, normal:3}[signal]))};
   }
-  var labels = {difficulte:'Difficult\u00e9 possible', attente:'Temps long', repetition:'R\u00e9p\u00e9tition',
-    travail:'Au travail', silence:'Sans action', ancien:'Session ancienne'};
+  var labels = {difficulte:T('difficulte'), attente:T('attente'), repetition:T('repetition'),
+    travail:T('travail'), silence:T('silence'), ancien:T('ancien')};
   var groupes = ['attention', 'repetition', 'travail', 'silence', 'ancien'];
-  var filtres = {actifs:'Tous', attention:'\u00c0 aller voir', repetition:'R\u00e9p\u00e9tition', travail:'Au travail',
-    silence:'Sans action', tous:'Avec les sessions anciennes'};
+  var filtres = {actifs:T('f_actifs'), attention:T('f_attention'), repetition:T('repetition'), travail:T('travail'),
+    silence:T('silence'), tous:T('f_tous')};
   var ouverts = {};
   function groupe(x) {
     if (!x.inSession) return 'ancien';
@@ -96,10 +113,10 @@
     return x.active ? 'travail' : 'silence';
   }
   function titreGroupe(g) {
-    return {attention:'\u00c0 aller voir', repetition:'R\u00e9p\u00e9tition apr\u00e8s r\u00e9ussite', travail:'Au travail',
-      silence:'Sans action depuis ' + number('inactivite') + ' min', ancien:'Sessions ouvertes, hors de la fen\u00eatre'}[g];
+    return {attention:T('f_attention'), repetition:T('g_repetition'), travail:T('travail'),
+      silence:T('g_silence', number('inactivite')), ancien:T('g_ancien')}[g];
   }
-  function heure(t) { return new Date(t * 1000).toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }); }
+  function heure(t) { return new Date(t * 1000).toLocaleTimeString(langue, { hour: '2-digit', minute: '2-digit' }); }
   // Couleur d'une note d'apres les seuils : rouge = compte pour une difficulte, vert = compte pour une reussite.
   function carre(score, titre) {
     var c = score === null ? 'np' : score < number('note-faible') ? 'faible' : score >= number('note-reussite') ? 'reussie' : 'moyenne';
@@ -107,13 +124,14 @@
     e.title = titre; return e;
   }
   function exercice(r) {
-    if (r.sheet && !/^(home|adm\/)/.test(r.module)) return (r.exam ? 'Examen ' : 'Feuille ') + r.sheet + ' \u00b7 ' + r.activity;
-    return r.activity;
+    var a = r.activity === 'Accueil' ? T('accueil') : r.activity === 'Activite inconnue' ? T('inconnue') : r.activity;
+    if (r.sheet && !/^(home|adm\/)/.test(r.module)) return T(r.exam ? 'examen' : 'feuille', r.sheet, a);
+    return a;
   }
   function chronologie(x, id) {
     var tr = el('tr', undefined, 'nova-suivi-chrono'), td = el('td');
     td.colSpan = 6; td.id = id; tr.appendChild(td);
-    td.appendChild(el('p', 'Chronologie \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes', 'nova-suivi-chrono-titre'));
+    td.appendChild(el('p', T('chrono_titre', number('fenetre')), 'nova-suivi-chrono-titre'));
     // Un groupe par exercice, titre au-dessus de ses notes (un titre par note se chevauchait). Nouveaux essais :
     // rien pour un seul (ouvrir puis repondre, deroulement normal) ; a partir de deux a la suite sans note, une
     // fleche grise << xN >> (l'eleve relance sans repondre ; choix de l'utilisateur, 2026-10-08).
@@ -121,7 +139,7 @@
     var vider = function () {
       if (relances.length >= 2) {
         var li = el('li', undefined, 'nova-suivi-relance');
-        li.title = relances.length + ' nouveaux essais sans r\u00e9ponse : ' + relances.map(heure).join(', ');
+        li.title = T('relances', relances.length, relances.map(heure).join(', '));
         li.appendChild(el('span', '', 'nova-suivi-relance-icone'));
         li.appendChild(el('small', '\u00d7' + relances.length));
         essais.appendChild(li);
@@ -131,13 +149,13 @@
     var fermer = function () {
       if (!essais) return;
       vider();
-      if (!essais.children.length) essais.appendChild(el('li', 'pas de note', 'nova-suivi-sans-note'));
+      if (!essais.children.length) essais.appendChild(el('li', T('pas_de_note'), 'nova-suivi-sans-note'));
     };
     x.recent.slice(-40).forEach(function (e) {
       var cle = e.exam + ':' + e.sheet + ':' + e.exo;
       if (cle !== avant) {
         fermer();
-        var segment = el('li', undefined, 'nova-suivi-segment'), titre = (e.exam ? 'Examen ' : 'Feuille ') + e.sheet + ' \u00b7 ' + e.title;
+        var segment = el('li', undefined, 'nova-suivi-segment'), titre = T(e.exam ? 'examen' : 'feuille', e.sheet, e.title);
         var t = el('strong', titre); segment.appendChild(t);
         // Titre en bulle (CSS) : survol, clavier ou clic, qui le garde affiche.
         segment.tabIndex = 0;
@@ -147,17 +165,17 @@
       if (e.kind !== 'score') { relances.push(e.at); return; }
       vider();
       var li = el('li');
-      li.appendChild(carre(e.score, e.score === null ? 'R\u00e9sultat indisponible' : e.score + '/10'));
+      li.appendChild(carre(e.score, e.score === null ? T('res_indispo') : e.score + '/10'));
       li.appendChild(el('span', heure(e.at), 'nova-suivi-heure'));
-      li.appendChild(el('small', e.score === null ? 'r\u00e9sultat indisponible' : 'note'));
+      li.appendChild(el('small', e.score === null ? T('res_indispo_court') : T('note')));
       essais.appendChild(li);
     });
     fermer();
-    if (!x.recent.length) list.appendChild(el('li', 'Aucun essai journalis\u00e9 dans cette fen\u00eatre.'));
+    if (!x.recent.length) list.appendChild(el('li', T('aucun_essai')));
     td.appendChild(list);
-    if (x.recent.length > 40) td.appendChild(el('p', 'Les 40 derniers \u00e9v\u00e9nements sont affich\u00e9s.', 'nova-suivi-aide'));
-    if (x.r.historyTruncated) td.appendChild(el('p', 'Historique partiel : les \u00e9v\u00e9nements les plus anciens sont omis.', 'nova-suivi-aide'));
-    var masquer = el('button', 'Masquer la chronologie', 'nova-suivi-masquer'); masquer.type = 'button';
+    if (x.recent.length > 40) td.appendChild(el('p', T('quarante'), 'nova-suivi-aide'));
+    if (x.r.historyTruncated) td.appendChild(el('p', T('partiel'), 'nova-suivi-aide'));
+    var masquer = el('button', T('masquer'), 'nova-suivi-masquer'); masquer.type = 'button';
     masquer.addEventListener('click', function () { delete ouverts[x.r.class + ':' + x.r.login]; render(); });
     td.appendChild(masquer);
     return tr;
@@ -177,19 +195,19 @@
       fort.insertBefore(img, fort.firstChild);
     }
     nom.appendChild(fort);
-    if (x.signal !== 'normal') nom.appendChild(el('small', x.why + (x.inSession ? '' : ' \u00b7 signal de l\u2019activit\u00e9 pass\u00e9e')));
+    if (x.signal !== 'normal') nom.appendChild(el('small', x.why + (x.inSession ? '' : ' \u00b7 ' + T('passee'))));
     else nom.appendChild(el('small', r.login + (plusieurs ? ' \u00b7 ' + r.className : '')));
     tr.appendChild(nom);
     tr.appendChild(el('td', exercice(r), 'nova-suivi-exercice'));
     var notes = el('td', undefined, 'nova-suivi-notes');
-    if (x.scores.length) x.scores.slice(-5).forEach(function (e) { notes.appendChild(carre(e.score, e.score + '/10 \u00e0 ' + heure(e.at))); });
-    else notes.appendChild(el('small', r.sheet && !/^(home|adm\/)/.test(r.module) ? 'pas encore de note' : '\u2014'));
+    if (x.scores.length) x.scores.slice(-5).forEach(function (e) { notes.appendChild(carre(e.score, T('note_a', e.score, heure(e.at)))); });
+    else notes.appendChild(el('small', r.sheet && !/^(home|adm\/)/.test(r.module) ? T('pas_encore') : '\u2014'));
     tr.appendChild(notes);
-    tr.appendChild(el('td', ago(r.last).replace('Il y a', 'il y a'), 'nova-suivi-quand'));
+    tr.appendChild(el('td', (function (q) { return q.charAt(0).toLocaleLowerCase(langue) + q.slice(1); })(ago(r.last)), 'nova-suivi-quand'));
     var cell = el('td', undefined, 'nova-suivi-ouvrir'), b = el('button', undefined, 'nova-suivi-chevron');
     b.type = 'button';
     b.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
-    b.setAttribute('aria-label', (ouvert ? 'Masquer' : 'Voir') + ' la chronologie de ' + r.name);
+    b.setAttribute('aria-label', T(ouvert ? 'masquer_chrono' : 'voir_chrono', r.name));
     if (ouvert) b.setAttribute('aria-controls', 'nova-suivi-chrono-' + r.login);
     function basculer() { if (ouverts[key]) delete ouverts[key]; else ouverts[key] = true; render(); }
     b.addEventListener('click', basculer);
@@ -199,17 +217,17 @@
     return tr;
   }
   function render() {
-    document.getElementById('nova-suivi-auto-libelle').textContent = 'Actualiser toutes les ' + number('intervalle') + ' s';
+    document.getElementById('nova-suivi-auto-libelle').textContent = T('auto', number('intervalle'));
     var ordre = {attention:0, repetition:1, travail:2, silence:3, ancien:4};
     var analyzed = rows.map(inspect);
     analyzed.forEach(function (x) { x.groupe = groupe(x); });
-    analyzed.sort(function (a,b) { return ordre[a.groupe]-ordre[b.groupe] || a.priority-b.priority || a.r.name.localeCompare(b.r.name, 'fr'); });
+    analyzed.sort(function (a,b) { return ordre[a.groupe]-ordre[b.groupe] || a.priority-b.priority || a.r.name.localeCompare(b.r.name, langue); });
     var nbClasses = Object.keys(classes).length;
     document.getElementById('nova-suivi-classe-bloc').hidden = nbClasses < 2;
     var choisie = controls.classe.value;
     document.getElementById('nova-suivi-sous-titre').textContent =
-      (choisie ? classes[choisie] : nbClasses === 1 ? classes[Object.keys(classes)[0]] : nbClasses + ' classes ou cours') +
-      ' \u00b7 ' + number('fenetre') + ' derni\u00e8res minutes';
+      (choisie ? classes[choisie] : nbClasses === 1 ? classes[Object.keys(classes)[0]] : T('n_classes', nbClasses)) +
+      ' \u00b7 ' + T('minutes', number('fenetre'));
     var scoped = analyzed.filter(function (x) { return !choisie || x.r.class === choisie; });
     var filter = controls.filtre.value;
     if (filter === 'difficulte') filter = 'attention';
@@ -248,11 +266,11 @@
     document.getElementById('nova-suivi-vide').hidden=visible.length>0;
     document.getElementById('nova-suivi-commandes').hidden=false;
     state.className = 'nova-suivi-ok';
-    state.textContent='Relev\u00e9 \u00e0 '+clock(data.now);
+    state.textContent=T('releve_a', clock(data.now));
   }
   async function refresh() {
     if (refreshing) return;
-    refreshing = true; state.textContent = 'Actualisation\u2026';
+    refreshing = true; state.textContent = T('actualisation');
     var abort = new AbortController(), timeout = setTimeout(function () { abort.abort(); }, 15000);
     try {
       var a = root.querySelector('#nova-suivi-refresh a');
@@ -263,10 +281,10 @@
       var next = doc.getElementById('nova-suivi-donnees');
       if (!next) {
         controls.auto.checked = false;
-        throw new Error('Session expiree ou acces indisponible : revenez a la classe.');
+        throw new Error(T('expiree'));
       }
       var fresh = JSON.parse(next.textContent);
-      if (fresh.error) throw new Error(fresh.error);
+      if (fresh.error) throw new Error((fresh.code && T('err_' + fresh.code)) || fresh.error);
       data = fresh; rows = data.students || []; dataEl.textContent = next.textContent;
       var nextLink = doc.querySelector('#nova-suivi-refresh a');
       if (nextLink) a.href = nextLink.href;
@@ -276,7 +294,7 @@
       render();
     } catch (e) {
       state.className = 'nova-suivi-panne';
-      state.textContent = 'Actualisation impossible. Dernier relev\u00e9 : '+clock(data.now)+'. '+e.message;
+      state.textContent = T('impossible', clock(data.now), e.message);
     } finally { clearTimeout(timeout); snapshot=Date.now(); refreshing=false; }
   }
   function saveAndRender() {

@@ -368,6 +368,24 @@ span.tooltip { color: var(--nova-lien); }
 .wims_subclasses ul { list-style: none; margin: var(--nova-e1) 0 0 .9em; padding-left: var(--nova-e4); border-left: 1px solid var(--nova-bord); }
 .wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"] { display: inline-block; padding-block: .3em; line-height: 1.35; }
 .wims_subclasses .program, .wims_subclasses .course { background-color: transparent; }
+/* Classes d'un niveau repliées (accueil d'une structure, enseignant ; 2026-11-10, maquette A, utilisateur) : bouton
+ * « Replier les n classes » posé par nova.js (replisClasses) à côté du niveau ; replié, il ne reste que les programmes et
+ * leurs cours. Choix gardé sur le serveur (header.phtml, .nova_replis_<login>). */
+.wims_subclasses > li.nova-replie > ul > li:has(> .wims_classes_direct_class) { display: none; }
+.wims_subclasses .nova-replis-bouton {
+  display: inline-flex; align-items: center; gap: .35em; vertical-align: middle;
+  min-height: 36px; margin: 0 0 0 var(--nova-e3); padding: 4px 12px;
+  border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface);
+  color: var(--nova-texte-2); font: inherit; font-size: .85em; line-height: 1.2; cursor: pointer; box-shadow: none;
+}
+.wims_subclasses .nova-replis-bouton:hover { border-color: var(--nova-accent); color: var(--nova-accent); background: var(--nova-surface); }
+.wims_subclasses .nova-replis-bouton:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.wims_subclasses .nova-replis-bouton::before {
+  content: ""; width: .9em; height: .9em; flex: none; background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 15l6-6 6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.wims_subclasses .nova-replis-bouton[aria-expanded="false"]::before { transform: rotate(180deg); }
 /* Titre d'une zone : la pastille, en plus grand, sans cadre. */
 h1.wims_title [class^="wims_classes_direct_"] { padding: .05em .45em .1em .35em; border-radius: 12px; }
 /* Légende : les mêmes pastilles, en petit, alignées. */

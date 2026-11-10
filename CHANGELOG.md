@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- **Accueil d'un portail** : bouton « Replier les classes » à côté de chaque niveau ; replié, il ne reste que les programmes et leurs cours. Le choix est gardé sur le serveur (il vous suit d'un appareil à l'autre).
 - Onglet DM WIMS des Réglages de Nova : liste de ce qui utilise ces réglages (« Créer le DM noté », badges Échauffement et Au top).
 - **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « New ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
 - **DM WIMS** : onglet à part ; un examen n'est un DM que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté » ou « test » (DM noté) ou « entraînement » ; mots-clés en étiquettes, faciles à ajouter ou retirer.

@@ -496,3 +496,7 @@
 !set nova_coul_verrou_degrade2=Atteins le niveau %s du badge %b pour les dégradés (après la couleur).
 !set nova_tag_nouveau=New
 !set nova_rg_enregistre=Réglages de Nova enregistrés.
+!set nova_txt_replis_replier=Replier les %1 classes
+!set nova_txt_replis_replier1=Replier la classe
+!set nova_txt_replis_afficher=Afficher les %1 classes
+!set nova_txt_replis_afficher1=Afficher la classe

@@ -234,6 +234,36 @@
     !endif
     !set nova_mv=!sh if test -r $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; then cat $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; fi
 <script type="text/plain" id="nova-menu-serveur">$nova_mv</script>
+    !! Nova : classes repliees par niveau sur l'accueil d'une structure (2026-11-10, utilisateur, maquette A) : choix garde
+    !! pour l'enseignant dans log/classes/<structure>/.nova_replis_<login>, valeur << n >> puis les numeros des niveaux
+    !! replies, separes par des points (n.1.3), envoyee par nova.js (replisClasses) a l'accueil avec nova_replis=.
+    !! La regle #nova-replis-style masque d'emblee les classes repliees (pas de clignotement) ; nova.js la retire une fois
+    !! les boutons poses. Sans JavaScript (html.nova-js absente), rien n'est masque.
+    !if $module=home
+      !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+      !if nova_replis isin $nova_q
+        !set nova_q=!replace internal & by $ $ in $nova_q
+        !set nova_rv=!getopt nova_replis in $nova_q
+        !set nova_rt=!text select char n0123456789. in $nova_rv
+        !set nova_r1=!char 1 of $nova_rv
+        !if $nova_rv!=$empty and $nova_rt=$nova_rv and $nova_r1=n
+          !writefile wimshome/log/classes/$nova_mk/.nova_replis_$wims_user $nova_rv
+        !endif
+      !endif
+      !set nova_rv=!sh cat $wims_home/log/classes/$nova_mk/.nova_replis_$wims_user 2>/dev/null | tr -cd 'n0-9.'
+      !reset nova_rs
+      !set nova_rl=!replace internal . by , in $nova_rv
+      !for nova_r1 in $nova_rl
+        !if $nova_r1!=n and $nova_r1!=$empty
+          !set nova_rs=!append item html.nova-js .wims_subclasses > li:has(> .wims_classes_direct_level):has(a[href*="class=$nova_mk%2F$nova_r1%2F"]) > ul > li:has(> .wims_classes_direct_class) to $nova_rs
+        !endif
+      !next nova_r1
+<span id="nova-replis" hidden data-valeur="$nova_rv" data-replier="$nova_txt_replis_replier" data-replier1="$nova_txt_replis_replier1" data-afficher="$nova_txt_replis_afficher" data-afficher1="$nova_txt_replis_afficher1"></span>
+      !if $nova_rs!=$empty
+<style id="nova-replis-style">$nova_rs { display: none; }</style>
+      !endif
+      !reset nova_rv nova_rt nova_r1 nova_rl nova_rs
+    !endif
     !reset nova_mk nova_mf nova_q nova_mv nova_mt nova_m1 nova_ms
   !endif
   !! Couleur personnelle d'un eleve (2026-11-07, utilisateur) : envoyee par nova.js (fenetre des badges) a l'accueil avec

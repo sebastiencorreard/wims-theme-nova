@@ -495,3 +495,7 @@
 !set nova_coul_verrou_degrade2=Reach level %s of the %b badge for gradients (after the colour).
 !set nova_tag_nouveau=New
 !set nova_rg_enregistre=Nova settings saved.
+!set nova_txt_replis_replier=Fold the %1 classes
+!set nova_txt_replis_replier1=Fold the class
+!set nova_txt_replis_afficher=Show the %1 classes
+!set nova_txt_replis_afficher1=Show the class

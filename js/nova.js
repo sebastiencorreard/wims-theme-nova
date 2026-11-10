@@ -1167,6 +1167,63 @@
    * défilement. WIMS ne pose son widget (_widgets/topback.phtml) que dans tail, doctail et user : pas
    * sur l'accueil enseignant d'une classe ni sur celui du site, pourtant longs. Nova le crée alors,
    * pour que la règle soit la même partout. Le lien vide de WIMS reçoit un nom accessible. */
+  /* Accueil d'une structure, enseignant (2026-11-10, utilisateur, maquette A) : bouton « Replier les n classes » à côté de
+   * chaque niveau qui a des classes ; replié, il ne reste que les programmes et leurs cours. Choix gardé sur le serveur
+   * pour l'enseignant (header.phtml : #nova-replis, .nova_replis_<login>), envoyé à l'accueil en arrière-plan (fetch,
+   * 1,2 s après le dernier clic : deux requêtes à moins d'1 s sont mal servies ; aussi au départ de la page). Niveau
+   * repéré par le 2e numéro du paramètre class= de ses liens (2945398/1/101 : niveau 1). */
+  function replisClasses() {
+    var source = document.getElementById('nova-replis');
+    var regle = document.getElementById('nova-replis-style');
+    if (!source) return;
+    var idNiveau = function (li) {
+      var liens = li.querySelectorAll('a[href*="class="]');
+      for (var i = 0; i < liens.length; i++) {
+        var m = /[?&+]class=[0-9]+(?:%2F|\/)([0-9]+)/.exec(liens[i].getAttribute('href') || '');
+        if (m) return m[1];
+      }
+      return '';
+    };
+    var niveaux = [].filter.call(document.querySelectorAll('.wimsbody ul.wims_subclasses > li'), function (li) {
+      return li.querySelector(':scope > .wims_classes_direct_level') && li.querySelector(':scope > ul > li > .wims_classes_direct_class') && idNiveau(li);
+    });
+    var replies = (source.getAttribute('data-valeur') || '').split('.').filter(function (v) { return /^[0-9]+$/.test(v); });
+    var attente = null;
+    var envoyer = function (garder) {
+      if (attente) { clearTimeout(attente); attente = null; }
+      if (!window.fetch) return;
+      fetch(lienAccueil('&nova_replis=' + ['n'].concat(replies).join('.')), { credentials: 'same-origin', keepalive: !!garder }).catch(function () { /* choix perdu */ });
+    };
+    window.addEventListener('pagehide', function () { if (attente) envoyer(true); });
+    var texte = function (cle, n) { return (source.getAttribute('data-' + cle + (n === 1 ? '1' : '')) || '').replace('%1', n); };
+    niveaux.forEach(function (li, k) {
+      var id = idNiveau(li);
+      var n = li.querySelectorAll(':scope > ul > li > .wims_classes_direct_class').length;
+      var liste = li.querySelector(':scope > ul');
+      if (!liste.id) liste.id = 'nova-replis-' + k;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'nova-replis-bouton';
+      b.setAttribute('aria-controls', liste.id);
+      var poser = function (replie) {
+        li.classList.toggle('nova-replie', replie);
+        b.setAttribute('aria-expanded', replie ? 'false' : 'true');
+        b.textContent = texte(replie ? 'afficher' : 'replier', n);
+      };
+      poser(replies.indexOf(id) >= 0);
+      b.addEventListener('click', function () {
+        var replie = !li.classList.contains('nova-replie');
+        poser(replie);
+        replies = replies.filter(function (v) { return v !== id; });
+        if (replie) replies.push(id);
+        if (attente) clearTimeout(attente);
+        attente = setTimeout(function () { envoyer(false); }, 1200);
+      });
+      li.querySelector(':scope > .wims_classes_direct_level').insertAdjacentElement('afterend', b);
+    });
+    if (regle) regle.remove();
+  }
+
   function retourEnHaut() {
     var lien = document.getElementById('back-to-top');
     if (!lien) {
@@ -5341,7 +5398,7 @@
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

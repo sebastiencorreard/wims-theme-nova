@@ -648,6 +648,4 @@
 !set nova_lc_qr_alt=Código QR del enlace para sus alumnos
 !set nova_lc_flyers=Folletos para imprimir (PDF)
 !set nova_lc_fl_nom=Nombre de la clase en los folletos
-!set nova_lc_fl_aide=Una página A4 con 21 folletos para recortar: uno por alumno, para pegar en el cuaderno.
-!set nova_lc_fl_l1=Enlace a mi clase WIMS
-!set nova_lc_fl_l3=Escanea el código QR para abrirla.
+!set nova_lc_fl_aide=Una página A4 con 30 folletos para recortar: uno por alumno, para pegar en el cuaderno.

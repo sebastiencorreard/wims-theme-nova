@@ -1660,7 +1660,7 @@
           document.body.appendChild(d);
           if (d.showModal) d.showModal(); else d.setAttribute('open', '');
         });
-        // Flyers a imprimer (2026-11-10, utilisateur, format B : 21 par page A4) : js/flyers.js charge au clic ; nom de la
+        // Flyers a imprimer (2026-11-10, utilisateur : 30 par page A4, 5 x 6, texte seul WIMS - <classe>) : js/flyers.js charge au clic ; nom de la
         // classe modifiable, garde dans ce navigateur (localStorage nova-flyers-nom|<classe>).
         var numero = (/[?&]class=([0-9/]+)/.exec(dec(lien)) || [])[1] || '';
         var cleNom = 'nova-flyers-nom|' + numero;
@@ -1701,7 +1701,7 @@
           });
           flyScript.then(function () {
             var nom = champNom.value.trim() || nomWims || numero;
-            var pdf = window.novaFlyersPdf({ qrcode: lib, lien: lien, nom: nom, ligne1: tx('fl-l1'), ligne3: tx('fl-l3'), format: 'petit', titre: tx('fl-l1') + ' : ' + nom });
+            var pdf = window.novaFlyersPdf({ qrcode: lib, lien: lien, nom: 'WIMS - ' + nom, format: 'mini' });
             var url = URL.createObjectURL(new Blob([pdf], { type: 'application/pdf' }));
             var a = document.createElement('a');
             a.href = url;

@@ -61,7 +61,9 @@
   // Formats : grand = 2 x 4 flyers (95 x 69 mm), petit = 3 x 7 (63 x 40 mm). Marge de page 10 mm.
   var FORMATS = {
     grand: { col: 2, lig: 4, qr: 42, marge: 5, ecart: 4, t1: 9, nom: 17, nomMin: 10, t3: 9 },
-    petit: { col: 3, lig: 7, qr: 29, marge: 3, ecart: 2.5, t1: 7, nom: 12, nomMin: 7, t3: 7 }
+    petit: { col: 3, lig: 7, qr: 29, marge: 3, ecart: 2.5, t1: 7, nom: 12, nomMin: 7, t3: 7 },
+    // 5 x 6 (38 x 46 mm), QR code au-dessus, une seule ligne centree dessous (WIMS - <classe> ; 2026-11-10, utilisateur).
+    mini: { col: 5, lig: 6, qr: 30, marge: 2.5, ecart: 2, t1: 7, nom: 11, nomMin: 6, t3: 7, vertical: true }
   };
   // o : { qrcode (fonction de js/qrcode.js), lien, nom, ligne1, ligne3, format: 'grand'|'petit' } -> Uint8Array (PDF).
   window.novaFlyersPdf = function (o) {
@@ -76,10 +78,10 @@
     var PW = 595.28, PH = 841.89, M = 10 * MM;
     var cw = (PW - 2 * M) / f.col, ch = (PH - 2 * M) / f.lig;
     var qs = f.qr * MM, pad = f.marge * MM, gap = f.ecart * MM;
-    var tx = pad + qs + gap, tw = cw - tx - pad;
+    var tx = f.vertical ? pad : pad + qs + gap, tw = cw - tx - pad;
     // Bloc de texte commun a tous les flyers (positions relatives a la cellule).
     var nomTaille = f.nom, nomLignes = couper(o.nom, nomTaille, true, tw);
-    while (nomLignes.length > 2 && nomTaille > f.nomMin) { nomTaille -= 0.5; nomLignes = couper(o.nom, nomTaille, true, tw); }
+    while (nomLignes.length > (f.vertical ? 1 : 2) && nomTaille > f.nomMin) { nomTaille -= 0.5; nomLignes = couper(o.nom, nomTaille, true, tw); }
     var l1 = couper(o.ligne1 || '', f.t1, false, tw), l3 = couper(o.ligne3 || '', f.t3, false, tw);
     var blocs = [];
     l1.forEach(function (t) { blocs.push({ t: t, s: f.t1, g: false, gris: true }); });
@@ -97,11 +99,14 @@
     for (var li = 0; li < f.lig; li++) for (var co = 0; co < f.col; co++) {
       var x = M + co * cw, y = PH - M - (li + 1) * ch;
       var e = qs / cote;
-      cs.push('q ' + n(e) + ' 0 0 ' + n(e) + ' ' + n(x + pad) + ' ' + n(y + (ch - qs) / 2) + ' cm /Qr Do Q');
-      var yy = y + ch / 2 + hauteur / 2;
+      var total = f.vertical ? qs + gap + hauteur : 0;
+      var qy = f.vertical ? y + (ch + total) / 2 - qs : y + (ch - qs) / 2;
+      cs.push('q ' + n(e) + ' 0 0 ' + n(e) + ' ' + n(f.vertical ? x + (cw - qs) / 2 : x + pad) + ' ' + n(qy) + ' cm /Qr Do Q');
+      var yy = f.vertical ? qy - gap : y + ch / 2 + hauteur / 2;
       blocs.forEach(function (b) {
         yy -= b.h;
-        cs.push('BT /' + (b.g ? 'F2' : 'F1') + ' ' + n(b.s) + ' Tf ' + (b.gris ? '0.3' : '0') + ' g ' + n(x + tx) + ' ' + n(yy + b.s * 0.22) + ' Td ' + chaine(octets(b.t)) + ' Tj ET');
+        var bx = f.vertical ? x + (cw - largeur(octets(b.t), b.s, b.g)) / 2 : x + tx;
+        cs.push('BT /' + (b.g ? 'F2' : 'F1') + ' ' + n(b.s) + ' Tf ' + (b.gris ? '0.3' : '0') + ' g ' + n(bx) + ' ' + n(yy + b.s * 0.22) + ' Td ' + chaine(octets(b.t)) + ' Tj ET');
       });
     }
     var contenu = cs.join('\n') + '\n';

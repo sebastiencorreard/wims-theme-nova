@@ -648,6 +648,4 @@
 !set nova_lc_qr_alt=Codice QR del link per i suoi studenti
 !set nova_lc_flyers=Volantini da stampare (PDF)
 !set nova_lc_fl_nom=Nome della classe sui volantini
-!set nova_lc_fl_aide=Una pagina A4 con 21 volantini da ritagliare: uno per studente, da incollare sul quaderno.
-!set nova_lc_fl_l1=Link alla mia classe WIMS
-!set nova_lc_fl_l3=Scansiona il codice QR per aprirla.
+!set nova_lc_fl_aide=Una pagina A4 con 30 volantini da ritagliare: uno per studente, da incollare sul quaderno.

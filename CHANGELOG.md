@@ -25,6 +25,10 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
 - Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
+### Corrections
+- **Mode « espacé »** (Préférences d'affichage, Accessibilité) : le texte est de nouveau espacé (lettres, mots, lignes) ; la police de Nova est gardée, sauf si l'appareil a OpenDyslexic.
+- **Fil d'Ariane** de la gestion de structure : plus de tiret devant « Gestion de … » avec le jeu d'icônes Font Awesome.
+
 ### Installation
 - **Langues** : Nova est traduit en espagnol et en italien (en plus du français et de l'anglais) ; une langue non traduite (catalan, allemand, chinois, slovène…) ou un texte manquant s'affiche en anglais, jamais vide. La page **Suivi en direct** est traduite elle aussi.
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.

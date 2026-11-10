@@ -5,6 +5,10 @@
 <meta name="description" content="$module_description $wims_site_description">
 <meta name="keywords" content="$wims_site_keywords, $module_domain, $module_keywords">
 <meta name="Author" content="$module_author">
+<!-- Nova : mode « espacé » de WIMS (Préférences d'affichage, Accessibilité ; 4e chiffre de useropts). WIMS remplit
+     $wims_special_font (espacement, interligne, police OpenDyslexic) ; html.nova-espace corrige la police et l'interligne (base.css). -->
+<style id="nova-espace">html body.main_body { $wims_special_font }</style>
+<script>(function () { var s = document.getElementById('nova-espace'); if (s && /:/.test(s.textContent)) document.documentElement.classList.add('nova-espace'); })();</script>
 
 <!-- makes browsers render all elements more consistently -->
 <link rel="stylesheet" href="scripts/js/external/normalize.min.css">
@@ -40,7 +44,7 @@ $wims_CSS
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
-<meta name="nova-css" content="e1946c0bbe">
+<meta name="nova-css" content="ed7dd1ada4">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune

@@ -116,6 +116,9 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
  * que sur la racine du fil d'Ariane ; les zones qui suivent n'affichent que leur nom (2026-10-02). */
 .breadcrumbs > li:not(:first-child) .class_home::before,
 .breadcrumbs > li:not(:first-child) > .home::before { content: none; display: none; }
+/* Font_Awesome pose un tiret (\f068) devant toute entrée de menu sans icône propre, ex. « Gestion de … » de la gestion de
+   structure (vécu, portail réel, 2026-11-10) : le fil n'a d'icône que la maison, en tête, comme avec le jeu « default ». */
+.breadcrumbs > li:not(:first-child) > :is(a, .text_item)::before { content: none; display: none; }
 .breadcrumbs li {
   float: none;
   font-size: var(--nova-petit);

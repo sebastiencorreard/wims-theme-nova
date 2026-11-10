@@ -23,3 +23,10 @@ a:hover, a:focus { color: var(--nova-lien-survol); }
 
 /* Les énoncés d'exercice ne sont jamais élargis de force (piège de Pion : table{width:100%}). */
 .oef_indstatement table, .statement table { width: auto; }
+
+/* Mode « espacé » de WIMS (2026-11-10 ; htmlheader.phtml #nova-espace, html.nova-espace) : l'espacement des lettres et des
+   mots de WIMS est gardé (hérité de body) ; police OpenDyslexic si l'appareil l'a, sinon celle de Nova (WIMS imposait
+   « sans-serif ») ; interligne sans unité (2,7em de WIMS : hérité en pixels, titres chevauchés). */
+html.nova-espace body.main_body { font-family: OpenDyslexic3, OpenDyslexic, var(--nova-police) !important; line-height: 2; }
+html.nova-espace :is(h1, h2, h3, h4, h5, h6, legend) { line-height: 1.4; }
+html.nova-espace :is(p, li, td, th, dd, label, .oef_indstatement, .statement) { line-height: 2; }

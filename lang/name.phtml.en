@@ -530,3 +530,15 @@
 !set nova_acc_expert=Expert setting (other rules, IP addresses...)
 !set nova_acc_expert_n=Expert setting: %1 other hand-written rule(s)
 !set nova_acc_expert_aide=The WIMS field. Hand-written rules are kept; the rules of this form are between the lines "# Nova : debut" and "# Nova : fin". A duplicate rule is written only once.
+!set nova_accp_enregistre=Access restriction saved.
+!set nova_accp_question=%1 dependent zones have a different access restriction. Apply this one to them?
+!set nova_accp_question1=A dependent zone has a different access restriction. Apply this one to it?
+!set nova_accp_texte=Their current restriction will be replaced by this one, hand-written rules included.
+!set nova_accp_voir=Show the zones
+!set nova_accp_appliquer=Apply to the %1 zones
+!set nova_accp_appliquer1=Apply to this zone
+!set nova_accp_non=No, only here
+!set nova_accp_attente=Applying...
+!set nova_accp_fait=Restriction applied to the %1 dependent zones.
+!set nova_accp_fait1=Restriction applied to the dependent zone.
+!set nova_accp_erreur=The restriction could not be applied to the zones. Use "Dependent zones" in the configuration.

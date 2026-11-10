@@ -7,6 +7,7 @@
 #   sans « ecarts » : dans la feuille de style (css) de chaque zone dépendante (sous-dossiers numérotés, comme
 #     modules/adm/class/config/propagate.proc ; cours d'un programme compris), les blocs choisis sont remplacés par
 #     ceux de la structure ; le reste de la feuille est gardé. Sortie : nombre de zones mises à jour.
+#   acces (2026-11-10, ecarts seulement) : restriction d'acces (access.conf), propagee par WIMS lui-meme.
 #   avec « ecarts » (lecture seule ; appelé sur les pages Apparence et Badges Nova de la structure) : un élément par zone
 #     dont un bloc choisi diffère de celui de la structure, sur une ligne : <li data-partie="badges">nom</li>…, nom
 #     échappé pour le HTML ($ compris : la sortie passe par une variable WIMS).
@@ -23,7 +24,6 @@ for p in $(printf '%s' "$P" | tr ',' ' '); do
   esac
 done
 motif=${motif#|}
-[ -n "$motif" ] || { echo 0; exit; }
 # Blocs Nova d'une feuille (motif : noms des blocs, alternative awk), espaces de fin de ligne retirés.
 blocs() { awk -v m="^/\\\\* Nova : ($2) \\\\*/" '$0 ~ m {b=1} b{sub(/[ \t]+$/, ""); print} b&&/^}/{b=0; print ""}' "$1" 2>/dev/null; }
 reste() { awk -v m="^/\\\\* Nova : ($2) \\\\*/" '$0 ~ m {b=1} !b{print} b&&/^}/{b=0}' "$1" 2>/dev/null; }
@@ -33,11 +33,13 @@ if [ "$T" = program ] && [ -n "$S" ]; then
 fi
 if [ "$M" = ecarts ]; then
   for p in $(printf '%s' "$P" | tr ',' ' '); do
-    case "$p" in apparence) m='reglages de la page Apparence' ;; badges) m='badges' ;; *) continue ;; esac
-    ref=$(blocs css "$m")
+    case "$p" in apparence) m='reglages de la page Apparence' ;; badges) m='badges' ;; acces) m='' ;; *) continue ;; esac
+    # acces (2026-11-10) : restriction d'acces, fichier access.conf entier (propage par WIMS, job=propagate).
+    if [ "$p" = acces ]; then ref=$(cat access.conf 2>/dev/null); else ref=$(blocs css "$m"); fi
     for z in $zones; do
       grep -q '^!set class_defined=yes' "$z/.def" 2>/dev/null || continue
-      [ "$(blocs "$z/css" "$m")" = "$ref" ] && continue
+      if [ "$p" = acces ]; then [ "$(cat "$z/access.conf" 2>/dev/null)" = "$ref" ] && continue
+      else [ "$(blocs "$z/css" "$m")" = "$ref" ] && continue; fi
       nom=$(sed -n 's/^!set class_description=//p' "$z/.def" | head -1)
       [ -n "$nom" ] || nom=$z
       printf '<li data-partie="%s">%s</li>' "$p" "$(printf '%s' "$nom" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/\$/\&#36;/g')"
@@ -45,6 +47,7 @@ if [ "$M" = ecarts ]; then
   done
   exit
 fi
+[ -n "$motif" ] || { echo 0; exit; }
 nova=$(blocs css "$motif")
 n=0
 for z in $zones; do

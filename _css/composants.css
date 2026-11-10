@@ -1237,3 +1237,10 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
   .nova-acces-ligne .nova-acces-retirer { position: absolute; top: 4px; right: 4px; }
   .nova-acces-moitie .nova-acces-champ[type="time"] { margin-left: calc(1.6em + var(--nova-e2)); }
 }
+.nova-acces-propager { max-width: 54rem; margin: 0 auto var(--nova-e4); box-sizing: border-box; padding: var(--nova-e4) var(--nova-e5); border: 1px solid #F1D29B; border-radius: var(--nova-rayon-carte); background: #FFF4E0; color: #4A2800; text-align: left; }
+.nova-acces-propager p { margin: 0 0 var(--nova-e2); }
+.nova-acces-propager .nova-acces-propager-titre { font-weight: 700; font-size: 1.05em; }
+.nova-acces-propager summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; }
+.nova-acces-propager ul { columns: 2; margin: var(--nova-e1) 0 0; }
+.wimsbody .wims_msg:has(+ .nova-acces-propager), .wimsbody .wims_msg:has(+ .nova-acces) { max-width: 54rem; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+.wimsbody .nova-acces-propager details { background: none; border: 0; box-shadow: none; padding: 0; margin: 0 0 var(--nova-e2); }

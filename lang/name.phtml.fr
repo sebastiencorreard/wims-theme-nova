@@ -531,3 +531,15 @@
 !set nova_acc_expert=Réglage expert (autres règles, adresses IP...)
 !set nova_acc_expert_n=Réglage expert : %1 autre(s) règle(s) écrite(s) à la main
 !set nova_acc_expert_aide=Le champ de WIMS. Les règles écrites à la main y sont gardées ; celles de ce formulaire sont entre les lignes « # Nova : debut » et « # Nova : fin ». Une règle en double n'est écrite qu'une fois.
+!set nova_accp_enregistre=Restriction d'accès enregistrée.
+!set nova_accp_question=%1 zones dépendantes ont une autre restriction d'accès. Leur appliquer celle-ci ?
+!set nova_accp_question1=Une zone dépendante a une autre restriction d'accès. Lui appliquer celle-ci ?
+!set nova_accp_texte=Leur restriction actuelle sera remplacée par celle-ci, règles écrites à la main comprises.
+!set nova_accp_voir=Voir les zones
+!set nova_accp_appliquer=Appliquer aux %1 zones
+!set nova_accp_appliquer1=L'appliquer à cette zone
+!set nova_accp_non=Non, seulement ici
+!set nova_accp_attente=Application en cours...
+!set nova_accp_fait=Restriction appliquée aux %1 zones dépendantes.
+!set nova_accp_fait1=Restriction appliquée à la zone dépendante.
+!set nova_accp_erreur=La restriction n'a pas pu être appliquée aux zones. Utilisez « Zones dépendantes » de la configuration.

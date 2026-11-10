@@ -1426,8 +1426,76 @@
     choix.addEventListener('change', function (e) { if (e.target.name === 'nova_acces_portee') { etat.portee = e.target.value; maj(); } });
     // Champ modifié à la main : les lignes de Nova y sont relues, le reste gardé.
     zone.addEventListener('change', function () { main = lire(false); afficher(); maj(); });
-    zone.form.addEventListener('submit', function () { if (document.activeElement === zone) main = lire(false); ecrire(); });
+    zone.form.addEventListener('submit', function (e) {
+      if (document.activeElement === zone) main = lire(false);
+      ecrire();
+      // « Enregistrer » (pas « Abandonner ») : la page suivante propose de propager (2026-11-10, utilisateur).
+      if (e.submitter && e.submitter.name === 'save') { try { sessionStorage.setItem('nova-acces-enregistre', String(Date.now())); } catch (x) { /* sans stockage */ } }
+    });
     afficher(); maj();
+    propagerAcces(racine);
+  }
+
+  /* Après l'enregistrement d'une restriction d'accès sur une structure (portail, groupement, niveau ; 2026-11-10,
+   * utilisateur, maquette) : message « enregistrée », et, si des zones dépendantes ont une autre restriction
+   * (header.phtml, #nova-ecarts-acces, propager.sh … acces ecarts), proposition de la leur appliquer. L'application passe
+   * par la propagation de WIMS (job=propagate, propagate=access : access.conf recopié tel quel), en arrière-plan. */
+  function propagerAcces(racine) {
+    var quand = null;
+    try { quand = +sessionStorage.getItem('nova-acces-enregistre'); sessionStorage.removeItem('nova-acces-enregistre'); } catch (e) { quand = null; }
+    if (!quand || Date.now() - quand > 120000) return;
+    var liste = document.getElementById('nova-ecarts-acces');
+    var t = function (c) { return liste ? liste.getAttribute('data-' + c) || '' : ''; };
+    var message = function (texte, alerte) {
+      var m = document.createElement('div');
+      m.className = 'wims_msg ' + (alerte ? 'alert' : 'success');
+      m.setAttribute('role', 'status');
+      m.textContent = texte;
+      return m;
+    };
+    if (!liste || !t('enregistre')) return;
+    var ok = message(t('enregistre'));
+    racine.parentNode.insertBefore(ok, racine);
+    var zones = liste.querySelectorAll('li');
+    var n = zones.length;
+    if (!n) return;
+    var boite = document.createElement('div');
+    boite.className = 'nova-acces-propager';
+    var q = document.createElement('p');
+    q.className = 'nova-acces-propager-titre';
+    q.textContent = n === 1 ? t('question1') : t('question').replace('%1', n);
+    var texte = document.createElement('p');
+    texte.textContent = t('texte');
+    var det = document.createElement('details');
+    var som = document.createElement('summary');
+    som.textContent = t('voir');
+    var ul = document.createElement('ul');
+    zones.forEach(function (li) { var x = document.createElement('li'); x.textContent = li.textContent; ul.appendChild(x); });
+    det.appendChild(som); det.appendChild(ul);
+    var actions = document.createElement('div');
+    actions.className = 'nova-acces-actions';
+    var oui = document.createElement('button');
+    oui.type = 'button'; oui.className = 'wims_button';
+    oui.textContent = n === 1 ? t('appliquer1') : t('appliquer').replace('%1', n);
+    var non = document.createElement('button');
+    non.type = 'button'; non.className = 'wims_button wims_secondary_button';
+    non.textContent = t('non');
+    actions.appendChild(oui); actions.appendChild(non);
+    [q, texte, det, actions].forEach(function (x) { boite.appendChild(x); });
+    racine.parentNode.insertBefore(boite, racine);
+    non.addEventListener('click', function () { boite.remove(); });
+    oui.addEventListener('click', function () {
+      oui.disabled = non.disabled = true;
+      oui.textContent = t('attente');
+      var fin = function (reussi) { boite.replaceWith(message(reussi ? (n === 1 ? t('fait1') : t('fait').replace('%1', n)) : t('erreur'), !reussi)); };
+      if (!window.fetch) { fin(false); return; }
+      setTimeout(function () {
+        fetch(lienSession('&cmd=reply&job=propagate&propagate=access&confirm=1'), { credentials: 'same-origin' })
+          .then(function (r) { return r.text(); })
+          .then(function (html) { fin(/wims_msg success/.test(html)); })
+          .catch(function () { fin(false); });
+      }, 1000);
+    });
   }
 
   function retourEnHaut() {

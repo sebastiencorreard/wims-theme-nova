@@ -59,12 +59,21 @@
             !next
             !reset nova_lc
           !else
+            !! Nova (2026-11-10, demande de l'utilisateur) : CGU deja dans le pied de page (footer.phtml) ; l'entree du
+            !! menu du compte est marquee nova-cgu-compte, cachee (cadre.css) et non recopiee dans Profil (nova.js
+            !! profilLateral), sauf reglage "Menus du theme standard".
             !for i_=1 to $wims_user_links_cnt
               !set 1_=!line $i_ of $wims_user_links
-              <li class="menuitem">
+              !set nova_lc=!item 1 of $1_
+              !if $nova_lc=cgu
+                <li class="menuitem nova-cgu-compte">
+              !else
+                <li class="menuitem">
+              !endif
                 !read $(w_path)oneitem.phtml $1_
               </li>
             !next
+            !reset nova_lc
           !endif
 
           !! "WIMS logout"

@@ -1141,6 +1141,8 @@ html.nova-js:not(.nova-profil-pret) body:has(#wimsmenumodubox) #wimstopbox li:ha
 
 /* Réglage « Navigation complète pour l'élève » : liens du compte que Nova cache aux élèves (user_links.phtml). */
 html:not(.nova-std-navigation) #user_links > li.nova-lien-complet { display: none; }
+/* CGU : seulement dans le pied de page (demande de l'utilisateur, 2026-11-10 ; _widgets/user_links.phtml). */
+html:not(.nova-std-menus) #user_links > li.nova-cgu-compte { display: none; }
 /* Réglage « Textes du thème standard » : libellé d'origine de l'accueil dans la barre (headhome.phtml). */
 .nova-nom-std { display: none; }
 html.nova-std-textes .nova-nom-nova { display: none; }

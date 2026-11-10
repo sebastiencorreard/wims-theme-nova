@@ -4433,7 +4433,7 @@
       var autres = langues.querySelectorAll('#lang_list a[href]');   // pas « ul a » : la liste de la barre contient le sélecteur
       if (autres.length) groupe.appendChild(choixLangue(langues, autres));
     }
-    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
+    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-cgu-compte)' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
     // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
     var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
     if (aides.length) {

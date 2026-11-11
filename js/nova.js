@@ -979,10 +979,13 @@
     var afficher = function () {
       var simple = racine.classList.contains('nova-menu-simple');
       bouton.setAttribute('aria-checked', simple ? 'true' : 'false');
-      // Liste des entrées cachées (modtool, pages de module) : rien de caché, rien à basculer ; le crayon garde son texte.
+      // Liste des entrées cachées (modtool, pages de module, accueils de structure) : rien de caché, rien à basculer :
+      // interrupteur grisé, avec une info-bulle (2026-11-11, utilisateur : toujours la barre de la maquette A).
       var nm = window.novaMenu;
-      bouton.hidden = racine.classList.contains('nova-menu-edition') || !!(nm && nm.inverse && !nm.garde.length);
-      actions.classList.toggle('nova-sans-inter', bouton.hidden);
+      var rien = !!(nm && nm.inverse && !nm.garde.length);
+      bouton.hidden = racine.classList.contains('nova-menu-edition');
+      bouton.disabled = rien;
+      if (rien && texte('rien')) bouton.title = texte('rien'); else bouton.removeAttribute('title');
     };
     bouton.addEventListener('click', function () {
       var simple = racine.classList.toggle('nova-menu-simple');

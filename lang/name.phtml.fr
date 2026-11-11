@@ -19,6 +19,7 @@
 !set nova_examen_court=Examen
 !set nova_menu_simplifie=Menu simplifié
 !set nova_menu_consigne=Cliquez sur l'&oelig;il d'une entrée pour la garder ou la cacher.
+!set nova_menu_rien=Aucune entrée cachée pour le moment
 !set nova_menu_personnaliser=Choisir les entrées du menu
 !set nova_menu_termine=Terminé
 !set nova_menu_defaut=Revenir au menu par défaut

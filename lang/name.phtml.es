@@ -21,6 +21,7 @@
 !set nova_examen_court=Examen
 !set nova_menu_simplifie=Menú simplificado
 !set nova_menu_consigne=Haga clic en el ojo de una entrada para mostrarla u ocultarla.
+!set nova_menu_rien=Ninguna entrada oculta por ahora
 !set nova_menu_personnaliser=Elegir las entradas del menú
 !set nova_menu_termine=Hecho
 !set nova_menu_defaut=Volver al menú por defecto

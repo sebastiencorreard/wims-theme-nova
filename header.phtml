@@ -256,6 +256,9 @@
     !if $module=adm/modtool
       !set nova_ms=modtool_
     !else
+      !if $module=home and $class_typename isitemof portal,group,level
+        !set nova_ms=p_accueil_$(class_typename)_
+      !endif
       !if $module!=home
         !set nova_ms=!replace internal / by _ in $module
         !set nova_ms=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $nova_ms

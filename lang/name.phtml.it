@@ -21,6 +21,7 @@
 !set nova_examen_court=Esame
 !set nova_menu_simplifie=Menu semplificato
 !set nova_menu_consigne=Fai clic sull'occhio di una voce per mostrarla o nasconderla.
+!set nova_menu_rien=Nessuna voce nascosta per ora
 !set nova_menu_personnaliser=Scegli le voci del menu
 !set nova_menu_termine=Fatto
 !set nova_menu_defaut=Torna al menu predefinito

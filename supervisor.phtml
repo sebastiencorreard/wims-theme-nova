@@ -313,6 +313,11 @@
 !endif
 
 :end
+!! Accueil d'un portail, d'un groupement, d'un niveau (2026-11-11, utilisateur) : menu personnalisable aussi ; ces
+!! accueils sautent ici (!goto end) depuis leur propre menu (menumodubox3.proc).
+!if $nova_menu_bascule!=1 and $class_typename isitemof portal,group,level
+  !read themes/$wims_theme/_widgets/menu-bascule.phtml
+!endif
 
 !reset div0 div1
 

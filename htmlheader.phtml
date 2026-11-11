@@ -44,7 +44,8 @@ $wims_CSS
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
-<meta name="nova-css" content="6f73f94d70">
+<meta name="nova-type" content="$class_typename">
+<meta name="nova-css" content="1a00a347c4">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -59,6 +60,9 @@ $wims_CSS
   /* Toute autre page qu'un accueil (2026-11-11, utilisateur) : comme modtool, un choix par page (module), liste des
      entrees cachees, tout le menu par defaut. Contexte = nom du module, / en _ (header.phtml fait de meme). */
   var pg = !mt && mm && mm.content && mm.content !== 'home' ? mm.content.replace(/\//g, '_').replace(/[^A-Za-z0-9_]/g, '') : '';
+  /* Accueil d'un portail, d'un groupement, d'un niveau (2026-11-11, utilisateur) : un choix par type d'accueil. */
+  var ty = document.querySelector('meta[name="nova-type"]');
+  if (!mt && mm && mm.content === 'home' && ty && /^(portal|group|level)(?![\s\S])/.test(ty.content)) pg = 'accueil_' + ty.content;
   var inv = mt || !!pg;
   var suf = mt ? '_modtool' : pg ? '_p_' + pg : '';  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
   /* Page Reglages de Nova (rubrique de la configuration, js/nova.js apparenceClasse ; ancienne ancre de la page Badges
@@ -148,7 +152,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=562aecb8bc" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=072ef6a18e" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

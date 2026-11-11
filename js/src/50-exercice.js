@@ -884,6 +884,36 @@
     caseVisee();
   }
 
+  /* Correction des exercices à tuiles (demande de l'utilisateur, 2026-11-11) : quand WIMS ne marque pas les tuiles
+   * réaffichées dans l'énoncé (div.inline.colorr_none, verdict seulement dans les conditions de l'auteur, ex.
+   * E5/number/oefdecimal jeudesfamilles : « 8 x 100 = 800 : OUI »), chaque tuile prend le verdict de la ligne de
+   * l'analyse qui commence par son texte : verte (bien placée) ou rouge (mal placée), pastille comme les choix.
+   * Une tuile sans ligne, ou avec des lignes qui se contredisent, reste neutre. Réglage « dominos ». */
+  function tuilesCorrigees() {
+    if (standard('dominos') || document.documentElement.classList.contains('nova-dominos')) return;
+    var tuiles = document.querySelectorAll('.oefstatement .drag_label');
+    if (!tuiles.length) return;
+    var texte = function (e) { return (e.textContent || '').replace(/\s+/g, ' ').trim(); };
+    var lignes = [];
+    Array.prototype.forEach.call(document.querySelectorAll('table.answeranalysis tr'), function (tr) {
+      var c = tr.querySelector('td.bold'), v = tr.querySelector('.oef_condgood, .oef_condbad');
+      if (c && v) lignes.push({ t: texte(c) + ' ', ok: v.classList.contains('oef_condgood') });
+    });
+    if (!lignes.length) return;
+    Array.prototype.forEach.call(tuiles, function (d) {
+      if (d.closest('.oef_indgood, .oef_indbad, .oef_indpartial') || d.classList.contains('nova-tuile-juste') || d.classList.contains('nova-tuile-fausse')) return;
+      var t = texte(d.querySelector('.drag_content') || d);
+      if (!t) return;
+      var vus = lignes.filter(function (l) { return l.t.indexOf(t + ' ') === 0; });
+      if (!vus.length || vus.some(function (l) { return l.ok !== vus[0].ok; })) return;
+      d.classList.add(vus[0].ok ? 'nova-tuile-juste' : 'nova-tuile-fausse');
+      var p = document.createElement('span');
+      p.className = 'nova-choix-pastille';
+      p.setAttribute('aria-hidden', 'true');
+      d.appendChild(p);
+    });
+  }
+
   // Case visée pendant le glissement ou quand une étiquette est choisie (dominos et tuiles).
   function caseVisee() {
     var glisse = null, rafId = 0, derniere = null;

@@ -269,3 +269,12 @@ html:not(.nova-std-dominos):not(.nova-dominos) .oef_indpartial .drag_label{ back
 /* Leur conteneur : fond orange de WIMS retiré, largeur calculée par WIMS pour des marges de 1 px libérée (sinon la
  * dernière tuile passe à la ligne). */
 html:not(.nova-std-dominos):not(.nova-dominos) .fill_container:has(> .drag_label){ background-color: transparent; width: auto !important; max-width: 100%; }
+/* Verdict par tuile tiré de l'analyse (nova.js tuilesCorrigees) : verte bien placée, rouge mal placée, pastille. */
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label:is(.nova-tuile-juste, .nova-tuile-fausse){ position: relative; overflow: visible; border-width: 2px !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-juste{ background-color: var(--nova-succes-fond) !important; border-color: var(--nova-succes) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse{ background-color: var(--nova-erreur-fond) !important; border-color: var(--nova-erreur) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement .drag_label .nova-choix-pastille{ top: -9px; right: -9px; width: 20px; height: 20px; font-size: 12px; }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-juste .nova-choix-pastille{ background: var(--nova-succes); }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-juste .nova-choix-pastille::before{ content: "\2713"; }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse .nova-choix-pastille{ background: var(--nova-erreur); }
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse .nova-choix-pastille::before{ content: "\2715"; }

@@ -3687,6 +3687,24 @@
     return f;
   }
 
+  /* Accueil de l'élève, écran étroit (2026-12-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
+   * montre moins de badges (les derniers d'abord, au moins un), puis perd son libellé s'il le faut (le lien garde son
+   * aria-label). Recalculé quand la largeur change. */
+  function pastilleBadges() {
+    var p = document.querySelector('.nova-mes-notes a.nova-pastille-badge');
+    if (!p) return;
+    var imgs = [].slice.call(p.querySelectorAll('img')), libelle = p.querySelector('span');
+    var ajuster = function () {
+      imgs.forEach(function (i) { i.hidden = false; });
+      if (libelle) libelle.hidden = false;
+      for (var n = imgs.length - 1; n > 0 && p.scrollWidth > p.clientWidth + 1; n--) imgs[n].hidden = true;
+      if (libelle && p.scrollWidth > p.clientWidth + 1) libelle.hidden = true;
+    };
+    ajuster();
+    window.addEventListener('resize', ajuster);
+    window.addEventListener('load', ajuster);
+  }
+
   /* ===== js/src/61-couleur.js : couleur personnelle (« Ma couleur ») ===== */
   // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
   // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
@@ -6371,7 +6389,7 @@
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

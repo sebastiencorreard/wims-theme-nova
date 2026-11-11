@@ -10,11 +10,13 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- Écran étroit : le bouton « Mes notes » garde sa taille ; c'est la pastille des badges qui se réduit, en montrant moins de badges.
 - **Décorations de Noël** en décembre : guirlande lumineuse en haut de la barre du haut, derrière les boutons, qui scintille si les animations sont activées, et flocons en filigrane dans la barre (jamais pendant un examen).
 - **Avatar** : nouvelle catégorie **Noël** (bonnet de père Noël, bonnet de lutin, serre-tête de renne, cache-oreilles), dessinée pour Nova, 1 pièce chacun, **en décembre seulement** (un élément acheté se retrouve l'année suivante) ; un élément de Noël remplace le chapeau porté.
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Accueil d'une structure : le nom des niveaux, classes, cours et programmes est écrit dans la couleur du texte, plus dans la couleur de la classe.
 - **Décorations de saison** : réglage « Décorations de saison » (onglet Affichage de « Réglages de Nova », et page Apparence du site), activé par défaut, pour les couper.
 - **Zones dépendantes** : boutons « Tout cocher » et « Tout décocher » au-dessus de la liste (cases de Nova comprises).
 - **Menu de gauche personnalisable sur toutes les pages** (feuille, examen, notes, participants, configuration, modtool, accueil d'un portail, d'un groupement ou d'un niveau…) : un crayon en bas du menu pour cacher les entrées inutiles de cette page, choix gardé sur le serveur ; un interrupteur « Menu simplifié » remplace le bouton « Menu complet », et « Choisir les entrées » est plus clair (consigne, « Terminé »).

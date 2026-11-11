@@ -338,3 +338,21 @@
     document.body.appendChild(f);
     return f;
   }
+
+  /* Accueil de l'élève, écran étroit (2026-12-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
+   * montre moins de badges (les derniers d'abord, au moins un), puis perd son libellé s'il le faut (le lien garde son
+   * aria-label). Recalculé quand la largeur change. */
+  function pastilleBadges() {
+    var p = document.querySelector('.nova-mes-notes a.nova-pastille-badge');
+    if (!p) return;
+    var imgs = [].slice.call(p.querySelectorAll('img')), libelle = p.querySelector('span');
+    var ajuster = function () {
+      imgs.forEach(function (i) { i.hidden = false; });
+      if (libelle) libelle.hidden = false;
+      for (var n = imgs.length - 1; n > 0 && p.scrollWidth > p.clientWidth + 1; n--) imgs[n].hidden = true;
+      if (libelle && p.scrollWidth > p.clientWidth + 1) libelle.hidden = true;
+    };
+    ajuster();
+    window.addEventListener('resize', ajuster);
+    window.addEventListener('load', ajuster);
+  }

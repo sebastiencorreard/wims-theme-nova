@@ -50,6 +50,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Téléphone : les tuiles à déplacer se glissent au doigt sans que la page défile (le navigateur commençait parfois à faire défiler la page avant que Nova ne l'en empêche) ; l'appui long sur une tuile n'ouvre plus la loupe ni la sélection.
 - Téléphone, tuiles à déplacer : sur un écran étroit, les cases ne restent plus collées au bout de la ligne précédente (marge perdue à gauche, trou vide entre deux rangées) ; cases dans un tableau (addition posée) : plus de trou entre les rangées ni de cases qui se chevauchent, tableau centré sur l'écran s'il déborde.
 - Page de réponse des tuiles dans un tableau (addition posée, tableau de signes) : la tuile porte elle-même sa bordure verte ou rouge, le renvoi [k] est en petit sous la tuile ; au téléphone, le tableau tient dans l'écran.
+- Tuiles à déplacer : pendant un glisser, la case visée se distingue de nouveau des autres cases libres (plus foncée, contour de la couleur de la classe).
 - Bouton « Valider » flottant (écran étroit) : une tuile à côté du bouton se laisse de nouveau prendre.
 - Certains exercices (ex. E4/number/oefoperation dans une feuille) affichaient une erreur WIMS « variable_name_buffer_overflow » : corrigé.
 - Éléments à associer : l'ancien aspect de WIMS n'apparaît plus un instant au chargement de la page.

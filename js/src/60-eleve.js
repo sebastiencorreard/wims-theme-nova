@@ -339,7 +339,7 @@
     return f;
   }
 
-  /* Accueil de l'élève, écran étroit (2026-12-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
+  /* Accueil de l'élève, écran étroit (2026-11-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
    * montre moins de badges (les derniers d'abord, au moins un), puis perd son libellé s'il le faut (le lien garde son
    * aria-label). Recalculé quand la largeur change. */
   function pastilleBadges() {

@@ -5,13 +5,13 @@
  * Dessins DERRIERE le contenu de la barre (z-index -1 : la barre, sticky et z-index 200, forme un contexte
  * d'empilement : les pseudo-elements passent au-dessus de son fond, sous ses boutons et son texte). */
 
-/* Noel (2026-12-11, utilisateur : en haut de la barre, derriere les boutons, en petit) : guirlande lumineuse (rouge,
+/* Noel (2026-11-11, utilisateur : en haut de la barre, derriere les boutons, en petit) : guirlande lumineuse (rouge,
  * or, vert, bleu), au bord haut de la barre. */
 html.nova-saison-noel #wimstopbox::before {
   content: ""; position: absolute; left: 0; right: 0; top: 0; height: 17px; z-index: -1; pointer-events: none;
   background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="144" height="24" viewBox="0 0 144 24"%3E%3Cpath d="M0 1Q18 13 36 1Q54 13 72 1Q90 13 108 1Q126 13 144 1" fill="none" stroke="%23234d2c" stroke-width="1.6"/%3E%3Cg transform="translate%2818 8%29"%3E%3Crect x="-2.2" y="0" width="4.4" height="3.2" rx="1" fill="%233a3a3a"/%3E%3Cpath d="M0 2.6c3.4 0 4.6 4 4.6 6.6a4.6 4.6 0 0 1-9.2 0c0-2.6 1.2-6.6 4.6-6.6z" fill="%23e63946"/%3E%3Cellipse cx="-1.6" cy="7.2" rx="1.1" ry="1.8" fill="white" fill-opacity=".55"/%3E%3C/g%3E%3Cg transform="translate%2854 8%29"%3E%3Crect x="-2.2" y="0" width="4.4" height="3.2" rx="1" fill="%233a3a3a"/%3E%3Cpath d="M0 2.6c3.4 0 4.6 4 4.6 6.6a4.6 4.6 0 0 1-9.2 0c0-2.6 1.2-6.6 4.6-6.6z" fill="%23f4c430"/%3E%3Cellipse cx="-1.6" cy="7.2" rx="1.1" ry="1.8" fill="white" fill-opacity=".55"/%3E%3C/g%3E%3Cg transform="translate%2890 8%29"%3E%3Crect x="-2.2" y="0" width="4.4" height="3.2" rx="1" fill="%233a3a3a"/%3E%3Cpath d="M0 2.6c3.4 0 4.6 4 4.6 6.6a4.6 4.6 0 0 1-9.2 0c0-2.6 1.2-6.6 4.6-6.6z" fill="%232bb673"/%3E%3Cellipse cx="-1.6" cy="7.2" rx="1.1" ry="1.8" fill="white" fill-opacity=".55"/%3E%3C/g%3E%3Cg transform="translate%28126 8%29"%3E%3Crect x="-2.2" y="0" width="4.4" height="3.2" rx="1" fill="%233a3a3a"/%3E%3Cpath d="M0 2.6c3.4 0 4.6 4 4.6 6.6a4.6 4.6 0 0 1-9.2 0c0-2.6 1.2-6.6 4.6-6.6z" fill="%233a86ff"/%3E%3Cellipse cx="-1.6" cy="7.2" rx="1.1" ry="1.8" fill="white" fill-opacity=".55"/%3E%3C/g%3E%3C/svg%3E') repeat-x 0 0 / 102px 17px;
 }
-/* Scintillement (2026-12-11) : halos clairs sur une ampoule sur deux, qui passent aux autres. Seulement si les animations
+/* Scintillement (2026-11-11) : halos clairs sur une ampoule sur deux, qui passent aux autres. Seulement si les animations
  * de Nova sont activees (html.nova-scintille, posee par nova.js decorationsSaison ; jamais si l'appareil demande moins
  * d'animations). Sans animation : guirlande immobile, sans halo. */
 html.nova-saison-noel.nova-scintille #wimstopbox::after {

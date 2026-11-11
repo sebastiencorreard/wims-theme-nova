@@ -59,7 +59,7 @@ body.nova-page-apparence form:has(#pr_cssfile) #pr_cssfile { width: 100%; box-si
 .nova-mes-notes:has(.nova-pastille-badge) { display: flex; justify-content: center; align-items: center; gap: var(--nova-e2); }
 @media (max-width: 639.98px) {
   .nova-mes-notes:has(.nova-pastille-badge) a.nova-mes-notes-bouton { width: auto; padding: 0 var(--nova-e3); }
-  /* Écran étroit (2026-12-11, utilisateur) : « Mes notes » garde sa largeur, c'est la pastille qui se réduit en montrant
+  /* Écran étroit (2026-11-11, utilisateur) : « Mes notes » garde sa largeur, c'est la pastille qui se réduit en montrant
    * moins de badges (nova.js pastilleBadges). */
   .nova-mes-notes:has(.nova-pastille-badge) a.nova-mes-notes-bouton { flex: 1 0 auto; }
   .nova-mes-notes a.nova-pastille-badge { flex: 0 1 auto; min-width: 0; overflow: hidden; }

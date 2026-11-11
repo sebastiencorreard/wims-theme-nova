@@ -172,7 +172,7 @@ html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; 
 
 
 /* Tuiles à déplacer des autres exercices à cases (maquette C « poignée et creux », choisie par l'utilisateur le
- * 2026-12-11 ; réglage « dominos ») : html.nova-tuiles, posée par nova.js (tuiles) hors des pages à dominos. Tuile
+ * 2026-11-11 ; réglage « dominos ») : html.nova-tuiles, posée par nova.js (tuiles) hors des pages à dominos. Tuile
  * blanche en relief, case creusée ; l'état est lu dans la couleur que Dynapi pose en ligne (voir plus haut) :
  * tuile prise #6060ff, case choisie #C0A060, case remplie (clic) #c0c0c0, tuile « vider » #ffd080. */
 html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable{

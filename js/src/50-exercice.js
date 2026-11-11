@@ -810,7 +810,7 @@
   }
 
   /* Tuiles à déplacer des autres exercices à cases (étiquettes qui ne sont pas des dominos : clickfill, dragfill ;
-   * maquette C « poignée et creux », choisie par l'utilisateur le 2026-12-11, rattachée au réglage « dominos »).
+   * maquette C « poignée et creux », choisie par l'utilisateur le 2026-11-11, rattachée au réglage « dominos »).
    * html.nova-tuiles avant « load » (le CSS habille tuiles et cases, _css/composants-dominos.css) ; tuiles et cases
    * plus petites que 44 px agrandies (même taille pour toutes, fill_sx x fill_sy de fill.after) ; poignée et « Déposer
    * ici » seulement quand les tuiles sont vraiment larges (160 px et plus, demande de l'utilisateur) ; la tuile « ? »

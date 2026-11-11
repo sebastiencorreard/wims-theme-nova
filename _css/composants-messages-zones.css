@@ -98,7 +98,7 @@ span.tooltip { color: var(--nova-lien); }
   -webkit-mask: var(--nova-zone-picto) center / contain no-repeat;
           mask: var(--nova-zone-picto) center / contain no-repeat;
 }
-/* Nom du niveau, de la classe, du cours ou du programme : couleur du texte, pas celle de l'accent (2026-12-11, utilisateur). */
+/* Nom du niveau, de la classe, du cours ou du programme : couleur du texte, pas celle de l'accent (2026-11-11, utilisateur). */
 :is(.wims_classes_direct_level, .wims_classes_direct_class, .wims_classes_direct_program, .wims_classes_direct_course, .wims_classes_direct_portal, .wims_classes_direct_testclass) a:is(:link, :visited, :hover, :active) { color: var(--nova-texte); }
 /* L'arbre des zones : plus de flèches ; des filets de rattachement fins. */
 .wims_subclasses { list-style: none; margin: 0; padding: 0; }

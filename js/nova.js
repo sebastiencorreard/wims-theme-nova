@@ -3315,7 +3315,7 @@
   }
 
   /* Tuiles à déplacer des autres exercices à cases (étiquettes qui ne sont pas des dominos : clickfill, dragfill ;
-   * maquette C « poignée et creux », choisie par l'utilisateur le 2026-12-11, rattachée au réglage « dominos »).
+   * maquette C « poignée et creux », choisie par l'utilisateur le 2026-11-11, rattachée au réglage « dominos »).
    * html.nova-tuiles avant « load » (le CSS habille tuiles et cases, _css/composants-dominos.css) ; tuiles et cases
    * plus petites que 44 px agrandies (même taille pour toutes, fill_sx x fill_sy de fill.after) ; poignée et « Déposer
    * ici » seulement quand les tuiles sont vraiment larges (160 px et plus, demande de l'utilisateur) ; la tuile « ? »
@@ -3763,7 +3763,7 @@
     return f;
   }
 
-  /* Accueil de l'élève, écran étroit (2026-12-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
+  /* Accueil de l'élève, écran étroit (2026-11-11, utilisateur) : « Mes notes » garde sa largeur ; la pastille des badges
    * montre moins de badges (les derniers d'abord, au moins un), puis perd son libellé s'il le faut (le lien garde son
    * aria-label). Recalculé quand la largeur change. */
   function pastilleBadges() {
@@ -6422,7 +6422,7 @@
     var examen = /_exam/.test(session) || !!document.getElementById('wimsexam') || document.body.classList.contains('nova-examen') ||
       document.body.classList.contains('nova-examen-session') || !!document.querySelector('#wimstopbox .menuitem.chrono, #chrono_exam, a.endexam');
     SAISONS.forEach(function (s) { d.classList.toggle('nova-saison-' + s.nom, deco && !examen && s.mois.indexOf(mois) >= 0); });
-    // Scintillement de la guirlande (2026-12-11) : seulement si les animations de Nova sont activées.
+    // Scintillement de la guirlande (2026-11-11) : seulement si les animations de Nova sont activées.
     d.classList.toggle('nova-scintille', !animationsCoupees());
   }
   // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien

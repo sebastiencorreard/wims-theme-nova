@@ -280,38 +280,42 @@ html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse .no
 html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse .nova-choix-pastille::before{ content: "\2715"; }
 
 /* ---------- Éléments à associer (OEF correspond ; variante A « Trait », maquette choisie par l'utilisateur, 2026-11-11) ----------
+ * Aspect de repos reconnu par la structure de WIMS (div > .corr_label, img corrlr, fond #ffe1e9), sans attendre nova.js :
+ * les calques Dynapi naissent au chargement, avant que nova.js puisse les marquer (ancien aspect visible un instant,
+ * signalé par l'utilisateur le 2026-11-11). Les classes de nova.js ne servent qu'aux états (choisie, cible, liée).
  * nova.js associations : html.nova-assoc, calques Dynapi .nova-assoc-tuile (gauche et droite) et .nova-assoc-lien (milieu,
  * 100 px de large chez WIMS). La tuile est dessinée par ::before, 3 px en retrait en haut et en bas (9 px entre deux lignes,
  * 3 px chez WIMS) ; le calque garde la couleur de WIMS en ligne, rendue transparente. Couleurs d'état de WIMS : choisie ou
  * glissée #8080ff (rgb(128, 128, 255)). */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile{
+html:not(.nova-std-dominos) div:has(> .corr_label){
   background-color: transparent !important; background-image: none !important;
   clip: auto !important; overflow: visible !important; isolation: isolate; cursor: pointer; color: var(--nova-texte);
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile::before{
+html:not(.nova-std-dominos) div:has(> .corr_label)::before{
   content: ""; position: absolute; inset: 3px 0; z-index: -1; box-sizing: border-box;
   background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 10px;
   box-shadow: 0 1px 2px rgb(0 0 0 / 10%), 0 3px 8px rgb(0 0 0 / 8%);
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile:hover::before{ box-shadow: 0 2px 4px rgb(0 0 0 / 12%), 0 6px 14px rgb(0 0 0 / 12%); }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile .corr_label:hover{ font-weight: inherit; border-color: transparent; }
+html:not(.nova-std-dominos) div:has(> .corr_label):hover::before{ box-shadow: 0 2px 4px rgb(0 0 0 / 12%), 0 6px 14px rgb(0 0 0 / 12%); }
+html:not(.nova-std-dominos) div:has(> .corr_label) .corr_label:hover{ font-weight: inherit; border-color: transparent; }
 /* Liée : contour de l'accent. Cibles (l'autre colonne, pendant qu'une tuile est choisie) : pointillés, fond doux. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile.nova-assoc-liee::before{ border-color: var(--nova-accent); }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile.nova-assoc-cible:not(.nova-assoc-prise)::before{ border: 1.5px dashed var(--nova-accent); background: var(--nova-accent-doux); }
+html:not(.nova-std-dominos) div:has(> .corr_label).nova-assoc-liee::before{ border-color: var(--nova-accent); }
+html:not(.nova-std-dominos) div:has(> .corr_label).nova-assoc-cible:not(.nova-assoc-prise)::before{ border: 1.5px dashed var(--nova-accent); background: var(--nova-accent-doux); }
 /* Choisie ou glissée : contour épais de l'accent, soulevée. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-tuile:is(.nova-assoc-prise, [style*="rgb(128, 128, 255)"])::before{
+html:not(.nova-std-dominos) div:has(> .corr_label):is(.nova-assoc-prise, [style*="rgb(128, 128, 255)"])::before{
   border: 2px solid var(--nova-accent); box-shadow: 0 10px 24px rgb(0 0 0 / 20%); transform: translateY(-2px);
 }
 /* Milieu : images de WIMS masquées, trait dessiné par Nova. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien{
+html:not(.nova-std-dominos) div:has(> div > .corr_label) > div:not(:has(> .corr_label)){
   background-color: transparent !important; clip: auto !important; overflow: visible !important; pointer-events: none;
   background-repeat: no-repeat !important;
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien > img{ display: none !important; }
+/* Flèches de WIMS masquées seulement quand nova.js dessine le trait (sinon, sans nova.js, plus rien ne montrerait les paires). */
+html:not(.nova-std-dominos) .nova-assoc-lien > img{ display: none !important; }
 /* Cadre blanc de WIMS autour des tuiles (lyr<i>.setBgColor('white')) : transparent, sur le fond de l'énoncé. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-cadre{ background-color: transparent !important; }
+html:not(.nova-std-dominos) div:has(> div > .corr_label){ background-color: transparent !important; }
 /* Paire faite : trait plein, un point à chaque bout. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-lie{
+html:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-lie{
   background-image: radial-gradient(circle at 6px 50%, var(--nova-accent) 0 4.5px, transparent 5px),
     radial-gradient(circle at calc(100% - 6px) 50%, var(--nova-accent) 0 4.5px, transparent 5px),
     linear-gradient(var(--nova-accent), var(--nova-accent)) !important;
@@ -319,50 +323,50 @@ html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-lie{
   background-position: 0 0, 0 0, 50% 50% !important;
 }
 /* Tuile choisie : point de son côté, pointillés vers un rond « ? » de l'autre côté. */
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien:is(.nova-assoc-attend-d, .nova-assoc-attend-g){
+html:not(.nova-std-dominos) .nova-assoc-lien:is(.nova-assoc-attend-d, .nova-assoc-attend-g){
   background-image: radial-gradient(circle at 6px 50%, var(--nova-accent) 0 4.5px, transparent 5px),
     repeating-linear-gradient(90deg, var(--nova-accent) 0 6px, transparent 6px 11px) !important;
   background-size: 100% 100%, calc(100% - 44px) 3px !important;
   background-position: 0 0, 10px 50% !important;
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-attend-g{
+html:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-attend-g{
   background-image: radial-gradient(circle at calc(100% - 6px) 50%, var(--nova-accent) 0 4.5px, transparent 5px),
     repeating-linear-gradient(270deg, var(--nova-accent) 0 6px, transparent 6px 11px) !important;
   background-position: 0 0, calc(100% - 10px) 50% !important;
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien:is(.nova-assoc-attend-d, .nova-assoc-attend-g)::after{
+html:not(.nova-std-dominos) .nova-assoc-lien:is(.nova-assoc-attend-d, .nova-assoc-attend-g)::after{
   content: "?"; position: absolute; top: 50%; right: 2px; width: 26px; height: 26px; margin-top: -13px; box-sizing: border-box;
   border: 2px dashed var(--nova-accent); border-radius: 50%; background: var(--nova-surface); color: var(--nova-accent);
   font: 700 14px/22px var(--nova-police, inherit); text-align: center;
 }
-html.nova-assoc:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-attend-g::after{ right: auto; left: 2px; }
+html:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-attend-g::after{ right: auto; left: 2px; }
 
 /* Correction (énoncé : réponse de l'élève ; analyse et verdict : bonne réponse) : tuiles blanches, droite verte ou rouge,
  * trait de la même couleur (pointillés si fausse), pastille dans l'énoncé. */
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td{ white-space: normal; }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr{ border-collapse: separate !important; border-spacing: 0 8px !important; margin-inline: auto; }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-case{
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td{ white-space: normal; }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]){ border-collapse: separate !important; border-spacing: 0 8px !important; margin-inline: auto; }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:is(:first-child, :last-child){
   background-color: var(--nova-surface) !important; border: 1px solid var(--nova-bord-fort); border-radius: 10px;
   padding: 6px 12px; text-align: center; vertical-align: middle; position: relative; min-width: 44px; color: var(--nova-texte);
 }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-case.nova-assoc-bon{ background-color: var(--nova-succes-fond) !important; border: 2px solid var(--nova-succes); }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-case.nova-assoc-faux{ background-color: var(--nova-erreur-fond) !important; border: 2px solid var(--nova-erreur); }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-trait{
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child:not(:first-child):not([style*="ffe1e9" i]){ background-color: var(--nova-succes-fond) !important; border: 2px solid var(--nova-succes); }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child:not(:first-child)[style*="ffe1e9" i]{ background-color: var(--nova-erreur-fond) !important; border: 2px solid var(--nova-erreur); }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:has(> img[src*="arrows/corrlr"]){
   --nova-assoc-c: var(--nova-succes); min-width: 64px; padding: 0; vertical-align: middle; background-repeat: no-repeat;
   background-image: radial-gradient(circle at 6px 50%, var(--nova-assoc-c) 0 4.5px, transparent 5px),
     radial-gradient(circle at calc(100% - 6px) 50%, var(--nova-assoc-c) 0 4.5px, transparent 5px),
     linear-gradient(var(--nova-assoc-c), var(--nova-assoc-c));
   background-size: 100% 100%, 100% 100%, calc(100% - 12px) 3px; background-position: 0 0, 0 0, 50% 50%;
 }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-trait.nova-assoc-faux{
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:has(> img[src*="arrows/corrlr"]):has(+ td[style*="ffe1e9" i]){
   --nova-assoc-c: var(--nova-erreur);
   background-image: radial-gradient(circle at 6px 50%, var(--nova-assoc-c) 0 4.5px, transparent 5px),
     radial-gradient(circle at calc(100% - 6px) 50%, var(--nova-assoc-c) 0 4.5px, transparent 5px),
     repeating-linear-gradient(90deg, var(--nova-assoc-c) 0 6px, transparent 6px 11px);
 }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-trait > img{ display: none; }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-bon > .nova-choix-pastille{ background: var(--nova-succes); }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-bon > .nova-choix-pastille::before{ content: "\2713"; }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-faux > .nova-choix-pastille{ background: var(--nova-erreur); }
-:where(html:not(.nova-std-dominos)) table.nova-assoc-corr td.nova-assoc-faux > .nova-choix-pastille::before{ content: "\2715"; }
-:where(html:not(.nova-std-dominos)) .nova-verdict .nova-verdict-juste:has(table.nova-assoc-corr){ display: block; margin-top: var(--nova-e2); }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:has(> img[src*="arrows/corrlr"]) > img{ display: none; }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child:not([style*="ffe1e9" i]) > .nova-choix-pastille{ background: var(--nova-succes); }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child:not([style*="ffe1e9" i]) > .nova-choix-pastille::before{ content: "\2713"; }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child[style*="ffe1e9" i] > .nova-choix-pastille{ background: var(--nova-erreur); }
+:where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child[style*="ffe1e9" i] > .nova-choix-pastille::before{ content: "\2715"; }
+:where(html:not(.nova-std-dominos)) .nova-verdict .nova-verdict-juste:has(table:has(> tbody > tr > td > img[src*="arrows/corrlr"])){ display: block; margin-top: var(--nova-e2); }

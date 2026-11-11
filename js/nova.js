@@ -1,10 +1,14 @@
-/* Nova — menu latéral sur téléphone et tablette.
- * Ajoute à la barre du haut un bouton qui ouvre et ferme le menu (#wimsmenumodubox) ; fermeture
- * aussi par Échap, par un clic hors du menu ou en suivant un lien. Sans JavaScript, le menu
- * reste dans la page : rien ne se perd. Aucune dépendance (jQuery n'est pas requis).
+/* Nova — js/nova.js. FICHIER ASSEMBLÉ par construire-js.sh à partir de js/src/*.js (dans l'ordre des noms) :
+ * ne pas le modifier ici, mais dans js/src/, puis relancer ./construire-js.sh.
+ * Une seule fonction englobante, ouverte dans 00-commun.js et fermée dans 99-demarrage.js : les fichiers de js/src
+ * sont des morceaux, pas des scripts autonomes. Les fonctions s'appellent d'un fichier à l'autre ; toutes sont
+ * lancées par demarrer() (99-demarrage.js). Aucune dépendance (jQuery n'est pas requis). Sans JavaScript, la page
+ * de WIMS reste utilisable : rien ne se perd.
  */
 (function () {
   'use strict';
+
+  /* ===== js/src/00-commun.js : outils communs (animations, textes, liens vers l'accueil, feuille à jour) ===== */
   /* Animations : COUPÉES par défaut (--nova-animations: non, jetons.css) ; un enseignant ou un
    * administrateur les active par une surcharge CSS : :root { --nova-animations: oui; }. Le réglage
    * « réduire les animations » de l'appareil les coupe toujours. Demandes de l'utilisateur, 2026-10-05. */
@@ -13,6 +17,125 @@
     var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-animations').trim().toLowerCase();
     return !/^["']?(oui|yes|on|1)["']?$/.test(v);
   }
+
+
+  // Infobulles pour les entrées qui peuvent passer en pictogramme seul (cadre.css).
+  function infobulles() {
+    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .menuitem:is(.back, .tools, .class_home) > a'), function (a) {
+      if (!a.title) a.title = a.textContent.trim();
+    });
+  }
+
+  // Valeur texte d'une variable CSS : guillemets retirés, échappements CSS décodés (« not\\e9 » → « noté » ; Chrome rend
+  // le texte tel qu'écrit, et les jetons de Nova sont en ASCII). 2026-11-08.
+  function texteCss(v) {
+    return (v || '').replace(/["']/g, '').replace(/\\([0-9a-fA-F]{1,6})\s?/g, function (m, h) { return String.fromCodePoint(parseInt(h, 16)); }).trim();
+  }
+
+  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
+   * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
+   * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
+  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'];
+  function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+
+  /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
+   * ?session= sans compteur ouvre l'accueil du contexte. */
+  function lienAccueil(suite) {
+    var m = /[?&]session=([^&.]+)/.exec(location.search), session = m ? m[1] : '';
+    // Juste après la connexion, l'adresse porte « session=new.… », qui ne vaut plus rien (vu le 2026-11-07) : la vraie
+    // session est dans les liens de la page.
+    if (session === 'new') session = '';
+    if (!session) {
+      var champ = document.querySelector('input[name="session"]');
+      if (champ) session = champ.value.split('.')[0];
+    }
+    if (!session) {
+      var a = document.querySelector('a[href*="session="]');
+      m = a && /session=([^&.]+)/.exec(a.getAttribute('href'));
+      if (m) session = m[1];
+    }
+    return 'wims.cgi?session=' + encodeURIComponent(session) + '&lang=' + encodeURIComponent(racineLangue()) + '&module=home' + suite;
+  }
+  // Lien de la session vers un autre module (cmd=new : valable depuis n'importe quelle page ; 2026-11-09).
+  function lienSession(suite) { return lienAccueil('').replace('&module=home', '') + suite; }
+
+  /* Action faite sur l'accueil (module de confiance) SANS y aller (2026-11-09, utilisateur : « je me retrouve sur la page
+   * de mon portail ») : requête en arrière-plan, message de #nova-propage gardé pour la page suivante (messageReporte),
+   * puis page de retour, ouverte par cmd=new (après une requête à l'accueil, les liens cmd=reply de la page ne valent
+   * plus) et au moins 1,5 s après (deux requêtes à moins d'1 s : la seconde est mal servie). Sans fetch : l'accueil. */
+  function actionAccueil(suite, retour) {
+    var accueil = lienAccueil(suite);
+    if (!window.fetch || !window.TextDecoder) { location.href = accueil; return; }
+    var debut = Date.now();
+    fetch(accueil, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+      var html = new TextDecoder('windows-1252').decode(buf);
+      var m = new DOMParser().parseFromString(html, 'text/html').getElementById('nova-propage');
+      if (m && m.textContent.trim()) {
+        try { sessionStorage.setItem('nova-message', JSON.stringify({ texte: m.textContent.trim(), etat: m.getAttribute('data-etat') || '', quand: Date.now() })); } catch (e) { /* message perdu */ }
+      }
+      setTimeout(function () { location.href = retour; }, Math.max(0, 1500 - (Date.now() - debut)));
+    }).catch(function () { location.href = accueil; });
+  }
+  // Message d'une action faite en arrière-plan (actionAccueil), en tête de la page de retour.
+  function messageReporte() {
+    var v = null;
+    try { v = JSON.parse(sessionStorage.getItem('nova-message') || 'null'); sessionStorage.removeItem('nova-message'); } catch (e) { v = null; }
+    var corps = document.querySelector('.wimsbody');
+    if (!v || !v.texte || Date.now() - v.quand > 60000 || !corps) return;
+    var msg = document.createElement('div');
+    msg.className = 'wims_msg ' + (v.etat === 'erreur' ? 'alert' : 'success');
+    msg.setAttribute('role', 'status');
+    msg.textContent = v.texte;
+    corps.insertBefore(msg, corps.firstChild);
+  }
+  function racineLangue() { return document.documentElement.lang || 'fr'; }
+
+  /* Feuille perimee (2026-11-09, utilisateur) : WIMS appelle css.css a une adresse fixe (?ver=<version de WIMS>),
+   * qu'une mise a jour du theme ne change pas ; un navigateur peut garder des jours l'ancienne feuille avec le
+   * nouveau nova.js (vecu sur le serveur de l'utilisateur, version 1.3). css.css porte l'empreinte de ses sources
+   * (--nova-css, _css/empreinte.css), htmlheader.phtml celle attendue (meta nova-css), toutes deux ecrites par
+   * construire-css.sh. Si elles different : la feuille est redemandee au serveur en remplacant l'entree du cache
+   * (fetch, cache: 'reload' : les pages suivantes la trouvent a jour), puis rechargee dans cette page. Une seule
+   * redemande par session et par empreinte ; un serveur dont le css.css est lui-meme ancien (mkcss.pl lance sur un
+   * autre dossier, installation incomplete) est note et laisse tel quel, avec un message dans la console. */
+  function feuilleAJour() {
+    var m = document.querySelector('meta[name="nova-css"]');
+    var attendu = m ? m.getAttribute('content') : '';
+    if (!attendu) return;
+    var lue = function () {
+      return getComputedStyle(document.documentElement).getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
+    };
+    if (lue() === attendu) return;
+    var lien = [].filter.call(document.querySelectorAll('link[rel="stylesheet"][href]'), function (l) {
+      return /(^|\/)html\/themes\/[^\/?]+\/css\.css(\?|$)/.test(l.getAttribute('href'));
+    })[0];
+    if (!lien) return;
+    var cle = 'nova-css-recharge', deja = null;
+    try { deja = sessionStorage.getItem(cle); } catch (e) { deja = null; }
+    if (deja === attendu + ' serveur') return;
+    var href = lien.href;
+    function remplacer() {
+      var neuf = lien.cloneNode(false);
+      neuf.href = href + (href.indexOf('?') < 0 ? '?' : '&') + 'nova=' + attendu;
+      neuf.addEventListener('load', function () {
+        if (lien.parentNode) lien.parentNode.removeChild(lien);
+        if (lue() !== attendu) {
+          try { sessionStorage.setItem(cle, attendu + ' serveur'); } catch (e) { /* sans stockage : rien */ }
+          if (window.console) console.warn('Nova : css.css du serveur (' + (lue() || 'sans empreinte') + ') ne correspond pas a nova.js (' +
+            attendu + ') : reconstruire la feuille ou reinstaller le theme.');
+        }
+        window.dispatchEvent(new Event('resize'));
+      });
+      lien.parentNode.insertBefore(neuf, lien.nextSibling);
+    }
+    if (deja === attendu || !window.fetch) { remplacer(); return; }
+    try { sessionStorage.setItem(cle, attendu); } catch (e) { /* sans stockage : une redemande par page */ }
+    fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
+  }
+
+  /* ===== js/src/10-barre-menus.js : barre du haut, menu latéral, menu personnalisable, profil, pied de page, retours ===== */
+  /* Menu latéral sur téléphone et tablette : bouton de la barre du haut qui ouvre et ferme le menu
+   * (#wimsmenumodubox) ; fermeture aussi par Échap, par un clic hors du menu ou en suivant un lien. */
   function initialiser() {
     var barre = document.getElementById('wimstopbox');
     var menu = document.getElementById('wimsmenumodubox');
@@ -50,306 +173,6 @@
       if (menu.contains(e.target) ? e.target.closest('a[href]') : !bouton.contains(e.target)) basculer(false);
     });
   }
-  /* Chronomètre d'examen (Nova/_widgets/headmenu.phtml). WIMS fait décompter #chrono_exam
-   * (scripts/js/chronoid.js) sans rien changer près de la fin : Nova lit ce texte « mm:ss » et pose
-   * l'état sur .nova-chrono (data-etat) — normal, attention (≤ 5 min), critique (≤ 1 min), fin —,
-   * change le libellé, l'annonce aux lecteurs d'écran, et affiche un bandeau à 00:00. Les textes
-   * viennent des data-texte-* écrits par le widget (lang/name.phtml.<langue>). */
-  function chronometre() {
-    var boite = document.querySelector('.nova-chrono');
-    var temps = boite && boite.querySelector('#chrono_exam, .nova-chrono-miroir');
-    if (!boite || !temps) return;
-    var libelle = boite.querySelector('.nova-chrono-libelle');
-    var libelleNormal = libelle ? libelle.textContent : '';
-    var textes = {
-      normal: libelleNormal,
-      attention: boite.getAttribute('data-texte-5min'),
-      critique: boite.getAttribute('data-texte-1min'),
-      fin: boite.getAttribute('data-texte-fin')
-    };
-    document.body.classList.add('nova-examen');
-    var annonce = document.createElement('div');
-    annonce.className = 'nova-sr';
-    annonce.setAttribute('aria-live', 'assertive');
-    document.body.appendChild(annonce);
-    var precedent = null;
-
-    function bandeau() {
-      if (document.querySelector('.nova-chrono-bandeau')) return;
-      var b = document.createElement('div');
-      b.className = 'nova-chrono-bandeau';
-      b.setAttribute('role', 'alert');
-      var fort = document.createElement('strong');
-      fort.textContent = textes.fin;
-      var detail = document.createElement('span');
-      detail.textContent = boite.getAttribute('data-texte-fin-detail') || '';
-      b.appendChild(fort);
-      b.appendChild(detail);
-      var corps = document.querySelector('.wimsbody') || document.body;
-      corps.insertBefore(b, corps.firstChild);
-    }
-    function mettreAJour() {
-      var m = /(\d+):(\d\d)/.exec(temps.textContent);
-      if (!m) return;
-      var s = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
-      var critique = +(boite.getAttribute('data-seuil-critique') || 60);
-      var attention = +(boite.getAttribute('data-seuil-attention') || 300);
-      var etat = s === 0 ? 'fin' : s <= critique ? 'critique' : s <= attention ? 'attention' : 'normal';
-      if (etat === precedent) return;
-      boite.setAttribute('data-etat', etat);
-      document.body.setAttribute('data-nova-chrono', etat);
-      if (libelle && textes[etat]) libelle.textContent = textes[etat];
-      if (etat !== 'normal') annonce.textContent = textes[etat] || '';
-      if (etat === 'fin') bandeau();
-      precedent = etat;
-    }
-    new MutationObserver(mettreAJour).observe(temps, { childList: true, characterData: true, subtree: true });
-    mettreAJour();
-
-    // Heure de fin, calculée par WIMS (html/examclock.proc) et rangée par tail.phtml dans un
-    // <template> : « 01/10/2026 - 10:48:12 » devient « Fin à 10:48 » dans le chronomètre.
-    var modele = document.getElementById('nova-fin-examen');
-    var heure = modele && /(\d{1,2}:\d{2}):\d{2}/.exec(modele.innerHTML);
-    if (heure) {
-      var fin = document.createElement('span');
-      fin.className = 'nova-chrono-fin';
-      fin.textContent = (boite.getAttribute('data-texte-fin-a') || '') + ' ' + heure[1];
-      boite.appendChild(fin);
-    }
-  }
-
-  /* Page de l'examen pendant une session (WIMS met alors « Terminer cette session d'examen » —
-   * a.endexam — dans le menu du compte). Barre réduite à : ☰, accueil, chronomètre, « Terminer ».
-   *  - le chronomètre recopie le décompte de la page (#exam_clock, « Temps restant… ») ;
-   *  - « Terminer » est le lien de WIMS lui-même, sorti du menu du compte ;
-   *  - le compte, Aide et les autres entrées de la barre passent dans le menu latéral, section
-   *    « Profil » (sur téléphone : derrière ☰). Le nom de la classe est masqué (CSS). */
-  function modeExamen() {
-    if (standard('examens')) return;   // réglage « Examens comme le thème standard »
-    var barre = document.getElementById('wimstopbox');
-    var fin = barre && barre.querySelector('#user_links a.endexam');
-    // Élève authentifié par CAS (ou autre authentification externe) : html/headmenu_user.phtml met alors le
-    // lien de déconnexion du CAS dans le menu du compte, sans « Terminer cette session d'examen ». Il ne reste
-    // que celui du module d'examen, dans le menu latéral : il sert de « Terminer » (vécu sur un site
-    // CAS, 2026-10-06 : ni « Terminer » ni chronomètre dans la barre).
-    if (!fin && barre) {
-      var lateral = document.querySelector('#wimsmenumodubox a[href*="job=scorereg"]');
-      if (lateral) {
-        fin = lateral.cloneNode(true);
-        fin.removeAttribute('id');
-        fin.classList.add('endexam');
-      }
-    }
-    if (!fin) return;
-    var textes = document.getElementById('nova-textes');
-    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
-    document.body.classList.add('nova-examen', 'nova-examen-session');
-
-    // Élève CAS : le menu du compte garde « Déconnexion » et « Déconnexion CAS » pendant l'examen (sans CAS,
-    // WIMS remplace la déconnexion par « Terminer ») ; retirés, pour ne pas quitter l'examen sans le terminer
-    // (demande de l'utilisateur, 2026-10-06). Avant la copie du menu du compte dans le menu latéral.
-    Array.prototype.forEach.call(barre.querySelectorAll('#user_links a.visitor'), function (a) {
-      var li = a.closest('li');
-      if (li && li.parentNode && li.parentNode.id === 'user_links') li.remove(); else a.remove();
-    });
-
-    // « Terminer » : le lien lui-même, dans la barre, libellé court ; le long reste pour l'accessibilité.
-    var liFin = fin.closest('li');
-    var long = fin.textContent.trim();
-    var place = document.createElement('div');
-    place.className = 'menuitem nova-terminer';
-    fin.setAttribute('aria-label', long);
-    fin.setAttribute('title', long);
-    fin.textContent = t('terminer', 'Terminer');
-    place.appendChild(fin);
-    barre.appendChild(place);
-    if (liFin) liFin.remove();
-
-    // Profil : le contenu du menu du compte et les autres entrées de la barre, recopiés dans le menu
-    // latéral ; sous 1024 px seulement (CSS) ils y passent et quittent la barre ; au-delà, ils restent
-    // dans la barre, où il y a la place (demande de l'utilisateur, 2026-10-03).
-    var menu = document.getElementById('wimsmenumodubox');
-    var compte = barre.querySelector('a.account');
-    var liCompte = compte && compte.closest('li');
-    if (menu && liCompte) {
-      var cible = menu.querySelector('.modubox_content') || menu;
-      var titre = document.createElement('h2');
-      titre.className = 'menu_title nova-profil-titre';
-      titre.textContent = t('profil', 'Profil');
-      var groupe = document.createElement('div');
-      groupe.className = 'wimsmenu menu nova-profil';
-      var ajouter = function (lien) {
-        if (!lien || !lien.getAttribute('href') || lien.getAttribute('href') === '#user_links') return;
-        var d = document.createElement('div');
-        d.className = 'menuitem';
-        var copie = lien.cloneNode(true);
-        copie.removeAttribute('id');
-        d.appendChild(copie);
-        groupe.appendChild(d);
-      };
-      // Le nom de l'élève en tête, en texte (le lien « #user_links » n'ouvrait que le menu).
-      var nom = document.createElement('div');
-      nom.className = 'menuitem nova-profil-nom';
-      nom.textContent = compte.textContent.trim();
-      groupe.appendChild(nom);
-      Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), ajouter);
-      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
-        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
-            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item.classList.contains('nova-examencours') || item === liCompte) return;
-        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), ajouter);
-        item.classList.add('nova-examen-large');
-      });
-      liCompte.classList.add('nova-examen-large');
-      // Menu du compte vide en session (la déconnexion est devenue « Terminer ») : le nom seul, sans menu.
-      if (!Array.prototype.some.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) { return a.getAttribute('href') !== '#user_links'; })) liCompte.classList.add('nova-compte-seul');
-      cible.insertBefore(groupe, cible.firstChild);
-      cible.insertBefore(titre, groupe);
-    } else if (liCompte) {
-      // Pas de menu latéral (page qui confirme « Terminer », 2026-10-03) : le menu du compte, vide
-      // pour un élève en session, disparaît ; Aide et les autres entrées passent à droite, devant
-      // « Terminer ».
-      var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) {
-        return a.getAttribute('href') !== '#user_links';
-      });
-      // Sinon (changer le mot de passe, depuis le 2026-10-08), il rejoint ce groupe, a droite : reste seul
-      // dans la barre, il se retrouvait au milieu (signale le 2026-11-11).
-      if (!restants.length) liCompte.remove();
-      var droite = document.createElement('div');
-      droite.className = 'wimsmenu menu dropdown nova-avant-terminer';
-      if (restants.length) droite.appendChild(liCompte);
-      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
-        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
-            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item === liCompte) return;
-        droite.appendChild(item);
-      });
-      if (droite.children.length) barre.insertBefore(droite, place);
-    }
-
-    // Chronomètre recopié du décompte de la page.
-    chronoMiroir(document.getElementById('exam_clock'), true);
-
-    // Plus aucun exercice à ouvrir (tout est fait, course arrêtée, ou temps écoulé) : la session
-    // reste ouverte chez WIMS, et bloque les autres examens, tant que l'élève n'a pas cliqué sur
-    // « Terminer » — qui le déconnecte. On le lui dit, avec le bouton sous la main.
-    // Seulement sur la liste des exercices de la session : ni sur la page qui confirme « Terminer »
-    // (job=scorereg, qui avertit au contraire que des exercices restent à faire — signalé le
-    // 2026-10-02), ni sur « Mes notes » (job=score), qui n'ont pas de lien d'exercice non plus.
-    var job = (/[?&+]job=([a-z]+)/.exec(location.href) || [])[1] || '';
-    var corps = document.querySelector('.wimsbody');
-    // Avertissement de « Terminer » (scorereg.phtml : « Oui » confirm_end=yes, « Non » job=score) : « Non »
-    // ramène à la liste des exercices (job=student) pour continuer l'examen, au lieu de « Mes notes »
-    // (demande de l'utilisateur, 2026-10-05).
-    var oui = document.querySelector('.wimsbody a[href*="confirm_end=yes"]');
-    if (oui) Array.prototype.forEach.call(oui.parentNode.querySelectorAll('a[href*="job=score"]:not([href*="job=scorereg"])'), function (non) {
-      non.setAttribute('href', non.getAttribute('href').replace(/job=score(?=&|$)/, 'job=student'));
-    });
-    // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
-    // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
-    // (demande de l'utilisateur, 2026-10-03), et « Terminer » devient « Examen en cours », vers la liste des
-    // exercices (job=student), pour y retourner sans passer par le menu (demande de l'utilisateur, 2026-10-05).
-    // Pilule à pictogramme de chronomètre, comme « Examen en cours » (_widgets/examencours.phtml), et le même
-    // lien sous le message (demande de l'utilisateur, 2026-10-05).
-    var chronoSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>';
-    var versExamen = null;
-    if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]')) {
-      versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
-      if (versExamen !== fin.getAttribute('href')) {
-        fin.setAttribute('href', versExamen);
-        // Libellé long « Examen en cours », court « Examen » sur un écran très étroit (CSS, comme la pastille).
-        fin.innerHTML = chronoSvg + '<span class="nova-long"></span><span class="nova-court"></span>';
-        fin.querySelector('.nova-long').textContent = t('texte-examen-encours', 'Exam in progress');
-        fin.querySelector('.nova-court').textContent = t('texte-examen', 'Exam');
-        fin.setAttribute('aria-label', t('texte-examen-encours', 'Exam in progress'));
-        fin.setAttribute('title', t('texte-examen-encours', 'Exam in progress'));
-        place.classList.add('nova-terminer-examen');
-      } else versExamen = null;
-    }
-    if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]') && !document.querySelector('.nova-terminer-impossible')) {
-      var avis = document.createElement('div');
-      avis.className = 'wims_msg warning nova-terminer-impossible';
-      avis.setAttribute('role', 'status');
-      avis.textContent = t('terminer-impossible', 'Answer at least one exercise before ending the session.');
-      corps.insertBefore(avis, corps.firstChild);
-      if (versExamen) {
-        var retourExamen = document.createElement('p');
-        retourExamen.className = 'nova-autre-examen';
-        var lienExamen = document.createElement('a');
-        lienExamen.className = 'nova-autre-examen-bouton';
-        lienExamen.href = versExamen;
-        lienExamen.innerHTML = chronoSvg;
-        lienExamen.appendChild(document.createTextNode(t('texte-examen-encours', 'Exam in progress')));
-        retourExamen.appendChild(lienExamen);
-        corps.insertBefore(retourExamen, avis.nextSibling);
-      }
-    }
-    if (corps && job !== 'scorereg' && job !== 'score' &&
-        !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {
-      var encadre = document.createElement('div');
-      encadre.className = 'nova-fin-session';
-      encadre.setAttribute('role', 'status');
-      var fort = document.createElement('strong');
-      fort.textContent = t('fin-session', '');
-      var detail = document.createElement('p');
-      detail.textContent = t('fin-session-detail', '');
-      var bouton = document.createElement('a');
-      bouton.className = 'nova-fin-session-bouton';
-      bouton.href = fin.href;
-      bouton.textContent = t('terminer', 'Terminer');
-      encadre.appendChild(fort);
-      encadre.appendChild(detail);
-      encadre.appendChild(bouton);
-      corps.insertBefore(encadre, corps.firstChild);
-    }
-  }
-
-  /* Chronomètre Nova dans la barre, recopié d'un décompte que WIMS écrit dans la page
-   * (#exam_clock d'un examen, #clockoef d'un exercice chronométré). examen=false : seuils relatifs
-   * à la durée (ambre au dernier quart, au moins 15 s ; rouge aux 10 dernières secondes), sans libellé en
-   * minutes ; le bandeau « Temps écoulé » reste. */
-  function chronoMiroir(horloge, examen) {
-    var barre = document.getElementById('wimstopbox');
-    if (!horloge || !barre || barre.querySelector('.nova-chrono')) return;
-    var textes = document.getElementById('nova-textes');
-    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
-    var item = document.createElement('div');
-    item.className = 'menuitem chrono';
-    item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
-      '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span class="nova-chrono-libelle"></span>' +
-      '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
-    var boite = item.firstChild;
-    var attributs = examen ? ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'] : ['texte-fin', 'texte-fin-detail'];
-    attributs.forEach(function (a) { boite.setAttribute('data-' + a, t(a, '')); });
-    // Exercice : après le décompte, la note baisse avec le retard (scoredelay de WIMS), elle n'est pas perdue.
-    if (!examen) boite.setAttribute('data-texte-fin-detail', t('texte-fin-detail-exo', t('texte-fin-detail', '')));
-    if (examen) boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
-    boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
-    var miroir = boite.querySelector('.nova-chrono-miroir');
-    var copier = function () {
-      var texte = horloge.textContent.trim();
-      var m = /(\d+):(\d\d)/.exec(texte);
-      if (!examen && m && !boite.hasAttribute('data-seuil-critique')) {
-        var duree = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
-        boite.setAttribute('data-seuil-critique', 10);
-        boite.setAttribute('data-seuil-attention', Math.max(15, Math.round(duree / 4)));
-      }
-      miroir.textContent = texte;
-    };
-    copier();
-    new MutationObserver(copier).observe(horloge, { childList: true, characterData: true, subtree: true });
-    var maison = barre.querySelector('.class_home');
-    var bloc = maison ? maison.parentNode : (barre.querySelector('.wimsmenu') || barre);
-    bloc.insertBefore(item, maison ? maison.nextSibling : bloc.firstChild);
-  }
-
-  // Exercice OEF chronométré (scripts/oef/Main.phtml : « Cet exercice est chronométré » + #clockoef).
-  /* Fenêtre de vérification d'un exercice d'examen (session « …_check ») : l'exercice y est rejoué,
-   * son horloge vaut 00:00 ; ni chronomètre ni « Temps écoulé » (signalé le 2026-10-02). */
-  function fenetreVerification() {
-    return /[?&+]session=[^&]*_check/.test(location.href) || !!document.querySelector('a[href*="_check."]');
-  }
-  function chronoExercice() { if (!fenetreVerification()) chronoMiroir(document.getElementById('clockoef'), false); }
 
   /* Menus déroulants de la barre (compte, langues ; _widgets/user_links.phtml), sans Foundation
    * (2026-10-03). Clic ou toucher : ouvre et ferme ; survol avec une souris : ouvre, et referme en
@@ -455,308 +278,6 @@
     });
   }
 
-  /* Accordéons de Foundation (data-accordion : adm/class/addmodule « Notation », adm/class/freework
-   * « zones »), sans Foundation (2026-10-03). nova.js passe avant l'initialisation de Foundation
-   * (jQuery ready, footer_foundation.phtml) : il retire data-accordion, que Foundation ignore alors.
-   * Mêmes réglages : data-allow-all-closed, data-multi-expand, data-deep-link (l'ancre de l'URL
-   * ouvre l'élément et suit l'élément ouvert). Le titre (lien) ouvre et ferme ; Entrée, Espace,
-   * flèches haut et bas entre les titres. L'élément ouvert porte is-active, comme chez Foundation. */
-  function accordeons() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-accordion]'), function (acc, n) {
-      acc.removeAttribute('data-accordion');
-      acc.setAttribute('data-nova-accordeon', '');
-      var toutFerme = acc.getAttribute('data-allow-all-closed') === 'true';
-      var plusieurs = acc.getAttribute('data-multi-expand') === 'true';
-      var ancre = acc.getAttribute('data-deep-link') === 'true';
-      var elements = [];
-      Array.prototype.forEach.call(acc.children, function (item, i) {
-        if (!item.hasAttribute('data-accordion-item')) return;
-        var titre = item.querySelector(':scope > .accordion-title');
-        var contenu = item.querySelector(':scope > .accordion-content');
-        if (!titre || !contenu) return;
-        if (!contenu.id) contenu.id = 'nova-accordeon-' + n + '-' + i;
-        if (!titre.id) titre.id = contenu.id + '-titre';
-        titre.setAttribute('role', 'button');
-        titre.setAttribute('aria-controls', contenu.id);
-        contenu.setAttribute('role', 'region');
-        contenu.setAttribute('aria-labelledby', titre.id);
-        elements.push({ item: item, titre: titre, contenu: contenu });
-      });
-      if (!elements.length) return;
-      function poser(e, ouvert) {
-        e.item.classList.toggle('is-active', ouvert);
-        e.titre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
-        e.contenu.setAttribute('aria-hidden', ouvert ? 'false' : 'true');
-      }
-      function ouvrir(e) {
-        if (!plusieurs) elements.forEach(function (f) { if (f !== e) poser(f, false); });
-        poser(e, true);
-        if (ancre && history.replaceState) history.replaceState(history.state, '', '#' + e.contenu.id);
-      }
-      function basculer(e) {
-        if (!e.item.classList.contains('is-active')) { ouvrir(e); return; }
-        var ouverts = elements.filter(function (f) { return f.item.classList.contains('is-active'); });
-        if (toutFerme || ouverts.length > 1) poser(e, false);
-      }
-      var cible = ancre && location.hash.length > 1 ? decodeURIComponent(location.hash.slice(1)) : '';
-      var parAncre = null;
-      elements.forEach(function (e) {
-        if (cible && e.contenu.id === cible) parAncre = e;
-        poser(e, e.item.classList.contains('is-active'));
-      });
-      if (parAncre) ouvrir(parAncre);
-      else if (!toutFerme && !elements.some(function (e) { return e.item.classList.contains('is-active'); })) poser(elements[0], true);
-      elements.forEach(function (e, i) {
-        e.titre.addEventListener('click', function (ev) { ev.preventDefault(); basculer(e); });
-        e.titre.addEventListener('keydown', function (ev) {
-          var j = -1;
-          if (ev.key === ' ') { ev.preventDefault(); basculer(e); }
-          else if (ev.key === 'ArrowDown') j = (i + 1) % elements.length;
-          else if (ev.key === 'ArrowUp') j = (i - 1 + elements.length) % elements.length;
-          if (j >= 0) { ev.preventDefault(); elements[j].titre.focus(); }
-        });
-      });
-    });
-  }
-
-  /* Fenêtres « reveal » de Foundation (data-reveal ; scripts/oef/form.phtml : « Êtes-vous sûr ? »
-   * quand des réponses sont vides), dans un <dialog> natif (2026-10-03). WIMS les ouvre par
-   * jQuery(...).foundation('open') (scripts/oef/var.proc, formcheck) : cet appel est intercepté pour
-   * elles, le reste va à Foundation tant qu'il est chargé. data-open="id" ouvre, data-close ferme,
-   * Échap aussi (natif). Le <dialog> est mis dans <body>, hors du formulaire, comme le faisait Foundation. */
-  function revelations() {
-    var fenetres = document.querySelectorAll('[data-reveal]');
-    if (!fenetres.length || typeof document.createElement('dialog').showModal !== 'function') return;
-    Array.prototype.forEach.call(fenetres, function (el) {
-      el.removeAttribute('data-reveal');
-      var d = document.createElement('dialog');
-      d.className = 'nova-dialogue';
-      var titre = el.querySelector('h1, h2');
-      if (titre) { if (!titre.id) titre.id = (el.id || 'nova-dialogue') + '-titre'; d.setAttribute('aria-labelledby', titre.id); }
-      d.appendChild(el);
-      document.body.appendChild(d);
-      el.novaDialogue = d;
-      d.addEventListener('click', function (e) {
-        if (e.target === d || e.target.closest('[data-close]')) d.close();   // clic sur le fond, Non, ×
-      });
-    });
-    function ouvrir(el) { if (el && el.novaDialogue && !el.novaDialogue.open) el.novaDialogue.showModal(); }
-    document.addEventListener('click', function (e) {
-      var o = e.target.closest && e.target.closest('[data-open]');
-      if (!o) return;
-      var el = document.getElementById(o.getAttribute('data-open'));
-      if (el && el.novaDialogue) { e.preventDefault(); ouvrir(el); }
-    });
-    var jq = window.jQuery;
-    if (jq && jq.fn) {
-      var origine = jq.fn.foundation;
-      jq.fn.foundation = function (methode) {
-        if (typeof methode === 'string' && this.length && this[0].novaDialogue) {
-          if (methode === 'open') ouvrir(this[0]);
-          else if (methode === 'close') this[0].novaDialogue.close();
-          return this;
-        }
-        return origine ? origine.apply(this, arguments) : this;
-      };
-    }
-  }
-
-  /* Panneaux déroulants de Foundation (bouton data-toggle="X" + div#X.dropdown-pane[data-dropdown] :
-   * scripts/js/dropdownbutton.phtml — sauvegarde de classe, vérification d'examen, feuilles), sans
-   * Foundation (2026-10-03). Le bouton ouvre et ferme (classe is-open, que le CSS de WIMS suit) ; le
-   * panneau se place sous le bouton (data-alignment="right" : aligné à droite) ; Échap, clic ailleurs
-   * le referment ; data-auto-focus : focus sur le premier lien. Le panneau « Abandonner » des
-   * exercices (scripts/oef/Main.phtml) est une boîte de dialogue jQuery UI : laissé à jQuery UI. */
-  function panneaux() {
-    var ouverts = [];
-    Array.prototype.forEach.call(document.querySelectorAll('.dropdown-pane[data-dropdown][id]'), function (p) {
-      var boutons = document.querySelectorAll('[data-toggle="' + p.id + '"]');
-      if (!boutons.length) return;
-      p.removeAttribute('data-dropdown');
-      Array.prototype.forEach.call(boutons, function (b) {
-        b.removeAttribute('data-toggle');
-        b.setAttribute('aria-controls', p.id);
-        b.setAttribute('aria-expanded', 'false');
-        b.addEventListener('click', function (e) {
-          if (p.classList.contains('ui-dialog-content') || p.id === 'exo_giveup') return;
-          e.stopPropagation();
-          if (p.classList.contains('is-open')) fermer(p); else ouvrir(p, b);
-        });
-      });
-    });
-    function fermer(p) {
-      p.classList.remove('is-open');
-      Array.prototype.forEach.call(document.querySelectorAll('[aria-controls="' + p.id + '"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
-      ouverts = ouverts.filter(function (q) { return q !== p; });
-    }
-    function ouvrir(p, b) {
-      ouverts.slice().forEach(fermer);
-      p.classList.add('is-open');
-      b.setAttribute('aria-expanded', 'true');
-      var parent = p.offsetParent || document.body;
-      var rp = parent.getBoundingClientRect(), rb = b.getBoundingClientRect();
-      var haut = rb.bottom - rp.top + parent.scrollTop + 4;
-      var gauche = p.getAttribute('data-alignment') === 'right' ? rb.right - rp.left - p.offsetWidth : rb.left - rp.left;
-      gauche = Math.max(4 - rp.left, Math.min(gauche, document.documentElement.clientWidth - rp.left - p.offsetWidth - 4));
-      p.style.top = haut + 'px';
-      p.style.left = gauche + parent.scrollLeft + 'px';
-      ouverts.push(p);
-      if (p.getAttribute('data-auto-focus') === 'true') { var a = p.querySelector('a[href], button, input'); if (a) a.focus(); }
-    }
-    document.addEventListener('click', function (e) { ouverts.slice().forEach(function (p) { if (!p.contains(e.target)) fermer(p); }); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key !== 'Escape' || !ouverts.length) return;
-      var p = ouverts[0], b = document.querySelector('[aria-controls="' + p.id + '"]');
-      fermer(p); if (b) b.focus();
-    });
-  }
-
-  /* Feuille d'exercices (adm/sheet, contenu.css) : le score de WIMS est un texte « Qualité: 0/10
-   * Réussite: 0% Points requis:10 » ; il devient des étiquettes (libellé + valeur), et la valeur en %
-   * une barre de réussite (verte à 100 %). Libellés repris tels quels : toutes les langues. */
-  /* Parcours (examen en mode « course ») : WIMS met dans la barre du haut un segment par exercice
-   * (scripts/examprogressbar.proc ; title = 10 pour les précédents, la note de l'exercice en cours,
-   * « todo » pour la suite). Choix de l'utilisateur (2026-10-03, maquette A) : segments + compteur,
-   * posés sur la page au-dessus de l'exercice. Une note à -1 (pas encore de réponse) s'écrit aussi
-   * « todo » : après un 10 à l'exercice en cours, c'est le bouton « série suivante »
-   * (#wims_nextinexam, themes/_widgets/nextinsheet.phtml) qui dit que le dernier 10 est le sien. */
-  function parcours() {
-    var li = document.querySelector('#wimstopbox .menuitem.progress');
-    var page = document.querySelector('.wimsbody');
-    var barre = li && li.querySelector('.wims_score_bar');
-    var n = barre ? barre.querySelectorAll('.wims_seed_item').length : 0;
-    if (!page || !n) { if (li) li.classList.add('nova-garde'); return; }   // laissée dans la barre
-    page.insertBefore(habillerParcours(barre, !!document.getElementById('wims_nextinexam')), page.firstChild);
-    li.parentNode.removeChild(li);
-  }
-
-  /* Barre de progression d'une course (examprogressbar.proc de WIMS : segments title="10" réussi, "todo",
-   * ou la note) → segments Nova + « Exercice n sur N ». reussi : l'exercice en cours est réussi (bouton
-   * « série suivante » présent). Rend le bloc .nova-parcours qui contient la barre. */
-  function habillerParcours(barre, reussi) {
-    var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item'));
-    var n = segments.length;
-    var textes = document.getElementById('nova-textes');
-    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
-    var faits = 0;
-    while (faits < n && segments[faits].title === '10') faits++;
-    var cours, etat, note = '';
-    if (faits < n && segments[faits].title !== 'todo') { cours = faits + 1; etat = 'note'; note = segments[faits].title; }
-    else if (faits === n) { cours = n; etat = 'termine'; }
-    else if (faits > 0 && reussi) { cours = faits; etat = 'reussi'; }
-    else { cours = faits + 1; etat = 'en-cours'; }
-    var modele = t('parcours', 'Exercise %n of %t');
-    segments.forEach(function (s, i) {
-      var k = i + 1, quoi;
-      s.removeAttribute('style');   // bleu, rouge, blanc de WIMS
-      if (k === cours) s.classList.add('nova-cours');
-      if (k < cours || (k === cours && (etat === 'reussi' || etat === 'termine'))) { s.classList.add('nova-fait'); quoi = t('parcours-reussi', 'passed'); }
-      else if (k === cours && etat === 'note') { s.classList.add('nova-echec'); quoi = t('parcours-note', 'scored') + ' ' + note + '/10'; }
-      else if (k === cours) quoi = t('parcours-en-cours', 'in progress');
-      else quoi = t('parcours-a-faire', 'to do');
-      s.title = modele.replace('%n', k).replace('%t', n) + ' : ' + quoi;
-    });
-    var bloc = document.createElement('div');
-    bloc.className = 'nova-parcours';
-    bloc.setAttribute('role', 'group');
-    bloc.setAttribute('aria-label', t('parcours-titre', 'Course progress'));
-    barre.classList.remove('inline');
-    barre.setAttribute('aria-hidden', 'true');
-    var compteur = document.createElement('p');
-    compteur.className = 'nova-parcours-compteur';
-    compteur.innerHTML = modele.replace(/[&<>]/g, '')
-      .replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
-    var suite = etat === 'note' ? t('parcours-note', 'scored') + ' ' + note + '/10'
-      : etat === 'termine' ? t('parcours-termine', 'finished') : etat === 'reussi' ? t('parcours-reussi', 'passed') : '';
-    if (suite) {
-      var s = document.createElement('span');
-      s.className = 'nova-parcours-etat';
-      s.textContent = suite;
-      compteur.appendChild(s);
-    }
-    bloc.appendChild(barre);
-    bloc.appendChild(compteur);
-    return bloc;
-  }
-
-  /* Page d'un examen « course » (adm/class/exam, student.phtml) : « Progression de la session de la
-   * course » (h2, masqué par le CSS) puis la barre de WIMS → mêmes segments que pendant le parcours
-   * (demande de l'utilisateur, 2026-10-03). */
-  function parcoursExamen() {
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody > div.wims_score_bar'), function (barre) {
-      if (!barre.querySelector(':scope > .wims_seed_item')) return;
-      var place = barre.nextSibling, parent = barre.parentNode;
-      var bloc = habillerParcours(barre, false);
-      bloc.classList.add('nova-parcours-examen');
-      parent.insertBefore(bloc, place);
-    });
-  }
-
-
-  /* Exercice « course » (OEF à étapes, ex. E6/number/oeftabmul coursemult) : l'énoncé écrit sa propre
-   * barre, une question par segment, title « done » ou « todo ». Même habillage que le parcours
-   * (segments + « Question 4 sur 10 ») ; le CSS colore déjà les segments d'après leur title. */
-  function courseExercice() {
-    var textes = document.getElementById('nova-textes');
-    var modele = (textes && textes.getAttribute('data-parcours-question')) || 'Question %n of %t';
-    Array.prototype.forEach.call(document.querySelectorAll('.oefstatement .wims_score_bar'), function (barre) {
-      if (barre.closest('.nova-parcours')) return;
-      var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item[title="done"], .wims_seed_item[title="todo"]'));
-      var n = segments.length;
-      if (!n) return;
-      var faits = segments.filter(function (s) { return s.title === 'done'; }).length;
-      var cours = Math.min(faits + 1, n);
-      segments.forEach(function (s, i) {
-        s.removeAttribute('style');
-        if (i < faits) s.classList.add('nova-fait');
-        else if (i === faits) s.classList.add('nova-cours');
-      });
-      var bloc = document.createElement('div');
-      bloc.className = 'nova-parcours nova-parcours-questions';
-      barre.parentNode.insertBefore(bloc, barre);
-      barre.setAttribute('aria-hidden', 'true');
-      bloc.appendChild(barre);
-      var compteur = document.createElement('p');
-      compteur.className = 'nova-parcours-compteur';
-      compteur.innerHTML = modele.replace(/[&<>]/g, '').replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
-      bloc.appendChild(compteur);
-    });
-  }
-
-  function feuilleExercices() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
-    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
-      if (bloc.querySelector('.nova-scores')) return;
-      var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, puces = [], pourcent = null;
-      while ((m = re.exec(texte))) {
-        puces.push([m[1].trim(), m[2].replace(/\s+/g, '')]);
-        if (/%$/.test(m[2].trim()) && pourcent === null) pourcent = parseFloat(m[2].replace(',', '.'));
-      }
-      if (!puces.length) return;
-      var liste = document.createElement('span');
-      liste.className = 'nova-scores';
-      puces.forEach(function (p) {
-        var e = document.createElement('span'), v = document.createElement('strong');
-        e.className = 'nova-score';
-        e.appendChild(document.createTextNode(p[0]));
-        v.textContent = p[1];
-        e.appendChild(v);
-        liste.appendChild(e);
-      });
-      bloc.textContent = '';
-      bloc.appendChild(liste);
-      if (pourcent !== null && !isNaN(pourcent)) {
-        var barre = document.createElement('div'), plein = document.createElement('span');
-        barre.className = 'nova-barre-reussite';
-        barre.setAttribute('aria-hidden', 'true');
-        plein.style.width = Math.max(0, Math.min(100, pourcent)) + '%';
-        if (pourcent >= 100) barre.setAttribute('data-plein', '');
-        barre.appendChild(plein);
-        bloc.appendChild(barre);
-      }
-    });
-  }
-
   /* Barre du haut sur une seule ligne au téléphone (< 640 px). Restent dans la barre : ☰, accueil,
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
@@ -851,40 +372,6 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panneau && !panneau.hidden) { fermer(); bouton.focus(); } });
     if (etroit.addEventListener) etroit.addEventListener('change', appliquer); else etroit.addListener(appliquer);
     appliquer();
-  }
-
-  /* Onglets jQuery UI : au-delà de 3, une liste déroulante les remplace au téléphone (CSS :
-   * .nova-onglets-replies). La liste actionne les onglets eux-mêmes (clic sur l'ancre), qui
-   * restent dans la page ; elle suit aussi les changements faits autrement. Lancé au chargement
-   * complet : jQuery UI construit les onglets après ce script. */
-  function ongletsCompacts() {
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .ui-tabs'), function (bloc) {
-      var nav = bloc.querySelector(':scope > .ui-tabs-nav');
-      if (!nav || bloc.querySelector(':scope > .nova-onglets-liste')) return;
-      var ancres = nav.querySelectorAll('.ui-tabs-anchor');
-      // Libellés coupés (« … », contenu.css : une seule ligne) : le texte entier en info-bulle.
-      Array.prototype.forEach.call(ancres, function (a) { if (!a.title) a.title = a.textContent.trim(); });
-      if (ancres.length <= 3) return;
-      var liste = document.createElement('select');
-      liste.className = 'nova-onglets-liste';
-      liste.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Tabs' : 'Onglets');
-      Array.prototype.forEach.call(ancres, function (a, i) {
-        var o = document.createElement('option');
-        o.value = i;
-        o.textContent = (i + 1) + ' \u00B7 ' + a.textContent.trim();
-        liste.appendChild(o);
-      });
-      var synchroniser = function () {
-        Array.prototype.forEach.call(ancres, function (a, i) {
-          if (a.parentNode.classList.contains('ui-tabs-active')) liste.value = i;
-        });
-      };
-      synchroniser();
-      liste.addEventListener('change', function () { ancres[liste.value].click(); });
-      new MutationObserver(synchroniser).observe(nav, { attributes: true, subtree: true, attributeFilter: ['class'] });
-      bloc.insertBefore(liste, nav);
-      bloc.classList.add('nova-onglets-replies');
-    });
   }
 
   /* Menu enseignant personnalisé, gardé sur le serveur (demande de l'utilisateur, 2026-10-07 ; header.phtml) :
@@ -1195,6 +682,3793 @@
     }, true);
   }
 
+  function retourEnHaut() {
+    var lien = document.getElementById('back-to-top');
+    if (!lien) {
+      if (!document.getElementById('wimstopbox')) return;
+      var noms = { fr: 'Haut de page', en: 'Top of page', nl: 'Naar boven' };
+      var langue = (document.documentElement.lang || 'fr').slice(0, 2);
+      var bloc = document.createElement('div');
+      bloc.className = 'wims_topback';
+      lien = document.createElement('a');
+      lien.id = 'back-to-top';
+      lien.href = '#wimstopbox';
+      lien.title = noms[langue] || noms.en;
+      lien.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var doux = !animationsCoupees();
+        window.scrollTo({ top: 0, behavior: doux ? 'smooth' : 'auto' });
+      });
+      bloc.appendChild(lien);
+      document.body.appendChild(bloc);
+    }
+    if (lien.title && !lien.getAttribute('aria-label')) lien.setAttribute('aria-label', lien.title);
+    var racine = document.documentElement, attente = false;
+    var maj = function () {
+      attente = false;
+      racine.classList.toggle('nova-defile', window.scrollY > window.innerHeight * 0.5);
+    };
+    window.addEventListener('scroll', function () {
+      if (!attente) { attente = true; window.requestAnimationFrame(maj); }
+    }, { passive: true });
+    maj();
+  }
+
+  /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
+   * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
+  /* Chronomètre ou « Examen en cours » au centre de la barre, à toutes les largeurs (demande de
+   * l'utilisateur, 2026-10-06) : exactement au centre si rien ne le touche ; sinon à la position la plus
+   * proche du centre où il ne touche rien (12 px d'écart) ; s'il ne tient nulle part, à sa place dans la
+   * barre. Avant d'y renoncer : sur un écran large, « Retour » et « Outils » en pictogrammes (nova-serree) ;
+   * partout, barre compacte (nova-compacte : accueil sans marge, libellé court de la pastille), puis sans
+   * l'heure de fin du chronomètre (nova-sans-fin). La
+   * position est posée par --nova-centre-x (CSS : .nova-centre, hors du flux). */
+  function centrerBarre() {
+    var barre = document.getElementById('wimstopbox');
+    var centre = barre && barre.querySelector('.menuitem.chrono, .nova-examencours');
+    if (!centre || !window.matchMedia) return;
+    var large = window.matchMedia('(min-width: 768px)');
+    var ECART = 12;
+    var positionner = function () {
+      var b = barre.getBoundingClientRect();
+      var w = centre.getBoundingClientRect().width;
+      var milieu = b.width / 2;
+      var style = getComputedStyle(barre);
+      var gauche = parseFloat(style.paddingLeft) || 0, droite = b.width - (parseFloat(style.paddingRight) || 0);
+      Array.prototype.forEach.call(barre.querySelectorAll('.menuitem, .nova-classe, .nova-menu-bouton, .nova-plus'), function (e) {
+        if (e === centre || centre.contains(e) || e.contains(centre) ||
+            e.closest('.is-dropdown-submenu, .nova-plus-panneau') || !e.getClientRects().length) return;
+        var q = e.getBoundingClientRect();
+        if (!q.width) return;
+        var g = q.left - b.left, d = q.right - b.left;
+        if ((g + d) / 2 < milieu) gauche = Math.max(gauche, d + ECART); else droite = Math.min(droite, g - ECART);
+      });
+      if (droite - gauche < w) return false;
+      var x = Math.min(Math.max(milieu, gauche + w / 2), droite - w / 2);
+      centre.style.setProperty('--nova-centre-x', x + 'px');
+      return true;
+    };
+    var placer = function () {
+      centre.style.removeProperty('--nova-centre-x');
+      barre.classList.remove('nova-serree', 'nova-compacte', 'nova-sans-fin');
+      centre.classList.add('nova-centre');       // hors du flux : les voisins prennent leur place
+      if (positionner()) return;
+      if (large.matches) {
+        barre.classList.add('nova-serree');      // « Retour », « Outils » : pictogrammes seuls
+        if (positionner()) return;
+        barre.classList.remove('nova-serree');
+      }
+      // Barre compacte : moins de marge autour de l'accueil, « Examen » au lieu de « Examen en cours ».
+      barre.classList.add('nova-compacte');
+      if (positionner()) return;
+      // Puis sans l'heure de fin du chronomètre (« Fin à … ») : le décompte reste.
+      if (centre.querySelector('.nova-chrono-fin')) {
+        barre.classList.add('nova-sans-fin');
+        if (positionner()) return;
+        barre.classList.remove('nova-sans-fin');
+      }
+      barre.classList.remove('nova-compacte');
+      centre.classList.remove('nova-centre');
+      centre.style.removeProperty('--nova-centre-x');
+    };
+    var verifier = function () {
+      placer();
+      // Barre sur deux lignes malgré tout : libellés de « Retour » et « Outils » retirés.
+      if (large.matches && barre.getBoundingClientRect().height > 72) { barre.classList.add('nova-serree'); placer(); }
+    };
+    verifier();
+    var attente;
+    window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(verifier, 100); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(verifier);
+  }
+
+  /* Élèves (#nova-eleve, header.phtml) : pas de fil d'Ariane (masqué en CSS), mais un bouton
+   * « Retour » dans la barre, juste après ☰, vers le niveau précédent du fil — le dernier lien
+   * de celui-ci (exercice → feuille → chapitre → accueil). Rien sur l'accueil (aucun lien), ni
+   * pendant un examen ou dans la fenêtre d'exercice, qui ont leurs propres boutons. */
+  function retourEleve() {
+    if (standard('navigation')) return;   // réglage « Navigation complète pour l'élève » : fil d'Ariane
+    if (!document.getElementById('nova-eleve') || document.body.classList.contains('nova-examen-session')) return;
+    var barre = document.getElementById('wimstopbox');
+    var fil = document.querySelector('.breadcrumbs');
+    if (!barre || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
+    // Pages Nova de l'accueil (Mon avatar, Mon activité ; signalé par l'utilisateur le 2026-11-07 : pas de sortie au
+    // téléphone) : leur fil d'Ariane n'a pas de lien vers l'accueil, qui est leur page parente.
+    var pageAccueil = /[?&+]nova_(avatar|activite)=1/.test(location.search) && lienAccueil('');
+    if (!fil && !pageAccueil) return;
+    // Le lien « Chapitre » qu'ajoute WIMS sur la page d'une feuille (module=home&seq=N) mène à la page
+    // d'une seule séquence, sans onglets : on remonte à l'accueil de la classe, où WIMS rouvre l'onglet
+    // d'origine (adm/tabscript, sessionStorage) — comme le retour depuis un examen.
+    var liens = fil ? Array.prototype.filter.call(fil.querySelectorAll('a[href]'), function (a) {
+      return !/[?&+]module=home(&|$)/.test(a.getAttribute('href')) || !/[?&+]seq=/.test(a.getAttribute('href'));
+    }) : [];
+    var precedent = liens[liens.length - 1];
+    if (pageAccueil) {
+      var maison = barre.querySelector('.class_home a[href]');
+      precedent = { href: new URL(pageAccueil, location.href).href, textContent: maison ? maison.textContent : '' };
+    }
+    if (!precedent) return;
+    var textes = document.getElementById('nova-textes');
+    var libelle = (textes && textes.getAttribute('data-retour')) || 'Back';
+    var item = document.createElement('span');
+    item.className = 'menuitem nova-retour';
+    var a = document.createElement('a');
+    a.href = precedent.href;
+    a.className = 'nova-retour-lien';
+    a.title = precedent.textContent.trim() ? libelle + ' : ' + precedent.textContent.trim() : libelle;
+    a.setAttribute('aria-label', a.title);
+    var texte = document.createElement('span');
+    texte.className = 'text_item';
+    texte.textContent = libelle;
+    a.appendChild(texte);
+    item.appendChild(a);
+    var bloc = barre.querySelector('.wimsmenu.float_left') || barre;
+    bloc.insertBefore(item, bloc.firstChild);
+  }
+
+  /* Rubrique « Profil » en tête du menu latéral (demande de l'utilisateur, 2026-10-07, maquette A ; même style
+   * qu'une rubrique ordinaire) : le menu du compte de la barre (nom, préférences, conditions, déconnexion), le
+   * choix de la langue s'il y en a un, quittent la barre ; « Aide » de la barre passe dans la rubrique « Aide et
+   * outils » si elle existe, sinon dans « Profil ». Élève et enseignant ; chez l'élève, le menu latéral est un
+   * tiroir ☰ à toutes les largeurs (CSS). Pages sans menu latéral : la barre garde son menu du compte. Pendant
+   * une session d'examen, modeExamen a déjà sa section « Profil ». */
+  /* Entrée « Langue : <langue actuelle> » de la rubrique Profil, qui déplie la liste des autres langues (drapeau + nom,
+   * langue actuelle cochée en tête). Libellés de WIMS ($wims_name_Language, lang_name_*). Clé profil_langue. */
+  function choixLangue(selecteur, autres) {
+    var d = document.createElement('div');
+    d.className = 'menuitem profil_langue nova-langue';
+    var bouton = document.createElement('a');
+    bouton.href = '#';
+    bouton.setAttribute('role', 'button');
+    bouton.setAttribute('aria-expanded', 'false');
+    var actuelle = selecteur.querySelector('a.current .legende, .disabled .legende');
+    var nomActuel = actuelle ? actuelle.textContent.trim() : (document.documentElement.lang || '');
+    var libelle = (selecteur.querySelector('a.lang') || selecteur).textContent.replace(/\s+/g, ' ').trim() || 'Language';
+    var texte = document.createElement('span');
+    texte.className = 'nova-langue-texte';
+    texte.textContent = libelle + ' : ' + nomActuel;
+    // Drapeau de la langue actuelle en guise d'icône : Font_Awesome n'a pas de globe, et le jeu « default » aucune icône.
+    var drapeau = selecteur.querySelector('a.current img, a.lang img');
+    if (drapeau) { var dr = drapeau.cloneNode(true); dr.alt = ''; dr.className = 'vignette'; bouton.appendChild(dr); }
+    bouton.appendChild(texte);
+    var liste = document.createElement('div');
+    liste.className = 'nova-langues';
+    liste.id = 'nova-langues';
+    liste.hidden = true;
+    bouton.setAttribute('aria-controls', liste.id);
+    var courant = selecteur.querySelector('a.current');
+    if (courant) {
+      var c = courant.cloneNode(true);
+      var precision = c.querySelector('.smaller');
+      if (precision) precision.remove();
+      c.setAttribute('aria-current', 'true');
+      liste.appendChild(c);
+    }
+    Array.prototype.forEach.call(autres, function (a) {
+      var copie = a.cloneNode(true);
+      copie.removeAttribute('id');
+      liste.appendChild(copie);
+    });
+    bouton.addEventListener('click', function (e) {
+      if (document.documentElement.classList.contains('nova-menu-edition')) return;   // menuPersonnel s'en charge
+      e.preventDefault();
+      var ouvrir = liste.hidden;
+      liste.hidden = !ouvrir;
+      bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+    });
+    d.appendChild(bouton);
+    d.appendChild(liste);
+    return d;
+  }
+
+  function profilLateral() {
+    var barre = document.getElementById('wimstopbox');
+    var menu = document.getElementById('wimsmenumodubox');
+    var racine = document.documentElement;
+    var fini = function () { racine.classList.add('nova-profil-pret'); };
+    if (standard('menus')) { fini(); return; }   // réglage « Menus du thème standard » : le compte reste dans la barre
+    if (!barre || !menu || menu.querySelector('.nova-profil')) { fini(); return; }
+    var compte = barre.querySelector('a.account');
+    var liCompte = compte && compte.closest('li');
+    if (!liCompte) { fini(); return; }
+    var textes = document.getElementById('nova-textes');
+    var cible = menu.querySelector('.modubox_content') || menu;
+    var titre = document.createElement('h2');
+    titre.className = 'menu_title nova-profil-titre';
+    titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profile';
+    var groupe = document.createElement('div');
+    groupe.className = 'wimsmenu menu nova-profil';
+    // Chaque entrée porte une clé « profil_<classe du lien> » : le menu simplifié peut la masquer, comme les
+    // autres (demande de l'utilisateur, 2026-10-07) ; la déconnexion (cmd=close, ou classe visitor des
+    // déconnexions CAS) n'en a pas : toujours visible (htmlheader.phtml).
+    var cleProfil = function (a) {
+      var c = ((a.getAttribute('class') || '').split(/\s+/).filter(function (x) { return /^[A-Za-z0-9_-]+$/.test(x); })[0]) || 'lien';
+      return 'profil_' + c;
+    };
+    var ajouter = function (lien, ou) {
+      if (!lien || !lien.getAttribute('href') || /^#/.test(lien.getAttribute('href'))) return;
+      var d = document.createElement('div');
+      d.className = 'menuitem';
+      if (/[?&+]cmd=close/.test(lien.getAttribute('href')) || lien.classList.contains('visitor')) d.classList.add('nova-deconnexion');
+      else d.classList.add(cleProfil(lien));
+      var copie = lien.cloneNode(true);
+      copie.removeAttribute('id');
+      copie.removeAttribute('aria-controls');
+      copie.removeAttribute('aria-expanded');
+      d.appendChild(copie);
+      (ou || groupe).appendChild(d);
+    };
+    var nom = document.createElement('div');
+    nom.className = 'menuitem profil_nom nova-profil-nom';
+    nom.textContent = compte.textContent.replace(/\s+/g, ' ').trim();
+    groupe.appendChild(nom);
+    // Langues (sélecteur de la barre, quand WIMS en met un : modtool, pages hors classe) : UNE entrée « Langue :
+    // Français » qui déplie la liste (maquette A, demande de l'utilisateur, 2026-11-04 ; avant : une entrée par langue).
+    var langues = barre.querySelector('#language_selector');
+    if (langues) {
+      var autres = langues.querySelectorAll('#lang_list a[href]');   // pas « ul a » : la liste de la barre contient le sélecteur
+      if (autres.length) groupe.appendChild(choixLangue(langues, autres));
+    }
+    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-cgu-compte)' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
+    // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
+    var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
+    if (aides.length) {
+      var rubriqueAide = null;
+      Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (t) {
+        if (!rubriqueAide && /aide|help/i.test(t.textContent) && t.nextElementSibling) rubriqueAide = t.nextElementSibling;
+      });
+      Array.prototype.forEach.call(aides, function (item) {
+        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), function (a) {
+          var avant = rubriqueAide && rubriqueAide.firstChild;
+          var d = document.createElement('div');
+          d.className = 'menuitem ' + (item.classList.contains('whelp') ? 'whelp' : 'help');
+          var copie = a.cloneNode(true);
+          copie.removeAttribute('id');
+          d.appendChild(copie);
+          if (rubriqueAide) rubriqueAide.insertBefore(d, avant); else groupe.appendChild(d);
+        });
+        item.remove();
+      });
+    }
+    cible.insertBefore(groupe, cible.firstChild);
+    cible.insertBefore(titre, groupe);
+    liCompte.remove();
+    if (langues) langues.remove();
+    // Menu simplifié de l'enseignant : les entrées de Profil et l'Aide déplacée, nouvelles, sont gardées une
+    // première fois (repère profil_v1 dans la liste), pour qu'aucune ne disparaisse d'elle-même.
+    var nm = window.novaMenu;
+    if (nm && !nm.inverse && document.getElementById('nova-menu-bascule') && nm.garde.indexOf('profil_v1') < 0) {
+      Array.prototype.forEach.call(menu.querySelectorAll('.nova-profil .menuitem, .menuitem.help, .menuitem.whelp'), function (item) {
+        Array.prototype.forEach.call(item.classList, function (c) {
+          if ((/^profil_/.test(c) || c === 'help' || c === 'whelp') && nm.garde.indexOf(c) < 0) nm.garde.push(c);
+        });
+      });
+      nm.garde.push('profil_v1');
+      try {
+        localStorage.setItem('nova_menu_garde', JSON.stringify(nm.garde));
+        localStorage.setItem('nova_menu_envoi', valeurMenu());
+      } catch (e) { /* cette page seulement */ }
+      var regle = document.getElementById('nova-menu-style');
+      if (regle) regle.textContent = nm.style(nm.garde);
+    }
+    fini();
+  }
+
+  /* Pied de page (demande de l'utilisateur, 2026-10-08) : CGU et Aide (_widgets/footer.phtml, barre .nova-pied au format
+   * du pied de page de l'enseignant) rejoignent, sur l'accueil de l'enseignant, sa barre #wimsmenubox.footer. */
+  function piedDePage() {
+    var barre = document.querySelector('#wimsmenubox.footer');
+    var pied = document.querySelector('body > .nova-pied');
+    var groupe = pied && pied.querySelector('.nova-pied-groupe');
+    if (!barre || !groupe) return;
+    barre.appendChild(groupe);
+    pied.parentNode.removeChild(pied);
+  }
+
+  /* Élève sur une page sans menu latéral (préférences d'affichage, liste des examens, devoirs libres ; 2026-11-11,
+   * utilisateur) : Nova crée un menu vide, que profilLateral remplit avec le menu du compte (nom, « Changer le mot de
+   * passe », déconnexion) ; le bouton ☰ (initialiser) l'ouvre, comme sur les autres pages. Réglage « Menus du thème
+   * standard » : rien (le compte reste dans la barre). */
+  function menuEleve() {
+    var corps = document.getElementById('wimsbodybox');
+    var barre = document.getElementById('wimstopbox');
+    if (!corps || !barre || document.getElementById('wimsmenumodubox') || !document.getElementById('nova-eleve')) return;
+    if (standard('menus') || !barre.querySelector('a.account')) return;
+    var menu = document.createElement('div');
+    menu.id = 'wimsmenumodubox';
+    menu.className = 'nova-menu-cree';
+    var contenu = document.createElement('div');
+    contenu.className = 'modubox_content';
+    menu.appendChild(contenu);
+    corps.insertBefore(menu, corps.firstChild);
+  }
+
+  function placerMenu() {
+    var menu = document.getElementById('wimsmenumodubox');
+    // Classe connue du jeu Font_Awesome de WIMS ; le jeu default reste sans icone.
+    if (menu) {
+      var suivi = menu.querySelector('.nova_suivi > a');
+      if (suivi) suivi.classList.add('eye');
+      // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
+      var reglagesNova = menu.querySelector('.nova_reglages > a');
+      if (reglagesNova) { reglagesNova.classList.add('config_module'); tagNouveau(reglagesNova); }
+    }
+    var corps = document.getElementById('wimsbodybox');
+    if (!menu || !corps || menu.parentElement === corps) return;
+    // Le menu doit etre un enfant de #wimsbodybox. WIMS le met dans #wimspagebox sur la page de reponse d'un
+    // exercice de feuille ; un module au HTML desequilibre (adm/class/sequence, job=addseq : </div> en trop)
+    // fait refermer #wimsbodybox trop tot par le navigateur, et le menu finit sous la page, enfant de <body>.
+    // data-nova-deplace garde l'origine (relevee par l'inventaire du banc).
+    var origine = menu.parentElement;
+    menu.setAttribute('data-nova-deplace', origine === document.body ? 'body' : (origine.id || origine.tagName.toLowerCase()));
+    var page = document.getElementById('wimspagebox');
+    if (page && !page.contains(corps) && page.parentElement !== corps && !corps.contains(page)) corps.appendChild(page);
+    corps.insertBefore(menu, page && page.parentElement === corps ? page : corps.firstChild);
+  }
+
+  /* ===== js/src/20-composants.js : composants repris à Foundation et jQuery UI (accordéons, fenêtres, panneaux, onglets), carrousel, boutons collants, connexion ===== */
+  /* Accordéons de Foundation (data-accordion : adm/class/addmodule « Notation », adm/class/freework
+   * « zones »), sans Foundation (2026-10-03). nova.js passe avant l'initialisation de Foundation
+   * (jQuery ready, footer_foundation.phtml) : il retire data-accordion, que Foundation ignore alors.
+   * Mêmes réglages : data-allow-all-closed, data-multi-expand, data-deep-link (l'ancre de l'URL
+   * ouvre l'élément et suit l'élément ouvert). Le titre (lien) ouvre et ferme ; Entrée, Espace,
+   * flèches haut et bas entre les titres. L'élément ouvert porte is-active, comme chez Foundation. */
+  function accordeons() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-accordion]'), function (acc, n) {
+      acc.removeAttribute('data-accordion');
+      acc.setAttribute('data-nova-accordeon', '');
+      var toutFerme = acc.getAttribute('data-allow-all-closed') === 'true';
+      var plusieurs = acc.getAttribute('data-multi-expand') === 'true';
+      var ancre = acc.getAttribute('data-deep-link') === 'true';
+      var elements = [];
+      Array.prototype.forEach.call(acc.children, function (item, i) {
+        if (!item.hasAttribute('data-accordion-item')) return;
+        var titre = item.querySelector(':scope > .accordion-title');
+        var contenu = item.querySelector(':scope > .accordion-content');
+        if (!titre || !contenu) return;
+        if (!contenu.id) contenu.id = 'nova-accordeon-' + n + '-' + i;
+        if (!titre.id) titre.id = contenu.id + '-titre';
+        titre.setAttribute('role', 'button');
+        titre.setAttribute('aria-controls', contenu.id);
+        contenu.setAttribute('role', 'region');
+        contenu.setAttribute('aria-labelledby', titre.id);
+        elements.push({ item: item, titre: titre, contenu: contenu });
+      });
+      if (!elements.length) return;
+      function poser(e, ouvert) {
+        e.item.classList.toggle('is-active', ouvert);
+        e.titre.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+        e.contenu.setAttribute('aria-hidden', ouvert ? 'false' : 'true');
+      }
+      function ouvrir(e) {
+        if (!plusieurs) elements.forEach(function (f) { if (f !== e) poser(f, false); });
+        poser(e, true);
+        if (ancre && history.replaceState) history.replaceState(history.state, '', '#' + e.contenu.id);
+      }
+      function basculer(e) {
+        if (!e.item.classList.contains('is-active')) { ouvrir(e); return; }
+        var ouverts = elements.filter(function (f) { return f.item.classList.contains('is-active'); });
+        if (toutFerme || ouverts.length > 1) poser(e, false);
+      }
+      var cible = ancre && location.hash.length > 1 ? decodeURIComponent(location.hash.slice(1)) : '';
+      var parAncre = null;
+      elements.forEach(function (e) {
+        if (cible && e.contenu.id === cible) parAncre = e;
+        poser(e, e.item.classList.contains('is-active'));
+      });
+      if (parAncre) ouvrir(parAncre);
+      else if (!toutFerme && !elements.some(function (e) { return e.item.classList.contains('is-active'); })) poser(elements[0], true);
+      elements.forEach(function (e, i) {
+        e.titre.addEventListener('click', function (ev) { ev.preventDefault(); basculer(e); });
+        e.titre.addEventListener('keydown', function (ev) {
+          var j = -1;
+          if (ev.key === ' ') { ev.preventDefault(); basculer(e); }
+          else if (ev.key === 'ArrowDown') j = (i + 1) % elements.length;
+          else if (ev.key === 'ArrowUp') j = (i - 1 + elements.length) % elements.length;
+          if (j >= 0) { ev.preventDefault(); elements[j].titre.focus(); }
+        });
+      });
+    });
+  }
+
+  /* Fenêtres « reveal » de Foundation (data-reveal ; scripts/oef/form.phtml : « Êtes-vous sûr ? »
+   * quand des réponses sont vides), dans un <dialog> natif (2026-10-03). WIMS les ouvre par
+   * jQuery(...).foundation('open') (scripts/oef/var.proc, formcheck) : cet appel est intercepté pour
+   * elles, le reste va à Foundation tant qu'il est chargé. data-open="id" ouvre, data-close ferme,
+   * Échap aussi (natif). Le <dialog> est mis dans <body>, hors du formulaire, comme le faisait Foundation. */
+  function revelations() {
+    var fenetres = document.querySelectorAll('[data-reveal]');
+    if (!fenetres.length || typeof document.createElement('dialog').showModal !== 'function') return;
+    Array.prototype.forEach.call(fenetres, function (el) {
+      el.removeAttribute('data-reveal');
+      var d = document.createElement('dialog');
+      d.className = 'nova-dialogue';
+      var titre = el.querySelector('h1, h2');
+      if (titre) { if (!titre.id) titre.id = (el.id || 'nova-dialogue') + '-titre'; d.setAttribute('aria-labelledby', titre.id); }
+      d.appendChild(el);
+      document.body.appendChild(d);
+      el.novaDialogue = d;
+      d.addEventListener('click', function (e) {
+        if (e.target === d || e.target.closest('[data-close]')) d.close();   // clic sur le fond, Non, ×
+      });
+    });
+    function ouvrir(el) { if (el && el.novaDialogue && !el.novaDialogue.open) el.novaDialogue.showModal(); }
+    document.addEventListener('click', function (e) {
+      var o = e.target.closest && e.target.closest('[data-open]');
+      if (!o) return;
+      var el = document.getElementById(o.getAttribute('data-open'));
+      if (el && el.novaDialogue) { e.preventDefault(); ouvrir(el); }
+    });
+    var jq = window.jQuery;
+    if (jq && jq.fn) {
+      var origine = jq.fn.foundation;
+      jq.fn.foundation = function (methode) {
+        if (typeof methode === 'string' && this.length && this[0].novaDialogue) {
+          if (methode === 'open') ouvrir(this[0]);
+          else if (methode === 'close') this[0].novaDialogue.close();
+          return this;
+        }
+        return origine ? origine.apply(this, arguments) : this;
+      };
+    }
+  }
+
+  /* Panneaux déroulants de Foundation (bouton data-toggle="X" + div#X.dropdown-pane[data-dropdown] :
+   * scripts/js/dropdownbutton.phtml — sauvegarde de classe, vérification d'examen, feuilles), sans
+   * Foundation (2026-10-03). Le bouton ouvre et ferme (classe is-open, que le CSS de WIMS suit) ; le
+   * panneau se place sous le bouton (data-alignment="right" : aligné à droite) ; Échap, clic ailleurs
+   * le referment ; data-auto-focus : focus sur le premier lien. Le panneau « Abandonner » des
+   * exercices (scripts/oef/Main.phtml) est une boîte de dialogue jQuery UI : laissé à jQuery UI. */
+  function panneaux() {
+    var ouverts = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.dropdown-pane[data-dropdown][id]'), function (p) {
+      var boutons = document.querySelectorAll('[data-toggle="' + p.id + '"]');
+      if (!boutons.length) return;
+      p.removeAttribute('data-dropdown');
+      Array.prototype.forEach.call(boutons, function (b) {
+        b.removeAttribute('data-toggle');
+        b.setAttribute('aria-controls', p.id);
+        b.setAttribute('aria-expanded', 'false');
+        b.addEventListener('click', function (e) {
+          if (p.classList.contains('ui-dialog-content') || p.id === 'exo_giveup') return;
+          e.stopPropagation();
+          if (p.classList.contains('is-open')) fermer(p); else ouvrir(p, b);
+        });
+      });
+    });
+    function fermer(p) {
+      p.classList.remove('is-open');
+      Array.prototype.forEach.call(document.querySelectorAll('[aria-controls="' + p.id + '"]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+      ouverts = ouverts.filter(function (q) { return q !== p; });
+    }
+    function ouvrir(p, b) {
+      ouverts.slice().forEach(fermer);
+      p.classList.add('is-open');
+      b.setAttribute('aria-expanded', 'true');
+      var parent = p.offsetParent || document.body;
+      var rp = parent.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      var haut = rb.bottom - rp.top + parent.scrollTop + 4;
+      var gauche = p.getAttribute('data-alignment') === 'right' ? rb.right - rp.left - p.offsetWidth : rb.left - rp.left;
+      gauche = Math.max(4 - rp.left, Math.min(gauche, document.documentElement.clientWidth - rp.left - p.offsetWidth - 4));
+      p.style.top = haut + 'px';
+      p.style.left = gauche + parent.scrollLeft + 'px';
+      ouverts.push(p);
+      if (p.getAttribute('data-auto-focus') === 'true') { var a = p.querySelector('a[href], button, input'); if (a) a.focus(); }
+    }
+    document.addEventListener('click', function (e) { ouverts.slice().forEach(function (p) { if (!p.contains(e.target)) fermer(p); }); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || !ouverts.length) return;
+      var p = ouverts[0], b = document.querySelector('[aria-controls="' + p.id + '"]');
+      fermer(p); if (b) b.focus();
+    });
+  }
+
+  /* Onglets jQuery UI : au-delà de 3, une liste déroulante les remplace au téléphone (CSS :
+   * .nova-onglets-replies). La liste actionne les onglets eux-mêmes (clic sur l'ancre), qui
+   * restent dans la page ; elle suit aussi les changements faits autrement. Lancé au chargement
+   * complet : jQuery UI construit les onglets après ce script. */
+  function ongletsCompacts() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .ui-tabs'), function (bloc) {
+      var nav = bloc.querySelector(':scope > .ui-tabs-nav');
+      if (!nav || bloc.querySelector(':scope > .nova-onglets-liste')) return;
+      var ancres = nav.querySelectorAll('.ui-tabs-anchor');
+      // Libellés coupés (« … », contenu.css : une seule ligne) : le texte entier en info-bulle.
+      Array.prototype.forEach.call(ancres, function (a) { if (!a.title) a.title = a.textContent.trim(); });
+      if (ancres.length <= 3) return;
+      var liste = document.createElement('select');
+      liste.className = 'nova-onglets-liste';
+      liste.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Tabs' : 'Onglets');
+      Array.prototype.forEach.call(ancres, function (a, i) {
+        var o = document.createElement('option');
+        o.value = i;
+        o.textContent = (i + 1) + ' \u00B7 ' + a.textContent.trim();
+        liste.appendChild(o);
+      });
+      var synchroniser = function () {
+        Array.prototype.forEach.call(ancres, function (a, i) {
+          if (a.parentNode.classList.contains('ui-tabs-active')) liste.value = i;
+        });
+      };
+      synchroniser();
+      liste.addEventListener('change', function () { ancres[liste.value].click(); });
+      new MutationObserver(synchroniser).observe(nav, { attributes: true, subtree: true, attributeFilter: ['class'] });
+      bloc.insertBefore(liste, nav);
+      bloc.classList.add('nova-onglets-replies');
+    });
+  }
+
+  /* Carrousel des exemples de l'accueil du site (themes/_widgets/examples.phtml : #exemples .carousel, une
+   * diapositive par div enfant), à la place de Slick (2026-10-03) : même aspect (flèches, points, pause en
+   * haut à droite, défilement automatique qui reboucle). Défilement natif (scroll-snap), au doigt aussi ;
+   * pas de défilement automatique si l'appareil demande moins d'animations ; pause au survol, au focus,
+   * onglet caché. */
+  function carrousel() {
+    var c = document.querySelector('#exemples .carousel');
+    if (!c || c.classList.contains('nova-carrousel')) return;
+    var diapos = Array.prototype.filter.call(c.children, function (e) { return e.tagName === 'DIV'; });
+    c.classList.add('nova-carrousel');
+    if (diapos.length < 2) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var n = diapos.length, courant = 0, arrete = false, suspendu = false, minuterie = 0;
+    // Défilement automatique par défaut, indépendant du réglage « Animations » (demande de l'utilisateur,
+    // 2026-10-07) ; coupé seulement si l'appareil demande de réduire les animations.
+    var calme = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var piste = document.createElement('div');
+    piste.className = 'nova-car-piste';
+    piste.setAttribute('aria-live', 'off');
+    c.setAttribute('role', 'region');
+    c.setAttribute('aria-roledescription', 'carrousel');
+    c.setAttribute('aria-label', t('car-titre', 'Examples'));
+    diapos.forEach(function (d, i) {
+      d.classList.add('nova-car-diapo');
+      d.setAttribute('role', 'group');
+      d.setAttribute('aria-roledescription', 'diapositive');
+      d.setAttribute('aria-label', t('car-diapo', 'Example %n of %t').replace('%n', i + 1).replace('%t', n));
+      piste.appendChild(d);
+    });
+    var bouton = function (classe, libelle) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = classe;
+      b.setAttribute('aria-label', libelle);
+      b.title = libelle;
+      return b;
+    };
+    var prec = bouton('nova-car-prec', t('car-prec', 'Previous example'));
+    var suiv = bouton('nova-car-suiv', t('car-suiv', 'Next example'));
+    var pause = bouton('nova-car-pause', t('car-pause', 'Stop scrolling'));
+    var points = document.createElement('div');
+    points.className = 'nova-car-points';
+    var boutons = diapos.map(function (d, i) {
+      var b = bouton('nova-car-point', d.getAttribute('aria-label'));
+      b.addEventListener('click', function () { aller(i); });
+      points.appendChild(b);
+      return b;
+    });
+    c.appendChild(pause);
+    c.appendChild(prec);
+    c.appendChild(piste);
+    c.appendChild(suiv);
+    c.appendChild(points);
+    var marquer = function () {
+      boutons.forEach(function (b, i) { if (i === courant) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
+      diapos.forEach(function (d, i) { d.toggleAttribute('inert', i !== courant); });
+    };
+    function aller(i) {
+      courant = (i + n) % n;
+      piste.scrollTo({ left: courant * piste.clientWidth, behavior: calme ? 'auto' : 'smooth' });
+      marquer();
+    }
+    prec.addEventListener('click', function () { aller(courant - 1); });
+    suiv.addEventListener('click', function () { aller(courant + 1); });
+    var attente = 0;
+    piste.addEventListener('scroll', function () {   // glissement au doigt : la diapositive se cale (scroll-snap)
+      clearTimeout(attente);
+      attente = setTimeout(function () {
+        var i = Math.round(piste.scrollLeft / Math.max(1, piste.clientWidth));
+        if (i !== courant) { courant = i; marquer(); }
+      }, 120);
+    });
+    var lancer = function () {
+      clearInterval(minuterie);
+      if (!arrete && !suspendu && !calme) minuterie = setInterval(function () { aller(courant + 1); }, 5000);
+    };
+    var majPause = function () {
+      var libelle = arrete ? t('car-lecture', 'Resume scrolling') : t('car-pause', 'Stop scrolling');
+      pause.setAttribute('aria-label', libelle);
+      pause.title = libelle;
+      pause.classList.toggle('nova-car-arrete', arrete);
+    };
+    pause.addEventListener('click', function () { arrete = !arrete; majPause(); lancer(); });
+    c.addEventListener('mouseenter', function () { suspendu = true; lancer(); });
+    c.addEventListener('mouseleave', function () { suspendu = false; lancer(); });
+    c.addEventListener('focusin', function () { suspendu = true; lancer(); });
+    c.addEventListener('focusout', function (e) { if (!c.contains(e.relatedTarget)) { suspendu = false; lancer(); } });
+    document.addEventListener('visibilitychange', function () { suspendu = document.hidden; lancer(); });
+    if (calme) { arrete = true; pause.hidden = true; }
+    majPause();
+    marquer();
+    lancer();
+  }
+
+  /* Exercice (OEF, scripts/oef : div.send_answer « Envoyer la réponse », div.oef_buttons « Continuer la série
+   * avec l'exercice suivant ») : au téléphone, le bloc de boutons reste en bas de l'écran tant que sa place
+   * dans la page est plus bas ; quand l'élève y arrive, il la reprend et défile avec la page (demande de
+   * l'utilisateur, 2026-10-03). Pas de position: sticky : .wimsbody défile en largeur au téléphone (filet de
+   * sécurité, contenu.css), un élément collant s'y collerait, hors de l'écran. Un repère après le bloc
+   * marque sa place ; une cale garde sa hauteur quand il est fixé. « Continuer la série… » devient
+   * « Exercice suivant ». */
+  function boutonsCollants() {
+    var textes = document.getElementById('nova-textes');
+    var suivant = document.querySelector('#oef_serie_nextexo .oef_serie_nextexo');
+    if (suivant) {
+      var libelle = textes && textes.getAttribute('data-exo-suivant');
+      if (libelle) { suivant.textContent = libelle; suivant.closest('a').title = libelle; }
+    }
+    // Série terminée (scripts/oef/answer.phtml : .oef_modulescore ; il ne reste que « Recommencer » dans
+    // #oef_actions) : « Revenir à la liste », le lien de retour de la barre du haut (« ← Retour » d'une
+    // feuille, retour de la fenêtre d'examen), devant « Recommencer » (demande de l'utilisateur, 2026-10-03).
+    var actions = document.getElementById('oef_actions');
+    var retour = document.querySelector('#wimstopbox .nova-retour-lien, #wimstopbox .menuitem.back > a');
+    if (actions && retour && document.querySelector('.oef_modulescore') && !actions.querySelector('.nova-revenir-liste')) {
+      var lien = retour.cloneNode(true);
+      lien.removeAttribute('id'); lien.removeAttribute('title'); lien.removeAttribute('aria-label');
+      lien.className = 'wims_button nova-revenir-liste';
+      lien.textContent = (textes && textes.getAttribute('data-revenir-liste')) || 'Back to the list';
+      var recommencer = actions.querySelector('#oef_serie_renew, #oef_renew');
+      var place = recommencer ? recommencer.parentNode : actions;
+      place.insertBefore(lien, recommencer || place.firstChild);
+    }
+    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons, #oef_actions:has(.nova-revenir-liste)'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
+    if (!blocs.length || !window.IntersectionObserver || !window.matchMedia) return;
+    var telephone = window.matchMedia('(max-width: 639.98px)');
+    blocs.forEach(function (bloc) {
+      var repere = document.createElement('span');
+      repere.className = 'nova-collant-repere';
+      repere.setAttribute('aria-hidden', 'true');
+      bloc.parentNode.insertBefore(repere, bloc.nextSibling);
+      var cale = document.createElement('div');
+      cale.className = 'nova-collant-cale';
+      cale.setAttribute('aria-hidden', 'true');
+      var dessous = false;
+      var appliquer = function () {
+        var fixer = telephone.matches && dessous && bloc.getClientRects().length > 0;
+        if (fixer === bloc.classList.contains('nova-collant')) return;
+        if (fixer) {
+          // La cale doit tenir exactement la place du bloc, marges comprises (celles de ses paragraphes
+          // traversent le bloc) : sinon le repère bouge de quelques pixels et le bloc se fixe et se libère
+          // sans fin à cet endroit, il « vibre » (signalé par l'utilisateur, 2026-11-04). On mesure le repère
+          // avant et après, et on corrige la hauteur de la cale de l'écart.
+          var avant = repere.getBoundingClientRect().top, hauteur = bloc.offsetHeight;
+          cale.style.height = hauteur + 'px';
+          bloc.parentNode.insertBefore(cale, bloc);
+          bloc.classList.add('nova-collant');
+          var ecart = avant - repere.getBoundingClientRect().top;
+          if (Math.abs(ecart) > 0.5) cale.style.height = Math.max(0, hauteur + ecart) + 'px';
+        } else {
+          bloc.classList.remove('nova-collant');
+          if (cale.parentNode) cale.parentNode.removeChild(cale);
+        }
+        document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant'));
+      };
+      new IntersectionObserver(function (entrees) {
+        var e = entrees[entrees.length - 1];
+        dessous = !e.isIntersecting && e.boundingClientRect.top > 0;   // place du bloc plus bas que l'écran
+        appliquer();
+      }).observe(repere);
+      if (telephone.addEventListener) telephone.addEventListener('change', appliquer);
+    });
+  }
+
+  /* Mot de passe : un œil dans le champ pour vérifier ce qu'on a tapé (demande de l'utilisateur,
+   * 2026-10-05). Tous les champs de mot de passe de la page (connexion, changement de mot de passe…). Le
+   * champ redevient masqué à l'envoi du formulaire. */
+  function oeilMotDePasse() {
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    document.querySelectorAll('.wimsbody input[type="password"]').forEach(function (champ) {
+      if (champ.closest('.nova-mdp')) return;
+      var parent = champ.parentNode;
+      var plein = champ.offsetWidth > 0 && champ.offsetWidth >= parent.clientWidth - 2;
+      var boite = document.createElement('span');
+      boite.className = 'nova-mdp' + (plein ? ' nova-mdp-plein' : '');
+      parent.insertBefore(boite, champ);
+      boite.appendChild(champ);
+      var bouton = document.createElement('button');
+      bouton.type = 'button';
+      bouton.className = 'nova-mdp-oeil';
+      var majour = function () {
+        var visible = champ.type === 'text';
+        bouton.setAttribute('aria-pressed', visible ? 'true' : 'false');
+        bouton.setAttribute('aria-label', visible ? t('mdp-masquer', 'Hide password') : t('mdp-afficher', 'Show password'));
+        bouton.title = bouton.getAttribute('aria-label');
+      };
+      bouton.addEventListener('click', function () {
+        champ.type = champ.type === 'password' ? 'text' : 'password';
+        majour();
+      });
+      if (champ.form) champ.form.addEventListener('submit', function () { champ.type = 'password'; majour(); });
+      majour();
+      boite.appendChild(bouton);
+    });
+  }
+
+  /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
+   * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
+   * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
+   * ailleurs. */
+  function focusSuite() {
+    if (!document.querySelector('.wimsbody .oefanswer')) return;
+    var actif = document.activeElement;
+    if (actif && actif !== document.body && actif !== document.documentElement) return;
+    var bouton = document.querySelector('a#oef_serie_nextexo[href], #oef_serie_nextexo a[href]') || document.querySelector('#oef_actions a.nova-revenir-liste[href]');
+    if (!bouton) return;
+    try { bouton.focus({ preventScroll: true }); } catch (e) { bouton.focus(); }
+  }
+
+  /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
+   * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
+   * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
+   */
+  function focusConnexion() {
+    var actif = document.activeElement;
+    if (actif && actif !== document.body && actif !== document.documentElement) return;
+    var login = document.querySelector('input#login[name="auth_user"]');
+    var motDePasse = document.querySelector('input#password[name="auth_password"]');
+    var cible = login && !login.value ? login : motDePasse;
+    if (cible && cible.form) cible.focus();
+  }
+
+  // Participant connecte (2026-11-11) : le point vert de .wims_connected::after devient un vrai element, qui peut
+  // porter une info-bulle (\u00ab En ligne \u00bb) et un texte pour les lecteurs d'ecran. Pas sur la phrase de
+  // l'accueil (p), qui le dit deja.
+  function enLigne() {
+    var els = document.querySelectorAll('.wims_connected:not(p)');
+    var textes = document.getElementById('nova-textes');
+    var mot = (textes && textes.getAttribute('data-texte-en-ligne')) || 'Online';
+    // WIMS ecrit aussi title="connected" (anglais, en dur) sur le lien du nom (usermanage userlist, regmanage :
+    // wims_ref_title) et sur le nom de la fiche d'un participant, CONNECTE OU NON (usermanage/userprop.phtml).
+    Array.prototype.forEach.call(document.querySelectorAll('[title="connected"]'), function (x) {
+      if (x.closest('.wims_connected')) x.title = mot; else x.removeAttribute('title');
+    });
+    if (!els.length) return;
+    Array.prototype.forEach.call(els, function (el) {
+      if (el.querySelector('.nova-en-ligne')) return;
+      var point = document.createElement('span');
+      point.className = 'nova-en-ligne';
+      point.title = mot;
+      point.setAttribute('role', 'img');
+      point.setAttribute('aria-label', mot);
+      el.appendChild(point);
+      el.classList.add('nova-en-ligne-pose');
+      // WIMS ecrit l'info-bulle du nom en anglais, en dur (adm/class/livret/user.phtml : title="connected").
+      if (el.hasAttribute('title')) el.title = mot;
+    });
+  }
+
+
+  /* ===== js/src/30-examen.js : chronomètre, mode examen, parcours, pages et cartes d'examen ===== */
+  /* Chronomètre d'examen (Nova/_widgets/headmenu.phtml). WIMS fait décompter #chrono_exam
+   * (scripts/js/chronoid.js) sans rien changer près de la fin : Nova lit ce texte « mm:ss » et pose
+   * l'état sur .nova-chrono (data-etat) — normal, attention (≤ 5 min), critique (≤ 1 min), fin —,
+   * change le libellé, l'annonce aux lecteurs d'écran, et affiche un bandeau à 00:00. Les textes
+   * viennent des data-texte-* écrits par le widget (lang/name.phtml.<langue>). */
+  function chronometre() {
+    var boite = document.querySelector('.nova-chrono');
+    var temps = boite && boite.querySelector('#chrono_exam, .nova-chrono-miroir');
+    if (!boite || !temps) return;
+    var libelle = boite.querySelector('.nova-chrono-libelle');
+    var libelleNormal = libelle ? libelle.textContent : '';
+    var textes = {
+      normal: libelleNormal,
+      attention: boite.getAttribute('data-texte-5min'),
+      critique: boite.getAttribute('data-texte-1min'),
+      fin: boite.getAttribute('data-texte-fin')
+    };
+    document.body.classList.add('nova-examen');
+    var annonce = document.createElement('div');
+    annonce.className = 'nova-sr';
+    annonce.setAttribute('aria-live', 'assertive');
+    document.body.appendChild(annonce);
+    var precedent = null;
+
+    function bandeau() {
+      if (document.querySelector('.nova-chrono-bandeau')) return;
+      var b = document.createElement('div');
+      b.className = 'nova-chrono-bandeau';
+      b.setAttribute('role', 'alert');
+      var fort = document.createElement('strong');
+      fort.textContent = textes.fin;
+      var detail = document.createElement('span');
+      detail.textContent = boite.getAttribute('data-texte-fin-detail') || '';
+      b.appendChild(fort);
+      b.appendChild(detail);
+      var corps = document.querySelector('.wimsbody') || document.body;
+      corps.insertBefore(b, corps.firstChild);
+    }
+    function mettreAJour() {
+      var m = /(\d+):(\d\d)/.exec(temps.textContent);
+      if (!m) return;
+      var s = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+      var critique = +(boite.getAttribute('data-seuil-critique') || 60);
+      var attention = +(boite.getAttribute('data-seuil-attention') || 300);
+      var etat = s === 0 ? 'fin' : s <= critique ? 'critique' : s <= attention ? 'attention' : 'normal';
+      if (etat === precedent) return;
+      boite.setAttribute('data-etat', etat);
+      document.body.setAttribute('data-nova-chrono', etat);
+      if (libelle && textes[etat]) libelle.textContent = textes[etat];
+      if (etat !== 'normal') annonce.textContent = textes[etat] || '';
+      if (etat === 'fin') bandeau();
+      precedent = etat;
+    }
+    new MutationObserver(mettreAJour).observe(temps, { childList: true, characterData: true, subtree: true });
+    mettreAJour();
+
+    // Heure de fin, calculée par WIMS (html/examclock.proc) et rangée par tail.phtml dans un
+    // <template> : « 01/10/2026 - 10:48:12 » devient « Fin à 10:48 » dans le chronomètre.
+    var modele = document.getElementById('nova-fin-examen');
+    var heure = modele && /(\d{1,2}:\d{2}):\d{2}/.exec(modele.innerHTML);
+    if (heure) {
+      var fin = document.createElement('span');
+      fin.className = 'nova-chrono-fin';
+      fin.textContent = (boite.getAttribute('data-texte-fin-a') || '') + ' ' + heure[1];
+      boite.appendChild(fin);
+    }
+  }
+
+  /* Page de l'examen pendant une session (WIMS met alors « Terminer cette session d'examen » —
+   * a.endexam — dans le menu du compte). Barre réduite à : ☰, accueil, chronomètre, « Terminer ».
+   *  - le chronomètre recopie le décompte de la page (#exam_clock, « Temps restant… ») ;
+   *  - « Terminer » est le lien de WIMS lui-même, sorti du menu du compte ;
+   *  - le compte, Aide et les autres entrées de la barre passent dans le menu latéral, section
+   *    « Profil » (sur téléphone : derrière ☰). Le nom de la classe est masqué (CSS). */
+  function modeExamen() {
+    if (standard('examens')) return;   // réglage « Examens comme le thème standard »
+    var barre = document.getElementById('wimstopbox');
+    var fin = barre && barre.querySelector('#user_links a.endexam');
+    // Élève authentifié par CAS (ou autre authentification externe) : html/headmenu_user.phtml met alors le
+    // lien de déconnexion du CAS dans le menu du compte, sans « Terminer cette session d'examen ». Il ne reste
+    // que celui du module d'examen, dans le menu latéral : il sert de « Terminer » (vécu sur un site
+    // CAS, 2026-10-06 : ni « Terminer » ni chronomètre dans la barre).
+    if (!fin && barre) {
+      var lateral = document.querySelector('#wimsmenumodubox a[href*="job=scorereg"]');
+      if (lateral) {
+        fin = lateral.cloneNode(true);
+        fin.removeAttribute('id');
+        fin.classList.add('endexam');
+      }
+    }
+    if (!fin) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    document.body.classList.add('nova-examen', 'nova-examen-session');
+
+    // Élève CAS : le menu du compte garde « Déconnexion » et « Déconnexion CAS » pendant l'examen (sans CAS,
+    // WIMS remplace la déconnexion par « Terminer ») ; retirés, pour ne pas quitter l'examen sans le terminer
+    // (demande de l'utilisateur, 2026-10-06). Avant la copie du menu du compte dans le menu latéral.
+    Array.prototype.forEach.call(barre.querySelectorAll('#user_links a.visitor'), function (a) {
+      var li = a.closest('li');
+      if (li && li.parentNode && li.parentNode.id === 'user_links') li.remove(); else a.remove();
+    });
+
+    // « Terminer » : le lien lui-même, dans la barre, libellé court ; le long reste pour l'accessibilité.
+    var liFin = fin.closest('li');
+    var long = fin.textContent.trim();
+    var place = document.createElement('div');
+    place.className = 'menuitem nova-terminer';
+    fin.setAttribute('aria-label', long);
+    fin.setAttribute('title', long);
+    fin.textContent = t('terminer', 'Terminer');
+    place.appendChild(fin);
+    barre.appendChild(place);
+    if (liFin) liFin.remove();
+
+    // Profil : le contenu du menu du compte et les autres entrées de la barre, recopiés dans le menu
+    // latéral ; sous 1024 px seulement (CSS) ils y passent et quittent la barre ; au-delà, ils restent
+    // dans la barre, où il y a la place (demande de l'utilisateur, 2026-10-03).
+    var menu = document.getElementById('wimsmenumodubox');
+    var compte = barre.querySelector('a.account');
+    var liCompte = compte && compte.closest('li');
+    if (menu && liCompte) {
+      var cible = menu.querySelector('.modubox_content') || menu;
+      var titre = document.createElement('h2');
+      titre.className = 'menu_title nova-profil-titre';
+      titre.textContent = t('profil', 'Profil');
+      var groupe = document.createElement('div');
+      groupe.className = 'wimsmenu menu nova-profil';
+      var ajouter = function (lien) {
+        if (!lien || !lien.getAttribute('href') || lien.getAttribute('href') === '#user_links') return;
+        var d = document.createElement('div');
+        d.className = 'menuitem';
+        var copie = lien.cloneNode(true);
+        copie.removeAttribute('id');
+        d.appendChild(copie);
+        groupe.appendChild(d);
+      };
+      // Le nom de l'élève en tête, en texte (le lien « #user_links » n'ouvrait que le menu).
+      var nom = document.createElement('div');
+      nom.className = 'menuitem nova-profil-nom';
+      nom.textContent = compte.textContent.trim();
+      groupe.appendChild(nom);
+      Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), ajouter);
+      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
+        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
+            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item.classList.contains('nova-examencours') || item === liCompte) return;
+        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), ajouter);
+        item.classList.add('nova-examen-large');
+      });
+      liCompte.classList.add('nova-examen-large');
+      // Menu du compte vide en session (la déconnexion est devenue « Terminer ») : le nom seul, sans menu.
+      if (!Array.prototype.some.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) { return a.getAttribute('href') !== '#user_links'; })) liCompte.classList.add('nova-compte-seul');
+      cible.insertBefore(groupe, cible.firstChild);
+      cible.insertBefore(titre, groupe);
+    } else if (liCompte) {
+      // Pas de menu latéral (page qui confirme « Terminer », 2026-10-03) : le menu du compte, vide
+      // pour un élève en session, disparaît ; Aide et les autres entrées passent à droite, devant
+      // « Terminer ».
+      var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) {
+        return a.getAttribute('href') !== '#user_links';
+      });
+      // Sinon (changer le mot de passe, depuis le 2026-10-08), il rejoint ce groupe, a droite : reste seul
+      // dans la barre, il se retrouvait au milieu (signale le 2026-11-11).
+      if (!restants.length) liCompte.remove();
+      var droite = document.createElement('div');
+      droite.className = 'wimsmenu menu dropdown nova-avant-terminer';
+      if (restants.length) droite.appendChild(liCompte);
+      Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
+        if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
+            item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item === liCompte) return;
+        droite.appendChild(item);
+      });
+      if (droite.children.length) barre.insertBefore(droite, place);
+    }
+
+    // Chronomètre recopié du décompte de la page.
+    chronoMiroir(document.getElementById('exam_clock'), true);
+
+    // Plus aucun exercice à ouvrir (tout est fait, course arrêtée, ou temps écoulé) : la session
+    // reste ouverte chez WIMS, et bloque les autres examens, tant que l'élève n'a pas cliqué sur
+    // « Terminer » — qui le déconnecte. On le lui dit, avec le bouton sous la main.
+    // Seulement sur la liste des exercices de la session : ni sur la page qui confirme « Terminer »
+    // (job=scorereg, qui avertit au contraire que des exercices restent à faire — signalé le
+    // 2026-10-02), ni sur « Mes notes » (job=score), qui n'ont pas de lien d'exercice non plus.
+    var job = (/[?&+]job=([a-z]+)/.exec(location.href) || [])[1] || '';
+    var corps = document.querySelector('.wimsbody');
+    // Avertissement de « Terminer » (scorereg.phtml : « Oui » confirm_end=yes, « Non » job=score) : « Non »
+    // ramène à la liste des exercices (job=student) pour continuer l'examen, au lieu de « Mes notes »
+    // (demande de l'utilisateur, 2026-10-05).
+    var oui = document.querySelector('.wimsbody a[href*="confirm_end=yes"]');
+    if (oui) Array.prototype.forEach.call(oui.parentNode.querySelectorAll('a[href*="job=score"]:not([href*="job=scorereg"])'), function (non) {
+      non.setAttribute('href', non.getAttribute('href').replace(/job=score(?=&|$)/, 'job=student'));
+    });
+    // « Terminer » demandé, mais WIMS refuse de clore une session sans aucune réponse tant qu'il reste du
+    // temps (scorereg.proc) : il montre « Détail du score actuel », sans sa confirmation. On le dit
+    // (demande de l'utilisateur, 2026-10-03), et « Terminer » devient « Examen en cours », vers la liste des
+    // exercices (job=student), pour y retourner sans passer par le menu (demande de l'utilisateur, 2026-10-05).
+    // Pilule à pictogramme de chronomètre, comme « Examen en cours » (_widgets/examencours.phtml), et le même
+    // lien sous le message (demande de l'utilisateur, 2026-10-05).
+    var chronoSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>';
+    var versExamen = null;
+    if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]')) {
+      versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
+      if (versExamen !== fin.getAttribute('href')) {
+        fin.setAttribute('href', versExamen);
+        // Libellé long « Examen en cours », court « Examen » sur un écran très étroit (CSS, comme la pastille).
+        fin.innerHTML = chronoSvg + '<span class="nova-long"></span><span class="nova-court"></span>';
+        fin.querySelector('.nova-long').textContent = t('texte-examen-encours', 'Exam in progress');
+        fin.querySelector('.nova-court').textContent = t('texte-examen', 'Exam');
+        fin.setAttribute('aria-label', t('texte-examen-encours', 'Exam in progress'));
+        fin.setAttribute('title', t('texte-examen-encours', 'Exam in progress'));
+        place.classList.add('nova-terminer-examen');
+      } else versExamen = null;
+    }
+    if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]') && !document.querySelector('.nova-terminer-impossible')) {
+      var avis = document.createElement('div');
+      avis.className = 'wims_msg warning nova-terminer-impossible';
+      avis.setAttribute('role', 'status');
+      avis.textContent = t('terminer-impossible', 'Answer at least one exercise before ending the session.');
+      corps.insertBefore(avis, corps.firstChild);
+      if (versExamen) {
+        var retourExamen = document.createElement('p');
+        retourExamen.className = 'nova-autre-examen';
+        var lienExamen = document.createElement('a');
+        lienExamen.className = 'nova-autre-examen-bouton';
+        lienExamen.href = versExamen;
+        lienExamen.innerHTML = chronoSvg;
+        lienExamen.appendChild(document.createTextNode(t('texte-examen-encours', 'Exam in progress')));
+        retourExamen.appendChild(lienExamen);
+        corps.insertBefore(retourExamen, avis.nextSibling);
+      }
+    }
+    if (corps && job !== 'scorereg' && job !== 'score' &&
+        !corps.querySelector('a[href*="worksheet="]') && !document.querySelector('.nova-fin-session')) {
+      var encadre = document.createElement('div');
+      encadre.className = 'nova-fin-session';
+      encadre.setAttribute('role', 'status');
+      var fort = document.createElement('strong');
+      fort.textContent = t('fin-session', '');
+      var detail = document.createElement('p');
+      detail.textContent = t('fin-session-detail', '');
+      var bouton = document.createElement('a');
+      bouton.className = 'nova-fin-session-bouton';
+      bouton.href = fin.href;
+      bouton.textContent = t('terminer', 'Terminer');
+      encadre.appendChild(fort);
+      encadre.appendChild(detail);
+      encadre.appendChild(bouton);
+      corps.insertBefore(encadre, corps.firstChild);
+    }
+  }
+
+  /* Chronomètre Nova dans la barre, recopié d'un décompte que WIMS écrit dans la page
+   * (#exam_clock d'un examen, #clockoef d'un exercice chronométré). examen=false : seuils relatifs
+   * à la durée (ambre au dernier quart, au moins 15 s ; rouge aux 10 dernières secondes), sans libellé en
+   * minutes ; le bandeau « Temps écoulé » reste. */
+  function chronoMiroir(horloge, examen) {
+    var barre = document.getElementById('wimstopbox');
+    if (!horloge || !barre || barre.querySelector('.nova-chrono')) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var item = document.createElement('div');
+    item.className = 'menuitem chrono';
+    item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
+      '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span class="nova-chrono-libelle"></span>' +
+      '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
+    var boite = item.firstChild;
+    var attributs = examen ? ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'] : ['texte-fin', 'texte-fin-detail'];
+    attributs.forEach(function (a) { boite.setAttribute('data-' + a, t(a, '')); });
+    // Exercice : après le décompte, la note baisse avec le retard (scoredelay de WIMS), elle n'est pas perdue.
+    if (!examen) boite.setAttribute('data-texte-fin-detail', t('texte-fin-detail-exo', t('texte-fin-detail', '')));
+    if (examen) boite.querySelector('.nova-chrono-libelle').textContent = t('libelle', '');
+    boite.querySelector('.nova-chrono-temps').setAttribute('aria-label', t('libelle', ''));
+    var miroir = boite.querySelector('.nova-chrono-miroir');
+    var copier = function () {
+      var texte = horloge.textContent.trim();
+      var m = /(\d+):(\d\d)/.exec(texte);
+      if (!examen && m && !boite.hasAttribute('data-seuil-critique')) {
+        var duree = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        boite.setAttribute('data-seuil-critique', 10);
+        boite.setAttribute('data-seuil-attention', Math.max(15, Math.round(duree / 4)));
+      }
+      miroir.textContent = texte;
+    };
+    copier();
+    new MutationObserver(copier).observe(horloge, { childList: true, characterData: true, subtree: true });
+    var maison = barre.querySelector('.class_home');
+    var bloc = maison ? maison.parentNode : (barre.querySelector('.wimsmenu') || barre);
+    bloc.insertBefore(item, maison ? maison.nextSibling : bloc.firstChild);
+  }
+
+  // Exercice OEF chronométré (scripts/oef/Main.phtml : « Cet exercice est chronométré » + #clockoef).
+  /* Fenêtre de vérification d'un exercice d'examen (session « …_check ») : l'exercice y est rejoué,
+   * son horloge vaut 00:00 ; ni chronomètre ni « Temps écoulé » (signalé le 2026-10-02). */
+  function fenetreVerification() {
+    return /[?&+]session=[^&]*_check/.test(location.href) || !!document.querySelector('a[href*="_check."]');
+  }
+  function chronoExercice() { if (!fenetreVerification()) chronoMiroir(document.getElementById('clockoef'), false); }
+
+  /* Feuille d'exercices (adm/sheet, contenu.css) : le score de WIMS est un texte « Qualité: 0/10
+   * Réussite: 0% Points requis:10 » ; il devient des étiquettes (libellé + valeur), et la valeur en %
+   * une barre de réussite (verte à 100 %). Libellés repris tels quels : toutes les langues. */
+  /* Parcours (examen en mode « course ») : WIMS met dans la barre du haut un segment par exercice
+   * (scripts/examprogressbar.proc ; title = 10 pour les précédents, la note de l'exercice en cours,
+   * « todo » pour la suite). Choix de l'utilisateur (2026-10-03, maquette A) : segments + compteur,
+   * posés sur la page au-dessus de l'exercice. Une note à -1 (pas encore de réponse) s'écrit aussi
+   * « todo » : après un 10 à l'exercice en cours, c'est le bouton « série suivante »
+   * (#wims_nextinexam, themes/_widgets/nextinsheet.phtml) qui dit que le dernier 10 est le sien. */
+  function parcours() {
+    var li = document.querySelector('#wimstopbox .menuitem.progress');
+    var page = document.querySelector('.wimsbody');
+    var barre = li && li.querySelector('.wims_score_bar');
+    var n = barre ? barre.querySelectorAll('.wims_seed_item').length : 0;
+    if (!page || !n) { if (li) li.classList.add('nova-garde'); return; }   // laissée dans la barre
+    page.insertBefore(habillerParcours(barre, !!document.getElementById('wims_nextinexam')), page.firstChild);
+    li.parentNode.removeChild(li);
+  }
+
+  /* Barre de progression d'une course (examprogressbar.proc de WIMS : segments title="10" réussi, "todo",
+   * ou la note) → segments Nova + « Exercice n sur N ». reussi : l'exercice en cours est réussi (bouton
+   * « série suivante » présent). Rend le bloc .nova-parcours qui contient la barre. */
+  function habillerParcours(barre, reussi) {
+    var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item'));
+    var n = segments.length;
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var faits = 0;
+    while (faits < n && segments[faits].title === '10') faits++;
+    var cours, etat, note = '';
+    if (faits < n && segments[faits].title !== 'todo') { cours = faits + 1; etat = 'note'; note = segments[faits].title; }
+    else if (faits === n) { cours = n; etat = 'termine'; }
+    else if (faits > 0 && reussi) { cours = faits; etat = 'reussi'; }
+    else { cours = faits + 1; etat = 'en-cours'; }
+    var modele = t('parcours', 'Exercise %n of %t');
+    segments.forEach(function (s, i) {
+      var k = i + 1, quoi;
+      s.removeAttribute('style');   // bleu, rouge, blanc de WIMS
+      if (k === cours) s.classList.add('nova-cours');
+      if (k < cours || (k === cours && (etat === 'reussi' || etat === 'termine'))) { s.classList.add('nova-fait'); quoi = t('parcours-reussi', 'passed'); }
+      else if (k === cours && etat === 'note') { s.classList.add('nova-echec'); quoi = t('parcours-note', 'scored') + ' ' + note + '/10'; }
+      else if (k === cours) quoi = t('parcours-en-cours', 'in progress');
+      else quoi = t('parcours-a-faire', 'to do');
+      s.title = modele.replace('%n', k).replace('%t', n) + ' : ' + quoi;
+    });
+    var bloc = document.createElement('div');
+    bloc.className = 'nova-parcours';
+    bloc.setAttribute('role', 'group');
+    bloc.setAttribute('aria-label', t('parcours-titre', 'Course progress'));
+    barre.classList.remove('inline');
+    barre.setAttribute('aria-hidden', 'true');
+    var compteur = document.createElement('p');
+    compteur.className = 'nova-parcours-compteur';
+    compteur.innerHTML = modele.replace(/[&<>]/g, '')
+      .replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
+    var suite = etat === 'note' ? t('parcours-note', 'scored') + ' ' + note + '/10'
+      : etat === 'termine' ? t('parcours-termine', 'finished') : etat === 'reussi' ? t('parcours-reussi', 'passed') : '';
+    if (suite) {
+      var s = document.createElement('span');
+      s.className = 'nova-parcours-etat';
+      s.textContent = suite;
+      compteur.appendChild(s);
+    }
+    bloc.appendChild(barre);
+    bloc.appendChild(compteur);
+    return bloc;
+  }
+
+  /* Page d'un examen « course » (adm/class/exam, student.phtml) : « Progression de la session de la
+   * course » (h2, masqué par le CSS) puis la barre de WIMS → mêmes segments que pendant le parcours
+   * (demande de l'utilisateur, 2026-10-03). */
+  function parcoursExamen() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody > div.wims_score_bar'), function (barre) {
+      if (!barre.querySelector(':scope > .wims_seed_item')) return;
+      var place = barre.nextSibling, parent = barre.parentNode;
+      var bloc = habillerParcours(barre, false);
+      bloc.classList.add('nova-parcours-examen');
+      parent.insertBefore(bloc, place);
+    });
+  }
+
+
+  /* Exercice « course » (OEF à étapes, ex. E6/number/oeftabmul coursemult) : l'énoncé écrit sa propre
+   * barre, une question par segment, title « done » ou « todo ». Même habillage que le parcours
+   * (segments + « Question 4 sur 10 ») ; le CSS colore déjà les segments d'après leur title. */
+  function courseExercice() {
+    var textes = document.getElementById('nova-textes');
+    var modele = (textes && textes.getAttribute('data-parcours-question')) || 'Question %n of %t';
+    Array.prototype.forEach.call(document.querySelectorAll('.oefstatement .wims_score_bar'), function (barre) {
+      if (barre.closest('.nova-parcours')) return;
+      var segments = Array.prototype.slice.call(barre.querySelectorAll('.wims_seed_item[title="done"], .wims_seed_item[title="todo"]'));
+      var n = segments.length;
+      if (!n) return;
+      var faits = segments.filter(function (s) { return s.title === 'done'; }).length;
+      var cours = Math.min(faits + 1, n);
+      segments.forEach(function (s, i) {
+        s.removeAttribute('style');
+        if (i < faits) s.classList.add('nova-fait');
+        else if (i === faits) s.classList.add('nova-cours');
+      });
+      var bloc = document.createElement('div');
+      bloc.className = 'nova-parcours nova-parcours-questions';
+      barre.parentNode.insertBefore(bloc, barre);
+      barre.setAttribute('aria-hidden', 'true');
+      bloc.appendChild(barre);
+      var compteur = document.createElement('p');
+      compteur.className = 'nova-parcours-compteur';
+      compteur.innerHTML = modele.replace(/[&<>]/g, '').replace('%n', '<strong>' + cours + '</strong>').replace('%t', String(n));
+      bloc.appendChild(compteur);
+    });
+  }
+
+  /* Page « Détails des examens » : garde dans le navigateur les types des pages de vérification
+   * (q, r) que tail.phtml a lus dans les journaux, pour la fenêtre de vérification (pagesExamen). */
+  function typesExamen() {
+    var e = document.getElementById('nova-examtypes');
+    if (!e) return;
+    var cle = 'nova_examtypes_' + (e.getAttribute('data-user') || '');
+    var connus = {};
+    try { connus = JSON.parse(localStorage.getItem(cle) || '{}') || {}; } catch (x) { connus = {}; }
+    (e.getAttribute('data-types') || '').split(';').forEach(function (entree) {
+      var i = entree.indexOf('=');
+      if (i > 0) connus[entree.slice(0, i).trim()] = entree.slice(i + 1).replace(/\s+/g, '');
+    });
+    try { localStorage.setItem(cle, JSON.stringify(connus)); } catch (x) { /* fenêtre sans Q/R exacts */ }
+  }
+
+  /* Fenêtre « vérification d'un exercice d'examen » (adm/class/userscore, job=examcheck ; demandé le
+   * 2026-10-02). WIMS (html/headmenu_user.phtml) écrit dans la barre « Pages : 1 ... 4 5 6 ... 12 » :
+   * la première, la précédente, la courante, la suivante et la dernière page, « ... » ailleurs, quelle
+   * que soit la place. Nova reconstruit TOUTES les pages, nommées d'après leur type, lu dans le journal
+   * de l'élève sur la page « Détails des examens » (tail.phtml, typesExamen) : une question (new, next) devient Qk, une
+   * réponse (reply) Rk — Q1 R1 Q2 R2... Dans un exercice à étapes ou une course (une question, puis une
+   * réponse par étape), chaque réponse intermédiaire affiche la question suivante et la dernière
+   * l'analyse de toutes : Q1 Q2 ... Q10 R1-10. La courante est mise en évidence ; « Pages : » disparaît. Les « … »
+   * n'interviennent qu'en dernier recours : on cache d'abord les pages les plus éloignées de la
+   * courante, en gardant toujours la première, la dernière et les voisines. L'information « élève :
+   * exercice, N steps, note » descend en tête de page. */
+  function pagesExamen() {
+    var nav = document.querySelector('#wimstopbox li.menuitem.nav');
+    if (!nav) return;
+    var liens = nav.querySelectorAll('a[href*="checkstep="]');
+    var modele = liens.length ? liens[0].getAttribute('href') : '';
+    // Autre vérification (exercice de feuille, devoir libre) : la barre de WIMS, rendue visible
+    // (cadre.css la cache jusqu'à ce que ce script passe, contre le clignotement).
+    var garderWims = function () { nav.classList.add('nova-nav-wims'); };
+    if (modele.indexOf('job=examcheck') < 0) { garderWims(); return; }
+    var courant = 0, maxi = 0;
+    Array.prototype.forEach.call(nav.childNodes, function (n) {
+      if (n.nodeType === 3) (n.textContent.match(/\d+/g) || []).forEach(function (x) { courant = +x; });
+    });
+    Array.prototype.forEach.call(liens, function (a) { maxi = Math.max(maxi, parseInt(a.textContent, 10) || 0); });
+    var info = document.querySelector('#wimstopbox li.menuitem.score');
+    var m = info && info.textContent.match(/(\d+)\s*steps?/);
+    var total = Math.max(m ? +m[1] : 0, maxi, courant);
+    if (!total) { garderWims(); return; }
+    var langue = (document.documentElement.lang || 'fr').slice(0, 2);
+    var mots = { fr: ['Question', 'R\u00e9ponse', 'Pages'], en: ['Question', 'Answer', 'Pages'], nl: ['Vraag', 'Antwoord', "Pagina's"] }[langue] ||
+      ['Question', 'Answer', 'Pages'];
+    var liste = document.createElement('ol');
+    liste.className = 'nova-pages-liste';
+    var bloc = document.createElement('nav');
+    bloc.setAttribute('aria-label', mots[2]);
+    bloc.appendChild(liste);
+    nav.textContent = '';
+    nav.appendChild(bloc);
+    nav.classList.add('nova-pages');
+    if (info && info.textContent.trim()) {
+      var corps = document.querySelector('.wimsbody');
+      if (corps) {
+        var ligne = document.createElement('p');
+        ligne.className = 'nova-pages-info';
+        ligne.innerHTML = info.innerHTML;
+        corps.insertBefore(ligne, corps.firstChild);
+      }
+      info.remove();
+    }
+    // Type de chaque page (q = question, r = réponse), lu dans le journal sur la page « Détails des
+    // examens » (tail.phtml, typesExamen) et gardé dans le navigateur ; à défaut, l'alternance.
+    var types = [];
+    var cle = function (nom) { var r = new RegExp('[?&+]' + nom + '=([^&]*)').exec(modele); return r ? decodeURIComponent(r[1]) : ''; };
+    try {
+      var connus = JSON.parse(localStorage.getItem('nova_examtypes_' + cle('checkuser')) || '{}');
+      types = (connus[cle('checksession') + ':' + cle('checkexo')] || '').split(',');
+    } catch (e) { types = []; }
+    if (types.length !== total || types.some(function (t) { return t !== 'q' && t !== 'r'; })) {
+      types = [];
+      for (var t = 1; t <= total; t++) types.push(t % 2 ? 'q' : 'r');
+    }
+    // Libellés. Une question (q) est Qk. Une réponse suivie d'une autre réponse (exercice à étapes,
+    // course) affiche en fait la question suivante : Qk+1. La dernière réponse d'une suite affiche
+    // l'analyse de toute la suite : Rk, ou Rk-m si elle couvre les questions k à m.
+    var libelles = [], titres = [], nq = 0, debut = 0;
+    types.forEach(function (t, i) {
+      if (t === 'q') { debut = ++nq; libelles.push('Q' + nq); titres.push(mots[0] + ' ' + nq); return; }
+      if (types[i + 1] === 'r') { libelles.push('Q' + (++nq)); titres.push(mots[0] + ' ' + nq); return; }
+      var de = debut || 1, a = Math.max(nq, de);
+      libelles.push(de === a ? 'R' + a : 'R' + de + '-' + a);
+      titres.push(mots[1] + ' ' + (de === a ? a : de + '-' + a));
+    });
+    var element = function (n) {
+      var question = libelles[n - 1].charAt(0) === 'Q';
+      var li = document.createElement('li');
+      li.className = question ? 'nova-page-q' : 'nova-page-r';
+      var e;
+      if (n === courant) {
+        e = document.createElement('span');
+        e.setAttribute('aria-current', 'page');
+        e.className = 'nova-page nova-page-courante';
+      } else {
+        e = document.createElement('a');
+        e.className = 'nova-page';
+        e.href = modele.replace(/checkstep=\d+/, 'checkstep=' + n);
+      }
+      e.textContent = libelles[n - 1];
+      e.title = titres[n - 1];
+      li.appendChild(e);
+      return li;
+    };
+    var dessiner = function (visibles) {
+      liste.textContent = '';
+      var avant = 0;
+      visibles.forEach(function (n) {
+        if (avant && n > avant + 1) {
+          var trou = document.createElement('li');
+          trou.className = 'nova-page-ellipse';
+          trou.setAttribute('aria-hidden', 'true');
+          trou.textContent = '\u2026';
+          liste.appendChild(trou);
+        }
+        liste.appendChild(element(n));
+        avant = n;
+      });
+    };
+    var ajuster = function () {
+      var visibles = [];
+      for (var n = 1; n <= total; n++) visibles.push(n);
+      dessiner(visibles);
+      var c = courant || 1;
+      while (liste.scrollWidth > liste.clientWidth + 1) {
+        var retirable = visibles.filter(function (n) { return n !== 1 && n !== total && Math.abs(n - c) > 1; });
+        // Dernier recours : les voisines aussi ; restent la première, la courante et la dernière.
+        if (!retirable.length) retirable = visibles.filter(function (n) { return n !== 1 && n !== total && n !== c; });
+        if (!retirable.length) break;
+        retirable.sort(function (a, b) { return Math.abs(b - c) - Math.abs(a - c) || b - a; });
+        visibles.splice(visibles.indexOf(retirable[0]), 1);
+        dessiner(visibles);
+      }
+    };
+    ajuster();
+    if (window.ResizeObserver) new ResizeObserver(function () { window.requestAnimationFrame(ajuster); }).observe(nav);
+    else window.addEventListener('resize', ajuster);
+  }
+
+  /* Barre de série d'exercices (cadre.css/contenu.css : indicateur d'étapes) : le lien vers
+   * l'exercice suivant s'écrit « > 2 » chez WIMS ; la flèche est dessinée, le « > » retiré, et le
+   * lien reçoit le nom de l'infobulle de WIMS (« Continuer la série avec l'exercice suivant »). */
+  function serieEtapes() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wims_serie_bar .wims_next_exo > a'), function (a) {
+      a.textContent = a.textContent.replace(/^\s*>\s*/, '');
+      var li = a.parentNode;
+      if (li.title && !a.getAttribute('aria-label')) a.setAttribute('aria-label', li.title + ' (' + a.textContent.trim() + ')');
+    });
+  }
+
+  /* Exercices d'un examen (adm/class/exam, student.phtml : ol.wims_exam > li.exo_item) en cartes, comme la
+   * feuille d'exercices (maquette A, utilisateur, 2026-10-03). WIMS écrit selon l'état : lien (.exo_link a),
+   * fait (.exo_name + .exo_done, ou un ❌ dans une course), bloqué par une dépendance (titre nu + lien
+   * « Nécessite… »), fermé (titre nu). Nova range : titre, puis étiquettes (poids, état) ; liens de WIMS gardés.
+   * Numéro, ✓ et flèche en CSS. */
+  function examExercices() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_exam'), function (ol) {
+      if (ol.classList.contains('nova-exam-liste')) return;
+      ol.classList.add('nova-exam-liste');
+      Array.prototype.forEach.call(ol.querySelectorAll(':scope > li.exo_item'), function (li) {
+        var puce = function (classe, contenu) {
+          var e = document.createElement('span');
+          e.className = 'nova-puce ' + classe;
+          if (typeof contenu === 'string') e.textContent = contenu; else e.appendChild(contenu);
+          return e;
+        };
+        var meta = document.createElement('span');
+        meta.className = 'nova-exo-meta';
+        var poids = li.querySelector('.weight');
+        if (poids) {
+          var m = /^\(?\s*([^:()]+?)\s*:\s*([^()]+?)\s*\)?$/.exec(poids.textContent.replace(/\s+/g, ' ').trim());
+          meta.appendChild(puce('nova-puce-poids', m ? m[1] + ' ' + m[2] : poids.textContent.trim()));
+          poids.remove();
+        }
+        var titre, lien = li.querySelector('.exo_link a'), fait = li.querySelector('.exo_done');
+        var echec = Array.prototype.filter.call(li.querySelectorAll('span'), function (e) { return e.textContent.indexOf('\u274C') >= 0; })[0];
+        var bloque = !lien && li.querySelector('a[href*="job=student"]');
+        if (lien) {
+          li.classList.add('nova-exo-afaire');
+          titre = lien.closest('.exo_link');
+        } else if (fait || echec) {
+          li.classList.add(fait ? 'nova-exo-fait' : 'nova-exo-echec');
+          titre = li.querySelector('.exo_name');
+          meta.appendChild(puce(fait ? 'nova-puce-ok' : 'nova-puce-echec', (fait || echec).textContent.trim()));
+          (fait || echec).remove();
+        } else if (bloque) {
+          li.classList.add('nova-exo-bloque');
+          var conteneur = bloque.parentNode === li ? bloque : bloque.parentNode;
+          meta.appendChild(puce('nova-puce-bloque', bloque));
+          if (conteneur !== bloque) conteneur.remove();
+        } else {
+          li.classList.add('nova-exo-ferme');
+          titre = li.querySelector(':scope > span');
+        }
+        if (!titre) {
+          // Titre écrit en texte nu par WIMS : le recueillir.
+          titre = document.createElement('span');
+          Array.prototype.slice.call(li.childNodes).forEach(function (n) {
+            if (n.nodeType === 3 && n.textContent.trim()) titre.appendChild(document.createTextNode(n.textContent.trim()));
+          });
+        }
+        titre.classList.add('nova-exo-titre');
+        if (!lien && titre.lastChild && titre.lastChild.nodeType === 3) titre.lastChild.textContent = titre.lastChild.textContent.replace(/\s*\.\s*$/, '');
+        var corps = document.createElement('span');
+        corps.className = 'nova-exo-corps';
+        corps.appendChild(titre);
+        if (meta.childNodes.length) corps.appendChild(meta);
+        Array.prototype.slice.call(li.childNodes).forEach(function (n) { if (n.nodeType === 3 || (n !== titre && n.nodeType === 1)) n.remove(); });
+        li.appendChild(corps);
+      });
+    });
+  }
+
+  /* Signes « \u2020 » et « ?? » du Détail des examens (adm/class/userscore, examcheck.phtml), que WIMS écrit sans
+   * explication dans la case d'un exercice sans note : \u2020 = session sans durée enregistrée (en cours ou interrompue),
+   * ?? = exercice sans note d'une session qui a une durée (pas ouvert, ou sans réponse ; WIMS ne distingue pas).
+   * Info-bulle (title) sur chaque signe et légende sous le tableau, seulement pour les signes présents
+   * (proposé par Claude le 2026-10-03, accepté par l'utilisateur le 2026-11-07). */
+  function signesExamens() {
+    var textes = document.getElementById('nova-textes');
+    if (!textes) return;
+    var defs = { '\u2020': textes.getAttribute('data-texte-signe-croix'), '??': textes.getAttribute('data-texte-signe-inconnu') };
+    var tables = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td.wims_sheet_score a'), function (a) {
+      var signe = a.textContent.trim();
+      if (!defs[signe]) return;
+      a.title = defs[signe];
+      a.setAttribute('aria-label', signe + ' : ' + defs[signe]);
+      var t = a.closest('table');
+      if (!t) return;
+      var e = tables.filter(function (x) { return x.table === t; })[0];
+      if (!e) { e = { table: t, signes: {} }; tables.push(e); }
+      e.signes[signe] = true;
+    });
+    tables.forEach(function (e) {
+      var p = document.createElement('p');
+      p.className = 'nova-legende-signes';
+      ['\u2020', '??'].forEach(function (signe) {
+        if (!e.signes[signe]) return;
+        var l = document.createElement('span');
+        var b = document.createElement('b');
+        b.textContent = signe;
+        l.appendChild(b);
+        l.appendChild(document.createTextNode(' ' + defs[signe]));
+        p.appendChild(l);
+      });
+      var apres = e.table.closest('.wims_scrollable, .table-scroll') || e.table;
+      apres.parentNode.insertBefore(p, apres.nextSibling);
+    });
+  }
+
+  /* Page d'un examen alors qu'un autre est en cours (adm/class/exam/student.phtml : div.wims_msg.alert
+   * « Vous avez déjà commencé un autre examen… ») : le bouton « Examen en cours » de la barre, posé par
+   * _widgets/examencours.phtml avec data-autre-examen, passe sous le message (demande de l'utilisateur,
+   * 2026-10-05). Son lien est celui de la barre (la session où l'examen a été commencé). */
+  function autreExamen() {
+    if (standard('examens')) return;
+    var pastille = document.querySelector('#wimstopbox .nova-examencours[data-autre-examen]');
+    var message = document.querySelector('.wimsbody .wims_msg.alert');
+    var lien = pastille && pastille.querySelector('a');
+    if (!message || !lien) return;
+    // Le message de WIMS (lang/msg.phtml du module, que le thème ne peut pas surcharger) est remplacé
+    // (demande de l'utilisateur, 2026-10-05) ; le CSS le cache jusque-là (3 s au plus).
+    var textes = document.getElementById('nova-textes');
+    var nouveau = textes && textes.getAttribute('data-texte-autre-examen');
+    if (nouveau) message.textContent = nouveau;
+    message.classList.add('nova-autre-examen-message');
+    var bloc = document.createElement('p');
+    bloc.className = 'nova-autre-examen';
+    lien.classList.add('nova-autre-examen-bouton');
+    bloc.appendChild(lien);
+    message.parentNode.insertBefore(bloc, message.nextSibling);
+    pastille.remove();
+  }
+
+  /* Indication et Aide d'un exercice pendant un examen : WIMS les écrit en texte inactif (scripts/oef/Main.phtml :
+   * <span class="disabled_link"> au lieu du bouton, dans une session _exam), y compris avec le thème Standard. Nova
+   * les montre comme ses boutons d'aide, grisés, avec une info-bulle (demande de l'utilisateur, 2026-10-08). Main.phtml
+   * écrit l'Indication puis l'Aide ; l'Aide se reconnaît à son texte (wims_name_help). */
+  function aideExamen() {
+    var inactifs = document.querySelectorAll('#oef_helphint > span.disabled_link');
+    if (!inactifs.length) return;
+    var textes = document.getElementById('nova-textes');
+    var bulle = (textes && textes.getAttribute('data-texte-indisponible-examen')) || 'Not available during an exam';
+    Array.prototype.forEach.call(inactifs, function (sp) {
+      var aide = /^(aide|help|hilfe|ayuda|aiuto)$/i.test(sp.textContent.trim());
+      sp.classList.add('wims_button_help', 'nova-inactif');
+      if (!document.getElementById(aide ? 'oef_help' : 'oef_hint')) sp.id = aide ? 'oef_help' : 'oef_hint';   // icône du jeu de WIMS
+      sp.setAttribute('aria-disabled', 'true');
+      sp.setAttribute('role', 'button');
+      sp.title = bulle;
+    });
+  }
+
+  /* Fin d'une session d'examen dans une classe CAS (demande de l'utilisateur, 2026-10-06) : WIMS efface la
+   * session (scorereg.proc) et montre la connexion de la classe, sans bouton CAS. Un clic sur « Terminer »
+   * ou sur le « Oui » qui le confirme est noté (sessionStorage, 2 min) ; si la page suivante porte l'adresse
+   * de connexion CAS de la classe (#nova-cas, header.phtml), l'élève y est renvoyé : le CAS, qui le connaît
+   * encore, le ramène dans la classe, prêt pour un autre examen. Toute autre page efface la marque. */
+  function reconnexionCas() {
+    var cle = 'nova-fin-examen', quand = 0;
+    try { quand = +sessionStorage.getItem(cle) || 0; sessionStorage.removeItem(cle); } catch (e) { quand = 0; }
+    document.addEventListener('click', function (ev) {
+      var a = ev.target.closest && ev.target.closest('a[href*="job=scorereg"], a[href*="confirm_end=yes"]');
+      if (a) { try { sessionStorage.setItem(cle, String(Date.now())); } catch (e) { /* sans stockage : rien */ } }
+    }, true);
+    var cas = document.getElementById('nova-cas');
+    if (cas && quand && Date.now() - quand < 120000) {
+      location.replace(cas.getAttribute('data-cas') + '/login?service=' + encodeURIComponent(cas.getAttribute('data-service')));
+    }
+  }
+
+  /* ===== js/src/40-feuilles-notes.js : cartes de feuille, scores, notes ===== */
+  function feuilleExercices() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
+      if (bloc.querySelector('.nova-scores')) return;
+      var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, puces = [], pourcent = null;
+      while ((m = re.exec(texte))) {
+        puces.push([m[1].trim(), m[2].replace(/\s+/g, '')]);
+        if (/%$/.test(m[2].trim()) && pourcent === null) pourcent = parseFloat(m[2].replace(',', '.'));
+      }
+      if (!puces.length) return;
+      var liste = document.createElement('span');
+      liste.className = 'nova-scores';
+      puces.forEach(function (p) {
+        var e = document.createElement('span'), v = document.createElement('strong');
+        e.className = 'nova-score';
+        e.appendChild(document.createTextNode(p[0]));
+        v.textContent = p[1];
+        e.appendChild(v);
+        liste.appendChild(e);
+      });
+      bloc.textContent = '';
+      bloc.appendChild(liste);
+      if (pourcent !== null && !isNaN(pourcent)) {
+        var barre = document.createElement('div'), plein = document.createElement('span');
+        barre.className = 'nova-barre-reussite';
+        barre.setAttribute('aria-hidden', 'true');
+        plein.style.width = Math.max(0, Math.min(100, pourcent)) + '%';
+        if (pourcent >= 100) barre.setAttribute('data-plein', '');
+        barre.appendChild(plein);
+        bloc.appendChild(barre);
+      }
+    });
+  }
+
+  /* Barres de score (themes/_widgets/userbar.phtml) : charte Nova (cadre.css / contenu.css).
+   *  - feuille : segments par exercice, état lu dans la classe WIMS (untry, undone, done,
+   *    congratulation, unwork) + compteur « réussis/total » ;
+   *  - examen : une case colorée en ligne par WIMS, note dans le titre (« Note:4/20 ») → pastille
+   *    « 4/20 », niveau faible / moyen / bon.
+   * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
+  /* Examen : la barre est l'HISTORIQUE des sessions passées (themes/_widgets/userexambar.phtml,
+   * de la plus ancienne à la plus récente, nombre illimité — jusqu'à 99 pour certains DM). On en
+   * montre autant que la largeur de la carte le permet : la plus récente en grand, avec sa note ;
+   * les plus anciennes qui ne tiennent pas se résument en « +k » (notes en infobulle). Recalculé
+   * quand la carte change de largeur (rotation, fenêtre). */
+  function historique(barre, cases) {
+    barre.classList.add('nova-score-examen');
+    var n = cases.length;
+    var ol = cases[0].parentNode;
+    cases[n - 1].classList.add('nova-derniere');
+    var plus = document.createElement('li');
+    plus.className = 'nova-plus-anciennes';
+    var ajuster = function () {
+      Array.prototype.forEach.call(cases, function (li) { li.classList.remove('nova-ancienne'); });
+      if (plus.parentNode) plus.remove();
+      var dispo = barre.clientWidth;
+      if (!dispo || ol.scrollWidth <= dispo) return;
+      ol.insertBefore(plus, cases[0]);
+      for (var k = 1; k < n; k++) {
+        cases[k - 1].classList.add('nova-ancienne');
+        plus.textContent = '+' + k;
+        if (ol.scrollWidth <= dispo) break;
+      }
+      plus.title = Array.prototype.slice.call(cases, 0, k).map(function (li) {
+        var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
+      }).join(' \u00B7 ');
+    };
+    ajuster();
+    if (window.ResizeObserver) {
+      var largeur = barre.clientWidth, attente = 0;
+      new ResizeObserver(function () {
+        if (barre.clientWidth === largeur) return;
+        largeur = barre.clientWidth;
+        cancelAnimationFrame(attente);
+        attente = requestAnimationFrame(ajuster);
+      }).observe(barre);
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
+  }
+
+  function scores() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
+      if (barre.classList.contains('nova-score')) return;
+      var cases = barre.querySelectorAll('ol > li');
+      if (!cases.length) return;
+      barre.classList.add('nova-score');
+      var notes = 0;
+      Array.prototype.forEach.call(cases, function (li) {
+        var a = li.querySelector('a');
+        var titre = (a && a.getAttribute('title')) || li.getAttribute('title') || '';
+        // Une session d'examen sans note donne « NaN/20 » (userexambar.phtml) ; WIMS y affiche 0.
+        var m = /(\d+(?:[.,]\d+)?|NaN)\s*\/\s*(\d+(?:[.,]\d+)?)/.exec(titre);
+        if (m && m[1] === 'NaN') m[1] = '0';
+        if (li.style.backgroundColor && m) {
+          var r = parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.'));
+          var n = Math.round(10 * r);   // note /10 arrondie, comme les couleurs de WIMS (scripts/adm/class/colors)
+          li.setAttribute('data-niveau', n <= 0 ? 'zero' : n <= 3 ? 'rouge' : n <= 6 ? 'orange' : n <= 8 ? 'jaune' : 'vert');
+          li.classList.add('nova-note');
+          if (a) a.textContent = m[1] + '/' + m[2];
+          notes++;
+        }
+      });
+      if (notes) { historique(barre, cases); return; }
+      if (barre.closest('li.wims_exam_item')) return;   // examen : pas de compteur de feuille
+      var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
+      var compte = document.createElement('span');
+      compte.className = 'nova-score-compte';
+      compte.textContent = reussis + '/' + cases.length;
+      barre.appendChild(compte);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div, span):not(.wims_score_bar, .wims_seq_item_n)'), function (bloc) {
+      if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
+    });
+  }
+
+  /* Note retenue d'un examen sur sa carte (accueil de la classe), comme la note d'une feuille : WIMS
+   * ne l'y met pas. Valeurs calculées par user.phtml (!examscore) dans #nova-notes-examens ; seulement
+   * pour un examen déjà commencé (relevé score/<élève>.exam, pas l'historique : WIMS en efface les vieilles
+   * sessions, la pastille disparaissait ; 2026-11-04). */
+  function notesExamens() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    var source = document.getElementById('nova-notes-examens');
+    if (!source) return;
+    var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Score';
+    (source.getAttribute('data-notes') || '').trim().split(/\s+/).forEach(function (paire) {
+      var m = /^(\d+):(.+)$/.exec(paire);
+      if (m) notes[m[1]] = m[2];
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('li.wims_exam_item'), function (li) {
+      if (li.querySelector('.nova-note-examen')) return;
+      var lien = li.querySelector('a[href*="exam="]');
+      var m = lien && /[?&+]exam=(\d+)/.exec(lien.getAttribute('href'));
+      if (!m || notes[m[1]] === undefined) return;
+      var bloc = document.createElement('div'), note = document.createElement('span');
+      bloc.className = 'wims_user_info nova-note-examen';
+      note.className = 'wims_sheet_score';
+      note.textContent = libelle + ': ' + notes[m[1]] + '/' + max;
+      bloc.appendChild(note);
+      li.appendChild(bloc);
+    });
+  }
+
+  /* Pastille de note d'une carte (« Note: 6.5/10 ») : le libellé isolé dans un span, que le CSS cache
+   * au téléphone (seule la valeur reste visible ; le libellé reste lu par les lecteurs d'écran). */
+  function libellesNotes() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    Array.prototype.forEach.call(document.querySelectorAll('li.wims_sheet_item > div.wims_user_info .wims_sheet_score, li.wims_exam_item > div.nova-note-examen .wims_sheet_score'), function (note) {
+      if (note.querySelector('.nova-note-libelle')) return;
+      var m = /^([^:]+:)\s*(\S.*)$/.exec(note.textContent.replace(/\s+/g, ' ').trim());
+      if (!m) return;
+      var libelle = document.createElement('span'), valeur = document.createElement('span');
+      libelle.className = 'nova-note-libelle';
+      libelle.textContent = m[1];
+      valeur.textContent = m[2];
+      note.textContent = '';
+      note.appendChild(libelle);
+      note.appendChild(valeur);
+    });
+  }
+
+  /* « NaN » que WIMS écrit dans une case de note qu'il ne peut pas calculer (session d'examen sans réponse :
+   * adm/class/userscore, examcheck.phtml, « Détail des examens ») : un « - » sobre (choix de l'utilisateur,
+   * 2026-10-03). Seul le texte « NaN » change ; ce qui suit (astérisque et info-bulle de WIMS) reste. */
+  function notesNaN() {
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td'), function (td) {
+      var n = td.firstChild;
+      while (n && n.nodeType === 3 && !n.textContent.trim()) n = n.nextSibling;
+      if (n && n.nodeType === 3 && n.textContent.trim() === 'NaN') n.textContent = n.textContent.replace('NaN', '-');
+    });
+  }
+
+  function notesColonnes() {
+    var mm = document.querySelector('meta[name="nova-module"]');
+    var table = document.getElementById('TABLE_userlist');
+    if (!mm || mm.content !== 'adm/class/userscore' || !table || table.hasAttribute('data-nova-notes')) return;
+    table.setAttribute('data-nova-notes', '');
+    var textes = document.getElementById('nova-textes');
+    var texte = function (n, defaut) { return (textes && textes.getAttribute('data-texte-' + n)) || defaut; };
+    var choix = document.querySelector('select[name="showsheet"]');
+    var cadre = choix && choix.closest('fieldset');
+    // Case du cadre « Choix des données » (sinon au-dessus du tableau), choix gardé par le navigateur.
+    var ajouterCase = function (id, libelle, cle, defaut, appliquer) {
+      var actif = defaut;
+      try { var v = localStorage.getItem(cle); if (v !== null) actif = v === '1'; } catch (e) { /* sans stockage : défaut */ }
+      var champ = document.createElement('div');
+      champ.className = 'field box nova-notes-option';
+      var c = document.createElement('input');
+      c.type = 'checkbox';
+      c.id = id;
+      c.checked = actif;
+      var lib = document.createElement('label');
+      lib.htmlFor = id;
+      lib.textContent = libelle;
+      champ.appendChild(c);
+      champ.appendChild(lib);
+      c.addEventListener('change', function () {
+        appliquer(c.checked);
+        try { localStorage.setItem(cle, c.checked ? '1' : '0'); } catch (e) { /* cette page seulement */ }
+      });
+      if (cadre) {
+        var envoi = cadre.querySelector(':scope > .wimsform');
+        cadre.insertBefore(champ, envoi || null);
+      } else {
+        var avant = table.closest('.wims_scrollable, .table-scroll') || table;
+        avant.parentNode.insertBefore(champ, avant);
+      }
+      appliquer(actif);
+    };
+    // (b) Titre au lieu du numéro (examens : 2026-11-08 ; feuilles et cases : 2026-11-09, utilisateur). Titres lus dans
+    // la liste de choix (option « 3 » = « 2/3: titre » pour la feuille 3, « E4 » = « Examen 4: titre »). Cochées par
+    // défaut, sauf réglage « Textes du thème standard ».
+    var titres = { feuille: {}, examen: {} };
+    if (choix) Array.prototype.forEach.call(choix.options, function (o) {
+      var m = /^(E?)(\d+)$/.exec(o.value);
+      var i = o.textContent.indexOf(':');
+      if (m && i >= 0 && o.textContent.slice(i + 1).trim()) titres[m[1] ? 'examen' : 'feuille'][m[2]] = o.textContent.slice(i + 1).trim();
+    });
+    var types = [
+      ['feuille', 'nova-titres-feuilles', texte('titres-feuilles', 'Worksheets: show the title instead of the number'), function () {
+        return Array.prototype.map.call(table.querySelectorAll('thead th a[href*="numshowsheet"]'), function (a) { return [a.closest('th'), a]; });
+      }],
+      ['examen', 'nova-titres-examens', texte('titres-examens', 'Exams: show the title instead of the number'), function () {
+        return Array.prototype.map.call(table.querySelectorAll('thead th.name_exam'), function (th) { return [th, th]; });
+      }]
+    ];
+    types.forEach(function (t) {
+      if (!Object.keys(titres[t[0]]).length) return;
+      var cellules = t[3]().map(function (x) {
+        var origine = x[1].textContent.trim();
+        var m = /(\d+)$/.exec(origine);
+        return { th: x[0], el: x[1], origine: origine, titre: m && titres[t[0]][m[1]] };
+      }).filter(function (c) { return c.titre; });
+      ajouterCase(t[1], t[2], t[1], !standard('textes'), function (oui) {
+        cellules.forEach(function (c) {
+          c.el.textContent = '';
+          if (oui) {
+            var s = document.createElement('span');
+            s.className = 'nova-titre-examen';
+            s.textContent = c.titre;
+            c.el.appendChild(s);
+            c.th.title = c.origine + ' : ' + c.titre;
+          } else {
+            c.el.textContent = c.origine;
+            c.th.removeAttribute('title');
+          }
+        });
+      });
+    });
+    // (a) Masquer la moyenne.
+    var moy = table.querySelector('thead th.average');
+    if (!moy) return;
+    var rang = Array.prototype.indexOf.call(moy.parentNode.children, moy);
+    ajouterCase('nova-sans-moyenne', texte('masquer-moyenne', 'Hide the average'), 'nova-notes-sans-moyenne', false, function (oui) {
+      Array.prototype.forEach.call(table.rows, function (tr) {
+        var c = tr.cells[rang];
+        if (c) c.classList.toggle('nova-col-masquee', oui);
+      });
+    });
+  }
+
+  /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types
+   * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
+   * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
+  function legendeTypes() {
+    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    var corps = document.querySelector('.wimsbody');
+    if (!corps) return;
+    var legendes = Array.prototype.filter.call(corps.querySelectorAll('ul.inline'), function (ul) {
+      var lis = ul.querySelectorAll(':scope > li');
+      return lis.length > 1 && Array.prototype.every.call(lis, function (li) { return /_item\b/.test(li.className) && !li.querySelector('a'); });
+    });
+    if (!legendes.length) return;
+    var type = function (el) { return (el.className.match(/\bwims_[a-z]+_item\b/) || [])[0]; };
+    var majour = function () {
+      var panneaux = Array.prototype.filter.call(corps.querySelectorAll('[id^="wims_seq_"]:not(#wims_seq_summary)'), function (p) { return p.getClientRects().length; });
+      var zones = panneaux.length ? panneaux : [corps];
+      var presents = {};
+      zones.forEach(function (z) {
+        Array.prototype.forEach.call(z.querySelectorAll('li[class*="_item"]'), function (li) {
+          if (li.querySelector(':scope > a') && !legendes.some(function (l) { return l.contains(li); })) presents[type(li)] = true;
+        });
+      });
+      legendes.forEach(function (ul) {
+        var visibles = 0;
+        Array.prototype.forEach.call(ul.querySelectorAll(':scope > li'), function (li) {
+          var garde = !!presents[type(li)];
+          li.classList.toggle('nova-legende-absente', !garde);
+          if (garde) visibles++;
+        });
+        ul.classList.toggle('nova-legende-absente', !visibles);
+        var bloc = ul.closest('.wims_seq_legend, .legend, fieldset');
+        if (bloc && bloc.querySelectorAll('ul.inline').length === 1) bloc.classList.toggle('nova-legende-absente', !visibles);
+      });
+    };
+    majour();
+    var attente = 0;
+    var relancer = function () { cancelAnimationFrame(attente); attente = requestAnimationFrame(majour); };
+    corps.addEventListener('click', relancer);
+    corps.addEventListener('change', relancer);
+    if (window.MutationObserver) {
+      new MutationObserver(relancer).observe(corps, { subtree: true, attributes: true, attributeFilter: ['style', 'aria-hidden', 'hidden'] });
+    }
+  }
+
+  /* ===== js/src/50-exercice.js : page de réponse, claviers, images cliquables, dominos ===== */
+  /* Exercice OEF (demande de l'utilisateur, 2026-10-05). « Envoyer la réponse » (div.send_answer) devient
+   * « Valider ». Page de réponse (scripts/oef/answer.phtml) : le tableau « Analyse de votre réponse » (une
+   * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
+   * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
+   * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
+   * <sup><small>[k]</small></sup>, k = nom de la ligne) : rouge si fausse ; étoiles (depuis la place du bouton « Valider ») si tout est juste, la page vibre si tout est faux ;
+   * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
+   * l'analyse ») : rien ne change. */
+  function retourReponse() {
+    if (standard('reponse')) return;   // réglage « Réponse comme le thème standard »
+    var textes = document.getElementById('nova-textes');
+    var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-' + cle)) || defaut; };
+    document.querySelectorAll('.wimsbody .send_answer input[type="submit"]').forEach(function (b) {
+      b.value = texte('valider', 'Submit');
+      b.classList.add('nova-valider');
+      // Place du bouton à l'envoi, à l'écran : les étoiles de la page de réponse en partiront.
+      if (b.form) b.form.addEventListener('submit', function () {
+        var r = b.getBoundingClientRect();
+        try { sessionStorage.setItem('nova-valider', JSON.stringify({ l: r.left, t: r.top, w: r.width, h: r.height, quand: Date.now() })); } catch (e) { /* sans stockage : étoiles sur le verdict */ }
+      });
+    });
+    var reponse = document.querySelector('.wimsbody .oefanswer');
+    if (!reponse) return;
+    var tableau = reponse.querySelector('table.answeranalysis');
+    var lignes = [], inconnues = 0, conditions = 0;
+    if (tableau) tableau.querySelectorAll('tr').forEach(function (tr) {
+      // L'état est le span en tête de la dernière cellule : oef_ind… pour une réponse, oef_cond… pour une
+      // condition (OUI/NON). La bonne réponse montrée à côté peut porter elle-même oef_indgood (étiquettes
+      // clickfill, E3/measurement/oefdatagestion.fr, vécu 2026-10-05) : ne pas chercher ailleurs.
+      var derniere = tr.lastElementChild;
+      var marque = derniere && derniere.querySelector(':scope > span[class^="oef_ind"], :scope > span[class^="oef_cond"]');
+      var m = marque && /^oef_(ind|cond)(good|bad|partial|prec)\b/.exec(marque.className);
+      var etat = m ? { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[2]] : null;
+      if (!etat) { if (tr.textContent.trim()) inconnues++; return; }
+      var reponseEleve = m[1] === 'ind' && tr.children.length >= 3;
+      if (m[1] === 'cond') conditions++;
+      lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
+        eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
+    });
+    // Lignes sans état (« voir l'analyse », renvois) : sans conséquence s'il y a des conditions, qui donnent
+    // alors le verdict ; sinon, WIMS tel quel, et l'animation suit la note (noteSeule).
+    if (!lignes.length || (inconnues && !conditions)) { reponse.classList.add('nova-retour-pret'); noteSeule(reponse); return; }
+
+    // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
+    var renvoiDe = function (el) { var r = el.nextElementSibling; return r && r.tagName === 'SUP' ? r.textContent.trim() : ''; };
+    document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
+      var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
+      if (!m) return;
+      var nom = renvoiDe(champ);
+      var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
+      if (ligne) ligne.champs.push(champ);
+      else if (m[1] === 'bad') champ.classList.add('nova-faux');
+    });
+    // Réponses à choix (cases à cocher, mots à marquer, choix unique réaffichés en liste : scripts/oef/embed.phtml ;
+    // variante A choisie par l'utilisateur le 2026-11-08) : chaque choix est marqué dans l'énoncé — cadre et
+    // pastille ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié : oef_indforget), choix non retenus
+    // pâlis ; sans bonne réponse montrée (presentgood=0), seulement « choisi », en couleur d'accent. Une ligne est
+    // « à choix » si elle a plusieurs champs, ou si des choix non retenus (sans renvoi) sont à côté de son champ.
+    // Réponse partiellement juste : WIMS marque tous les choix « partial » ; le bon est retrouvé dans sa liste
+    // « la bonne réponse est … » (même image, ou même texte).
+    var nonRetenus = Array.prototype.filter.call(document.querySelectorAll('.oefstatement div.inline[class*="oef_"]'), function (d) {
+      return /\boef_(indforget|indneutral|empty)\b/.test(d.className) && !renvoiDe(d);
+    });
+    var voisin = function (champ) {
+      var zone = champ.parentElement && champ.parentElement.parentElement;
+      return zone && nonRetenus.some(function (d) { return zone.contains(d); });
+    };
+    var cleChoix = function (el) {
+      var img = el.querySelector('img');
+      return img ? 'img:' + img.getAttribute('src') : 'txt:' + el.textContent.replace(/\s+/g, ' ').trim();
+    };
+    var oublies = 0, aTort = 0, choixVus = false;
+    lignes.forEach(function (ligne) {
+      if (!ligne.champs.length || !(ligne.champs.length > 1 || ligne.champs.some(voisin))) return;
+      ligne.choix = true;
+      choixVus = true;
+      var bons = null;
+      if (ligne.juste) {
+        bons = {};
+        Array.prototype.forEach.call(ligne.juste.querySelectorAll('img'), function (i) { bons['img:' + i.getAttribute('src')] = true; });
+        ligne.juste.textContent.split(',').forEach(function (t) { t = t.replace(/\s+/g, ' ').trim(); if (t) bons['txt:' + t] = true; });
+      }
+      ligne.champs.forEach(function (champ) {
+        var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
+        var etat = m[1] === 'good' ? 'juste' : m[1] === 'bad' ? 'faux' : 'pris';
+        if (etat === 'pris' && m[1] !== 'neutral' && bons) etat = bons[cleChoix(champ)] ? 'juste' : 'faux';
+        if (etat === 'faux') aTort++;
+        champ.classList.add('nova-choix', 'nova-choix-' + etat);
+      });
+    });
+    if (choixVus) nonRetenus.forEach(function (d) {
+      if (/\boef_indforget\b/.test(d.className)) { d.classList.add('nova-choix', 'nova-choix-oublie'); oublies++; }
+      else if (/\boef_indneutral\b/.test(d.className)) d.classList.add('nova-choix-neutre');
+    });
+    // Pastilles et noms des états, pour les lecteurs d'écran (pastille dessinée en CSS).
+    document.querySelectorAll('.oefstatement .nova-choix').forEach(function (champ) {
+      var etat = /nova-choix-(juste|faux|oublie|pris)/.exec(champ.className)[1];
+      var p = document.createElement('span');
+      p.className = 'nova-choix-pastille';
+      p.setAttribute('role', 'img');
+      p.setAttribute('aria-label', texte('choix-' + etat, { juste: 'chosen, correct', faux: 'chosen, wrong', oublie: 'missed', pris: 'chosen' }[etat]));
+      champ.appendChild(p);
+      // Choix « image » (figure, photo) : cadre collé à l'image. Une formule rendue en image par WIMS (formules en mode
+      // image, réglage de l'élève ou du site) reste un choix « texte » : petite image, de la hauteur d'une ligne
+      // (vu le 2026-11-08 : texte coupé par le cadre). Seuil : 40 px.
+      var imgs = [].slice.call(champ.querySelectorAll('img'));
+      var texteSeul = champ.textContent.replace(/\s+/g, '').length;
+      if (!imgs.length || texteSeul) return;
+      var classer = function () {
+        if (imgs.some(function (i) { return !i.complete; })) return;
+        if (imgs.some(function (i) { return Math.max(i.naturalHeight || 0, i.getBoundingClientRect().height) >= 40; })) champ.classList.add('nova-choix-image');
+      };
+      imgs.forEach(function (i) { if (!i.complete) i.addEventListener('load', classer); });
+      classer();
+    });
+    // Le verdict ne répète plus les choix (demande de l'utilisateur, 2026-11-08) : « il manque n réponses »,
+    // « n réponses choisies à tort ».
+    var pluriel = function (n, cle, un, plusieurs) { return texte(cle + (n > 1 ? 's' : ''), n > 1 ? plusieurs : un).replace('%1', n); };
+    lignes.forEach(function (ligne) {
+      if (!ligne.choix || !ligne.juste || ligne.etat === 'bonne') return;
+      var r = [];
+      if (aTort) r.push(pluriel(aTort, 'choix-a-tort', '%1 answer chosen by mistake', '%1 answers chosen by mistake'));
+      if (oublies) r.push(pluriel(oublies, 'choix-manque', '%1 answer missing', '%1 answers missing'));
+      if (r.length) { ligne.resume = r.join(', '); ligne.juste = null; }
+    });
+    lignes.forEach(function (ligne) {
+      if (ligne.etat === 'mauvaise' && !ligne.choix) ligne.champs.forEach(function (champ) { champ.classList.add('nova-faux'); });
+    });
+
+    var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
+    var fausse = lignes.some(function (l) { return l.etat === 'mauvaise'; });
+    // Animations seulement si le verdict est entier (demande de l'utilisateur, 2026-10-05) : étoiles quand
+    // tout est juste, vibration quand tout est faux ; rien dans les cas intermédiaires.
+    var toutesFausses = lignes.every(function (l) { return l.etat === 'mauvaise'; });
+    var boite = document.createElement('div');
+    boite.className = 'nova-verdict nova-verdict-' + (toutes ? 'bonne' : fausse ? 'mauvaise' : 'partielle');
+    boite.setAttribute('role', 'status');
+    var corps = document.createElement('div');
+    corps.className = 'nova-verdict-corps';
+    boite.appendChild(corps);
+    var titre = document.createElement('p');
+    titre.className = 'nova-verdict-titre';
+    corps.appendChild(titre);
+    var libelle = function (etat) {
+      return etat === 'mauvaise' ? texte('mauvaise', 'Wrong answer') : etat === 'partielle' ? texte('partielle', 'Partly correct answer')
+        : etat === 'precision' ? texte('precision', 'Not precise enough') : texte('bonne', 'Correct answer');
+    };
+    // « …, la bonne réponse était X » : la bonne réponse de WIMS est déplacée (MathJax compris).
+    var completer = function (el, ligne) {
+      if (ligne.resume) el.appendChild(document.createTextNode(', ' + ligne.resume));
+      if (!ligne.juste) return;
+      el.appendChild(document.createTextNode(', ' + texte('bonne-etait', 'the correct answer was') + ' '));
+      ligne.juste.classList.add('nova-verdict-juste');
+      el.appendChild(ligne.juste);
+    };
+    // Réponse hors énoncé, fausse : copie de la réponse de l'élève, en rouge.
+    var eleve = function (ligne) {
+      if (!ligne.eleve || ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
+      var p = document.createElement('p');
+      p.className = 'nova-verdict-eleve';
+      p.appendChild(document.createTextNode(texte('votre-reponse', 'Your answer:') + ' '));
+      var copie = document.createElement('span');
+      copie.className = ligne.etat === 'mauvaise' ? 'nova-faux' : '';
+      while (ligne.eleve.firstChild) copie.appendChild(ligne.eleve.firstChild);
+      p.appendChild(copie);
+      corps.appendChild(p);
+    };
+    if (toutes) {
+      titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
+      etoiles(boite);
+    } else if (lignes.length === 1) {
+      titre.textContent = libelle(lignes[0].etat);
+      completer(titre, lignes[0]);
+      eleve(lignes[0]);
+    } else if (lignes.some(function (l) { return l.etat === 'bonne'; })) {
+      // Réponses justes et à revoir mêlées : deux colonnes, « Justes » | « À revoir » (maquette A, choisie par
+      // l'utilisateur le 2026-10-08). Chaque ligne : [k], la réponse de l'élève, et pour une réponse à revoir
+      // la bonne réponse de WIMS (déplacée, MathJax compris).
+      var justes = lignes.filter(function (l) { return l.etat === 'bonne'; }).length;
+      titre.textContent = texte(justes > 1 ? 'justes-sur' : 'juste-sur', justes > 1 ? '%1 correct answers out of %2' : '%1 correct answer out of %2')
+        .replace('%1', justes).replace('%2', lignes.length);
+      boite.className = 'nova-verdict nova-verdict-mixte';
+      var colonnes = document.createElement('div');
+      colonnes.className = 'nova-verdict-colonnes';
+      var colonne = function (cle, nom) {
+        var c = document.createElement('div');
+        c.className = 'nova-verdict-colonne nova-verdict-colonne-' + cle;
+        var t = document.createElement('p');
+        t.className = 'nova-verdict-colonne-titre';
+        t.textContent = nom;
+        c.appendChild(t);
+        var ul = document.createElement('ul');
+        c.appendChild(ul);
+        colonnes.appendChild(c);
+        return ul;
+      };
+      var listeJustes = colonne('justes', texte('justes', 'Correct'));
+      var listeRevoir = colonne('revoir', texte('a-revoir', 'To review'));
+      lignes.forEach(function (ligne) {
+        var li = document.createElement('li');
+        if (ligne.nom) {
+          var num = document.createElement('span');
+          num.className = 'nova-verdict-num';
+          num.textContent = /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom + ' :';
+          li.appendChild(num);
+        }
+        var contenu = document.createElement('span');
+        li.appendChild(contenu);
+        var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
+        if (donnee) {
+          while (ligne.eleve.firstChild) donnee.appendChild(ligne.eleve.firstChild);
+          if (ligne.etat === 'mauvaise') donnee.className = 'nova-faux';
+          contenu.appendChild(donnee);
+        }
+        if (ligne.etat === 'bonne') { listeJustes.appendChild(li); return; }
+        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' \u2014 ' : '') + libelle(ligne.etat)));
+        if (ligne.juste) {
+          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' \u2192 ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
+          ligne.juste.classList.add('nova-verdict-juste');
+          contenu.appendChild(ligne.juste);
+        } else if (ligne.resume) contenu.appendChild(document.createTextNode(' \u2192 ' + ligne.resume));
+        else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
+        listeRevoir.appendChild(li);
+      });
+      corps.appendChild(colonnes);
+    } else {
+      titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
+      var liste = document.createElement('ul');
+      lignes.forEach(function (ligne) {
+        if (ligne.etat === 'bonne') return;
+        var li = document.createElement('li');
+        // Le titre dit déjà « Mauvaise réponse » : « [k] : la bonne réponse était X » suffit.
+        li.textContent = ligne.nom ? ligne.nom + ' : ' : '';
+        if (ligne.etat === 'mauvaise' && ligne.juste) {
+          li.appendChild(document.createTextNode(texte('bonne-etait', 'the correct answer was') + ' '));
+          ligne.juste.classList.add('nova-verdict-juste');
+          li.appendChild(ligne.juste);
+        } else {
+          li.appendChild(document.createTextNode(libelle(ligne.etat)));
+          completer(li, ligne);
+        }
+        liste.appendChild(li);
+      });
+      corps.appendChild(liste);
+      lignes.forEach(eleve);
+    }
+    reponse.insertBefore(boite, reponse.firstChild);
+    reponse.classList.add('nova-retour', 'nova-retour-pret');
+    if (toutesFausses) vibrer();
+  }
+
+  // Verdict que Nova ne sait pas lire (tableau vide : le verdict est dans les commentaires de l'auteur, ex.
+  // H4/algebra/factorcom.fr) : WIMS tel quel ; étoiles si la note de l'exercice est 10/10, vibration si 0/10
+  // (span.oef_modulescore : « … une note de N sur 10 », chiffres lus quelle que soit la langue).
+  function noteSeule(reponse) {
+    var note = reponse.querySelector('.oef_modulescore');
+    var m = note && /(\d+(?:[.,]\d+)?)\D+10(?:\D|$)/.exec(note.textContent);
+    if (!m) return;
+    var n = parseFloat(m[1].replace(',', '.'));
+    if (n >= 10) etoiles(reponse);
+    else if (n === 0) vibrer();
+  }
+
+  // Petites étoiles (CSS : .nova-etoiles, sans animation si l'élève la refuse), centrées sur la place du
+  // bouton « Valider » à l'envoi (demande de l'utilisateur, 2026-10-05) : position fixe, toujours à l'écran ;
+  // à défaut (envoi ancien ou inconnu), sur l'élément donné.
+  function etoiles(el) {
+    if (animationsCoupees()) return;
+    var nuee = document.createElement('span');
+    nuee.className = 'nova-etoiles';
+    nuee.setAttribute('aria-hidden', 'true');
+    var place = null;
+    try {
+      place = JSON.parse(sessionStorage.getItem('nova-valider') || 'null');
+      sessionStorage.removeItem('nova-valider');
+    } catch (e) { place = null; }
+    if (place && Date.now() - place.quand < 120000 && place.w > 0) {
+      nuee.classList.add('nova-etoiles-valider');
+      nuee.style.left = Math.max(0, Math.min(place.l, innerWidth - place.w)) + 'px';
+      nuee.style.top = Math.max(60, Math.min(place.t, innerHeight - place.h)) + 'px';
+      nuee.style.width = place.w + 'px';
+      nuee.style.height = place.h + 'px';
+      el = document.body;
+    }
+    var couleurs = ['var(--nova-note-jaune)', 'var(--nova-accent)', 'var(--nova-note-jaune)', 'var(--nova-note-vert)'];
+    for (var i = 0; i < 12; i++) {
+      var s = document.createElement('span');
+      s.textContent = '\u2605';
+      s.style.setProperty('--x', (20 + i * 60 / 11) + '%');
+      s.style.setProperty('--dx', ((i - 5.5) * 9 + Math.random() * 16 - 8).toFixed(0) + 'px');
+      s.style.setProperty('--h', (-70 - Math.random() * 50).toFixed(0) + 'px');
+      s.style.setProperty('--d', (Math.random() * 0.35).toFixed(2) + 's');
+      s.style.setProperty('--t', (11 + Math.random() * 9).toFixed(0) + 'px');
+      s.style.setProperty('--r', (Math.random() * 120 - 60).toFixed(0) + 'deg');
+      s.style.setProperty('--c', couleurs[i % couleurs.length]);
+      nuee.appendChild(s);
+    }
+    if (el !== document.body) el.classList.add('nova-etoile-source');
+    el.appendChild(nuee);
+    setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
+  }
+
+  // Réponse fausse : toute la page vibre, brièvement (demande de l'utilisateur, 2026-10-05).
+  function vibrer() {
+    if (animationsCoupees()) return;
+    var racine = document.documentElement;
+    racine.classList.add('nova-vibre');
+    setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
+  }
+
+  /* Champs de réponse d'un exercice (scripts/anstype/*.input : le type n'est pas visible dans le HTML) :
+   * - ni correction automatique, ni vérification d'orthographe (qui trahirait une faute dans une réponse en
+   *   mots), ni majuscule automatique (WIMS n'en protège pas « units » et « sigunits ») ;
+   * - pas de pavé numérique : un champ « numeric » accepte le signe moins et les fractions (2/3), absents
+   *   des pavés décimal ou téléphone (iPhone surtout) ; le clavier texte reste le seul complet ;
+   * - Entrée dans un champ alors qu'un autre est vide : passe au champ vide suivant au lieu d'envoyer
+   *   (WIMS refuserait l'envoi) ; touche Entrée du téléphone « Suivant », puis « OK » sur le dernier ;
+   * - focus sur le premier champ à l'ouverture.
+   * Demande de l'utilisateur, 2026-10-06. */
+  function claviersReponse() {
+    var form = document.forms.replyform;
+    if (!form) return;
+    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"], textarea[name^="reply"]'), function (c) {
+      return c.tagName === 'TEXTAREA' || !c.type || c.type === 'text';
+    });
+    champs.forEach(function (c) {
+      c.setAttribute('autocapitalize', 'off');
+      c.setAttribute('autocorrect', 'off');
+      c.setAttribute('spellcheck', 'false');
+      c.setAttribute('autocomplete', 'off');
+    });
+    var lignes = champs.filter(function (c) { return c.tagName === 'INPUT' && !c.readOnly; });
+    var vide = function (c) { return !c.value.trim(); };
+    var majour = function () {
+      lignes.forEach(function (c) {
+        var autreVide = lignes.some(function (d) { return d !== c && vide(d); });
+        c.setAttribute('enterkeyhint', autreVide ? 'next' : 'go');
+      });
+    };
+    lignes.forEach(function (c, i) {
+      c.addEventListener('input', majour);
+      c.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'Enter' || ev.isComposing || ev.shiftKey || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+        var suivants = lignes.slice(i + 1).concat(lignes.slice(0, i));
+        var cible = suivants.filter(vide)[0];
+        if (!cible) return;                       // tout est rempli : envoi normal
+        ev.preventDefault();
+        cible.focus();
+      });
+    });
+    majour();
+    // Focus sur le premier champ de réponse (demande de l'utilisateur, 2026-10-06) : champ texte ou zone de
+    // texte, sans défilement (l'énoncé reste en vue), seulement si rien d'autre n'a le focus.
+    var premier = champs.filter(function (c) { return !c.readOnly && !c.disabled && c.getClientRects().length; })[0];
+    var actif = document.activeElement;
+    if (premier && (!actif || actif === document.body || actif === document.documentElement)) {
+      try { premier.focus({ preventScroll: true }); } catch (e) { premier.focus(); }
+    }
+  }
+
+  /* Tuiles à déplacer des exercices (dragfill, correspond… : bibliothèque Dynapi de WIMS, DragEvent, qui
+   * n'écoute que la souris) : au doigt, le téléphone faisait défiler la page au lieu de déplacer la tuile.
+   * Pont tactile (demande de l'utilisateur, 2026-10-06) : un toucher qui commence sur une couche Dynapi
+   * déplaçable (écouteur DragEvent.lyrListener) ne fait plus défiler ; dès que le doigt bouge, il devient
+   * mousedown / mousemove / mouseup pour Dynapi. Un simple toucher reste un « clic » (tuile puis
+   * destination). */
+  function glisserTactile() {
+    var dyn = window.DynObject, drag = window.DragEvent;
+    if (!dyn || !dyn.all || !drag || !drag.lyrListener || !('ontouchstart' in window)) return;
+    var deplacable = function (el) {
+      for (; el && el !== document.body; el = el.parentElement) {
+        var obj = el.id && dyn.all[el.id];
+        if (obj && obj._listeners && obj._listeners.indexOf(drag.lyrListener) >= 0) return el;
+      }
+      return null;
+    };
+    // Dynapi remplace window.MouseEvent par sa propre classe : évènement natif par document.createEvent.
+    var souris = function (type, cible, x, y) {
+      var e = document.createEvent('MouseEvents');
+      e.initMouseEvent(type, true, true, window, 1, x, y, x, y, false, false, false, false, 0, null);
+      (cible || document.body).dispatchEvent(e);
+    };
+    // Hors de l'écran, elementFromPoint ne renvoie rien : le body (Dynapi ne sait pas traiter le document).
+    var sous = function (x, y) { return document.elementFromPoint(x, y) || document.body; };
+    var etat = null;
+    document.addEventListener('touchstart', function (ev) {
+      etat = null;
+      if (ev.touches.length !== 1 || !deplacable(ev.target)) return;
+      var t = ev.touches[0];
+      etat = { cible: ev.target, x: t.clientX, y: t.clientY, glisse: false };
+    }, { capture: true, passive: true });
+    document.addEventListener('touchmove', function (ev) {
+      if (!etat) return;
+      ev.preventDefault();                       // dès le premier mouvement : la page ne défile pas
+      var t = ev.touches[0];
+      if (!etat.glisse) {
+        if (Math.abs(t.clientX - etat.x) + Math.abs(t.clientY - etat.y) < 6) return;
+        etat.glisse = true;
+        souris('mousedown', etat.cible, etat.x, etat.y);
+      }
+      souris('mousemove', sous(t.clientX, t.clientY), t.clientX, t.clientY);
+    }, { capture: true, passive: false });
+    var finir = function (ev) {
+      if (!etat) return;
+      var e = etat; etat = null;
+      if (!e.glisse) return;                     // simple toucher : le navigateur fait son « clic »
+      if (ev.cancelable) ev.preventDefault();    // pas de clic en plus après un glissement
+      var t = ev.changedTouches[0];
+      souris('mouseup', sous(t.clientX, t.clientY), t.clientX, t.clientY);
+    };
+    document.addEventListener('touchend', finir, { capture: true, passive: false });
+    document.addEventListener('touchcancel', finir, { capture: true, passive: false });
+  }
+
+  /* Clavier mathématique tactile (disposition A choisie par l'utilisateur, 2026-10-06), activé par une
+   * surcharge CSS (:root { --nova-clavier-maths: oui; }, jetons.css), sur un écran tactile seulement. Il
+   * remplace le clavier du téléphone (inputmode="none") dans tous les champs texte de réponse ; « ABC » rend
+   * le clavier du téléphone pour le champ, un petit bouton « 123 » à côté du champ ramène au clavier Nova.
+   * x² → ^2, x³ → ^3, √ → sqrt() (curseur entre les parenthèses), ×10ˣ → *10^, × → *, ÷ → /. Entrée :
+   * « Suivant » vers le champ vide suivant, sinon « OK » (bouton d'envoi de WIMS, sa vérification comprise).
+   * Les touches ne prennent pas le focus (pointerdown sans action par défaut) : le curseur reste dans le
+   * champ. */
+  function clavierMaths() {
+    var form = document.forms.replyform;
+    if (!form || !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
+    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
+    if (!/^["']?(oui|yes|on|1)["']?$/.test(reglage)) return;
+    var textes = document.getElementById('nova-textes');
+    var t = function (n, d) { return (textes && textes.getAttribute('data-texte-clavier' + (n ? '-' + n : ''))) || d; };
+    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"]'), function (c) {
+      return (!c.type || c.type === 'text') && !c.readOnly && !c.disabled;
+    });
+    if (!champs.length) return;
+    var natifs = [];
+    var svg = function (d) {
+      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+    };
+    var exp = function (b, e) { return b + '<sup>' + e + '</sup>'; };
+    // Disposition A, colonnes permutées (demande de l'utilisateur, 2026-10-06) : chiffres et opérations à
+    // gauche, fonctions et navigation à droite, « Suivant » en bas à droite. c = classe, v = texte écrit ou
+    // action, a = nom accessible.
+    var touches = [
+      { l: '7' }, { l: '8' }, { l: '9' }, { l: '\u00F7', c: 'f', v: '/' },
+      { l: exp('x', '2'), c: 'f', v: '^2', a: t('carre', 'Squared') }, { l: exp('x', '3'), c: 'f', v: '^3', a: t('cube', 'Cubed') },
+      { l: '\u221A', c: 'f', v: 'racine', a: t('racine', 'Square root') },
+      { l: '4' }, { l: '5' }, { l: '6' }, { l: '\u00D7', c: 'f', v: '*' },
+      { l: '(' }, { l: ')' }, { l: '\u00D710' + '<sup>x</sup>', c: 'f', v: '*10^', a: t('puissance10', 'Times ten to the power') },
+      { l: '1' }, { l: '2' }, { l: '3' }, { l: '\u2212', c: 'f', v: '-' },
+      { l: svg('<path d="M15 6l-6 6 6 6"/>'), c: 'nav', v: 'gauche', a: t('gauche', 'Move left') },
+      { l: svg('<path d="M9 6l6 6-6 6"/>'), c: 'nav', v: 'droite', a: t('droite', 'Move right') },
+      { l: svg('<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>'), c: 'nav', v: 'effacer', a: t('effacer', 'Delete') },
+      { l: '0', c: 's2' }, { l: '.' }, { l: '+', c: 'f' },
+      { l: 'ABC', c: 'abc', v: 'abc', a: t('abc', 'Phone keyboard') }, { l: '', c: 'ok s2', v: 'entree' }
+    ];
+    var clavier = document.createElement('div');
+    clavier.className = 'nova-clavier';
+    clavier.setAttribute('role', 'group');
+    clavier.setAttribute('aria-label', t('', 'Math keyboard'));
+    clavier.hidden = true;
+    var entree = null;
+    touches.forEach(function (k) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.tabIndex = -1;
+      b.className = 'nova-touche' + (k.c ? ' ' + k.c : '');
+      b.innerHTML = '<span>' + k.l + '</span>';
+      b.setAttribute('data-v', k.v || k.l);
+      if (k.a) b.setAttribute('aria-label', k.a);
+      if (k.v === 'entree') entree = b;
+      clavier.appendChild(b);
+    });
+    document.body.appendChild(clavier);
+
+    var champ = null;
+    var evenement = function (c) { var e = document.createEvent('Event'); e.initEvent('input', true, true); c.dispatchEvent(e); };
+    var vide = function (c) { return !c.value.trim(); };
+    var suivantVide = function () {
+      var i = champs.indexOf(champ);
+      return champs.slice(i + 1).concat(champs.slice(0, i)).filter(vide)[0] || null;
+    };
+    var majEntree = function () {
+      if (!entree || !champ) return;
+      var suite = suivantVide();
+      entree.querySelector('span').textContent = suite ? t('suivant', 'Next') : t('ok', 'OK');
+    };
+    var inserer = function (txt, recul) {
+      var a = champ.selectionStart, b = champ.selectionEnd;
+      champ.setRangeText(txt, a, b, 'end');
+      if (recul) { var q = champ.selectionStart - recul; champ.setSelectionRange(q, q); }
+      evenement(champ);
+    };
+    var agir = function (v) {
+      if (!champ) return;
+      var a = champ.selectionStart, b = champ.selectionEnd;
+      if (v === 'gauche') { var g = a === b ? Math.max(0, a - 1) : a; champ.setSelectionRange(g, g); }
+      else if (v === 'droite') { var d = a === b ? Math.min(champ.value.length, b + 1) : b; champ.setSelectionRange(d, d); }
+      else if (v === 'effacer') {
+        if (a !== b) champ.setRangeText('', a, b, 'end');
+        else if (a > 0) champ.setRangeText('', a - 1, a, 'end');
+        evenement(champ);
+      }
+      else if (v === 'racine') inserer('sqrt()', 1);
+      else if (v === 'abc') natif(champ);
+      else if (v === 'entree') {
+        var suite = suivantVide();
+        if (suite) { suite.focus(); return; }
+        var envoi = form.querySelector('.send_answer input[type="submit"], input[type="submit"]');
+        if (envoi) envoi.click(); else form.submit();
+      }
+      else inserer(v);
+      majEntree();
+    };
+    // Les touches ne prennent pas le focus : le curseur reste dans le champ.
+    clavier.addEventListener('pointerdown', function (ev) { if (ev.target.closest('.nova-touche')) ev.preventDefault(); });
+    clavier.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    clavier.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.nova-touche');
+      if (b) agir(b.getAttribute('data-v'));
+    });
+
+    var afficher = function (c) {
+      champ = c;
+      clavier.hidden = false;
+      document.documentElement.classList.add('nova-clavier-ouvert');
+      document.documentElement.style.setProperty('--nova-clavier-h', clavier.offsetHeight + 'px');
+      majEntree();
+      // Le champ reste visible au-dessus du clavier.
+      var r = c.getBoundingClientRect(), bas = window.innerHeight - clavier.offsetHeight - 12;
+      if (r.bottom > bas) window.scrollBy(0, r.bottom - bas);
+      else if (r.top < 72) window.scrollBy(0, r.top - 72);
+    };
+    var cacher = function () {
+      clavier.hidden = true;
+      document.documentElement.classList.remove('nova-clavier-ouvert');
+    };
+    // « ABC » : clavier du téléphone pour ce champ ; « 123 » à côté du champ pour revenir.
+    var natif = function (c) {
+      if (natifs.indexOf(c) < 0) natifs.push(c);
+      c.setAttribute('inputmode', 'text');
+      c.classList.add('nova-champ-natif');
+      cacher();
+      c.blur();
+      c.focus();
+    };
+    champs.forEach(function (c) {
+      c.setAttribute('inputmode', 'none');
+      // Liste de suggestions vide de WIMS (list="emptylist", contre la saisie automatique) : une flèche ▼
+      // apparaît sur le champ au téléphone ; inutile ici (autocomplete déjà coupé par claviersReponse).
+      c.removeAttribute('list');
+      c.addEventListener('input', majEntree);
+    });
+    // Pastille flottante en bas à droite, quand le clavier Nova est rangé : le rouvre sur le dernier champ
+    // utilisé (demande de l'utilisateur, 2026-10-06). Elle suit le haut du clavier du téléphone s'il est
+    // ouvert (visualViewport).
+    var dernier = champs[0];
+    var pastille = document.createElement('button');
+    pastille.type = 'button';
+    pastille.className = 'nova-pastille-clavier';
+    pastille.setAttribute('aria-label', t('123', 'Math keyboard'));
+    pastille.title = t('123', 'Math keyboard');
+    pastille.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg>';
+    pastille.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
+    pastille.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+    pastille.addEventListener('click', function () {
+      var c = dernier;
+      var n = natifs.indexOf(c);
+      if (n >= 0) natifs.splice(n, 1);
+      c.classList.remove('nova-champ-natif');
+      c.setAttribute('inputmode', 'none');
+      c.blur();
+      c.focus();
+      afficher(c);
+    });
+    document.body.appendChild(pastille);
+    document.documentElement.classList.add('nova-clavier-permis');
+    if (window.visualViewport) {
+      var suivreClavier = function () {
+        var vv = window.visualViewport;
+        var bas = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+        document.documentElement.style.setProperty('--nova-vv-bas', bas + 'px');
+      };
+      window.visualViewport.addEventListener('resize', suivreClavier);
+      window.visualViewport.addEventListener('scroll', suivreClavier);
+    }
+    // Toucher ailleurs (énoncé, figure…) range le clavier Nova et rend la page entière ; la pastille le rouvre.
+    document.addEventListener('pointerdown', function (ev) {
+      if (clavier.hidden || clavier.contains(ev.target) || pastille.contains(ev.target) || champs.indexOf(ev.target) >= 0) return;
+      cacher();
+      if (champs.indexOf(document.activeElement) >= 0) document.activeElement.blur();
+    }, true);
+    document.addEventListener('focusin', function (ev) {
+      if (champs.indexOf(ev.target) >= 0) dernier = ev.target;
+      if (champs.indexOf(ev.target) >= 0 && natifs.indexOf(ev.target) < 0) afficher(ev.target);
+      else if (!clavier.contains(ev.target)) cacher();
+    });
+    document.addEventListener('focusout', function () {
+      setTimeout(function () {
+        var actif = document.activeElement;
+        if (champs.indexOf(actif) < 0 || natifs.indexOf(actif) >= 0) cacher();
+      }, 0);
+    });
+    if (champs.indexOf(document.activeElement) >= 0) afficher(document.activeElement);
+  }
+
+  /* Images cliquables des exercices (<input type="image">, réponses « coord », droites graduées…) : le
+   * navigateur envoie la position du clic en pixels AFFICHÉS, que WIMS lit comme des pixels de l'image. Nova
+   * réduit les champs à la largeur de la page (max-width: 100 %) : sur un écran étroit ou zoomé, le point partait
+   * ailleurs (signalé par un collègue de l'utilisateur, 2026-10-07, H2/number/OEFevalwimsnbrel.fr ; pas avec Pion3,
+   * qui laisse l'image déborder). La position est ramenée à l'image d'origine avant l'envoi. Clavier (Entrée) :
+   * envoi ordinaire. */
+  function imagesCliquables() {
+    if (!document.querySelector('.wimsbody input[type="image"]')) return;
+    var tailles = {};
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody input[type="image"]'), function (i) {
+      var im = new Image();
+      im.onload = function () { tailles[i.src] = [im.naturalWidth, im.naturalHeight]; };
+      im.src = i.src;
+    });
+    document.addEventListener('click', function (e) {
+      var i = e.target;
+      if (!i || i.tagName !== 'INPUT' || i.type !== 'image' || !i.form || !i.closest('.wimsbody') || e.detail === 0) return;
+      var t = tailles[i.src];
+      var r = i.getBoundingClientRect();
+      var c = getComputedStyle(i);
+      var gauche = r.left + parseFloat(c.borderLeftWidth) + parseFloat(c.paddingLeft);
+      var haut = r.top + parseFloat(c.borderTopWidth) + parseFloat(c.paddingTop);
+      var largeur = r.width - parseFloat(c.borderLeftWidth) - parseFloat(c.borderRightWidth) - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight);
+      var hauteur = r.height - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth) - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom);
+      if (!t || !largeur || !hauteur || (Math.abs(largeur - t[0]) < 0.5 && Math.abs(hauteur - t[1]) < 0.5 && Math.abs(gauche - r.left) < 0.5 && Math.abs(haut - r.top) < 0.5)) return;   // taille réelle : rien à corriger
+      e.preventDefault();
+      var x = Math.round((e.clientX - gauche) * t[0] / largeur);
+      var y = Math.round((e.clientY - haut) * t[1] / hauteur);
+      x = Math.max(0, Math.min(t[0] - 1, x));
+      y = Math.max(0, Math.min(t[1] - 1, y));
+      var nom = i.name ? i.name + '.' : '';
+      Array.prototype.forEach.call(i.form.querySelectorAll('input.nova-clic-image'), function (h) { h.remove(); });
+      [['x', x], ['y', y]].forEach(function (v) {
+        var h = document.createElement('input');
+        h.type = 'hidden'; h.className = 'nova-clic-image'; h.name = nom + v[0]; h.value = v[1];
+        i.form.appendChild(h);
+      });
+      if (typeof i.form.requestSubmit === 'function') i.form.requestSubmit(); else i.form.submit();
+    }, true);
+  }
+
+  /* Exercices à dominos (étiquettes faites d'un tableau, scripts/anstype/fill.after ; demandes de l'utilisateur,
+   * 2026-10-08) :
+   *  - une consigne au-dessus des dominos (insérée avant que Dynapi ne place ses calques sur les repères
+   *    fillobj1…, après « load » : rien ne se décale) ;
+   *  - une seule taille de texte pour tous les dominos, la plus grande sans débordement (mesurée une fois les
+   *    formules affichées par MathJax) ;
+   *  - la case où le domino tomberait, en surbrillance pendant le glissement (règle de WIMS, f_cright : coin du
+   *    domino à moins des 2/3 de la case), ou la case sous le pointeur quand un domino est choisi d'un clic. */
+  function dominos() {
+    if (standard('dominos')) return;   // réglage « Dominos du thème standard »
+    var repere = document.getElementById('fillobj1');
+    var exercice = !!repere && Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); });
+    // Page de correction (demande de l'utilisateur, 2026-10-08) : dominos réaffichés par WIMS (.drag_label >
+    // .drag_content > table, dans l'énoncé et l'analyse) et ceux de la solution de l'auteur (tableaux à une ligne de
+    // deux cases, marqués ici nova-domino-solution) : même habillage, même taille commune.
+    var correction = !exercice && !!document.querySelector('.drag_content > table.wimsborder');
+    if (!exercice && !correction) return;
+    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table.wimsborder'), function (t) {
+      var lignes = t.rows;
+      if (t.closest('.drag_content') || t.querySelector('table') || lignes.length !== 1 || lignes[0].cells.length !== 2) return;
+      t.classList.add('nova-domino-solution');
+    });
+    // Ligne de solution trop large (dominos à 205 px et « = 6 = ») : elle défile dans son cadre, la page ne s'élargit pas.
+    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table:has(table.nova-domino-solution)'), function (t) {
+      if (t.querySelector('table:has(table.nova-domino-solution)') || t.parentElement.classList.contains('nova-defile-x')) return;
+      var cadre = document.createElement('div');
+      cadre.className = 'nova-defile-x';
+      t.parentNode.insertBefore(cadre, t);
+      cadre.appendChild(t);
+    });
+    // Placement des calques par Dynapi (fill.after) : les cases d'un même groupe sont rangées en grille à partir du
+    // repère du groupe, f_cut cases par ligne, pas de 205 px (stretchH) en largeur et de 50 px (stretchV) en hauteur ;
+    // les dominos, sur leur repère fillobj<n> (décalage left de -205 px). Nova les fait plus hauts (80 px, CSS) : le
+    // pas vertical est agrandi d'autant, sinon des cases sur plusieurs lignes se chevaucheraient. Au téléphone
+    // (demande de l'utilisateur, 2026-10-08), ils sont moins larges (175 px ; 150 px d'abord : texte trop petit) :
+    // places réservées, largeur, décalages et nombre de cases par ligne (f_cut) réduits avant « load », quand Dynapi
+    // place ses calques.
+    if (exercice && window.DynLayer && DynLayer.prototype.setAnchor) {
+      var telephone = !!(window.matchMedia && matchMedia('(max-width: 639.98px)').matches);
+      var etroit = 175, haut = 80 + 8, origine = null, origineV = null;
+      Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, div:has(> a[id^="fillobj"]) > img'), function (im) {
+        var w = parseFloat(im.style.width);
+        if (!(w > 1)) return;
+        if (!origine) origine = w;
+        if (telephone) im.style.width = Math.round(w * etroit / origine) + 'px';
+      });
+      if (!telephone) etroit = origine;
+      if (telephone && origine && window.f_cut) {
+        var place = (document.querySelector('.wims_question') || repere.parentNode).clientWidth || 0;
+        var parLigne = Math.max(1, Math.floor(place / etroit));
+        for (var ic = 0; ic < f_cut.length; ic++) if (f_cut[ic] > parLigne) f_cut[ic] = parLigne;
+      }
+      if (origine) {
+        var ancrer = DynLayer.prototype.setAnchor;
+        DynLayer.prototype.setAnchor = function (a) {
+          if (a && a.stretchH === origine) {
+            var b = {};
+            for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
+            if (origineV === null && typeof a.stretchV === 'number') origineV = a.stretchV;
+            b.stretchH = etroit;
+            if (typeof b.left === 'number') b.left = Math.round(b.left * etroit / origine);
+            if (typeof b.top === 'number' && origineV) b.top = Math.round(b.top * haut / origineV);
+            a = b;
+          }
+          return ancrer.call(this, a);
+        };
+      }
+    }
+    // Page à dominos : marquée avant « load » (le CSS agrandit dominos, cases et places réservées avant que Dynapi ne
+    // calcule ses positions).
+    document.documentElement.classList.add('nova-dominos');
+    var textes = document.getElementById('nova-textes');
+    var consigne = textes && textes.getAttribute('data-texte-consigne-dominos');
+    var bloc = repere && repere.parentElement;
+    if (exercice && consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
+      var pc = document.createElement('p');
+      pc.className = 'nova-consigne-glisser';
+      pc.textContent = consigne;
+      bloc.parentNode.insertBefore(pc, bloc);
+    }
+    // Taille commune : essais à 20 px, puis la plus grande qui tient partout, sur la face la plus large ou la plus
+    // haute (bornée à 26 px).
+    var essais = 0;
+    var taille = function () {
+      var faces = Array.prototype.slice.call(document.querySelectorAll('.wims_grabbable .fill_content > table.wimsborder :is(th, td), .drag_content > table.wimsborder :is(th, td), table.nova-domino-solution :is(th, td)'));
+      var pretes = faces.length && faces.every(function (c) { return !c.querySelector('math') || c.querySelector('mjx-container'); });
+      if (!pretes) { if (++essais < 40) setTimeout(taille, 200); return; }
+      // Même taille pour tous les dominos affichés ensemble (cette page) ; elle peut changer d'un exercice à l'autre
+      // (précision de l'utilisateur, 2026-10-08). Par un zoom commun sur les formules, et non par la taille de police :
+      // MathJax recalcule l'échelle de ses formules d'après la police qui les entoure et annulait le changement (vécu :
+      // largeurs inchangées de 10 à 26 px). Mesure au naturel (zoom 1), puis le plus grand zoom qui tient partout.
+      var mesure = function (c) {
+        // Rendu visible de MathJax (le MathML gardé pour les lecteurs d'écran fausserait la mesure), sinon le texte.
+        var mj = c.querySelectorAll('mjx-container');
+        if (mj.length) {
+          var g = Infinity, d = -Infinity, h = Infinity, bas = -Infinity;
+          Array.prototype.forEach.call(mj, function (m) { var q = m.getBoundingClientRect(); g = Math.min(g, q.left); d = Math.max(d, q.right); h = Math.min(h, q.top); bas = Math.max(bas, q.bottom); });
+          return { width: d - g, height: bas - h };
+        }
+        var r = document.createRange(); r.selectNodeContents(c); return r.getBoundingClientRect();
+      };
+      var contenus = faces.map(function (c) { return c.querySelector('.wims_mathml') || c; });
+      contenus.forEach(function (e) { e.style.zoom = ''; });
+      var z = Infinity;
+      faces.forEach(function (c) {
+        var b = mesure(c), cs = getComputedStyle(c);
+        var largeur = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;   // 2 px d'air de plus de chaque côté
+        var hauteur = c.closest('.wims_grabbable, .drag_label, .nova-domino-solution').clientHeight - 12;  // marges et air
+        if (b.width > 0) z = Math.min(z, largeur / b.width);
+        if (b.height > 0) z = Math.min(z, hauteur / b.height);
+      });
+      if (!isFinite(z)) return;
+      z = Math.max(0.5, Math.min(3, Math.floor(z * 100) / 100));   // la hauteur du domino borne déjà la taille
+      contenus.forEach(function (e) { e.style.zoom = String(z); });
+      document.documentElement.setAttribute('data-nova-dominos-zoom', String(z));
+    };
+    // MathJax retouche encore ses formules plusieurs secondes après « load » (fontes, taille relative à la police) :
+    // mesures répétées toutes les 500 ms pendant 8 s, puis à chaque fin de rendu MathJax (vécu : 20 px posés d'après
+    // une mesure prise trop tôt, texte qui débordait). Mesure et taille finale dans la même tâche : rien ne clignote.
+    var relancer = function () { essais = 0; taille(); };
+    window.addEventListener('load', function () {
+      var n = 0;
+      var tic = setInterval(function () { relancer(); if (++n >= 16) clearInterval(tic); }, 500);
+      if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(function () { setTimeout(relancer, 150); });
+    });
+    if (!exercice) return;
+    // Téléphone en portrait, dominos ou cases sur plusieurs lignes : fenêtre flottante qui propose le mode paysage
+    // (demande de l'utilisateur, 2026-10-08). Elle part en paysage ou quand on la ferme (pas de retour de la session).
+    var portrait = window.matchMedia ? matchMedia('(orientation: portrait)') : null;
+    var surUneLigne = function (sel) {
+      var hauts = Array.prototype.map.call(document.querySelectorAll(sel), function (e) { return Math.round(e.getBoundingClientRect().top + window.scrollY); });
+      return !hauts.length || Math.max.apply(null, hauts) - Math.min.apply(null, hauts) < 4;
+    };
+    var fenetre = null;
+    var paysage = function () {
+      var ferme = false;
+      try { ferme = sessionStorage.getItem('nova-paysage-ferme') === '1'; } catch (e) { /* sans stockage */ }
+      var montrer = !ferme && portrait && portrait.matches && document.querySelector('.wims_droppable') &&
+        !(surUneLigne('.wims_droppable') && surUneLigne('.wims_grabbable'));
+      if (!montrer) { if (fenetre) fenetre.hidden = true; return; }
+      if (!fenetre) {
+        fenetre = document.createElement('div');
+        fenetre.className = 'nova-paysage';
+        fenetre.setAttribute('role', 'status');
+        fenetre.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="16" rx="2"/><path d="M3 15a9 9 0 0 0 15 6"/><path d="M18 17v4h-4"/></svg><span></span><button type="button"></button>';
+        fenetre.querySelector('span').textContent = (textes && textes.getAttribute('data-texte-paysage')) || 'Turn your phone sideways.';
+        var bouton = fenetre.querySelector('button');
+        bouton.textContent = '\u00d7';
+        bouton.setAttribute('aria-label', (textes && textes.getAttribute('data-texte-fermer')) || 'Close');
+        bouton.addEventListener('click', function () {
+          fenetre.hidden = true;
+          try { sessionStorage.setItem('nova-paysage-ferme', '1'); } catch (e) { /* cette page seulement */ }
+        });
+        document.body.appendChild(fenetre);
+      }
+      fenetre.hidden = false;
+    };
+    window.addEventListener('load', function () { setTimeout(paysage, 1200); });
+    if (portrait && portrait.addEventListener) portrait.addEventListener('change', function () { setTimeout(paysage, 600); });
+    // Case visée.
+    var glisse = null, rafId = 0, derniere = null;
+    var marquer = function (z) {
+      if (z === derniere) return;
+      if (derniere) derniere.classList.remove('nova-survolee');
+      if (z) z.classList.add('nova-survolee');
+      derniere = z;
+    };
+    var choisi = function () { return document.querySelector('.wims_grabbable[style*="rgb(96, 96, 255)"]'); };
+    document.addEventListener('mousedown', function (e) { var g = e.target.closest && e.target.closest('.wims_grabbable'); glisse = g || null; }, true);
+    document.addEventListener('mouseup', function () { glisse = null; setTimeout(function () { marquer(null); }, 0); }, true);
+    document.addEventListener('mousemove', function (e) {
+      if (rafId) return;
+      rafId = requestAnimationFrame(function () {
+        rafId = 0;
+        var zones = document.querySelectorAll('.wims_droppable');
+        var vise = null;
+        if (glisse) {
+          var g = glisse.getBoundingClientRect();
+          Array.prototype.some.call(zones, function (z) {
+            var r = z.getBoundingClientRect();
+            if (Math.abs(g.left - r.left) <= r.width * 2 / 3 && Math.abs(g.top - r.top) <= r.height * 2 / 3) { vise = z; return true; }
+            return false;
+          });
+        } else if (choisi()) {
+          Array.prototype.some.call(zones, function (z) {
+            var r = z.getBoundingClientRect();
+            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { vise = z; return true; }
+            return false;
+          });
+        }
+        marquer(vise);
+      });
+    }, true);
+  }
+
+  /* ===== js/src/60-eleve.js : accueil de l'élève, Mon activité, badges ===== */
+  /* Élève d'un portail ou d'un groupement dont l'accueil ne propose qu'un seul cours (ou une seule classe) :
+   * il y entre directement, juste après la connexion comme à chaque retour à cet accueil, qui devient ainsi
+   * le cours (demande de l'utilisateur, 2026-10-05). Seulement si cet accueil n'a rien d'autre à montrer : ni
+   * travail (#widget_user_list), ni message de la classe (themes/_widgets/motd.phtml). location.replace :
+   * pas d'étape de plus dans l'historique. Un retour depuis le cours passe par le portail (ou le groupement) :
+   * sa page de classe renvoie d'abord à la classe, il faut un second saut (vécu au banc). Garde-fou : au plus
+   * 3 sauts vers le même cours en 10 s. */
+  function coursUnique() {
+    if (!document.getElementById('nova-eleve')) return;
+    // Avant tout retour anticipé : chaque page de l'élève doit noter sa classe.
+    // Sens du déplacement (correction du 2026-10-07, signalée par l'utilisateur : un élève qui remontait du cours
+    // vers une page à entrée unique, celle de sa classe, y était renvoyé aussitôt vers le cours, page masquée, et
+    // ne passait qu'après plusieurs « Retour » rapides). On ne saute que vers le bas : juste après la connexion
+    // (session=new.), ou depuis une page qui n'est pas sous l'entrée unique. La classe de chaque page de l'élève
+    // (meta nova-classe, htmlheader.phtml) est retenue pour la page suivante.
+    var meta = document.querySelector('meta[name="nova-classe"]');
+    var ici = meta ? meta.getAttribute('content') : '';
+    var precedente = null;
+    try { precedente = sessionStorage.getItem('nova-classe-prec'); if (ici) sessionStorage.setItem('nova-classe-prec', ici); } catch (e) { /* sans stockage */ }
+    if (/[?&]session=new\./.test(location.href)) precedente = null;
+    var corps = document.querySelector('.wimsbody');
+    // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
+    // accueil (demande de l'utilisateur, 2026-10-06).
+    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
+    if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
+    var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
+    var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
+    var travail = document.getElementById('widget_user_list');
+    var seul = liens.length === 1 && !(travail && travail.textContent.trim()) &&
+      !document.querySelector('#wims_class_motd, #wims_class_pmotd');
+    if (!liste) return;
+    if (seul) {
+      var cible = (/[?&+]class=([^&]*)/.exec(liens[0].getAttribute('href')) || [])[1] || liens[0].href;
+      try { cible = decodeURIComponent(cible); } catch (e) { /* telle quelle */ }
+      if (precedente && (precedente === cible || precedente.indexOf(cible + '/') === 0)) { corps.classList.add('nova-sans-saut'); return; }
+      var recent = false;
+      try {
+        var dernier = JSON.parse(sessionStorage.getItem('nova-cours-unique') || 'null');
+        var suite = !!dernier && dernier.cible === cible && Date.now() - dernier.t < 10000;
+        var essais = suite ? dernier.n + 1 : 1;
+        recent = essais > 3;
+        if (!recent) sessionStorage.setItem('nova-cours-unique', JSON.stringify({ cible: cible, t: suite ? dernier.t : Date.now(), n: essais }));
+      } catch (e) { /* stockage refusé : on entre quand même */ }
+      // Après « load » et un délai : une requête partie moins d'une seconde après la précédente est traitée
+      // avec l'état précédent de la session et ramène ici (mesuré au banc : 300 ms échoue, 1 s passe de
+      // justesse, 1,5 s passe). Juste après la connexion (session=new.…), 300 ms suffisent.
+      if (!recent) {
+        var delai = /[?&]session=new\./.test(location.href) ? 300 : 1500;
+        var partir = function () { setTimeout(function () { location.replace(liens[0].href); }, delai); };
+        if (document.readyState === 'complete') partir(); else window.addEventListener('load', partir);
+        return;
+      }
+    }
+    corps.classList.add('nova-sans-saut');
+  }
+
+  /* « Dernière connexion le 07/10/2026 - 23:03:05 » (modules/home/main.phtml, date de scripts/adm/date.phtml, hors du
+   * thème) : jour/mois et heures:minutes seulement, « 07/10 à 23:03 » (demande de l'utilisateur, 2026-10-08). */
+  function derniereConnexion() {
+    var a = /^en/i.test(document.documentElement.lang || '') ? 'at' : '\u00e0';
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .wims_msg.info'), function (m) {
+      var re = /(\d{1,2})\/(\d{1,2})\/\d{4}\s*-\s*(\d{1,2}):(\d{2}):\d{2}/;
+      if (!re.test(m.textContent)) return;
+      var marche = document.createTreeWalker(m, NodeFilter.SHOW_TEXT);
+      for (var t = marche.nextNode(); t; t = marche.nextNode()) {
+        if (re.test(t.nodeValue)) { t.nodeValue = t.nodeValue.replace(re, '$1/$2 ' + a + ' $3:$4'); return; }
+      }
+    });
+  }
+
+  /* Menu latéral rangé dans #wimspagebox par WIMS sur certaines pages (page de réponse d'un exercice de feuille)
+   * au lieu d'être enfant de #wimsbodybox comme partout ailleurs : remis à sa place habituelle, sinon ni le tiroir
+   * ni la grille de Nova ne s'appliquent (vécu le 2026-10-08 : menu ☰ en bas de page, sous les boutons collés et
+   * le voile). */
+  /* Page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A) : le lien de WIMS
+   * (module adm/class/activity) mène à la page Nova de l'accueil (nova_activite=1, _widgets/activite.phtml), sauf
+   * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
+  function activiteLien() {
+    if (!document.getElementById('nova-eleve') || standard('menus')) return;
+    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
+    if (v === 'non') return;
+    document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
+      a.href = a.href.replace(/module=adm%2Fclass%2Factivity(&\+job=[^&]*)?/, 'module=home&+nova_activite=1');
+    });
+  }
+
+  /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
+   *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
+   *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
+   *  - sur l'accueil (user.phtml) : pastille à côté de « Mes notes », annonce d'un nouveau niveau, et données
+   *    du badge (#nova-badges, calculées par _procs/badges.awk) pour la fenêtre, ouverte d'un toucher. */
+  function badges() {
+    var racine = document.documentElement;
+    var actif = getComputedStyle(racine).getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
+    if (getComputedStyle(racine).getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
+    var maison = document.querySelector('#wimstopbox .class_home a[href]');
+    var surAccueil = !!document.getElementById('nova-badges');
+    // « Mes badges » juste après « Mes notes », dans le même menu (le menu latéral ; demande de l'utilisateur,
+    // 2026-10-07). Classe « heart » : icône cœur du jeu Font_Awesome de WIMS (sans elle, un tiret), rien
+    // avec le jeu « default ».
+    var notes = document.querySelector('#wimsmenumodubox .menuitem > a.myscore');
+    var textes = document.getElementById('nova-textes');
+    if (actif && notes && document.getElementById('nova-eleve') && (maison || surAccueil) &&
+        !document.body.classList.contains('nova-examen-session') && !document.querySelector('.nova-mes-badges')) {
+      var item = notes.parentNode.cloneNode(false);
+      item.removeAttribute('id');
+      var lien = document.createElement('a');
+      lien.className = 'heart nova-mes-badges';
+      lien.href = maison ? maison.href.split('#')[0] + '#nova-badges' : '#nova-badges';   // accueil : sans lien de retour
+      lien.textContent = (textes && textes.getAttribute('data-texte-mes-badges')) || 'My badges';
+      item.appendChild(lien);
+      notes.parentNode.parentNode.insertBefore(item, notes.parentNode.nextSibling);
+    }
+
+    var d = document.getElementById('nova-badges');
+    if (!d) return;
+    var masquer = document.querySelector('.nova-badge-annonce .nova-badge-masquer');
+    if (masquer) masquer.addEventListener('click', function () { masquer.closest('.nova-badge-annonce').remove(); });
+    var fenetre = null;
+    var ouvrir = function (badge) {
+      if (!fenetre) fenetre = fenetreBadges(d);
+      if (badge && fenetre.choisir) fenetre.choisir(badge);
+      if (typeof fenetre.showModal === 'function') { if (!fenetre.open) fenetre.showModal(); }
+      else fenetre.setAttribute('open', '');
+    };
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href$="#nova-badges"]');
+      if (!a) return;
+      e.preventDefault();
+      ouvrir(a.getAttribute('data-badge'));
+    });
+    if (location.hash === '#nova-badges') {
+      try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* adresse gardée */ }
+      ouvrir();
+    }
+  }
+
+  function fenetreBadges(d) {
+    var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
+    var el = function (balise, classe, texte) {
+      var e = document.createElement(balise);
+      if (classe) e.className = classe;
+      if (texte != null) e.textContent = texte;
+      return e;
+    };
+    var noms = a('niveaux').split(',');
+    var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
+    var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
+    var nsess = +reg[7] || 2;   // Échauffement : sessions d'entraînement demandées avant le DM noté
+    var f = el('dialog', 'nova-badges-fenetre');
+    f.setAttribute('aria-labelledby', 'nova-badges-titre');
+    var tete = el('div', 'nova-badges-entete');
+    var h = el('h2', '', a('titre'));
+    h.id = 'nova-badges-titre';
+    var fermer = el('button', 'nova-badges-fermer', '\u00d7');
+    fermer.type = 'button';
+    fermer.setAttribute('aria-label', a('fermer'));
+    fermer.addEventListener('click', function () { f.close ? f.close() : f.removeAttribute('open'); });
+    tete.appendChild(h); tete.appendChild(fermer);
+    f.appendChild(tete);
+    // Toucher à côté de la fenêtre : la ferme.
+    f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
+
+    var dateLongue = function (o) {
+      if (!/^\d{8}$/.test(o)) return '';
+      return new Date(+o.slice(0, 4), +o.slice(4, 6) - 1, +o.slice(6, 8)).toLocaleDateString(racineLangue(), { day: 'numeric', month: 'long', year: 'numeric' });
+    };
+    // Panneau commun : en-tête (image, nom, niveau, date, règle), chiffres, état, grille des niveaux, aide.
+    var panneau = function (cle, nom, niveau, np, paliers, obtenu, regle, chiffresListe, etatClasse, etatTexte, unite, aide, images) {
+      var carte = el('section', 'nova-badge-detail');
+      carte.setAttribute('data-badge', cle);
+      var image = function (n) { return images + Math.max(1, n) + '.webp'; };
+      var haut = el('div', 'nova-badge-haut');
+      var img = el('img', niveau ? '' : 'nova-badge-verrou');
+      img.src = image(niveau); img.alt = ''; img.width = 96; img.height = 96;
+      haut.appendChild(img);
+      var titre = el('div');
+      titre.appendChild(el('h3', '', nom));
+      titre.appendChild(el('p', 'nova-badge-niveau', niveau ? noms[niveau - 1] + ' \u00b7 ' + a('niveau') + ' ' + niveau + '/' + np : a('aucun')));
+      var dt = niveau ? dateLongue(obtenu) : '';
+      if (dt) titre.appendChild(el('p', '', a('obtenu') + ' ' + dt + '.'));
+      titre.appendChild(el('p', '', regle));
+      haut.appendChild(titre);
+      carte.appendChild(haut);
+      var chiffres = el('div', 'nova-badge-chiffres');
+      chiffresListe.forEach(function (c) {
+        var b = el('div');
+        b.appendChild(el('b', '', String(c[0])));
+        b.appendChild(el('span', '', c[1]));
+        chiffres.appendChild(b);
+      });
+      carte.appendChild(chiffres);
+      if (etatTexte) carte.appendChild(el('p', 'nova-badge-etat nova-badge-etat-' + etatClasse, etatTexte));
+      var grille = el('ol', 'nova-badge-niveaux');
+      paliers.forEach(function (p, i) {
+        var n = i + 1;
+        var li = el('li', n < niveau ? 'nova-atteint' : (n === niveau ? 'nova-atteint nova-actuel' : 'nova-verrou'));
+        var im = el('img');
+        im.src = image(n); im.alt = ''; im.width = 52; im.height = 52; im.loading = 'lazy';
+        li.appendChild(im);
+        li.appendChild(el('span', '', noms[i] || String(n)));
+        li.appendChild(el('b', '', unite ? p + ' ' + unite : String(p)));
+        grille.appendChild(li);
+      });
+      carte.appendChild(grille);
+      if (aide) carte.appendChild(el('p', 'nova-badge-aide', aide));
+      return carte;
+    };
+    var panneaux = [];
+    // Régularité (ex-Fidélité ; compteur de semaines depuis le 2026-11-07, maquette validée par l'utilisateur) :
+    // fidelite on niveau total total etat prochain nouveau obtenu np paliers… (etat : fait | attente).
+    var mf = a('fidelite').split(/\s+/);
+    if (mf[1] === 'on') {
+      var niveau = +mf[2], totalF = +mf[3], etat = mf[5] === 'fait' ? 'fait' : 'attente', prochain = +mf[6], np = +mf[9];
+      var paliers = mf.slice(10, 10 + np).map(Number);
+      var suite = niveau < np ? (prochain === 1 ? a('fid-suite1') : a('fid-suite')).replace('%n', prochain).replace('%s', noms[niveau]) : a('max');
+      var etatTexte = etat === 'fait' ? (a('fid-etat-fait') + ' ' + suite).trim()
+        : (parsem === 1 ? a('fid-etat-attente1') : a('fid-etat-attente')).replace('%e', parsem);
+      var chiffresF = [[totalF, a('fid-total')]];
+      if (niveau < np) chiffresF.push([prochain, a('avant').replace('%s', noms[niveau])]);
+      panneaux.push(['fidelite', a('fid-nom'), panneau('fidelite', a('fid-nom'), niveau, np, paliers, mf[8],
+        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), a('fid-aide'), a('images-fidelite'))]);
+    }
+    // Persévérance : perseverance on niveau total prochain nouveau obtenu np paliers…
+    var mp = a('perseverance').split(/\s+/);
+    if (mp[1] === 'on') {
+      var nivP = +mp[2], total = +mp[3], prochP = +mp[4], npP = +mp[7];
+      var palP = mp.slice(8, 8 + npP).map(Number);
+      var chiffresP = [[total, a('per-total')]];
+      if (nivP < npP) chiffresP.push([prochP, a('avant').replace('%s', noms[nivP])]);
+      // « En cours » : exercice qui n'attend qu'une réussite (titre|échecs), sinon ce qui reste.
+      var enc = a('encours'), etatP, texteP;
+      if (enc && enc.indexOf('|') > 0) {
+        var t = enc.split('|');
+        etatP = 'attente';
+        texteP = a('per-encours').replace('%t', t[0]).replace('%n', t[1]).replace('%e', echec);
+      } else {
+        etatP = 'fait';
+        texteP = nivP < npP ? (prochP === 1 ? a('per-suite1') : a('per-suite')).replace('%n', prochP).replace('%s', noms[nivP]) : a('max');
+      }
+      panneaux.push(['perseverance', a('per-nom'), panneau('perseverance', a('per-nom'), nivP, npP, palP, mp[6],
+        a('per-regle').replace('%r', reussite).replace('%n', nechecs).replace('%e', echec), chiffresP, etatP, texteP, '',
+        a(examens ? 'per-examens-oui' : 'per-examens-non'), a('images-perseverance'))]);
+    }
+    // Échauffement (DM WIMS, 2026-11-06) : echauffement on niveau total prochain nouveau obtenu np paliers… ;
+    // data-dm = « faites demandées titre » du DM noté ouvert et pas encore commencé, ou « - ».
+    var mh = a('echauffement').split(/\s+/);
+    if (mh[1] === 'on') {
+      var nivH = +mh[2], totalH = +mh[3], prochH = +mh[4], npH = +mh[7];
+      var palH = mh.slice(8, 8 + npH).map(Number);
+      var chiffresH = [[totalH, a('ech-total')]];
+      if (nivH < npH) chiffresH.push([prochH, a('avant').replace('%s', noms[nivH])]);
+      var dm = /^dm (\d+) (\d+) (.+)$/.exec(a('dm')), etatH, texteH;
+      if (dm) {
+        var reste = +dm[2] - +dm[1];
+        etatH = reste > 0 ? 'attente' : 'fait';
+        texteH = (reste > 1 ? a('ech-dm').replace('%n', reste) : (reste === 1 ? a('ech-dm1') : a('ech-pret'))).replace('%t', dm[3]);
+      } else {
+        etatH = 'fait';
+        texteH = nivH < npH ? (prochH === 1 ? a('ech-suite1') : a('ech-suite')).replace('%n', prochH).replace('%s', noms[nivH]) : a('max');
+      }
+      panneaux.push(['echauffement', a('ech-nom'), panneau('echauffement', a('ech-nom'), nivH, npH, palH, mh[6],
+        (nsess === 1 ? a('ech-regle1') : a('ech-regle')).replace('%n', nsess), chiffresH, etatH, texteH, '',
+        a('ech-aide'), a('images-echauffement'))]);
+    }
+    // Au top (DM WIMS notés réussis, 2026-11-07) : top on niveau total prochain nouveau obtenu np paliers… ;
+    // data-topdm = « topdm <note retenue | -> <seuil> <titre> » du DM noté ouvert le plus récent, ou « topdm - ».
+    var mt = a('top').split(/\s+/);
+    if (mt[1] === 'on') {
+      var nivT = +mt[2], totalT = +mt[3], prochT = +mt[4], npT = +mt[7];
+      var palT = mt.slice(8, 8 + npT).map(Number);
+      var chiffresT = [[totalT, a('top-total')]];
+      if (nivT < npT) chiffresT.push([prochT, a('avant').replace('%s', noms[nivT])]);
+      var td = /^topdm (\S+) (\S+) (.+)$/.exec(a('topdm')), etatT, texteT;
+      var virgule = function (n) { return String(Math.round(n * 10) / 10).replace('.', racineLangue() === 'fr' ? ',' : '.'); };
+      var seuilT = +reg[8] || (td ? +td[2] : 9);
+      if (td && td[1] === '-') { etatT = 'attente'; texteT = a('top-afaire'); }
+      else if (td && +td[1] >= seuilT) { etatT = 'fait'; texteT = a('top-reussi'); }
+      else if (td) { etatT = 'attente'; texteT = a('top-encore'); }
+      if (td) texteT = texteT.replace('%t', td[3]).replace('%n', virgule(+td[1])).replace('%s', virgule(seuilT));
+      else {
+        etatT = 'fait';
+        texteT = nivT < npT ? (prochT === 1 ? a('top-suite1') : a('top-suite')).replace('%n', prochT).replace('%s', noms[nivT]) : a('max');
+      }
+      panneaux.push(['top', a('top-nom'), panneau('top', a('top-nom'), nivT, npT, palT, mt[6],
+        a('top-regle').replace('%s', virgule(seuilT)), chiffresT, etatT, texteT, '', a('top-aide'), a('images-top'))]);
+    }
+    // Couleur personnelle : carte dans l'onglet du badge choisi par l'enseignant (reglages : 9e champ badge, 10e niveau).
+    var drC = droitsCouleur(d);
+    panneaux.forEach(function (p) {
+      if (!drC || (p[0] !== drC.badge && p[0] !== drC.badgeDeg)) return;
+      var detail = p[2], aide = detail.querySelector('.nova-badge-aide');
+      var carte = carteCouleur(d, p[0]);
+      detail.insertBefore(carte, detail.querySelector('.nova-badge-niveaux') || aide);
+    });
+    // Onglets, s'il y a plus d'un badge.
+    var onglets = null;
+    f.choisir = function (cle) {
+      panneaux.forEach(function (p) {
+        var on = p[0] === cle;
+        p[2].hidden = !on;
+        if (p[3]) { p[3].setAttribute('aria-selected', on ? 'true' : 'false'); p[3].classList.toggle('nova-actif', on); p[3].tabIndex = on ? 0 : -1; }
+      });
+    };
+    if (panneaux.length > 1) {
+      onglets = el('div', 'nova-badges-onglets');
+      onglets.setAttribute('role', 'tablist');
+      panneaux.forEach(function (p) {
+        var b = el('button', 'nova-badges-onglet');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.id = 'nova-onglet-' + p[0];
+        var im = el('img');
+        var niv = +({ fidelite: mf, perseverance: mp, echauffement: mh, top: mt }[p[0]][2]);
+        im.src = a('images-' + p[0]) + Math.max(1, niv) + '.webp'; im.alt = ''; im.width = 28; im.height = 28;
+        if (!niv) im.className = 'nova-badge-verrou';
+        b.appendChild(im);
+        b.appendChild(el('span', 'nova-badges-onglet-nom', p[1]));
+        b.title = p[1];
+        b.addEventListener('click', function () { f.choisir(p[0]); });
+        p[2].setAttribute('role', 'tabpanel');
+        p[2].setAttribute('aria-labelledby', b.id);
+        p[3] = b;
+        onglets.appendChild(b);
+      });
+      onglets.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var i = panneaux.findIndex(function (p) { return !p[2].hidden; });
+        var n = (i + (e.key === 'ArrowRight' ? 1 : panneaux.length - 1)) % panneaux.length;
+        f.choisir(panneaux[n][0]); panneaux[n][3].focus();
+      });
+      f.appendChild(onglets);
+    }
+    panneaux.forEach(function (p) { f.appendChild(p[2]); });
+    if (panneaux.length) f.choisir(panneaux[0][0]);
+    document.body.appendChild(f);
+    return f;
+  }
+
+  /* ===== js/src/61-couleur.js : couleur personnelle (« Ma couleur ») ===== */
+  // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
+  // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
+  /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 3,5:1),
+   * débloquée par le niveau d'un badge choisi par l'enseignant (--nova-couleur-badge, --nova-couleur-niveau), puis 8 dégradés
+   * pré-établis à un niveau plus élevé du même badge (--nova-couleur-degrade ; maquette v2 validée le 2026-11-07). Choix gardé
+   * pour toute la structure sur le serveur (.nova_couleur_<login>, header.phtml) et, pour l'appliquer avant l'affichage de
+   * chaque page (htmlheader.phtml), dans localStorage sous nova-couleur|<structure ou classe>|<login> : « #accent » ou
+   * « #accent #seconde » (dégradé : html.nova-degrade et --nova-degrade, _css/couleur.css). Le choix se fait dans la fenêtre
+   * « Ma couleur », ouverte par le menu Profil (sur l'accueil seulement : l'envoi au serveur passe par l'accueil). */
+  // Palette (2026-11-07, utilisateur : 10 couleurs, du spectre entier, claires et foncées, texte blanc lisible ≥ 3,5:1).
+  var PALETTE = [['corail', '#E0442E'], ['orange', '#D35400'], ['ambre', '#B87400'], ['vert', '#1E9447'], ['sapin', '#2E6B3A'],
+    ['turquoise', '#008C95'], ['azur', '#0A7BD6'], ['nuit', '#1F3A6E'], ['violet', '#7B1FE0'], ['rose', '#D1106B']];
+  // Dégradés : deux couleurs de la palette, texte blanc ≥ 3,8:1 sur toute la longueur (calculé le 2026-11-07).
+  var DEGRADES = [['crepuscule', 'corail', 'violet'], ['braise', 'orange', 'rose'], ['framboise', 'rose', 'violet'], ['soleil', 'ambre', 'corail'],
+    ['ocean', 'azur', 'turquoise'], ['aurore', 'turquoise', 'violet'], ['foret', 'sapin', 'turquoise'], ['etoilee', 'nuit', 'violet']];
+  function hexPalette(nom) { var c = PALETTE.filter(function (p) { return p[0] === nom; })[0]; return c ? c[1] : ''; }
+  function couleursDe(nom) {   // [accent, seconde] ; [] = couleur de la classe
+    var g = DEGRADES.filter(function (x) { return x[0] === nom; })[0];
+    if (g) return [hexPalette(g[1]), hexPalette(g[2])];
+    var c = hexPalette(nom);
+    return c ? [c] : [];
+  }
+  function cleCouleur() {
+    var meta = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.content : ''; };
+    var racine = meta('nova-structure') || meta('nova-classe').split('/')[0], u = meta('nova-utilisateur');
+    return racine && u ? 'nova-couleur|' + racine + '|' + u : '';
+  }
+  function poserCouleur(nom) {
+    var c = couleursDe(nom), cle = cleCouleur(), r = document.documentElement;
+    if (c[0]) r.style.setProperty('--nova-accent', c[0]); else r.style.removeProperty('--nova-accent');
+    if (c[1]) { r.style.setProperty('--nova-degrade', 'linear-gradient(90deg, ' + c[0] + ', ' + c[1] + ')'); r.classList.add('nova-degrade'); }
+    else { r.style.removeProperty('--nova-degrade'); r.classList.remove('nova-degrade'); }
+    try { if (cle) { if (c[0]) localStorage.setItem(cle, c.join(' ')); else localStorage.removeItem(cle); } } catch (e) { /* sans stockage : cette page seulement */ }
+  }
+  // Droits de l'élève d'après l'accueil (#nova-badges) : 0 rien, 1 couleur, 2 dégradés ; null = récompense non proposée.
+  function droitsCouleur(d) {
+    if (!d) return null;
+    var reg = (d.getAttribute('data-reglages') || '').split(/\s+/), badge = reg[9] || 'aucun';
+    if (badge === 'aucun') return null;
+    var ligne = (d.getAttribute('data-' + badge) || '').split(/\s+/);
+    if (ligne[1] !== 'on') return null;
+    var niveau = +ligne[2] || 0, requis = +reg[10] || 2, requisDeg = +reg[11] || requis + 2;
+    var court = { fidelite: 'fid', perseverance: 'per', echauffement: 'ech', top: 'top' };
+    // Dégradés : badge à part (12e champ, 2026-11-08 ; absent = celui de la couleur, aucun = pas de dégradés). Ils ne
+    // s'ouvrent qu'une fois la couleur débloquée.
+    var badgeDeg = reg[12] || badge;
+    if (badgeDeg === badge) requisDeg = Math.max(requis, requisDeg);
+    var ligneDeg = badgeDeg === badge ? ligne : (d.getAttribute('data-' + badgeDeg) || '').split(/\s+/);
+    var niveauDeg = badgeDeg !== 'aucun' && ligneDeg[1] === 'on' ? +ligneDeg[2] || 0 : -1;
+    var degOk = niveauDeg >= 0 && niveauDeg >= requisDeg;
+    return { badge: badge, nomBadge: d.getAttribute('data-' + court[badge] + '-nom') || badge, niveau: niveau, requis: requis, requisDeg: requisDeg,
+      badgeDeg: niveauDeg >= 0 ? badgeDeg : 'aucun', nomBadgeDeg: d.getAttribute('data-' + court[badgeDeg] + '-nom') || badgeDeg,
+      etat: niveau >= requis ? (degOk ? 2 : 1) : 0 };
+  }
+  function cleMenuCouleur() { var c = cleCouleur(); return c ? c + '|menu' : ''; }
+  function lireMenuCouleur() { try { var c = cleMenuCouleur(); return c ? JSON.parse(localStorage.getItem(c) || 'null') : null; } catch (e) { return null; } }
+  function garderMenuCouleur(v) { try { var c = cleMenuCouleur(); if (c) { if (v) localStorage.setItem(c, JSON.stringify(v)); else localStorage.removeItem(c); } } catch (e) { /* rien */ } }
+  // Accueil de l'élève (#nova-couleur, user.phtml) : la valeur du serveur fait foi (vide : badges ou réglage coupés).
+  // Puis l'entrée « Ma couleur » du menu Profil, sur toutes les pages ordinaires (mémoire de l'accueil).
+  function couleurPerso() {
+    var source = document.getElementById('nova-couleur'), d = document.getElementById('nova-badges');
+    // Badges coupés dans cette zone (data-bdg) : la couleur choisie ailleurs dans la structure reste, l'entrée du menu part.
+    var bdg = source && source.getAttribute('data-bdg') === 'on';
+    if (bdg) poserCouleur(source.getAttribute('data-couleur') || '');
+    if (!document.getElementById('nova-eleve')) return;
+    var memo = lireMenuCouleur();
+    if (source) {
+      var dr = bdg && droitsCouleur(d);
+      if (!dr) { memo = null; garderMenuCouleur(null); }
+      else {
+        memo = { etat: dr.etat, vu: memo && typeof memo.vu === 'number' ? memo.vu : 0,
+          titre: d.getAttribute('data-coul-menu') || 'My colour', nouveau: d.getAttribute('data-coul-nouveau') || '' };
+        garderMenuCouleur(memo);
+      }
+    }
+    if (!memo) return;
+    var barre = document.getElementById('wimstopbox');
+    if (barre && !barreOrdinaire(barre)) return;
+    var profil = document.querySelector('#wimsmenumodubox .nova-profil');
+    if (!profil || profil.querySelector('.profil_couleur')) return;
+    var item = document.createElement('div');
+    item.className = 'menuitem profil_couleur';
+    var a = document.createElement('a');
+    a.className = 'tint';   // Font_Awesome : goutte (« .menuitem .tint »), rien avec le jeu « default »
+    // Toujours une adresse wims.cgi : « Liens externes masqués aux élèves » (--nova-masques-eleves) cache toute rubrique qui
+    // contient un lien hors de wims.cgi ; un simple « #… » y faisait disparaître tout le Profil (vécu, portail, 2026-11-07).
+    a.href = lienAccueil('') + '#nova-ma-couleur';
+    var span = document.createElement('span');
+    span.textContent = memo.titre;
+    a.appendChild(span);
+    if (memo.etat > memo.vu && memo.nouveau) {
+      a.classList.add('nova-couleur-neuf');
+      var n = document.createElement('span');
+      n.className = 'nova-couleur-nouveau';
+      n.textContent = memo.nouveau;
+      a.appendChild(n);
+    }
+    item.appendChild(a);
+    var avant = profil.querySelector('.profil_avatar') || profil.querySelector('.nova-profil-nom');
+    profil.insertBefore(item, avant ? avant.nextSibling : profil.firstChild);
+    if (!d) return;
+    var fenetre = null;
+    var ouvrir = function () {
+      if (!fenetre) fenetre = fenetreCouleur(d);
+      if (typeof fenetre.showModal === 'function') { if (!fenetre.open) fenetre.showModal(); } else fenetre.setAttribute('open', '');
+      var m = lireMenuCouleur();
+      if (m) { m.vu = Math.max(m.vu || 0, m.etat); garderMenuCouleur(m); }
+      var neuf = document.querySelector('.profil_couleur .nova-couleur-nouveau');
+      if (neuf) { neuf.remove(); a.classList.remove('nova-couleur-neuf'); }
+    };
+    window.novaOuvrirCouleur = ouvrir;
+    document.addEventListener('click', function (e) {
+      var l = e.target.closest && e.target.closest('a[href$="#nova-ma-couleur"]');
+      if (!l) return;
+      e.preventDefault();
+      var badgesOuverte = document.querySelector('dialog.nova-badges-fenetre[open]:not(.nova-couleur-fenetre)');
+      if (badgesOuverte && badgesOuverte.close) badgesOuverte.close();
+      ouvrir();
+    });
+    if (location.hash === '#nova-ma-couleur') {
+      try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* adresse gardée */ }
+      ouvrir();
+    }
+  }
+  // Fenêtre « Ma couleur » (maquette v2 validée le 2026-11-07) : couleurs unies, couleur de la classe, dégradés.
+  function fenetreCouleur(d) {
+    var a = function (n) { return d.getAttribute('data-' + n) || ''; };
+    var el = function (balise, classe, texte) {
+      var e = document.createElement(balise);
+      if (classe) e.className = classe;
+      if (texte != null) e.textContent = texte;
+      return e;
+    };
+    var dr = droitsCouleur(d) || { etat: 0, requis: 2, requisDeg: 4, nomBadge: '' };
+    var niveaux = a('niveaux').split(',');
+    var nomNiv = function (n) { return niveaux[n - 1] || String(n); };
+    var f = el('dialog', 'nova-badges-fenetre nova-couleur-fenetre');
+    f.setAttribute('aria-labelledby', 'nova-couleur-titre');
+    var tete = el('div', 'nova-badges-entete');
+    var h = el('h2', '', a('coul-menu'));
+    h.id = 'nova-couleur-titre';
+    var fermer = el('button', 'nova-badges-fermer', '\u00d7');
+    fermer.type = 'button';
+    fermer.setAttribute('aria-label', a('fermer'));
+    fermer.addEventListener('click', function () { f.close ? f.close() : f.removeAttribute('open'); });
+    tete.appendChild(h); tete.appendChild(fermer);
+    f.appendChild(tete);
+    f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
+    var corps = el('div', 'nova-couleur-corps');
+    f.appendChild(corps);
+    var verrou = function (texte, n, nomBadge) {
+      var v = el('p', 'nova-couleur-verrou', texte.replace('%s', nomNiv(n)).replace('%b', nomBadge || dr.nomBadge));
+      return v;
+    };
+    var actuelle = (document.getElementById('nova-couleur') || d).getAttribute('data-couleur') || '';
+    var etat = el('p', 'nova-couleur-etat');
+    etat.setAttribute('aria-live', 'polite');
+    var boutons = [];
+    var nomsU = a('coul-noms').split(','), nomsD = a('coul-degrades-noms').split(',');
+    var nomDe = function (nom) {
+      var i = PALETTE.findIndex(function (p) { return p[0] === nom; });
+      if (i >= 0) return nomsU[i] || nom;
+      i = DEGRADES.findIndex(function (p) { return p[0] === nom; });
+      return i >= 0 ? nomsD[i] || nom : '';
+    };
+    var choisir = function (nom, envoyer) {
+      actuelle = nom;
+      boutons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-couleur') === nom ? 'true' : 'false'); });
+      var n = nomDe(nom);
+      etat.textContent = n ? a('coul-choisie').replace('%s', n) : '';
+      poserCouleur(nom);
+      var source = document.getElementById('nova-couleur');
+      if (source) source.setAttribute('data-couleur', nom === 'classe' ? '' : nom);
+      if (envoyer) { var u = lienAccueil('&nova_couleur=' + nom); if (u) fetch(u, { credentials: 'same-origin' }).catch(function () {}); }
+    };
+    // Couleur unie
+    var b1 = el('section', 'nova-couleur-bloc');
+    b1.appendChild(el('h3', '', a('coul-unie')));
+    if (dr.etat < 1) b1.appendChild(verrou(a('coul-verrou'), dr.requis));
+    else {
+      b1.appendChild(el('p', 'nova-couleur-aide', a('coul-aide')));
+      var liste = el('div', 'nova-couleur-liste');
+      PALETTE.forEach(function (p, i) {
+        var b = el('button', 'nova-couleur-pastille');
+        b.type = 'button';
+        b.style.background = p[1];
+        b.setAttribute('data-couleur', p[0]);
+        b.setAttribute('aria-label', nomsU[i] || p[0]);
+        b.title = nomsU[i] || p[0];
+        b.addEventListener('click', function () { choisir(p[0], true); });
+        boutons.push(b);
+        liste.appendChild(b);
+      });
+      b1.appendChild(liste);
+      var classe = el('button', 'nova-couleur-classe', a('coul-classe'));
+      classe.type = 'button';
+      classe.addEventListener('click', function () { choisir('classe', true); });
+      b1.appendChild(classe);
+    }
+    corps.appendChild(b1);
+    // Dégradés
+    var b2 = el('section', 'nova-couleur-bloc');
+    b2.appendChild(el('h3', '', a('coul-degrades')));
+    b2.appendChild(el('p', 'nova-couleur-aide', a('coul-degrades-aide')));
+    if (dr.etat < 2) b2.appendChild(dr.badgeDeg && dr.badgeDeg !== dr.badge ? verrou(a('coul-verrou-degrade2') || a('coul-verrou-degrade'), dr.requisDeg, dr.nomBadgeDeg) : verrou(a('coul-verrou-degrade'), dr.requisDeg));
+    else {
+      var grille = el('div', 'nova-couleur-degrades');
+      DEGRADES.forEach(function (g, i) {
+        var b = el('button', 'nova-couleur-degrade', nomsD[i] || g[0]);
+        b.type = 'button';
+        b.style.background = 'linear-gradient(90deg, ' + hexPalette(g[1]) + ', ' + hexPalette(g[2]) + ')';
+        b.setAttribute('data-couleur', g[0]);
+        b.addEventListener('click', function () { choisir(g[0], true); });
+        boutons.push(b);
+        grille.appendChild(b);
+      });
+      b2.appendChild(grille);
+    }
+    corps.appendChild(b2);
+    corps.appendChild(etat);
+    choisir(actuelle, false);
+    etat.textContent = '';
+    document.body.appendChild(f);
+    return f;
+  }
+  // Fenêtre des badges, onglet du badge qui débloque la couleur : rappel de la récompense et lien vers « Ma couleur ».
+  // cle : badge de l'onglet ; la carte n'y montre que ses paliers (couleur, dégradés : badges à part depuis le 2026-11-08).
+  function carteCouleur(d, cle) {
+    var a = function (n) { return d.getAttribute('data-' + n) || ''; };
+    var dr = droitsCouleur(d);
+    var niveaux = a('niveaux').split(',');
+    var nomNiv = function (n) { return niveaux[n - 1] || String(n); };
+    var carte = document.createElement('div');
+    carte.className = 'nova-couleur-carte' + (dr && dr.etat ? '' : ' nova-couleur-verrou');
+    var h = document.createElement('p');
+    h.className = 'nova-couleur-titre';
+    h.textContent = a('coul-titre');
+    carte.appendChild(h);
+    if (!dr) return carte;
+    var paliers = [];
+    if (!cle || cle === dr.badge) paliers.push([a('coul-recompense'), dr.requis, dr.etat >= 1]);
+    if (dr.badgeDeg !== 'aucun' && (!cle || cle === dr.badgeDeg)) paliers.push([dr.badgeDeg === dr.badge ? a('coul-recompense-deg') : (a('coul-recompense-deg2') || a('coul-recompense-deg')), dr.requisDeg, dr.etat >= 2]);
+    paliers.forEach(function (x) {
+      var p = document.createElement('p');
+      p.className = 'nova-couleur-aide' + (x[2] ? ' nova-couleur-acquis' : '');
+      p.textContent = x[0].replace('%s', nomNiv(x[1]));
+      carte.appendChild(p);
+    });
+    if (dr.etat >= 1) {
+      var l = document.createElement('a');
+      l.className = 'nova-couleur-choisir';
+      l.href = '#nova-ma-couleur';
+      l.textContent = a('coul-choisir');
+      carte.appendChild(l);
+    }
+    return carte;
+  }
+
+  /* ===== js/src/62-avatar.js : avatar et pièces ===== */
+  /* Avatar de l'élève (demande de l'utilisateur, maquette validée le 2026-11-07) : Avataaars de DiceBear (js/avatar.js,
+   * chargé seulement quand il faut dessiner). Jetons gagnés en réussissant des exercices, éléments ouverts avec eux ou
+   * par les badges : tout est calculé et vérifié sur le serveur (_procs/avatar.awk, _widgets/avatar.phtml) ; ici,
+   * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
+   * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
+   * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
+  var AVATAR_CATEGORIES = ['top', 'hatColor', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
+    'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
+  function cleAvatar() {
+    var cle = cleCouleur();
+    return cle ? cle.replace(/^nova-couleur\|/, 'nova-avatar|') : '';
+  }
+  function lireAvatar() {
+    try { return JSON.parse(localStorage.getItem(cleAvatar()) || 'null'); } catch (e) { return null; }
+  }
+  function garderAvatar(v) {
+    try { var cle = cleAvatar(); if (!cle) return; if (v) localStorage.setItem(cle, JSON.stringify(v)); else localStorage.removeItem(cle); } catch (e) { /* sans stockage : rien */ }
+  }
+  // Fonds en dégradé du catalogue (récompenses de badges ; maquette v3 validée le 2026-11-07).
+  // Coiffures qui sont des chapeaux : seules à montrer l'onglet « Chapeau (couleur) » (hatColor).
+  var AVATAR_CHAPEAUX = ['hat', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04'];
+  function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0; }
+  function porteLunettes(c) { return !!c.accessories && c.accessories !== 'aucun' && c.accessories !== 'eyepatch'; }
+  function porteBarbe(c) { return !!c.facialHair && c.facialHair !== 'aucun'; }
+  // Onglets de couleur montrés seulement quand ils changent quelque chose (2026-11-07, utilisateur) : chapeau porté,
+  // lunettes portées ; cheveux cachés par un chapeau, sauf barbe (elle prend la couleur des cheveux).
+  function ongletUtile(k, c) {
+    if (k === 'hatColor') return porteChapeau(c);
+    if (k === 'accessoriesColor') return porteLunettes(c);
+    if (k === 'hairColor') return !porteChapeau(c) || porteBarbe(c);
+    return true;
+  }
+  var AVATAR_DEGRADES = { coucher: ['ff6b6b', 'ffd60a'], ocean: ['00b4d8', '3a86ff'], aurore: ['06d6a0', '8338ec'],
+    bonbon: ['ff006e', 'ffafcc'], lagon: ['9ef01a', '00b4d8'], galaxie: ['1d3557', '8338ec'] };
+  // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
+  function optionsAvatar(choix) {
+    var c = {};
+    (choix || '').split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) c[e.slice(0, i)] = e.slice(i + 1); });
+    var o = { seed: 'nova', nose: ['default'], topProbability: 100 };
+    ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'clothing', 'clothesColor', 'clothingGraphic', 'backgroundColor'].forEach(function (k) {
+      if (c[k]) o[k] = [c[k]];
+    });
+    // Couleur du chapeau (2026-11-07) : la sienne, sinon celle du vêtement (avatars enregistrés avant).
+    if (c.hatColor || c.clothesColor) o.hatColor = [c.hatColor || c.clothesColor];
+    if (AVATAR_DEGRADES[c.backgroundColor]) { o.backgroundColor = AVATAR_DEGRADES[c.backgroundColor]; o.backgroundType = ['gradientLinear']; o.backgroundRotation = [135]; }
+    if (c.accessoriesColor) o.accessoriesColor = [c.accessoriesColor];
+    if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
+    if (!c.facialHair || c.facialHair === 'aucun') o.facialHairProbability = 0;
+    else { o.facialHair = [c.facialHair]; o.facialHairProbability = 100; if (c.hairColor) o.facialHairColor = [c.hairColor]; }
+    return o;
+  }
+  var avatarScript = null;
+  function chargerAvatar(src) {
+    if (window.novaAvatar) return Promise.resolve(window.novaAvatar);
+    if (!avatarScript) avatarScript = new Promise(function (ok, ko) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = function () { if (window.novaAvatar) ok(window.novaAvatar); else ko(new Error('avatar')); };
+      s.onerror = function () { avatarScript = null; ko(new Error('avatar')); };
+      document.head.appendChild(s);
+    });
+    return avatarScript;
+  }
+  function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
+  // Suivi en salle (js/suivi.js) : dessin d'un avatar d'élève d'après son choix enregistré.
+  window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(optionsAvatar(choix)); }); };
+  // Avatar de la barre : fenêtres ordinaires seulement (demande de l'utilisateur, 2026-11-07 : la place manque à côté
+  // de « Terminer » et du chronomètre). Pas en examen (session _exam, chronomètre, Terminer, pastille « Examen en
+  // cours »), ni dans une fenêtre d'aide, d'outil ou allégée.
+  function barreOrdinaire(barre) {
+    var session = (location.search.match(/[?&]session=([^&]*)/) || [])[1] || '';
+    if (/_(exam|tool|help|mhelp|light)/.test(session)) return false;
+    if (document.getElementById('wimsexam') || document.getElementById('wimsmhelp') || document.getElementById('wimslightpopup')) return false;
+    if (document.body.classList.contains('nova-examen') || document.body.classList.contains('nova-examen-session')) return false;
+    return !barre.querySelector('.menuitem.chrono, #chrono_exam, a.endexam, .nova-terminer, .nova-examencours');
+  }
+  // Pièce des jetons : logo de WIMS (img/logo-wims-blanc-v2.svg) cadré sur le centre de son cercle invisible
+  // (93,24 ; 153,74), pour qu'il tombe au centre du disque (demande de l'utilisateur, 2026-11-07, maquette A : pièce dorée).
+  var PIECE_SVG = '<svg viewBox="33.24 93.74 120 120" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="m 68.398532,197.05166 c 15.058946,8.57956 34.389228,-15.02121 34.822798,-43.94077 0.41266,-27.52561 -17.133498,-51.43258 -34.718402,-42.12108 -17.584914,9.31149 -4.468906,36.96212 20.148988,52.58723 23.724794,15.05825 52.099204,11.57787 53.173974,-7.95129 1.07477,-19.52916 -30.77363,-24.11146 -55.82547,-9.84162 -25.624939,14.59628 -32.660849,42.68797 -17.601888,51.26753 z"/></svg>';
+  function pieceJeton() {
+    var p = document.createElement('span');
+    p.className = 'nova-piece';
+    p.setAttribute('aria-hidden', 'true');
+    p.innerHTML = PIECE_SVG;
+    return p;
+  }
+  // Singulier pour 1, et pour 0 en français (« 0 pièce »).
+  function singulier(n) { return n === 1 || (n === 0 && /^fr/.test(document.documentElement.lang || 'fr')); }
+  function texteJetons(memo, n) { return ((singulier(n) ? memo.tJeton : memo.tJetons) || '%n').replace('%n', n); }
+  // Barre : compteur de jetons puis avatar, à droite. Gain depuis le dernier affichage (memo.vu) : animation A de la
+  // maquette (la pièce tourne, « +1 » monte), jouée même si les animations de Nova sont coupées (récompense ponctuelle,
+  // utilisateur), jamais si l'appareil demande de réduire les animations (CSS).
+  function poserAvatarBarre(memo, gain) {
+    var barre = document.getElementById('wimstopbox');
+    var ancien = document.querySelector('.nova-avatar-zone');
+    if (!barre || !memo || !memo.actif || !barreOrdinaire(barre) || (!memo.uri && typeof memo.jetons !== 'number')) { if (ancien) ancien.remove(); return; }
+    var zone = ancien || document.createElement('span');
+    zone.className = 'nova-avatar-zone';
+    zone.textContent = '';
+    if (typeof memo.jetons === 'number') {
+      var c = document.createElement('a');
+      c.className = 'nova-jetons-barre';
+      c.href = lienMonAvatar();
+      c.setAttribute('aria-label', texteJetons(memo, memo.jetons) + ' \u2013 ' + (memo.titre || ''));
+      c.title = texteJetons(memo, memo.jetons);
+      c.appendChild(pieceJeton());
+      var nb = document.createElement('span');
+      nb.className = 'nova-jetons-nb';
+      nb.textContent = gain ? memo.jetons - gain : memo.jetons;
+      c.appendChild(nb);
+      if (gain) {
+        var plus = document.createElement('span');
+        plus.className = 'nova-jetons-plus';
+        plus.setAttribute('aria-hidden', 'true');
+        plus.textContent = '+' + gain;
+        c.appendChild(plus);
+        c.classList.add('nova-jetons-gain');
+        setTimeout(function () { nb.textContent = memo.jetons; }, 550);
+        setTimeout(function () { c.classList.remove('nova-jetons-gain'); if (plus.parentNode) plus.remove(); }, 1600);
+      }
+      zone.appendChild(c);
+    }
+    if (memo.uri) {
+      var a = document.createElement('a');
+      a.className = 'nova-avatar-barre';
+      a.href = lienMonAvatar();
+      a.title = memo.titre || '';
+      a.setAttribute('aria-label', memo.titre || '');
+      var img = document.createElement('img');
+      img.src = memo.uri;
+      img.alt = '';
+      a.appendChild(img);
+      zone.appendChild(a);
+    }
+    if (!ancien) barre.appendChild(zone);
+  }
+  function avatarBarre() {
+    if (!document.getElementById('nova-eleve') || !cleAvatar()) return;
+    var source = document.getElementById('nova-avatar-barre');
+    var memo = lireAvatar();
+    var gain = 0;
+    if (source) {
+      var actif = source.getAttribute('data-actif') === 'oui';
+      var choix = source.getAttribute('data-choix') || '';
+      if (!actif) { memo = null; garderAvatar(null); }
+      else {
+        var j = source.getAttribute('data-jetons');
+        var ancien = memo || {};
+        memo = { actif: 1, choix: choix, titre: source.getAttribute('data-titre') || '', uri: ancien.choix === choix ? ancien.uri : '',
+          tJeton: source.getAttribute('data-t-jeton') || '', tJetons: source.getAttribute('data-t-jetons') || '',
+          jetons: /^[0-9]+$/.test(j || '') ? +j : ancien.jetons, vu: ancien.vu };
+        if (typeof memo.jetons === 'number') {
+          if (typeof memo.vu === 'number' && memo.jetons > memo.vu) gain = memo.jetons - memo.vu;
+          memo.vu = memo.jetons;
+        }
+        garderAvatar(memo);
+        if (choix && !memo.uri) chargerAvatar(source.getAttribute('data-script')).then(function (dessin) {
+          memo.uri = dessin(optionsAvatar(choix));
+          garderAvatar(memo);
+          poserAvatarBarre(memo);
+        }).catch(function () {});
+      }
+    }
+    if (!memo || !memo.actif) return;
+    poserAvatarBarre(memo, gain);
+    // Menu Profil : « Mon avatar » après le nom.
+    var profil = document.querySelector('#wimsmenumodubox .nova-profil');
+    if (profil && !profil.querySelector('.profil_avatar')) {
+      var d = document.createElement('div');
+      d.className = 'menuitem profil_avatar';
+      var a = document.createElement('a');
+      a.href = lienMonAvatar();
+      a.className = 'account';   // Font_Awesome : silhouette (\f007, « .menuitem .account ») ; « user » perdait contre le tiret générique
+      var span = document.createElement('span');
+      span.textContent = memo.titre;
+      a.appendChild(span);
+      d.appendChild(a);
+      var nom = profil.querySelector('.nova-profil-nom');
+      profil.insertBefore(d, nom ? nom.nextSibling : profil.firstChild);
+    }
+  }
+
+  function avatarPage() {
+    var d = document.getElementById('nova-avatar');
+    if (!d) return;
+    var t = function (n) { return d.getAttribute('data-t-' + n) || ''; };
+    var el = function (balise, classe, texte) {
+      var e = document.createElement(balise);
+      if (classe) e.className = classe;
+      if (texte != null) e.textContent = texte;
+      return e;
+    };
+    var etat = {};
+    var lire = function (source) {
+      var j = (source.getAttribute('data-jetons') || '').split(' ');
+      etat.jetons = { dispo: +j[3] || 0, total: +j[4] || 0, jour: +j[5] || 0, max: +j[6] || 10, reste: +j[7] || 1, pc: +j[8] || 0 };
+      etat.message = (source.getAttribute('data-message') || '').split(' ')[1] || '-';
+      var c = (source.getAttribute('data-choix') || '').split(' ')[1] || '-';
+      etat.enregistre = c === '-' ? '' : c;
+      etat.elements = {};
+      etat.ordre = {};
+      (source.getAttribute('data-elements') || '').split(' ').slice(1).forEach(function (x) {
+        var p = x.split(':');
+        if (p.length !== 3) return;
+        (etat.ordre[p[0]] = etat.ordre[p[0]] || []).push(p[1]);
+        etat.elements[p[0] + '.' + p[1]] = p[2];
+      });
+    };
+    lire(d);
+    var regles = (d.getAttribute('data-regles') || '7 15 10').split(' ');
+    var ouvert = function (e) { var s = etat.elements[e] || ''; return s === 'libre' || s === 'achete' || /-1$/.test(s); };
+    // Choix courant : l'enregistré, sinon un tirage fixe parmi les éléments libres (d'après le login : chacun le sien).
+    var choix = {};
+    var graine = 0;
+    (d.getAttribute('data-utilisateur') || '').split('').forEach(function (ch) { graine = (graine * 31 + ch.charCodeAt(0)) % 100003; });
+    AVATAR_CATEGORIES.forEach(function (k, i) {
+      var libres = (etat.ordre[k] || []).filter(function (v) { return etat.elements[k + '.' + v] === 'libre'; });
+      if (k === 'accessories' || k === 'facialHair') libres = ['aucun'];
+      if (k === 'hatColor') return;   // sans choix : couleur du vêtement
+      // Peau : tirage parmi les teintes naturelles (le jaune et l'orange restent au choix de l'élève).
+      if (k === 'skinColor') libres = libres.filter(function (v) { return v !== 'f8d25c' && v !== 'fd9841'; });
+      if (libres.length) choix[k] = libres[(graine + i * 7) % libres.length];
+    });
+    etat.enregistre.split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) choix[e.slice(0, i)] = e.slice(i + 1); });
+    if (!choix.clothingGraphic) choix.clothingGraphic = (etat.ordre.clothingGraphic || ['pizza'])[0];
+    if (!choix.hatColor && choix.clothesColor && ouvert('hatColor.' + choix.clothesColor)) choix.hatColor = choix.clothesColor;
+    var chaine = function (c) {
+      return AVATAR_CATEGORIES.filter(function (k) { return c[k] && ouvert(k + '.' + c[k]); }).map(function (k) { return k + '.' + c[k]; }).join(',');
+    };
+    var badgesAvatar = {};
+    (d.getAttribute('data-niveaux') || '').split(' ').slice(1).forEach(function (x) { var p = x.split(':'); badgesAvatar[p[0]] = [+p[1] || 0, p[2] === '1']; });
+    var noms = t('categories').split(',');
+    var niveaux = t('niveaux').split(',');
+    var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
+    // Élément de badge débloqué : image du badge au niveau qui l'a ouvert (dossiers d'images des badges, voir CLAUDE.md)
+    // et phrase « Débloqué grâce à ton badge … » (demande de l'utilisateur, 2026-11-07).
+    var IMAGES_BADGES = { fidelite: 'regularite/coeur', perseverance: 'perseverance/flamme', echauffement: 'entrainement/halteres', top: 'etoile/etoile' };
+    var baseTheme = (d.getAttribute('data-script') || '').replace(/js\/avatar\.js$/, '');
+    var badgeObtenu = function (s) { return /^badge-[a-z]+-[0-9]+-1$/.test(s); };
+    var texteBadge = function (s) { var p = s.split('-'); return t('badge-ok').replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])); };
+    var imageBadge = function (s) {
+      var p = s.split('-'), dossier = IMAGES_BADGES[p[1]], n = Math.max(1, Math.min(8, +p[2] || 1));
+      return dossier ? baseTheme + 'img/badges/' + dossier + '_0' + n + '.webp' : '';
+    };
+
+    // Squelette.
+    var page = el('div', 'nova-avatar-editeur');
+    var cote = el('div', 'nova-avatar-apercu');
+    var portrait = el('div', 'nova-avatar-portrait');
+    var grand = el('img');
+    grand.alt = '';
+    portrait.appendChild(grand);
+    // Aperçu d'un élément pas encore débloqué sur le grand portrait (maquette validée le 2026-11-07, utilisateur).
+    var cadre = el('div', 'nova-avatar-cadre');
+    cadre.appendChild(portrait);
+    cadre.appendChild(el('span', 'nova-avatar-pastille', t('apercu')));
+    cote.appendChild(cadre);
+    var ligneJetons = el('p', 'nova-avatar-jetons');
+    var jeton = pieceJeton();
+    var nbJetons = el('span', 'nova-avatar-nb');
+    ligneJetons.appendChild(jeton);
+    ligneJetons.appendChild(nbJetons);
+    cote.appendChild(ligneJetons);
+    var jauge = el('div', 'nova-avatar-jauge');
+    jauge.setAttribute('aria-hidden', 'true');
+    var barreJauge = el('span');
+    jauge.appendChild(barreJauge);
+    cote.appendChild(jauge);
+    var prochain = el('p', 'nova-avatar-petit nova-avatar-prochain');
+    var jour = el('p', 'nova-avatar-petit');
+    cote.appendChild(prochain);
+    cote.appendChild(jour);
+    var actions = el('div', 'nova-avatar-actions');
+    var boutonEnr = el('button', 'wims_button nova-avatar-enregistrer', t('enregistrer'));
+    boutonEnr.type = 'button';
+    var boutonHasard = el('button', 'wims_button wims_secondary_button nova-avatar-hasard', t('hasard'));
+    boutonHasard.type = 'button';
+    actions.appendChild(boutonEnr);
+    actions.appendChild(boutonHasard);
+    cote.appendChild(actions);
+    var message = el('p', 'nova-avatar-message');
+    message.setAttribute('role', 'status');
+    cote.appendChild(message);
+    page.appendChild(cote);
+
+    var droite = el('div', 'nova-avatar-choix');
+    var onglets = el('div', 'nova-avatar-onglets');
+    onglets.setAttribute('role', 'tablist');
+    // Rangée des catégories défilante : fondu et flèche du côté où il reste des onglets (utilisateur, 2026-11-07).
+    // Flèches pour la souris et le doigt seulement (le clavier passe d'un onglet à l'autre).
+    var defile = el('div', 'nova-avatar-defile');
+    var flecheG = el('button', 'nova-avatar-fleche nova-avatar-fleche-g', '\u2039');
+    var flecheD = el('button', 'nova-avatar-fleche nova-avatar-fleche-d', '\u203a');
+    [flecheG, flecheD].forEach(function (f, i) {
+      f.type = 'button';
+      f.tabIndex = -1;
+      f.setAttribute('aria-hidden', 'true');
+      f.addEventListener('click', function () {
+        onglets.scrollBy({ left: (i ? 1 : -1) * Math.max(120, onglets.clientWidth * 0.7), behavior: animationsCoupees() ? 'auto' : 'smooth' });
+      });
+    });
+    defile.appendChild(flecheG);
+    defile.appendChild(onglets);
+    defile.appendChild(flecheD);
+    var bordsOnglets = function () {
+      var g = onglets.scrollLeft > 2, dr = onglets.scrollLeft + onglets.clientWidth < onglets.scrollWidth - 2;
+      defile.classList.toggle('nova-avatar-a-gauche', g);
+      defile.classList.toggle('nova-avatar-a-droite', dr);
+    };
+    onglets.addEventListener('scroll', bordsOnglets, { passive: true });
+    window.addEventListener('resize', bordsOnglets);
+    var note = el('p', 'nova-avatar-note');
+    var grille = el('div', 'nova-avatar-grille');
+    grille.setAttribute('role', 'tabpanel');
+    var confirmer = el('div', 'nova-avatar-confirmer');
+    confirmer.hidden = true;
+    var confImg = el('img');
+    confImg.alt = '';
+    var confTexte = el('p');
+    var confOui = el('button', 'wims_button', t('ouvrir'));
+    confOui.type = 'button';
+    var confNon = el('button', 'wims_button wims_secondary_button', t('annuler'));
+    confNon.type = 'button';
+    [confImg, confTexte, confOui, confNon].forEach(function (x) { confirmer.appendChild(x); });
+    var legende = el('p', 'nova-avatar-legende');
+    [['1', 'nova-avatar-prix', t('leg1')], ['2', 'nova-avatar-prix', t('leg2')], ['\u2605', 'nova-avatar-prix nova-avatar-etoile', t('leg3')]].forEach(function (l) {
+      var s = el('span');
+      s.appendChild(el('span', l[1], l[0]));
+      s.appendChild(document.createTextNode(' ' + l[2]));
+      legende.appendChild(s);
+    });
+    [defile, note, grille, confirmer, legende].forEach(function (x) { droite.appendChild(x); });
+    page.appendChild(droite);
+
+    var aide = el('div', 'nova-avatar-regles');
+    aide.appendChild(el('h2', '', t('regles')));
+    var ul = el('ul');
+    // regle3 (délai) retirée de l'affichage le 2026-11-07 (utilisateur) ; le délai compte toujours.
+    [t('regle1').replace('%n', regles[0]), t('regle2'), t('regle4').replace('%n', regles[2]), t('regle5')].forEach(function (x) { ul.appendChild(el('li', '', x)); });
+    aide.appendChild(ul);
+    d.appendChild(page);
+    d.appendChild(aide);
+
+    var catActive = 0, enAttente = null, occupe = false, dessin = null;
+    var rendu = function (c) { return dessin ? dessin(optionsAvatar(AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
+    var dire = function (texte) { message.textContent = texte || ''; };
+    // Éléments proposés : tous, sauf ceux d'un badge qui n'est pas activé dans la classe (utilisateur, 2026-11-07).
+    var proposes = function (k) {
+      return (etat.ordre[k] || []).filter(function (v) {
+        var p = (etat.elements[k + '.' + v] || '').split('-');
+        return p[0] !== 'badge' || (badgesAvatar[p[1]] || [0, false])[1];
+      });
+    };
+    var nbOuverts = function (k) { return proposes(k).filter(function (v) { return ouvert(k + '.' + v); }).length; };
+    var dessiner = function () {
+      var j = etat.jetons;
+      nbJetons.textContent = (singulier(j.dispo) ? t('jeton') : t('jetons')).replace('%n', j.dispo);
+      barreJauge.style.width = Math.max(0, Math.min(100, j.pc)) + '%';
+      prochain.textContent = j.reste === 1 ? t('prochain1') : t('prochain').replace('%n', j.reste);
+      jour.textContent = t('jour').replace('%n', j.jour).replace('%m', j.max);
+      if (!dessin) return;
+      // Aperçu : le choix courant avec l'élément en attente ; « Enregistrer » désactivé tant qu'il est affiché.
+      var vu = Object.assign({}, choix);
+      if (enAttente) {
+        vu[enAttente.k] = enAttente.v;
+        if (enAttente.k === 'clothingGraphic') vu.clothing = 'graphicShirt';
+        if (enAttente.k === 'accessoriesColor' && (!vu.accessories || vu.accessories === 'aucun' || vu.accessories === 'eyepatch')) vu.accessories = 'prescription02';
+      }
+      grand.src = rendu(vu);
+      cadre.classList.toggle('nova-avatar-essai', !!enAttente);
+      boutonEnr.disabled = !!enAttente || occupe;
+      boutonEnr.title = enAttente ? t('enr-bloque') : '';
+      onglets.textContent = '';
+      if (!ongletUtile(AVATAR_CATEGORIES[catActive], choix)) catActive = 0;
+      AVATAR_CATEGORIES.forEach(function (k, i) {
+        if (!etat.ordre[k]) return;
+        if (!ongletUtile(k, choix)) return;   // d'après ce qui est porté (pas seulement essayé)
+        var b = el('button', 'nova-avatar-onglet');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-selected', i === catActive ? 'true' : 'false');
+        b.appendChild(document.createTextNode(noms[i] || k));
+        b.appendChild(el('span', 'nova-avatar-compte', nbOuverts(k) + '/' + proposes(k).length));
+        b.addEventListener('click', function () { catActive = i; enAttente = null; dessiner(); });
+        onglets.appendChild(b);
+      });
+      var k = AVATAR_CATEGORIES[catActive];
+      var valeurs = proposes(k);
+      note.textContent = k === 'clothingGraphic' ? t('motif') : t('ouverts').replace('%n', nbOuverts(k)).replace('%m', valeurs.length);
+      if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) note.textContent += ' ' + t('lunettes');
+      grille.textContent = '';
+      valeurs.forEach(function (v) {
+        var e = k + '.' + v, s = etat.elements[e] || '';
+        var essai = Object.assign({}, choix);
+        essai[k] = v;
+        if (k === 'clothingGraphic') essai.clothing = 'graphicShirt';
+        // Couleur des lunettes : aperçu sur des lunettes, même si l'élève n'en porte pas.
+        if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) essai.accessories = 'prescription02';
+        var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
+        var essaye = enAttente && enAttente.k === k && enAttente.v === v;
+        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : '') + (essaye ? ' nova-avatar-essaye' : '') + (v === 'transparent' ? ' nova-avatar-transparent' : ''));
+        b.type = 'button';
+        b.setAttribute('aria-pressed', porte ? 'true' : 'false');
+        var nomV = v === 'aucun' ? t('aucun') : v;
+        var img = el('img');
+        img.alt = '';
+        img.src = rendu(essai);
+        b.appendChild(img);
+        if (!ouvert(e)) {
+          var cad = el('span', 'nova-avatar-cadenas');
+          cad.setAttribute('aria-hidden', 'true');
+          cad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+          b.appendChild(cad);
+        }
+        if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }
+        else if (badgeObtenu(s) && imageBadge(s)) {
+          var mini = el('img', 'nova-avatar-badge');
+          mini.src = imageBadge(s);
+          mini.alt = '';
+          b.appendChild(mini);
+          nomV += ' (' + texteBadge(s) + ')';
+        }
+        else if (/^badge-/.test(s)) { b.appendChild(el('span', 'nova-avatar-prix nova-avatar-etoile', '\u2605')); nomV += ' (' + t('leg3') + ')'; }
+        b.title = nomV;
+        b.setAttribute('aria-label', nomV);
+        b.addEventListener('click', function () { cliquer(k, v, b.querySelector('img').src); });
+        grille.appendChild(b);
+      });
+      confirmer.hidden = !enAttente;
+      // Onglet choisi visible dans la rangée, puis fondus et flèches à jour.
+      var actif = onglets.querySelector('[aria-selected="true"]');
+      if (actif && (actif.offsetLeft < onglets.scrollLeft || actif.offsetLeft + actif.offsetWidth > onglets.scrollLeft + onglets.clientWidth)) {
+        onglets.scrollLeft = actif.offsetLeft - (onglets.clientWidth - actif.offsetWidth) / 2;
+      }
+      bordsOnglets();
+    };
+    var cliquer = function (k, v, uri) {
+      var e = k + '.' + v, s = etat.elements[e] || '';
+      dire('');
+      if (ouvert(e)) {
+        choix[k] = v;
+        if (k === 'clothingGraphic') choix.clothing = 'graphicShirt';
+        enAttente = null;
+        if (badgeObtenu(s)) dire(texteBadge(s));
+        dessiner();
+        return;
+      }
+      enAttente = { k: k, v: v, s: s };
+      confImg.src = uri;
+      if (/^badge-/.test(s)) {
+        // badge-<clé>-<niveau requis>-<0|1> ; niveau atteint et badge proposé : data-niveaux (« clé:niveau:1|0 »).
+        var p = s.split('-'), b = badgesAvatar[p[1]] || [0, 0];
+        confTexte.textContent = (b[1] ? t('badge') : t('badge-off')).replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])).replace('%m', nomNiv(b[0]));
+        confOui.hidden = true;
+      } else {
+        var prix = +s;
+        confOui.hidden = false;
+        confOui.disabled = etat.jetons.dispo < prix;
+        confTexte.textContent = etat.jetons.dispo < prix ? (prix === 1 ? t('manque1') : t('manque').replace('%n', prix))
+          : (prix === 1 ? t('question') : t('question2')).replace('%n', prix);
+      }
+      dessiner();
+      confirmer.scrollIntoView({ block: 'nearest', behavior: animationsCoupees() ? 'auto' : 'smooth' });
+    };
+    // Envoi au serveur (accueil, module de confiance) ; sa réponse est la page à jour, dont on relit #nova-avatar.
+    var envoyer = function (suite) {
+      if (occupe) return Promise.reject(new Error('occupe'));
+      occupe = true;
+      [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = true; });
+      return fetch(lienAccueil('&nova_avatar=1' + suite), { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var source = doc.getElementById('nova-avatar');
+        if (!source) throw new Error('page');
+        lire(source);
+        return etat.message;
+      }).finally(function () {
+        occupe = false;
+        [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = false; });
+      });
+    };
+    confOui.addEventListener('click', function () {
+      if (!enAttente) return;
+      var a = enAttente;
+      envoyer('&nova_avatar_ouvrir=' + a.k + '.' + a.v).then(function (m) {
+        enAttente = null;
+        if (m === 'ouvert') { choix[a.k] = a.v; if (a.k === 'clothingGraphic') choix.clothing = 'graphicShirt'; dire(t('ouvert')); }
+        else dire(t('refus'));
+        // Compteur de la barre à jour, sans animation (une dépense n'est pas un gain).
+        var mj = lireAvatar();
+        if (mj) { mj.jetons = mj.vu = etat.jetons.dispo; garderAvatar(mj); poserAvatarBarre(mj); }
+        dessiner();
+      }).catch(function () { dire(t('refus')); });
+    });
+    confNon.addEventListener('click', function () { enAttente = null; dessiner(); });
+    boutonEnr.addEventListener('click', function () {
+      var c = chaine(choix);
+      envoyer('&nova_avatar_choix=' + c).then(function (m) {
+        if (m !== 'choix' && etat.enregistre !== c) { dire(t('refus')); return; }
+        dire(t('enregistre'));
+        var memo = lireAvatar() || {};
+        memo.actif = 1; memo.choix = etat.enregistre; memo.titre = memo.titre || t('titre') || ''; memo.uri = rendu(choix);
+        memo.jetons = memo.vu = etat.jetons.dispo;
+        garderAvatar(memo);
+        poserAvatarBarre(memo);
+      }).catch(function () { dire(t('refus')); });
+    });
+    boutonHasard.addEventListener('click', function () {
+      AVATAR_CATEGORIES.forEach(function (k) {
+        if (k === 'clothingGraphic') return;
+        var ok = (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); });
+        if (ok.length) choix[k] = ok[Math.floor(Math.random() * ok.length)];
+      });
+      enAttente = null;
+      dire(t('tire'));
+      dessiner();
+    });
+    dessiner();
+    if (!etat.enregistre) dire(t('premier'));
+    chargerAvatar(d.getAttribute('data-script')).then(function (f) { dessin = f; dessiner(); }).catch(function () { dire(t('erreur')); });
+  }
+
+  /* ===== js/src/70-enseignant.js : pages de l'enseignant (replis, restriction d'accès, liens de connexion, désactivation, DM, configuration, zones dépendantes) ===== */
   /* Retour en haut : la pastille (cadre.css) n'apparaît qu'après une demi-hauteur d'écran de
    * défilement. WIMS ne pose son widget (_widgets/topback.phtml) que dans tail, doctail et user : pas
    * sur l'accueil enseignant d'une classe ni sur celui du site, pourtant longs. Nova le crée alors,
@@ -1815,646 +5089,6 @@
     if (avant && avant.nodeType === 3 && /:\s*$/.test(avant.textContent)) avant.textContent = '';
   }
 
-  function retourEnHaut() {
-    var lien = document.getElementById('back-to-top');
-    if (!lien) {
-      if (!document.getElementById('wimstopbox')) return;
-      var noms = { fr: 'Haut de page', en: 'Top of page', nl: 'Naar boven' };
-      var langue = (document.documentElement.lang || 'fr').slice(0, 2);
-      var bloc = document.createElement('div');
-      bloc.className = 'wims_topback';
-      lien = document.createElement('a');
-      lien.id = 'back-to-top';
-      lien.href = '#wimstopbox';
-      lien.title = noms[langue] || noms.en;
-      lien.addEventListener('click', function (ev) {
-        ev.preventDefault();
-        var doux = !animationsCoupees();
-        window.scrollTo({ top: 0, behavior: doux ? 'smooth' : 'auto' });
-      });
-      bloc.appendChild(lien);
-      document.body.appendChild(bloc);
-    }
-    if (lien.title && !lien.getAttribute('aria-label')) lien.setAttribute('aria-label', lien.title);
-    var racine = document.documentElement, attente = false;
-    var maj = function () {
-      attente = false;
-      racine.classList.toggle('nova-defile', window.scrollY > window.innerHeight * 0.5);
-    };
-    window.addEventListener('scroll', function () {
-      if (!attente) { attente = true; window.requestAnimationFrame(maj); }
-    }, { passive: true });
-    maj();
-  }
-
-  /* Page « Détails des examens » : garde dans le navigateur les types des pages de vérification
-   * (q, r) que tail.phtml a lus dans les journaux, pour la fenêtre de vérification (pagesExamen). */
-  function typesExamen() {
-    var e = document.getElementById('nova-examtypes');
-    if (!e) return;
-    var cle = 'nova_examtypes_' + (e.getAttribute('data-user') || '');
-    var connus = {};
-    try { connus = JSON.parse(localStorage.getItem(cle) || '{}') || {}; } catch (x) { connus = {}; }
-    (e.getAttribute('data-types') || '').split(';').forEach(function (entree) {
-      var i = entree.indexOf('=');
-      if (i > 0) connus[entree.slice(0, i).trim()] = entree.slice(i + 1).replace(/\s+/g, '');
-    });
-    try { localStorage.setItem(cle, JSON.stringify(connus)); } catch (x) { /* fenêtre sans Q/R exacts */ }
-  }
-
-  /* Fenêtre « vérification d'un exercice d'examen » (adm/class/userscore, job=examcheck ; demandé le
-   * 2026-10-02). WIMS (html/headmenu_user.phtml) écrit dans la barre « Pages : 1 ... 4 5 6 ... 12 » :
-   * la première, la précédente, la courante, la suivante et la dernière page, « ... » ailleurs, quelle
-   * que soit la place. Nova reconstruit TOUTES les pages, nommées d'après leur type, lu dans le journal
-   * de l'élève sur la page « Détails des examens » (tail.phtml, typesExamen) : une question (new, next) devient Qk, une
-   * réponse (reply) Rk — Q1 R1 Q2 R2... Dans un exercice à étapes ou une course (une question, puis une
-   * réponse par étape), chaque réponse intermédiaire affiche la question suivante et la dernière
-   * l'analyse de toutes : Q1 Q2 ... Q10 R1-10. La courante est mise en évidence ; « Pages : » disparaît. Les « … »
-   * n'interviennent qu'en dernier recours : on cache d'abord les pages les plus éloignées de la
-   * courante, en gardant toujours la première, la dernière et les voisines. L'information « élève :
-   * exercice, N steps, note » descend en tête de page. */
-  function pagesExamen() {
-    var nav = document.querySelector('#wimstopbox li.menuitem.nav');
-    if (!nav) return;
-    var liens = nav.querySelectorAll('a[href*="checkstep="]');
-    var modele = liens.length ? liens[0].getAttribute('href') : '';
-    // Autre vérification (exercice de feuille, devoir libre) : la barre de WIMS, rendue visible
-    // (cadre.css la cache jusqu'à ce que ce script passe, contre le clignotement).
-    var garderWims = function () { nav.classList.add('nova-nav-wims'); };
-    if (modele.indexOf('job=examcheck') < 0) { garderWims(); return; }
-    var courant = 0, maxi = 0;
-    Array.prototype.forEach.call(nav.childNodes, function (n) {
-      if (n.nodeType === 3) (n.textContent.match(/\d+/g) || []).forEach(function (x) { courant = +x; });
-    });
-    Array.prototype.forEach.call(liens, function (a) { maxi = Math.max(maxi, parseInt(a.textContent, 10) || 0); });
-    var info = document.querySelector('#wimstopbox li.menuitem.score');
-    var m = info && info.textContent.match(/(\d+)\s*steps?/);
-    var total = Math.max(m ? +m[1] : 0, maxi, courant);
-    if (!total) { garderWims(); return; }
-    var langue = (document.documentElement.lang || 'fr').slice(0, 2);
-    var mots = { fr: ['Question', 'R\u00e9ponse', 'Pages'], en: ['Question', 'Answer', 'Pages'], nl: ['Vraag', 'Antwoord', "Pagina's"] }[langue] ||
-      ['Question', 'Answer', 'Pages'];
-    var liste = document.createElement('ol');
-    liste.className = 'nova-pages-liste';
-    var bloc = document.createElement('nav');
-    bloc.setAttribute('aria-label', mots[2]);
-    bloc.appendChild(liste);
-    nav.textContent = '';
-    nav.appendChild(bloc);
-    nav.classList.add('nova-pages');
-    if (info && info.textContent.trim()) {
-      var corps = document.querySelector('.wimsbody');
-      if (corps) {
-        var ligne = document.createElement('p');
-        ligne.className = 'nova-pages-info';
-        ligne.innerHTML = info.innerHTML;
-        corps.insertBefore(ligne, corps.firstChild);
-      }
-      info.remove();
-    }
-    // Type de chaque page (q = question, r = réponse), lu dans le journal sur la page « Détails des
-    // examens » (tail.phtml, typesExamen) et gardé dans le navigateur ; à défaut, l'alternance.
-    var types = [];
-    var cle = function (nom) { var r = new RegExp('[?&+]' + nom + '=([^&]*)').exec(modele); return r ? decodeURIComponent(r[1]) : ''; };
-    try {
-      var connus = JSON.parse(localStorage.getItem('nova_examtypes_' + cle('checkuser')) || '{}');
-      types = (connus[cle('checksession') + ':' + cle('checkexo')] || '').split(',');
-    } catch (e) { types = []; }
-    if (types.length !== total || types.some(function (t) { return t !== 'q' && t !== 'r'; })) {
-      types = [];
-      for (var t = 1; t <= total; t++) types.push(t % 2 ? 'q' : 'r');
-    }
-    // Libellés. Une question (q) est Qk. Une réponse suivie d'une autre réponse (exercice à étapes,
-    // course) affiche en fait la question suivante : Qk+1. La dernière réponse d'une suite affiche
-    // l'analyse de toute la suite : Rk, ou Rk-m si elle couvre les questions k à m.
-    var libelles = [], titres = [], nq = 0, debut = 0;
-    types.forEach(function (t, i) {
-      if (t === 'q') { debut = ++nq; libelles.push('Q' + nq); titres.push(mots[0] + ' ' + nq); return; }
-      if (types[i + 1] === 'r') { libelles.push('Q' + (++nq)); titres.push(mots[0] + ' ' + nq); return; }
-      var de = debut || 1, a = Math.max(nq, de);
-      libelles.push(de === a ? 'R' + a : 'R' + de + '-' + a);
-      titres.push(mots[1] + ' ' + (de === a ? a : de + '-' + a));
-    });
-    var element = function (n) {
-      var question = libelles[n - 1].charAt(0) === 'Q';
-      var li = document.createElement('li');
-      li.className = question ? 'nova-page-q' : 'nova-page-r';
-      var e;
-      if (n === courant) {
-        e = document.createElement('span');
-        e.setAttribute('aria-current', 'page');
-        e.className = 'nova-page nova-page-courante';
-      } else {
-        e = document.createElement('a');
-        e.className = 'nova-page';
-        e.href = modele.replace(/checkstep=\d+/, 'checkstep=' + n);
-      }
-      e.textContent = libelles[n - 1];
-      e.title = titres[n - 1];
-      li.appendChild(e);
-      return li;
-    };
-    var dessiner = function (visibles) {
-      liste.textContent = '';
-      var avant = 0;
-      visibles.forEach(function (n) {
-        if (avant && n > avant + 1) {
-          var trou = document.createElement('li');
-          trou.className = 'nova-page-ellipse';
-          trou.setAttribute('aria-hidden', 'true');
-          trou.textContent = '\u2026';
-          liste.appendChild(trou);
-        }
-        liste.appendChild(element(n));
-        avant = n;
-      });
-    };
-    var ajuster = function () {
-      var visibles = [];
-      for (var n = 1; n <= total; n++) visibles.push(n);
-      dessiner(visibles);
-      var c = courant || 1;
-      while (liste.scrollWidth > liste.clientWidth + 1) {
-        var retirable = visibles.filter(function (n) { return n !== 1 && n !== total && Math.abs(n - c) > 1; });
-        // Dernier recours : les voisines aussi ; restent la première, la courante et la dernière.
-        if (!retirable.length) retirable = visibles.filter(function (n) { return n !== 1 && n !== total && n !== c; });
-        if (!retirable.length) break;
-        retirable.sort(function (a, b) { return Math.abs(b - c) - Math.abs(a - c) || b - a; });
-        visibles.splice(visibles.indexOf(retirable[0]), 1);
-        dessiner(visibles);
-      }
-    };
-    ajuster();
-    if (window.ResizeObserver) new ResizeObserver(function () { window.requestAnimationFrame(ajuster); }).observe(nav);
-    else window.addEventListener('resize', ajuster);
-  }
-
-  /* Barre de série d'exercices (cadre.css/contenu.css : indicateur d'étapes) : le lien vers
-   * l'exercice suivant s'écrit « > 2 » chez WIMS ; la flèche est dessinée, le « > » retiré, et le
-   * lien reçoit le nom de l'infobulle de WIMS (« Continuer la série avec l'exercice suivant »). */
-  function serieEtapes() {
-    Array.prototype.forEach.call(document.querySelectorAll('.wims_serie_bar .wims_next_exo > a'), function (a) {
-      a.textContent = a.textContent.replace(/^\s*>\s*/, '');
-      var li = a.parentNode;
-      if (li.title && !a.getAttribute('aria-label')) a.setAttribute('aria-label', li.title + ' (' + a.textContent.trim() + ')');
-    });
-  }
-
-  /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
-   * chevauche rien ; sinon il garde sa place (cadre.css, .nova-centre). */
-  /* Chronomètre ou « Examen en cours » au centre de la barre, à toutes les largeurs (demande de
-   * l'utilisateur, 2026-10-06) : exactement au centre si rien ne le touche ; sinon à la position la plus
-   * proche du centre où il ne touche rien (12 px d'écart) ; s'il ne tient nulle part, à sa place dans la
-   * barre. Avant d'y renoncer : sur un écran large, « Retour » et « Outils » en pictogrammes (nova-serree) ;
-   * partout, barre compacte (nova-compacte : accueil sans marge, libellé court de la pastille), puis sans
-   * l'heure de fin du chronomètre (nova-sans-fin). La
-   * position est posée par --nova-centre-x (CSS : .nova-centre, hors du flux). */
-  function centrerBarre() {
-    var barre = document.getElementById('wimstopbox');
-    var centre = barre && barre.querySelector('.menuitem.chrono, .nova-examencours');
-    if (!centre || !window.matchMedia) return;
-    var large = window.matchMedia('(min-width: 768px)');
-    var ECART = 12;
-    var positionner = function () {
-      var b = barre.getBoundingClientRect();
-      var w = centre.getBoundingClientRect().width;
-      var milieu = b.width / 2;
-      var style = getComputedStyle(barre);
-      var gauche = parseFloat(style.paddingLeft) || 0, droite = b.width - (parseFloat(style.paddingRight) || 0);
-      Array.prototype.forEach.call(barre.querySelectorAll('.menuitem, .nova-classe, .nova-menu-bouton, .nova-plus'), function (e) {
-        if (e === centre || centre.contains(e) || e.contains(centre) ||
-            e.closest('.is-dropdown-submenu, .nova-plus-panneau') || !e.getClientRects().length) return;
-        var q = e.getBoundingClientRect();
-        if (!q.width) return;
-        var g = q.left - b.left, d = q.right - b.left;
-        if ((g + d) / 2 < milieu) gauche = Math.max(gauche, d + ECART); else droite = Math.min(droite, g - ECART);
-      });
-      if (droite - gauche < w) return false;
-      var x = Math.min(Math.max(milieu, gauche + w / 2), droite - w / 2);
-      centre.style.setProperty('--nova-centre-x', x + 'px');
-      return true;
-    };
-    var placer = function () {
-      centre.style.removeProperty('--nova-centre-x');
-      barre.classList.remove('nova-serree', 'nova-compacte', 'nova-sans-fin');
-      centre.classList.add('nova-centre');       // hors du flux : les voisins prennent leur place
-      if (positionner()) return;
-      if (large.matches) {
-        barre.classList.add('nova-serree');      // « Retour », « Outils » : pictogrammes seuls
-        if (positionner()) return;
-        barre.classList.remove('nova-serree');
-      }
-      // Barre compacte : moins de marge autour de l'accueil, « Examen » au lieu de « Examen en cours ».
-      barre.classList.add('nova-compacte');
-      if (positionner()) return;
-      // Puis sans l'heure de fin du chronomètre (« Fin à … ») : le décompte reste.
-      if (centre.querySelector('.nova-chrono-fin')) {
-        barre.classList.add('nova-sans-fin');
-        if (positionner()) return;
-        barre.classList.remove('nova-sans-fin');
-      }
-      barre.classList.remove('nova-compacte');
-      centre.classList.remove('nova-centre');
-      centre.style.removeProperty('--nova-centre-x');
-    };
-    var verifier = function () {
-      placer();
-      // Barre sur deux lignes malgré tout : libellés de « Retour » et « Outils » retirés.
-      if (large.matches && barre.getBoundingClientRect().height > 72) { barre.classList.add('nova-serree'); placer(); }
-    };
-    verifier();
-    var attente;
-    window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(verifier, 100); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(verifier);
-  }
-
-
-  // Infobulles pour les entrées qui peuvent passer en pictogramme seul (cadre.css).
-  function infobulles() {
-    Array.prototype.forEach.call(document.querySelectorAll('#wimstopbox .menuitem:is(.back, .tools, .class_home) > a'), function (a) {
-      if (!a.title) a.title = a.textContent.trim();
-    });
-  }
-
-  /* Élèves (#nova-eleve, header.phtml) : pas de fil d'Ariane (masqué en CSS), mais un bouton
-   * « Retour » dans la barre, juste après ☰, vers le niveau précédent du fil — le dernier lien
-   * de celui-ci (exercice → feuille → chapitre → accueil). Rien sur l'accueil (aucun lien), ni
-   * pendant un examen ou dans la fenêtre d'exercice, qui ont leurs propres boutons. */
-  function retourEleve() {
-    if (standard('navigation')) return;   // réglage « Navigation complète pour l'élève » : fil d'Ariane
-    if (!document.getElementById('nova-eleve') || document.body.classList.contains('nova-examen-session')) return;
-    var barre = document.getElementById('wimstopbox');
-    var fil = document.querySelector('.breadcrumbs');
-    if (!barre || barre.querySelector('.menuitem.back, .menuitem.chrono')) return;
-    // Pages Nova de l'accueil (Mon avatar, Mon activité ; signalé par l'utilisateur le 2026-11-07 : pas de sortie au
-    // téléphone) : leur fil d'Ariane n'a pas de lien vers l'accueil, qui est leur page parente.
-    var pageAccueil = /[?&+]nova_(avatar|activite)=1/.test(location.search) && lienAccueil('');
-    if (!fil && !pageAccueil) return;
-    // Le lien « Chapitre » qu'ajoute WIMS sur la page d'une feuille (module=home&seq=N) mène à la page
-    // d'une seule séquence, sans onglets : on remonte à l'accueil de la classe, où WIMS rouvre l'onglet
-    // d'origine (adm/tabscript, sessionStorage) — comme le retour depuis un examen.
-    var liens = fil ? Array.prototype.filter.call(fil.querySelectorAll('a[href]'), function (a) {
-      return !/[?&+]module=home(&|$)/.test(a.getAttribute('href')) || !/[?&+]seq=/.test(a.getAttribute('href'));
-    }) : [];
-    var precedent = liens[liens.length - 1];
-    if (pageAccueil) {
-      var maison = barre.querySelector('.class_home a[href]');
-      precedent = { href: new URL(pageAccueil, location.href).href, textContent: maison ? maison.textContent : '' };
-    }
-    if (!precedent) return;
-    var textes = document.getElementById('nova-textes');
-    var libelle = (textes && textes.getAttribute('data-retour')) || 'Back';
-    var item = document.createElement('span');
-    item.className = 'menuitem nova-retour';
-    var a = document.createElement('a');
-    a.href = precedent.href;
-    a.className = 'nova-retour-lien';
-    a.title = precedent.textContent.trim() ? libelle + ' : ' + precedent.textContent.trim() : libelle;
-    a.setAttribute('aria-label', a.title);
-    var texte = document.createElement('span');
-    texte.className = 'text_item';
-    texte.textContent = libelle;
-    a.appendChild(texte);
-    item.appendChild(a);
-    var bloc = barre.querySelector('.wimsmenu.float_left') || barre;
-    bloc.insertBefore(item, bloc.firstChild);
-  }
-
-  /* Barres de score (themes/_widgets/userbar.phtml) : charte Nova (cadre.css / contenu.css).
-   *  - feuille : segments par exercice, état lu dans la classe WIMS (untry, undone, done,
-   *    congratulation, unwork) + compteur « réussis/total » ;
-   *  - examen : une case colorée en ligne par WIMS, note dans le titre (« Note:4/20 ») → pastille
-   *    « 4/20 », niveau faible / moyen / bon.
-   * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
-  /* Examen : la barre est l'HISTORIQUE des sessions passées (themes/_widgets/userexambar.phtml,
-   * de la plus ancienne à la plus récente, nombre illimité — jusqu'à 99 pour certains DM). On en
-   * montre autant que la largeur de la carte le permet : la plus récente en grand, avec sa note ;
-   * les plus anciennes qui ne tiennent pas se résument en « +k » (notes en infobulle). Recalculé
-   * quand la carte change de largeur (rotation, fenêtre). */
-  function historique(barre, cases) {
-    barre.classList.add('nova-score-examen');
-    var n = cases.length;
-    var ol = cases[0].parentNode;
-    cases[n - 1].classList.add('nova-derniere');
-    var plus = document.createElement('li');
-    plus.className = 'nova-plus-anciennes';
-    var ajuster = function () {
-      Array.prototype.forEach.call(cases, function (li) { li.classList.remove('nova-ancienne'); });
-      if (plus.parentNode) plus.remove();
-      var dispo = barre.clientWidth;
-      if (!dispo || ol.scrollWidth <= dispo) return;
-      ol.insertBefore(plus, cases[0]);
-      for (var k = 1; k < n; k++) {
-        cases[k - 1].classList.add('nova-ancienne');
-        plus.textContent = '+' + k;
-        if (ol.scrollWidth <= dispo) break;
-      }
-      plus.title = Array.prototype.slice.call(cases, 0, k).map(function (li) {
-        var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
-      }).join(' \u00B7 ');
-    };
-    ajuster();
-    if (window.ResizeObserver) {
-      var largeur = barre.clientWidth, attente = 0;
-      new ResizeObserver(function () {
-        if (barre.clientWidth === largeur) return;
-        largeur = barre.clientWidth;
-        cancelAnimationFrame(attente);
-        attente = requestAnimationFrame(ajuster);
-      }).observe(barre);
-    }
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
-  }
-
-  function scores() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
-    Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
-      if (barre.classList.contains('nova-score')) return;
-      var cases = barre.querySelectorAll('ol > li');
-      if (!cases.length) return;
-      barre.classList.add('nova-score');
-      var notes = 0;
-      Array.prototype.forEach.call(cases, function (li) {
-        var a = li.querySelector('a');
-        var titre = (a && a.getAttribute('title')) || li.getAttribute('title') || '';
-        // Une session d'examen sans note donne « NaN/20 » (userexambar.phtml) ; WIMS y affiche 0.
-        var m = /(\d+(?:[.,]\d+)?|NaN)\s*\/\s*(\d+(?:[.,]\d+)?)/.exec(titre);
-        if (m && m[1] === 'NaN') m[1] = '0';
-        if (li.style.backgroundColor && m) {
-          var r = parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.'));
-          var n = Math.round(10 * r);   // note /10 arrondie, comme les couleurs de WIMS (scripts/adm/class/colors)
-          li.setAttribute('data-niveau', n <= 0 ? 'zero' : n <= 3 ? 'rouge' : n <= 6 ? 'orange' : n <= 8 ? 'jaune' : 'vert');
-          li.classList.add('nova-note');
-          if (a) a.textContent = m[1] + '/' + m[2];
-          notes++;
-        }
-      });
-      if (notes) { historique(barre, cases); return; }
-      if (barre.closest('li.wims_exam_item')) return;   // examen : pas de compteur de feuille
-      var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
-      var compte = document.createElement('span');
-      compte.className = 'nova-score-compte';
-      compte.textContent = reussis + '/' + cases.length;
-      barre.appendChild(compte);
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div, span):not(.wims_score_bar, .wims_seq_item_n)'), function (bloc) {
-      if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
-    });
-  }
-
-  /* Note retenue d'un examen sur sa carte (accueil de la classe), comme la note d'une feuille : WIMS
-   * ne l'y met pas. Valeurs calculées par user.phtml (!examscore) dans #nova-notes-examens ; seulement
-   * pour un examen déjà commencé (relevé score/<élève>.exam, pas l'historique : WIMS en efface les vieilles
-   * sessions, la pastille disparaissait ; 2026-11-04). */
-  function notesExamens() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
-    var source = document.getElementById('nova-notes-examens');
-    if (!source) return;
-    var notes = {}, max = source.getAttribute('data-max') || '10', libelle = source.getAttribute('data-libelle') || 'Score';
-    (source.getAttribute('data-notes') || '').trim().split(/\s+/).forEach(function (paire) {
-      var m = /^(\d+):(.+)$/.exec(paire);
-      if (m) notes[m[1]] = m[2];
-    });
-    Array.prototype.forEach.call(document.querySelectorAll('li.wims_exam_item'), function (li) {
-      if (li.querySelector('.nova-note-examen')) return;
-      var lien = li.querySelector('a[href*="exam="]');
-      var m = lien && /[?&+]exam=(\d+)/.exec(lien.getAttribute('href'));
-      if (!m || notes[m[1]] === undefined) return;
-      var bloc = document.createElement('div'), note = document.createElement('span');
-      bloc.className = 'wims_user_info nova-note-examen';
-      note.className = 'wims_sheet_score';
-      note.textContent = libelle + ': ' + notes[m[1]] + '/' + max;
-      bloc.appendChild(note);
-      li.appendChild(bloc);
-    });
-  }
-
-  /* Pastille de note d'une carte (« Note: 6.5/10 ») : le libellé isolé dans un span, que le CSS cache
-   * au téléphone (seule la valeur reste visible ; le libellé reste lu par les lecteurs d'écran). */
-  function libellesNotes() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
-    Array.prototype.forEach.call(document.querySelectorAll('li.wims_sheet_item > div.wims_user_info .wims_sheet_score, li.wims_exam_item > div.nova-note-examen .wims_sheet_score'), function (note) {
-      if (note.querySelector('.nova-note-libelle')) return;
-      var m = /^([^:]+:)\s*(\S.*)$/.exec(note.textContent.replace(/\s+/g, ' ').trim());
-      if (!m) return;
-      var libelle = document.createElement('span'), valeur = document.createElement('span');
-      libelle.className = 'nova-note-libelle';
-      libelle.textContent = m[1];
-      valeur.textContent = m[2];
-      note.textContent = '';
-      note.appendChild(libelle);
-      note.appendChild(valeur);
-    });
-  }
-
-  /* Exercices d'un examen (adm/class/exam, student.phtml : ol.wims_exam > li.exo_item) en cartes, comme la
-   * feuille d'exercices (maquette A, utilisateur, 2026-10-03). WIMS écrit selon l'état : lien (.exo_link a),
-   * fait (.exo_name + .exo_done, ou un ❌ dans une course), bloqué par une dépendance (titre nu + lien
-   * « Nécessite… »), fermé (titre nu). Nova range : titre, puis étiquettes (poids, état) ; liens de WIMS gardés.
-   * Numéro, ✓ et flèche en CSS. */
-  function examExercices() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
-    Array.prototype.forEach.call(document.querySelectorAll('ol.wims_exam'), function (ol) {
-      if (ol.classList.contains('nova-exam-liste')) return;
-      ol.classList.add('nova-exam-liste');
-      Array.prototype.forEach.call(ol.querySelectorAll(':scope > li.exo_item'), function (li) {
-        var puce = function (classe, contenu) {
-          var e = document.createElement('span');
-          e.className = 'nova-puce ' + classe;
-          if (typeof contenu === 'string') e.textContent = contenu; else e.appendChild(contenu);
-          return e;
-        };
-        var meta = document.createElement('span');
-        meta.className = 'nova-exo-meta';
-        var poids = li.querySelector('.weight');
-        if (poids) {
-          var m = /^\(?\s*([^:()]+?)\s*:\s*([^()]+?)\s*\)?$/.exec(poids.textContent.replace(/\s+/g, ' ').trim());
-          meta.appendChild(puce('nova-puce-poids', m ? m[1] + ' ' + m[2] : poids.textContent.trim()));
-          poids.remove();
-        }
-        var titre, lien = li.querySelector('.exo_link a'), fait = li.querySelector('.exo_done');
-        var echec = Array.prototype.filter.call(li.querySelectorAll('span'), function (e) { return e.textContent.indexOf('\u274C') >= 0; })[0];
-        var bloque = !lien && li.querySelector('a[href*="job=student"]');
-        if (lien) {
-          li.classList.add('nova-exo-afaire');
-          titre = lien.closest('.exo_link');
-        } else if (fait || echec) {
-          li.classList.add(fait ? 'nova-exo-fait' : 'nova-exo-echec');
-          titre = li.querySelector('.exo_name');
-          meta.appendChild(puce(fait ? 'nova-puce-ok' : 'nova-puce-echec', (fait || echec).textContent.trim()));
-          (fait || echec).remove();
-        } else if (bloque) {
-          li.classList.add('nova-exo-bloque');
-          var conteneur = bloque.parentNode === li ? bloque : bloque.parentNode;
-          meta.appendChild(puce('nova-puce-bloque', bloque));
-          if (conteneur !== bloque) conteneur.remove();
-        } else {
-          li.classList.add('nova-exo-ferme');
-          titre = li.querySelector(':scope > span');
-        }
-        if (!titre) {
-          // Titre écrit en texte nu par WIMS : le recueillir.
-          titre = document.createElement('span');
-          Array.prototype.slice.call(li.childNodes).forEach(function (n) {
-            if (n.nodeType === 3 && n.textContent.trim()) titre.appendChild(document.createTextNode(n.textContent.trim()));
-          });
-        }
-        titre.classList.add('nova-exo-titre');
-        if (!lien && titre.lastChild && titre.lastChild.nodeType === 3) titre.lastChild.textContent = titre.lastChild.textContent.replace(/\s*\.\s*$/, '');
-        var corps = document.createElement('span');
-        corps.className = 'nova-exo-corps';
-        corps.appendChild(titre);
-        if (meta.childNodes.length) corps.appendChild(meta);
-        Array.prototype.slice.call(li.childNodes).forEach(function (n) { if (n.nodeType === 3 || (n !== titre && n.nodeType === 1)) n.remove(); });
-        li.appendChild(corps);
-      });
-    });
-  }
-
-  /* Carrousel des exemples de l'accueil du site (themes/_widgets/examples.phtml : #exemples .carousel, une
-   * diapositive par div enfant), à la place de Slick (2026-10-03) : même aspect (flèches, points, pause en
-   * haut à droite, défilement automatique qui reboucle). Défilement natif (scroll-snap), au doigt aussi ;
-   * pas de défilement automatique si l'appareil demande moins d'animations ; pause au survol, au focus,
-   * onglet caché. */
-  function carrousel() {
-    var c = document.querySelector('#exemples .carousel');
-    if (!c || c.classList.contains('nova-carrousel')) return;
-    var diapos = Array.prototype.filter.call(c.children, function (e) { return e.tagName === 'DIV'; });
-    c.classList.add('nova-carrousel');
-    if (diapos.length < 2) return;
-    var textes = document.getElementById('nova-textes');
-    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
-    var n = diapos.length, courant = 0, arrete = false, suspendu = false, minuterie = 0;
-    // Défilement automatique par défaut, indépendant du réglage « Animations » (demande de l'utilisateur,
-    // 2026-10-07) ; coupé seulement si l'appareil demande de réduire les animations.
-    var calme = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    var piste = document.createElement('div');
-    piste.className = 'nova-car-piste';
-    piste.setAttribute('aria-live', 'off');
-    c.setAttribute('role', 'region');
-    c.setAttribute('aria-roledescription', 'carrousel');
-    c.setAttribute('aria-label', t('car-titre', 'Examples'));
-    diapos.forEach(function (d, i) {
-      d.classList.add('nova-car-diapo');
-      d.setAttribute('role', 'group');
-      d.setAttribute('aria-roledescription', 'diapositive');
-      d.setAttribute('aria-label', t('car-diapo', 'Example %n of %t').replace('%n', i + 1).replace('%t', n));
-      piste.appendChild(d);
-    });
-    var bouton = function (classe, libelle) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = classe;
-      b.setAttribute('aria-label', libelle);
-      b.title = libelle;
-      return b;
-    };
-    var prec = bouton('nova-car-prec', t('car-prec', 'Previous example'));
-    var suiv = bouton('nova-car-suiv', t('car-suiv', 'Next example'));
-    var pause = bouton('nova-car-pause', t('car-pause', 'Stop scrolling'));
-    var points = document.createElement('div');
-    points.className = 'nova-car-points';
-    var boutons = diapos.map(function (d, i) {
-      var b = bouton('nova-car-point', d.getAttribute('aria-label'));
-      b.addEventListener('click', function () { aller(i); });
-      points.appendChild(b);
-      return b;
-    });
-    c.appendChild(pause);
-    c.appendChild(prec);
-    c.appendChild(piste);
-    c.appendChild(suiv);
-    c.appendChild(points);
-    var marquer = function () {
-      boutons.forEach(function (b, i) { if (i === courant) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
-      diapos.forEach(function (d, i) { d.toggleAttribute('inert', i !== courant); });
-    };
-    function aller(i) {
-      courant = (i + n) % n;
-      piste.scrollTo({ left: courant * piste.clientWidth, behavior: calme ? 'auto' : 'smooth' });
-      marquer();
-    }
-    prec.addEventListener('click', function () { aller(courant - 1); });
-    suiv.addEventListener('click', function () { aller(courant + 1); });
-    var attente = 0;
-    piste.addEventListener('scroll', function () {   // glissement au doigt : la diapositive se cale (scroll-snap)
-      clearTimeout(attente);
-      attente = setTimeout(function () {
-        var i = Math.round(piste.scrollLeft / Math.max(1, piste.clientWidth));
-        if (i !== courant) { courant = i; marquer(); }
-      }, 120);
-    });
-    var lancer = function () {
-      clearInterval(minuterie);
-      if (!arrete && !suspendu && !calme) minuterie = setInterval(function () { aller(courant + 1); }, 5000);
-    };
-    var majPause = function () {
-      var libelle = arrete ? t('car-lecture', 'Resume scrolling') : t('car-pause', 'Stop scrolling');
-      pause.setAttribute('aria-label', libelle);
-      pause.title = libelle;
-      pause.classList.toggle('nova-car-arrete', arrete);
-    };
-    pause.addEventListener('click', function () { arrete = !arrete; majPause(); lancer(); });
-    c.addEventListener('mouseenter', function () { suspendu = true; lancer(); });
-    c.addEventListener('mouseleave', function () { suspendu = false; lancer(); });
-    c.addEventListener('focusin', function () { suspendu = true; lancer(); });
-    c.addEventListener('focusout', function (e) { if (!c.contains(e.relatedTarget)) { suspendu = false; lancer(); } });
-    document.addEventListener('visibilitychange', function () { suspendu = document.hidden; lancer(); });
-    if (calme) { arrete = true; pause.hidden = true; }
-    majPause();
-    marquer();
-    lancer();
-  }
-
-  /* « NaN » que WIMS écrit dans une case de note qu'il ne peut pas calculer (session d'examen sans réponse :
-   * adm/class/userscore, examcheck.phtml, « Détail des examens ») : un « - » sobre (choix de l'utilisateur,
-   * 2026-10-03). Seul le texte « NaN » change ; ce qui suit (astérisque et info-bulle de WIMS) reste. */
-  function notesNaN() {
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td'), function (td) {
-      var n = td.firstChild;
-      while (n && n.nodeType === 3 && !n.textContent.trim()) n = n.nextSibling;
-      if (n && n.nodeType === 3 && n.textContent.trim() === 'NaN') n.textContent = n.textContent.replace('NaN', '-');
-    });
-  }
-
-  /* Signes « \u2020 » et « ?? » du Détail des examens (adm/class/userscore, examcheck.phtml), que WIMS écrit sans
-   * explication dans la case d'un exercice sans note : \u2020 = session sans durée enregistrée (en cours ou interrompue),
-   * ?? = exercice sans note d'une session qui a une durée (pas ouvert, ou sans réponse ; WIMS ne distingue pas).
-   * Info-bulle (title) sur chaque signe et légende sous le tableau, seulement pour les signes présents
-   * (proposé par Claude le 2026-10-03, accepté par l'utilisateur le 2026-11-07). */
-  function signesExamens() {
-    var textes = document.getElementById('nova-textes');
-    if (!textes) return;
-    var defs = { '\u2020': textes.getAttribute('data-texte-signe-croix'), '??': textes.getAttribute('data-texte-signe-inconnu') };
-    var tables = [];
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody td.wims_sheet_score a'), function (a) {
-      var signe = a.textContent.trim();
-      if (!defs[signe]) return;
-      a.title = defs[signe];
-      a.setAttribute('aria-label', signe + ' : ' + defs[signe]);
-      var t = a.closest('table');
-      if (!t) return;
-      var e = tables.filter(function (x) { return x.table === t; })[0];
-      if (!e) { e = { table: t, signes: {} }; tables.push(e); }
-      e.signes[signe] = true;
-    });
-    tables.forEach(function (e) {
-      var p = document.createElement('p');
-      p.className = 'nova-legende-signes';
-      ['\u2020', '??'].forEach(function (signe) {
-        if (!e.signes[signe]) return;
-        var l = document.createElement('span');
-        var b = document.createElement('b');
-        b.textContent = signe;
-        l.appendChild(b);
-        l.appendChild(document.createTextNode(' ' + defs[signe]));
-        p.appendChild(l);
-      });
-      var apres = e.table.closest('.wims_scrollable, .table-scroll') || e.table;
-      apres.parentNode.insertBefore(p, apres.nextSibling);
-    });
-  }
-
   /* Page « Notes » de l'enseignant (adm/class/userscore, main.phtml, tableau #TABLE_userlist ; demande de
    * l'utilisateur, 2026-11-08).
    * (a) Case « Masquer la moyenne », décochée par défaut, dans le cadre du choix des colonnes ; choix gardé par le
@@ -2648,12 +5282,6 @@
     placer(p);
   }
 
-  // Valeur texte d'une variable CSS : guillemets retirés, échappements CSS décodés (« not\\e9 » → « noté » ; Chrome rend
-  // le texte tel qu'écrit, et les jetons de Nova sont en ASCII). 2026-11-08.
-  function texteCss(v) {
-    return (v || '').replace(/["']/g, '').replace(/\\([0-9a-fA-F]{1,6})\s?/g, function (m, h) { return String.fromCodePoint(parseInt(h, 16)); }).trim();
-  }
-
   function dmNote() {
     var textes = document.getElementById('nova-textes');
     var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-texte-' + cle)) || defaut; };
@@ -2776,953 +5404,293 @@
     });
   }
 
-  function notesColonnes() {
-    var mm = document.querySelector('meta[name="nova-module"]');
-    var table = document.getElementById('TABLE_userlist');
-    if (!mm || mm.content !== 'adm/class/userscore' || !table || table.hasAttribute('data-nova-notes')) return;
-    table.setAttribute('data-nova-notes', '');
-    var textes = document.getElementById('nova-textes');
-    var texte = function (n, defaut) { return (textes && textes.getAttribute('data-texte-' + n)) || defaut; };
-    var choix = document.querySelector('select[name="showsheet"]');
-    var cadre = choix && choix.closest('fieldset');
-    // Case du cadre « Choix des données » (sinon au-dessus du tableau), choix gardé par le navigateur.
-    var ajouterCase = function (id, libelle, cle, defaut, appliquer) {
-      var actif = defaut;
-      try { var v = localStorage.getItem(cle); if (v !== null) actif = v === '1'; } catch (e) { /* sans stockage : défaut */ }
-      var champ = document.createElement('div');
-      champ.className = 'field box nova-notes-option';
-      var c = document.createElement('input');
-      c.type = 'checkbox';
-      c.id = id;
-      c.checked = actif;
-      var lib = document.createElement('label');
-      lib.htmlFor = id;
-      lib.textContent = libelle;
-      champ.appendChild(c);
-      champ.appendChild(lib);
-      c.addEventListener('change', function () {
-        appliquer(c.checked);
-        try { localStorage.setItem(cle, c.checked ? '1' : '0'); } catch (e) { /* cette page seulement */ }
-      });
-      if (cadre) {
-        var envoi = cadre.querySelector(':scope > .wimsform');
-        cadre.insertBefore(champ, envoi || null);
-      } else {
-        var avant = table.closest('.wims_scrollable, .table-scroll') || table;
-        avant.parentNode.insertBefore(champ, avant);
-      }
-      appliquer(actif);
-    };
-    // (b) Titre au lieu du numéro (examens : 2026-11-08 ; feuilles et cases : 2026-11-09, utilisateur). Titres lus dans
-    // la liste de choix (option « 3 » = « 2/3: titre » pour la feuille 3, « E4 » = « Examen 4: titre »). Cochées par
-    // défaut, sauf réglage « Textes du thème standard ».
-    var titres = { feuille: {}, examen: {} };
-    if (choix) Array.prototype.forEach.call(choix.options, function (o) {
-      var m = /^(E?)(\d+)$/.exec(o.value);
-      var i = o.textContent.indexOf(':');
-      if (m && i >= 0 && o.textContent.slice(i + 1).trim()) titres[m[1] ? 'examen' : 'feuille'][m[2]] = o.textContent.slice(i + 1).trim();
-    });
-    var types = [
-      ['feuille', 'nova-titres-feuilles', texte('titres-feuilles', 'Worksheets: show the title instead of the number'), function () {
-        return Array.prototype.map.call(table.querySelectorAll('thead th a[href*="numshowsheet"]'), function (a) { return [a.closest('th'), a]; });
-      }],
-      ['examen', 'nova-titres-examens', texte('titres-examens', 'Exams: show the title instead of the number'), function () {
-        return Array.prototype.map.call(table.querySelectorAll('thead th.name_exam'), function (th) { return [th, th]; });
-      }]
-    ];
-    types.forEach(function (t) {
-      if (!Object.keys(titres[t[0]]).length) return;
-      var cellules = t[3]().map(function (x) {
-        var origine = x[1].textContent.trim();
-        var m = /(\d+)$/.exec(origine);
-        return { th: x[0], el: x[1], origine: origine, titre: m && titres[t[0]][m[1]] };
-      }).filter(function (c) { return c.titre; });
-      ajouterCase(t[1], t[2], t[1], !standard('textes'), function (oui) {
-        cellules.forEach(function (c) {
-          c.el.textContent = '';
-          if (oui) {
-            var s = document.createElement('span');
-            s.className = 'nova-titre-examen';
-            s.textContent = c.titre;
-            c.el.appendChild(s);
-            c.th.title = c.origine + ' : ' + c.titre;
-          } else {
-            c.el.textContent = c.origine;
-            c.th.removeAttribute('title');
-          }
-        });
-      });
-    });
-    // (a) Masquer la moyenne.
-    var moy = table.querySelector('thead th.average');
-    if (!moy) return;
-    var rang = Array.prototype.indexOf.call(moy.parentNode.children, moy);
-    ajouterCase('nova-sans-moyenne', texte('masquer-moyenne', 'Hide the average'), 'nova-notes-sans-moyenne', false, function (oui) {
-      Array.prototype.forEach.call(table.rows, function (tr) {
-        var c = tr.cells[rang];
-        if (c) c.classList.toggle('nova-col-masquee', oui);
-      });
-    });
-  }
-
-  /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types
-   * présents à l'écran, c'est-à-dire dans l'onglet de séquence affiché (ou toute la page s'il n'y a pas
-   * d'onglets) ; recalculée à chaque changement d'onglet (demande de l'utilisateur, 2026-10-03). */
-  function legendeTypes() {
-    if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+  /* Configuration et maintenance d'une classe, d'un groupement ou d'un portail (adm/class/config, page d'entrée ;
+   * 2026-11-11, utilisateur : comme l'administration du serveur, maquette B). Les listes de WIMS deviennent des cartes :
+   * un groupe sans titre = une carte ; « <strong>titre</strong> (aide) + sous-liste » = titre de groupe, puis sa carte.
+   * Ligne = icône (d'après la cible du lien), libellé, description sans parenthèses, chevron ; ligne entière cliquable
+   * (les autres liens de la ligne restent au-dessus). « Actualiser les index » garde ses boutons. Nœuds déplacés, pas
+   * copiés (onclick de WIMS gardés) ; cartes gardent la classe wims_nopuce (rubriqueReglages, liensConnexion). Réglage
+   * standard « listes ». */
+  var CONFIG_ICONES = [
+    [/#nova-reglages/, 'nova'], [/job=connectlink/, 'lien'], [/job=arch/, 'disque'], [/job=security/, 'bouclier'],
+    [/job=clean/, 'balai'], [/job=propagate/, 'propager'], [/job=authtype/, 'cle'], [/job=list(?![a-z])/, 'curseurs'],
+    [/adm(%2F|\/)class(%2F|\/)sequence/, 'sequence'], [/job=oefdefault/, 'crayon'], [/job=present/, 'palette'],
+    [/adm(%2F|\/)forum/, 'forum'], [/adm(%2F|\/)class(%2F|\/)motd/, 'portevoix'], [/adm(%2F|\/)class(%2F|\/)cdt/, 'cahier'],
+    [/adm(%2F|\/)class(%2F|\/)livret/, 'livret'], [/job=access/, 'cadenas'], [/job=grestrict/, 'jauge'],
+    [/job=neighbor/, 'users'], [/job=connect(?![a-z])/, 'serveur'], [/adm(%2F|\/)light/, 'oeil']
+  ];
+  function configurationClasse() {
+    if (standard('listes')) return;
     var corps = document.querySelector('.wimsbody');
     if (!corps) return;
-    var legendes = Array.prototype.filter.call(corps.querySelectorAll('ul.inline'), function (ul) {
-      var lis = ul.querySelectorAll(':scope > li');
-      return lis.length > 1 && Array.prototype.every.call(lis, function (li) { return /_item\b/.test(li.className) && !li.querySelector('a'); });
-    });
-    if (!legendes.length) return;
-    var type = function (el) { return (el.className.match(/\bwims_[a-z]+_item\b/) || [])[0]; };
-    var majour = function () {
-      var panneaux = Array.prototype.filter.call(corps.querySelectorAll('[id^="wims_seq_"]:not(#wims_seq_summary)'), function (p) { return p.getClientRects().length; });
-      var zones = panneaux.length ? panneaux : [corps];
-      var presents = {};
-      zones.forEach(function (z) {
-        Array.prototype.forEach.call(z.querySelectorAll('li[class*="_item"]'), function (li) {
-          if (li.querySelector(':scope > a') && !legendes.some(function (l) { return l.contains(li); })) presents[type(li)] = true;
-        });
-      });
-      legendes.forEach(function (ul) {
-        var visibles = 0;
-        Array.prototype.forEach.call(ul.querySelectorAll(':scope > li'), function (li) {
-          var garde = !!presents[type(li)];
-          li.classList.toggle('nova-legende-absente', !garde);
-          if (garde) visibles++;
-        });
-        ul.classList.toggle('nova-legende-absente', !visibles);
-        var bloc = ul.closest('.wims_seq_legend, .legend, fieldset');
-        if (bloc && bloc.querySelectorAll('ul.inline').length === 1) bloc.classList.toggle('nova-legende-absente', !visibles);
-      });
+    var config = /adm(%2F|\/)class(%2F|\/)config/;
+    var arch = corps.querySelector('ul.wims_nopuce > li > a[href*="job=arch"]');
+    if (!arch || !config.test(arch.href) || corps.querySelector('.nova-cfg')) return;
+    var enfants = function (el, tag) { return Array.prototype.filter.call(el.children, function (c) { return c.tagName === tag; }); };
+    var nettoyer = function (s) { return s.replace(/\s+/g, ' ').trim().replace(/^\(\s*/, '').replace(/\s*\)?[\s.,]*$/, '').replace(/\s*\)$/, ''); };
+    // Description : nœuds qui suivent le libellé (texte, autres liens), parenthèses de WIMS retirées.
+    var description = function (noeuds) {
+      var span = document.createElement('span');
+      span.className = 'nova-cfg-desc';
+      noeuds.forEach(function (n) { span.appendChild(n); });
+      span.normalize();
+      while (span.firstChild && span.firstChild.nodeType === 3 && !span.firstChild.nodeValue.trim()) span.removeChild(span.firstChild);
+      var premier = span.firstChild, dernier = span.lastChild;
+      if (premier && premier.nodeType === 3) premier.nodeValue = premier.nodeValue.replace(/^\s*\(\s*/, '');
+      if (dernier && dernier.nodeType === 3) dernier.nodeValue = dernier.nodeValue.replace(/\s*\)?[\s.,]*$/, '');
+      return span.textContent.trim() ? span : null;
     };
-    majour();
-    var attente = 0;
-    var relancer = function () { cancelAnimationFrame(attente); attente = requestAnimationFrame(majour); };
-    corps.addEventListener('click', relancer);
-    corps.addEventListener('change', relancer);
-    if (window.MutationObserver) {
-      new MutationObserver(relancer).observe(corps, { subtree: true, attributes: true, attributeFilter: ['style', 'aria-hidden', 'hidden'] });
-    }
-  }
-
-  /* Exercice (OEF, scripts/oef : div.send_answer « Envoyer la réponse », div.oef_buttons « Continuer la série
-   * avec l'exercice suivant ») : au téléphone, le bloc de boutons reste en bas de l'écran tant que sa place
-   * dans la page est plus bas ; quand l'élève y arrive, il la reprend et défile avec la page (demande de
-   * l'utilisateur, 2026-10-03). Pas de position: sticky : .wimsbody défile en largeur au téléphone (filet de
-   * sécurité, contenu.css), un élément collant s'y collerait, hors de l'écran. Un repère après le bloc
-   * marque sa place ; une cale garde sa hauteur quand il est fixé. « Continuer la série… » devient
-   * « Exercice suivant ». */
-  function boutonsCollants() {
-    var textes = document.getElementById('nova-textes');
-    var suivant = document.querySelector('#oef_serie_nextexo .oef_serie_nextexo');
-    if (suivant) {
-      var libelle = textes && textes.getAttribute('data-exo-suivant');
-      if (libelle) { suivant.textContent = libelle; suivant.closest('a').title = libelle; }
-    }
-    // Série terminée (scripts/oef/answer.phtml : .oef_modulescore ; il ne reste que « Recommencer » dans
-    // #oef_actions) : « Revenir à la liste », le lien de retour de la barre du haut (« ← Retour » d'une
-    // feuille, retour de la fenêtre d'examen), devant « Recommencer » (demande de l'utilisateur, 2026-10-03).
-    var actions = document.getElementById('oef_actions');
-    var retour = document.querySelector('#wimstopbox .nova-retour-lien, #wimstopbox .menuitem.back > a');
-    if (actions && retour && document.querySelector('.oef_modulescore') && !actions.querySelector('.nova-revenir-liste')) {
-      var lien = retour.cloneNode(true);
-      lien.removeAttribute('id'); lien.removeAttribute('title'); lien.removeAttribute('aria-label');
-      lien.className = 'wims_button nova-revenir-liste';
-      lien.textContent = (textes && textes.getAttribute('data-revenir-liste')) || 'Back to the list';
-      var recommencer = actions.querySelector('#oef_serie_renew, #oef_renew');
-      var place = recommencer ? recommencer.parentNode : actions;
-      place.insertBefore(lien, recommencer || place.firstChild);
-    }
-    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons, #oef_actions:has(.nova-revenir-liste)'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
-    if (!blocs.length || !window.IntersectionObserver || !window.matchMedia) return;
-    var telephone = window.matchMedia('(max-width: 639.98px)');
-    blocs.forEach(function (bloc) {
-      var repere = document.createElement('span');
-      repere.className = 'nova-collant-repere';
-      repere.setAttribute('aria-hidden', 'true');
-      bloc.parentNode.insertBefore(repere, bloc.nextSibling);
-      var cale = document.createElement('div');
-      cale.className = 'nova-collant-cale';
-      cale.setAttribute('aria-hidden', 'true');
-      var dessous = false;
-      var appliquer = function () {
-        var fixer = telephone.matches && dessous && bloc.getClientRects().length > 0;
-        if (fixer === bloc.classList.contains('nova-collant')) return;
-        if (fixer) {
-          // La cale doit tenir exactement la place du bloc, marges comprises (celles de ses paragraphes
-          // traversent le bloc) : sinon le repère bouge de quelques pixels et le bloc se fixe et se libère
-          // sans fin à cet endroit, il « vibre » (signalé par l'utilisateur, 2026-11-04). On mesure le repère
-          // avant et après, et on corrige la hauteur de la cale de l'écart.
-          var avant = repere.getBoundingClientRect().top, hauteur = bloc.offsetHeight;
-          cale.style.height = hauteur + 'px';
-          bloc.parentNode.insertBefore(cale, bloc);
-          bloc.classList.add('nova-collant');
-          var ecart = avant - repere.getBoundingClientRect().top;
-          if (Math.abs(ecart) > 0.5) cale.style.height = Math.max(0, hauteur + ecart) + 'px';
-        } else {
-          bloc.classList.remove('nova-collant');
-          if (cale.parentNode) cale.parentNode.removeChild(cale);
-        }
-        document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant'));
-      };
-      new IntersectionObserver(function (entrees) {
-        var e = entrees[entrees.length - 1];
-        dessous = !e.isIntersecting && e.boundingClientRect.top > 0;   // place du bloc plus bas que l'écran
-        appliquer();
-      }).observe(repere);
-      if (telephone.addEventListener) telephone.addEventListener('change', appliquer);
-    });
-  }
-
-  /* Exercice OEF (demande de l'utilisateur, 2026-10-05). « Envoyer la réponse » (div.send_answer) devient
-   * « Valider ». Page de réponse (scripts/oef/answer.phtml) : le tableau « Analyse de votre réponse » (une
-   * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
-   * bonne réponse en div.inline.tt) devient un verdict en tête de .oefanswer ; le CSS masque le reste du bloc
-   * sauf .oef_feedbacks. La réponse réaffichée dans l'énoncé (scripts/oef/embed.phtml : div.oef_ind… suivi de
-   * <sup><small>[k]</small></sup>, k = nom de la ligne) : rouge si fausse ; étoiles (depuis la place du bouton « Valider ») si tout est juste, la page vibre si tout est faux ;
-   * oef_indneutral (bonne réponse non montrée) prend l'état de sa ligne. Ligne inconnue (conditions, « voir
-   * l'analyse ») : rien ne change. */
-  function retourReponse() {
-    if (standard('reponse')) return;   // réglage « Réponse comme le thème standard »
-    var textes = document.getElementById('nova-textes');
-    var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-' + cle)) || defaut; };
-    document.querySelectorAll('.wimsbody .send_answer input[type="submit"]').forEach(function (b) {
-      b.value = texte('valider', 'Submit');
-      b.classList.add('nova-valider');
-      // Place du bouton à l'envoi, à l'écran : les étoiles de la page de réponse en partiront.
-      if (b.form) b.form.addEventListener('submit', function () {
-        var r = b.getBoundingClientRect();
-        try { sessionStorage.setItem('nova-valider', JSON.stringify({ l: r.left, t: r.top, w: r.width, h: r.height, quand: Date.now() })); } catch (e) { /* sans stockage : étoiles sur le verdict */ }
-      });
-    });
-    var reponse = document.querySelector('.wimsbody .oefanswer');
-    if (!reponse) return;
-    var tableau = reponse.querySelector('table.answeranalysis');
-    var lignes = [], inconnues = 0, conditions = 0;
-    if (tableau) tableau.querySelectorAll('tr').forEach(function (tr) {
-      // L'état est le span en tête de la dernière cellule : oef_ind… pour une réponse, oef_cond… pour une
-      // condition (OUI/NON). La bonne réponse montrée à côté peut porter elle-même oef_indgood (étiquettes
-      // clickfill, E3/measurement/oefdatagestion.fr, vécu 2026-10-05) : ne pas chercher ailleurs.
-      var derniere = tr.lastElementChild;
-      var marque = derniere && derniere.querySelector(':scope > span[class^="oef_ind"], :scope > span[class^="oef_cond"]');
-      var m = marque && /^oef_(ind|cond)(good|bad|partial|prec)\b/.exec(marque.className);
-      var etat = m ? { good: 'bonne', bad: 'mauvaise', partial: 'partielle', prec: 'precision' }[m[2]] : null;
-      if (!etat) { if (tr.textContent.trim()) inconnues++; return; }
-      var reponseEleve = m[1] === 'ind' && tr.children.length >= 3;
-      if (m[1] === 'cond') conditions++;
-      lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
-        eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
-    });
-    // Lignes sans état (« voir l'analyse », renvois) : sans conséquence s'il y a des conditions, qui donnent
-    // alors le verdict ; sinon, WIMS tel quel, et l'animation suit la note (noteSeule).
-    if (!lignes.length || (inconnues && !conditions)) { reponse.classList.add('nova-retour-pret'); noteSeule(reponse); return; }
-
-    // Réponses réaffichées dans l'énoncé, rattachées à leur ligne par le renvoi [k].
-    var renvoiDe = function (el) { var r = el.nextElementSibling; return r && r.tagName === 'SUP' ? r.textContent.trim() : ''; };
-    document.querySelectorAll('.oefstatement div[class*="oef_ind"]').forEach(function (champ) {
-      var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
-      if (!m) return;
-      var nom = renvoiDe(champ);
-      var ligne = lignes.filter(function (l) { return nom && l.nom === nom; })[0];
-      if (ligne) ligne.champs.push(champ);
-      else if (m[1] === 'bad') champ.classList.add('nova-faux');
-    });
-    // Réponses à choix (cases à cocher, mots à marquer, choix unique réaffichés en liste : scripts/oef/embed.phtml ;
-    // variante A choisie par l'utilisateur le 2026-11-08) : chaque choix est marqué dans l'énoncé — cadre et
-    // pastille ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié : oef_indforget), choix non retenus
-    // pâlis ; sans bonne réponse montrée (presentgood=0), seulement « choisi », en couleur d'accent. Une ligne est
-    // « à choix » si elle a plusieurs champs, ou si des choix non retenus (sans renvoi) sont à côté de son champ.
-    // Réponse partiellement juste : WIMS marque tous les choix « partial » ; le bon est retrouvé dans sa liste
-    // « la bonne réponse est … » (même image, ou même texte).
-    var nonRetenus = Array.prototype.filter.call(document.querySelectorAll('.oefstatement div.inline[class*="oef_"]'), function (d) {
-      return /\boef_(indforget|indneutral|empty)\b/.test(d.className) && !renvoiDe(d);
-    });
-    var voisin = function (champ) {
-      var zone = champ.parentElement && champ.parentElement.parentElement;
-      return zone && nonRetenus.some(function (d) { return zone.contains(d); });
+    var icone = function (h) {
+      for (var i = 0; i < CONFIG_ICONES.length; i++) if (CONFIG_ICONES[i][0].test(h)) return CONFIG_ICONES[i][1];
+      return '';
     };
-    var cleChoix = function (el) {
-      var img = el.querySelector('img');
-      return img ? 'img:' + img.getAttribute('src') : 'txt:' + el.textContent.replace(/\s+/g, ' ').trim();
-    };
-    var oublies = 0, aTort = 0, choixVus = false;
-    lignes.forEach(function (ligne) {
-      if (!ligne.champs.length || !(ligne.champs.length > 1 || ligne.champs.some(voisin))) return;
-      ligne.choix = true;
-      choixVus = true;
-      var bons = null;
-      if (ligne.juste) {
-        bons = {};
-        Array.prototype.forEach.call(ligne.juste.querySelectorAll('img'), function (i) { bons['img:' + i.getAttribute('src')] = true; });
-        ligne.juste.textContent.split(',').forEach(function (t) { t = t.replace(/\s+/g, ' ').trim(); if (t) bons['txt:' + t] = true; });
+    var ligne = function (li) {
+      var ico = document.createElement('span');
+      ico.className = 'nova-cfg-ico';
+      ico.setAttribute('aria-hidden', 'true');
+      var noeuds = Array.prototype.slice.call(li.childNodes);
+      var boutons = noeuds.filter(function (n) { return n.nodeType === 1 && n.matches('a.wims_button, a.wims_button_help'); });
+      li.classList.add('nova-cfg-ligne');
+      if (boutons.length) {
+        // « Actualiser les index » : libellé (texte avant le premier bouton), puis les boutons.
+        li.classList.add('nova-cfg-index');
+        ico.setAttribute('data-icone', 'maj');
+        var tete = document.createElement('span');
+        tete.className = 'nova-cfg-tete nova-cfg-libelle';
+        tete.textContent = noeuds.filter(function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ').replace(/\s+/g, ' ').trim();
+        var div = document.createElement('div');
+        div.className = 'nova-cfg-boutons';
+        boutons.forEach(function (b) { div.appendChild(b); });
+        li.textContent = '';
+        li.appendChild(ico); li.appendChild(tete); li.appendChild(div);
+        return li;
       }
-      ligne.champs.forEach(function (champ) {
-        var m = /\boef_ind(good|bad|partial|prec|neutral)\b/.exec(champ.className);
-        var etat = m[1] === 'good' ? 'juste' : m[1] === 'bad' ? 'faux' : 'pris';
-        if (etat === 'pris' && m[1] !== 'neutral' && bons) etat = bons[cleChoix(champ)] ? 'juste' : 'faux';
-        if (etat === 'faux') aTort++;
-        champ.classList.add('nova-choix', 'nova-choix-' + etat);
-      });
+      var a = noeuds.filter(function (n) { return n.nodeType === 1 && n.tagName === 'A'; })[0];
+      if (!a) return li;
+      ico.setAttribute('data-icone', icone(a.getAttribute('href') || ''));
+      a.classList.add('nova-cfg-lien');
+      var tete2 = document.createElement('span');
+      tete2.className = 'nova-cfg-tete';
+      var apres = noeuds.slice(noeuds.indexOf(a) + 1);
+      var tags = apres.filter(function (n) { return n.nodeType === 1 && n.classList.contains('nova-tag-nouveau'); });
+      apres = apres.filter(function (n) { return tags.indexOf(n) < 0; });
+      noeuds.slice(0, noeuds.indexOf(a)).forEach(function (n) { if (n.nodeType === 3) li.removeChild(n); });
+      tete2.appendChild(a);
+      tags.forEach(function (t) { tete2.appendChild(t); });
+      var d = description(apres);
+      li.textContent = '';
+      li.appendChild(ico); li.appendChild(tete2);
+      if (d) li.appendChild(d);
+      return li;
+    };
+    var listes = Array.prototype.filter.call(corps.querySelectorAll('ul.wims_nopuce'), function (ul) {
+      return !ul.closest('ul.wims_nopuce ul') && Array.prototype.some.call(ul.querySelectorAll('a[href]'), function (x) { return config.test(x.href); });
     });
-    if (choixVus) nonRetenus.forEach(function (d) {
-      if (/\boef_indforget\b/.test(d.className)) { d.classList.add('nova-choix', 'nova-choix-oublie'); oublies++; }
-      else if (/\boef_indneutral\b/.test(d.className)) d.classList.add('nova-choix-neutre');
-    });
-    // Pastilles et noms des états, pour les lecteurs d'écran (pastille dessinée en CSS).
-    document.querySelectorAll('.oefstatement .nova-choix').forEach(function (champ) {
-      var etat = /nova-choix-(juste|faux|oublie|pris)/.exec(champ.className)[1];
-      var p = document.createElement('span');
-      p.className = 'nova-choix-pastille';
-      p.setAttribute('role', 'img');
-      p.setAttribute('aria-label', texte('choix-' + etat, { juste: 'chosen, correct', faux: 'chosen, wrong', oublie: 'missed', pris: 'chosen' }[etat]));
-      champ.appendChild(p);
-      // Choix « image » (figure, photo) : cadre collé à l'image. Une formule rendue en image par WIMS (formules en mode
-      // image, réglage de l'élève ou du site) reste un choix « texte » : petite image, de la hauteur d'une ligne
-      // (vu le 2026-11-08 : texte coupé par le cadre). Seuil : 40 px.
-      var imgs = [].slice.call(champ.querySelectorAll('img'));
-      var texteSeul = champ.textContent.replace(/\s+/g, '').length;
-      if (!imgs.length || texteSeul) return;
-      var classer = function () {
-        if (imgs.some(function (i) { return !i.complete; })) return;
-        if (imgs.some(function (i) { return Math.max(i.naturalHeight || 0, i.getBoundingClientRect().height) >= 40; })) champ.classList.add('nova-choix-image');
+    listes.forEach(function (ul) {
+      var bloc = document.createElement('div');
+      bloc.className = 'nova-cfg';
+      var carte = null;
+      var nouvelleCarte = function () {
+        carte = document.createElement('ul');
+        carte.className = 'wims_nopuce nova-cfg-carte';
+        bloc.appendChild(carte);
       };
-      imgs.forEach(function (i) { if (!i.complete) i.addEventListener('load', classer); });
-      classer();
-    });
-    // Le verdict ne répète plus les choix (demande de l'utilisateur, 2026-11-08) : « il manque n réponses »,
-    // « n réponses choisies à tort ».
-    var pluriel = function (n, cle, un, plusieurs) { return texte(cle + (n > 1 ? 's' : ''), n > 1 ? plusieurs : un).replace('%1', n); };
-    lignes.forEach(function (ligne) {
-      if (!ligne.choix || !ligne.juste || ligne.etat === 'bonne') return;
-      var r = [];
-      if (aTort) r.push(pluriel(aTort, 'choix-a-tort', '%1 answer chosen by mistake', '%1 answers chosen by mistake'));
-      if (oublies) r.push(pluriel(oublies, 'choix-manque', '%1 answer missing', '%1 answers missing'));
-      if (r.length) { ligne.resume = r.join(', '); ligne.juste = null; }
-    });
-    lignes.forEach(function (ligne) {
-      if (ligne.etat === 'mauvaise' && !ligne.choix) ligne.champs.forEach(function (champ) { champ.classList.add('nova-faux'); });
-    });
-
-    var toutes = lignes.every(function (l) { return l.etat === 'bonne'; });
-    var fausse = lignes.some(function (l) { return l.etat === 'mauvaise'; });
-    // Animations seulement si le verdict est entier (demande de l'utilisateur, 2026-10-05) : étoiles quand
-    // tout est juste, vibration quand tout est faux ; rien dans les cas intermédiaires.
-    var toutesFausses = lignes.every(function (l) { return l.etat === 'mauvaise'; });
-    var boite = document.createElement('div');
-    boite.className = 'nova-verdict nova-verdict-' + (toutes ? 'bonne' : fausse ? 'mauvaise' : 'partielle');
-    boite.setAttribute('role', 'status');
-    var corps = document.createElement('div');
-    corps.className = 'nova-verdict-corps';
-    boite.appendChild(corps);
-    var titre = document.createElement('p');
-    titre.className = 'nova-verdict-titre';
-    corps.appendChild(titre);
-    var libelle = function (etat) {
-      return etat === 'mauvaise' ? texte('mauvaise', 'Wrong answer') : etat === 'partielle' ? texte('partielle', 'Partly correct answer')
-        : etat === 'precision' ? texte('precision', 'Not precise enough') : texte('bonne', 'Correct answer');
-    };
-    // « …, la bonne réponse était X » : la bonne réponse de WIMS est déplacée (MathJax compris).
-    var completer = function (el, ligne) {
-      if (ligne.resume) el.appendChild(document.createTextNode(', ' + ligne.resume));
-      if (!ligne.juste) return;
-      el.appendChild(document.createTextNode(', ' + texte('bonne-etait', 'the correct answer was') + ' '));
-      ligne.juste.classList.add('nova-verdict-juste');
-      el.appendChild(ligne.juste);
-    };
-    // Réponse hors énoncé, fausse : copie de la réponse de l'élève, en rouge.
-    var eleve = function (ligne) {
-      if (!ligne.eleve || ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
-      var p = document.createElement('p');
-      p.className = 'nova-verdict-eleve';
-      p.appendChild(document.createTextNode(texte('votre-reponse', 'Your answer:') + ' '));
-      var copie = document.createElement('span');
-      copie.className = ligne.etat === 'mauvaise' ? 'nova-faux' : '';
-      while (ligne.eleve.firstChild) copie.appendChild(ligne.eleve.firstChild);
-      p.appendChild(copie);
-      corps.appendChild(p);
-    };
-    if (toutes) {
-      titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
-      etoiles(boite);
-    } else if (lignes.length === 1) {
-      titre.textContent = libelle(lignes[0].etat);
-      completer(titre, lignes[0]);
-      eleve(lignes[0]);
-    } else if (lignes.some(function (l) { return l.etat === 'bonne'; })) {
-      // Réponses justes et à revoir mêlées : deux colonnes, « Justes » | « À revoir » (maquette A, choisie par
-      // l'utilisateur le 2026-10-08). Chaque ligne : [k], la réponse de l'élève, et pour une réponse à revoir
-      // la bonne réponse de WIMS (déplacée, MathJax compris).
-      var justes = lignes.filter(function (l) { return l.etat === 'bonne'; }).length;
-      titre.textContent = texte(justes > 1 ? 'justes-sur' : 'juste-sur', justes > 1 ? '%1 correct answers out of %2' : '%1 correct answer out of %2')
-        .replace('%1', justes).replace('%2', lignes.length);
-      boite.className = 'nova-verdict nova-verdict-mixte';
-      var colonnes = document.createElement('div');
-      colonnes.className = 'nova-verdict-colonnes';
-      var colonne = function (cle, nom) {
-        var c = document.createElement('div');
-        c.className = 'nova-verdict-colonne nova-verdict-colonne-' + cle;
-        var t = document.createElement('p');
-        t.className = 'nova-verdict-colonne-titre';
-        t.textContent = nom;
-        c.appendChild(t);
-        var ul = document.createElement('ul');
-        c.appendChild(ul);
-        colonnes.appendChild(c);
-        return ul;
-      };
-      var listeJustes = colonne('justes', texte('justes', 'Correct'));
-      var listeRevoir = colonne('revoir', texte('a-revoir', 'To review'));
-      lignes.forEach(function (ligne) {
-        var li = document.createElement('li');
-        if (ligne.nom) {
-          var num = document.createElement('span');
-          num.className = 'nova-verdict-num';
-          num.textContent = /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom + ' :';
-          li.appendChild(num);
-        }
-        var contenu = document.createElement('span');
-        li.appendChild(contenu);
-        var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
-        if (donnee) {
-          while (ligne.eleve.firstChild) donnee.appendChild(ligne.eleve.firstChild);
-          if (ligne.etat === 'mauvaise') donnee.className = 'nova-faux';
-          contenu.appendChild(donnee);
-        }
-        if (ligne.etat === 'bonne') { listeJustes.appendChild(li); return; }
-        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' \u2014 ' : '') + libelle(ligne.etat)));
-        if (ligne.juste) {
-          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' \u2192 ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
-          ligne.juste.classList.add('nova-verdict-juste');
-          contenu.appendChild(ligne.juste);
-        } else if (ligne.resume) contenu.appendChild(document.createTextNode(' \u2192 ' + ligne.resume));
-        else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
-        listeRevoir.appendChild(li);
+      var ajouter = function (li) { if (!carte) nouvelleCarte(); carte.appendChild(ligne(li)); };
+      var prec = ul.previousElementSibling;
+      if (prec && prec.tagName === 'H2') bloc.appendChild(prec);
+      enfants(ul, 'LI').forEach(function (li) {
+        var titre = enfants(li, 'STRONG')[0];
+        var sous = enfants(li, 'UL')[0];
+        if (titre) {
+          var t = document.createElement('div');
+          t.className = 'nova-cfg-titre';
+          t.textContent = titre.textContent.trim();
+          var texte = Array.prototype.filter.call(li.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ');
+          texte = nettoyer(texte);
+          if (texte) {
+            var sd = document.createElement('span');
+            sd.className = 'nova-cfg-desc';
+            sd.textContent = texte;
+            t.appendChild(sd);
+          }
+          bloc.appendChild(t);
+          carte = null;
+          if (sous) { enfants(sous, 'LI').forEach(ajouter); carte = null; }
+        } else if (sous && !enfants(li, 'A').length) {
+          enfants(sous, 'LI').forEach(ajouter);
+          carte = null;
+        } else ajouter(li);
       });
-      corps.appendChild(colonnes);
-    } else {
-      titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
-      var liste = document.createElement('ul');
-      lignes.forEach(function (ligne) {
-        if (ligne.etat === 'bonne') return;
-        var li = document.createElement('li');
-        // Le titre dit déjà « Mauvaise réponse » : « [k] : la bonne réponse était X » suffit.
-        li.textContent = ligne.nom ? ligne.nom + ' : ' : '';
-        if (ligne.etat === 'mauvaise' && ligne.juste) {
-          li.appendChild(document.createTextNode(texte('bonne-etait', 'the correct answer was') + ' '));
-          ligne.juste.classList.add('nova-verdict-juste');
-          li.appendChild(ligne.juste);
-        } else {
-          li.appendChild(document.createTextNode(libelle(ligne.etat)));
-          completer(li, ligne);
-        }
-        liste.appendChild(li);
-      });
-      corps.appendChild(liste);
-      lignes.forEach(eleve);
-    }
-    reponse.insertBefore(boite, reponse.firstChild);
-    reponse.classList.add('nova-retour', 'nova-retour-pret');
-    if (toutesFausses) vibrer();
+      // Préférences d'affichage : paragraphe qui suit la liste de configuration, mis en carte à la suite.
+      var p = ul.nextElementSibling;
+      if (p && p.tagName === 'P' && p.firstElementChild && p.firstElementChild.tagName === 'A' && /adm(%2F|\/)light/.test(p.firstElementChild.href)) {
+        var lp = document.createElement('li');
+        while (p.firstChild) lp.appendChild(p.firstChild);
+        p.parentNode.removeChild(p);
+        nouvelleCarte();
+        carte.appendChild(ligne(lp));
+      }
+      ul.parentNode.replaceChild(bloc, ul);
+    });
+    // Deux onglets (2026-11-11, utilisateur) : « Sauvegarde et maintenance » et « Configuration », titres = h2 de WIMS.
+    var blocs = [].slice.call(corps.querySelectorAll('.nova-cfg'));
+    var titres = blocs.map(function (b) { var h = b.querySelector(':scope > h2'); return h ? h.textContent.trim() : ''; });
+    if (blocs.length < 2 || titres.some(function (t) { return !t; })) return;
+    var onglets = document.createElement('div');
+    onglets.className = 'nova-cfg-onglets';
+    blocs[0].parentNode.insertBefore(onglets, blocs[0]);
+    blocs.forEach(function (b, i) {
+      var sec = document.createElement('section');
+      sec.className = 'nova-onglet';
+      sec.setAttribute('data-onglet', i ? 'configuration' : 'maintenance');
+      sec.setAttribute('data-titre', titres[i]);
+      sec.appendChild(b);
+      onglets.appendChild(sec);
+    });
+    ongletsReglages(onglets, titres.join(', '), 'nova-cfg-onglet');
   }
 
-  // Verdict que Nova ne sait pas lire (tableau vide : le verdict est dans les commentaires de l'auteur, ex.
-  // H4/algebra/factorcom.fr) : WIMS tel quel ; étoiles si la note de l'exercice est 10/10, vibration si 0/10
-  // (span.oef_modulescore : « … une note de N sur 10 », chiffres lus quelle que soit la langue).
-  function noteSeule(reponse) {
-    var note = reponse.querySelector('.oef_modulescore');
-    var m = note && /(\d+(?:[.,]\d+)?)\D+10(?:\D|$)/.exec(note.textContent);
-    if (!m) return;
-    var n = parseFloat(m[1].replace(',', '.'));
-    if (n >= 10) etoiles(reponse);
-    else if (n === 0) vibrer();
-  }
-
-  // Petites étoiles (CSS : .nova-etoiles, sans animation si l'élève la refuse), centrées sur la place du
-  // bouton « Valider » à l'envoi (demande de l'utilisateur, 2026-10-05) : position fixe, toujours à l'écran ;
-  // à défaut (envoi ancien ou inconnu), sur l'élément donné.
-  function etoiles(el) {
-    if (animationsCoupees()) return;
-    var nuee = document.createElement('span');
-    nuee.className = 'nova-etoiles';
-    nuee.setAttribute('aria-hidden', 'true');
-    var place = null;
-    try {
-      place = JSON.parse(sessionStorage.getItem('nova-valider') || 'null');
-      sessionStorage.removeItem('nova-valider');
-    } catch (e) { place = null; }
-    if (place && Date.now() - place.quand < 120000 && place.w > 0) {
-      nuee.classList.add('nova-etoiles-valider');
-      nuee.style.left = Math.max(0, Math.min(place.l, innerWidth - place.w)) + 'px';
-      nuee.style.top = Math.max(60, Math.min(place.t, innerHeight - place.h)) + 'px';
-      nuee.style.width = place.w + 'px';
-      nuee.style.height = place.h + 'px';
-      el = document.body;
-    }
-    var couleurs = ['var(--nova-note-jaune)', 'var(--nova-accent)', 'var(--nova-note-jaune)', 'var(--nova-note-vert)'];
-    for (var i = 0; i < 12; i++) {
-      var s = document.createElement('span');
-      s.textContent = '\u2605';
-      s.style.setProperty('--x', (20 + i * 60 / 11) + '%');
-      s.style.setProperty('--dx', ((i - 5.5) * 9 + Math.random() * 16 - 8).toFixed(0) + 'px');
-      s.style.setProperty('--h', (-70 - Math.random() * 50).toFixed(0) + 'px');
-      s.style.setProperty('--d', (Math.random() * 0.35).toFixed(2) + 's');
-      s.style.setProperty('--t', (11 + Math.random() * 9).toFixed(0) + 'px');
-      s.style.setProperty('--r', (Math.random() * 120 - 60).toFixed(0) + 'deg');
-      s.style.setProperty('--c', couleurs[i % couleurs.length]);
-      nuee.appendChild(s);
-    }
-    if (el !== document.body) el.classList.add('nova-etoile-source');
-    el.appendChild(nuee);
-    setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
-  }
-
-  // Réponse fausse : toute la page vibre, brièvement (demande de l'utilisateur, 2026-10-05).
-  function vibrer() {
-    if (animationsCoupees()) return;
-    var racine = document.documentElement;
-    racine.classList.add('nova-vibre');
-    setTimeout(function () { racine.classList.remove('nova-vibre'); }, 600);
-  }
-
-  /* Page d'un examen alors qu'un autre est en cours (adm/class/exam/student.phtml : div.wims_msg.alert
-   * « Vous avez déjà commencé un autre examen… ») : le bouton « Examen en cours » de la barre, posé par
-   * _widgets/examencours.phtml avec data-autre-examen, passe sous le message (demande de l'utilisateur,
-   * 2026-10-05). Son lien est celui de la barre (la session où l'examen a été commencé). */
-  function autreExamen() {
-    if (standard('examens')) return;
-    var pastille = document.querySelector('#wimstopbox .nova-examencours[data-autre-examen]');
-    var message = document.querySelector('.wimsbody .wims_msg.alert');
-    var lien = pastille && pastille.querySelector('a');
-    if (!message || !lien) return;
-    // Le message de WIMS (lang/msg.phtml du module, que le thème ne peut pas surcharger) est remplacé
-    // (demande de l'utilisateur, 2026-10-05) ; le CSS le cache jusque-là (3 s au plus).
-    var textes = document.getElementById('nova-textes');
-    var nouveau = textes && textes.getAttribute('data-texte-autre-examen');
-    if (nouveau) message.textContent = nouveau;
-    message.classList.add('nova-autre-examen-message');
-    var bloc = document.createElement('p');
-    bloc.className = 'nova-autre-examen';
-    lien.classList.add('nova-autre-examen-bouton');
-    bloc.appendChild(lien);
-    message.parentNode.insertBefore(bloc, message.nextSibling);
-    pastille.remove();
-  }
-
-  /* Élève d'un portail ou d'un groupement dont l'accueil ne propose qu'un seul cours (ou une seule classe) :
-   * il y entre directement, juste après la connexion comme à chaque retour à cet accueil, qui devient ainsi
-   * le cours (demande de l'utilisateur, 2026-10-05). Seulement si cet accueil n'a rien d'autre à montrer : ni
-   * travail (#widget_user_list), ni message de la classe (themes/_widgets/motd.phtml). location.replace :
-   * pas d'étape de plus dans l'historique. Un retour depuis le cours passe par le portail (ou le groupement) :
-   * sa page de classe renvoie d'abord à la classe, il faut un second saut (vécu au banc). Garde-fou : au plus
-   * 3 sauts vers le même cours en 10 s. */
-  function coursUnique() {
-    if (!document.getElementById('nova-eleve')) return;
-    // Avant tout retour anticipé : chaque page de l'élève doit noter sa classe.
-    // Sens du déplacement (correction du 2026-10-07, signalée par l'utilisateur : un élève qui remontait du cours
-    // vers une page à entrée unique, celle de sa classe, y était renvoyé aussitôt vers le cours, page masquée, et
-    // ne passait qu'après plusieurs « Retour » rapides). On ne saute que vers le bas : juste après la connexion
-    // (session=new.), ou depuis une page qui n'est pas sous l'entrée unique. La classe de chaque page de l'élève
-    // (meta nova-classe, htmlheader.phtml) est retenue pour la page suivante.
-    var meta = document.querySelector('meta[name="nova-classe"]');
-    var ici = meta ? meta.getAttribute('content') : '';
-    var precedente = null;
-    try { precedente = sessionStorage.getItem('nova-classe-prec'); if (ici) sessionStorage.setItem('nova-classe-prec', ici); } catch (e) { /* sans stockage */ }
-    if (/[?&]session=new\./.test(location.href)) precedente = null;
+  /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : cases « Apparence du thème
+   * Nova » et « Badges Nova » (séparées le 2026-11-07, utilisateur) ajoutées à la liste de WIMS. Cochées, l'envoi envoie
+   * d'abord les autres cases à WIMS (s'il y en a), puis ouvre l'accueil avec nova_propager=apparence|badges|tout :
+   * header.phtml (module de confiance) y recopie les blocs Nova choisis de la feuille de la structure dans celles de ses
+   * zones et pose #nova-propage, message affiché ici en tête de page. */
+  function propagationNova() {
+    var fait = document.getElementById('nova-propage');
     var corps = document.querySelector('.wimsbody');
-    // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
-    // accueil (demande de l'utilisateur, 2026-10-06).
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
-    if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
-    var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
-    var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
-    var travail = document.getElementById('widget_user_list');
-    var seul = liens.length === 1 && !(travail && travail.textContent.trim()) &&
-      !document.querySelector('#wims_class_motd, #wims_class_pmotd');
-    if (!liste) return;
-    if (seul) {
-      var cible = (/[?&+]class=([^&]*)/.exec(liens[0].getAttribute('href')) || [])[1] || liens[0].href;
-      try { cible = decodeURIComponent(cible); } catch (e) { /* telle quelle */ }
-      if (precedente && (precedente === cible || precedente.indexOf(cible + '/') === 0)) { corps.classList.add('nova-sans-saut'); return; }
-      var recent = false;
-      try {
-        var dernier = JSON.parse(sessionStorage.getItem('nova-cours-unique') || 'null');
-        var suite = !!dernier && dernier.cible === cible && Date.now() - dernier.t < 10000;
-        var essais = suite ? dernier.n + 1 : 1;
-        recent = essais > 3;
-        if (!recent) sessionStorage.setItem('nova-cours-unique', JSON.stringify({ cible: cible, t: suite ? dernier.t : Date.now(), n: essais }));
-      } catch (e) { /* stockage refusé : on entre quand même */ }
-      // Après « load » et un délai : une requête partie moins d'une seconde après la précédente est traitée
-      // avec l'état précédent de la session et ramène ici (mesuré au banc : 300 ms échoue, 1 s passe de
-      // justesse, 1,5 s passe). Juste après la connexion (session=new.…), 300 ms suffisent.
-      if (!recent) {
-        var delai = /[?&]session=new\./.test(location.href) ? 300 : 1500;
-        var partir = function () { setTimeout(function () { location.replace(liens[0].href); }, delai); };
-        if (document.readyState === 'complete') partir(); else window.addEventListener('load', partir);
-        return;
-      }
+    if (fait && fait.textContent.trim() && corps) {
+      var msg = document.createElement('div');
+      msg.className = 'wims_msg ' + (fait.getAttribute('data-etat') === 'erreur' ? 'alert' : 'success');
+      msg.setAttribute('role', 'status');
+      msg.textContent = fait.textContent.trim();
+      corps.insertBefore(msg, corps.firstChild);
     }
-    corps.classList.add('nova-sans-saut');
-  }
-
-  /* Mot de passe : un œil dans le champ pour vérifier ce qu'on a tapé (demande de l'utilisateur,
-   * 2026-10-05). Tous les champs de mot de passe de la page (connexion, changement de mot de passe…). Le
-   * champ redevient masqué à l'envoi du formulaire. */
-  function oeilMotDePasse() {
+    var cases = document.querySelectorAll('.wimsbody input[type="checkbox"][name="propagate"]');
+    if (!cases.length || !cases[0].form || document.getElementById('propagate_nova_apparence')) return;
+    var form = cases[0].form, liste = cases[0].closest('ul');
     var textes = document.getElementById('nova-textes');
-    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
-    document.querySelectorAll('.wimsbody input[type="password"]').forEach(function (champ) {
-      if (champ.closest('.nova-mdp')) return;
-      var parent = champ.parentNode;
-      var plein = champ.offsetWidth > 0 && champ.offsetWidth >= parent.clientWidth - 2;
-      var boite = document.createElement('span');
-      boite.className = 'nova-mdp' + (plein ? ' nova-mdp-plein' : '');
-      parent.insertBefore(boite, champ);
-      boite.appendChild(champ);
-      var bouton = document.createElement('button');
-      bouton.type = 'button';
-      bouton.className = 'nova-mdp-oeil';
-      var majour = function () {
-        var visible = champ.type === 'text';
-        bouton.setAttribute('aria-pressed', visible ? 'true' : 'false');
-        bouton.setAttribute('aria-label', visible ? t('mdp-masquer', 'Hide password') : t('mdp-afficher', 'Show password'));
-        bouton.title = bouton.getAttribute('aria-label');
+    var ajouter = function (partie, defaut) {
+      var li = document.createElement('li');
+      var c = document.createElement('input');
+      c.type = 'checkbox'; c.id = 'propagate_nova_' + partie; c.value = partie;
+      var label = document.createElement('label');
+      label.htmlFor = c.id;
+      label.textContent = (textes && textes.getAttribute('data-texte-propager-' + partie)) || defaut;
+      li.appendChild(c); li.appendChild(label);
+      if (liste) liste.appendChild(li); else cases[cases.length - 1].parentNode.appendChild(li);
+      return c;
+    };
+    var nova = [ajouter('apparence', 'Nova theme appearance'), ajouter('badges', 'Nova badges')];
+    // Tout cocher / tout décocher (2026-11-11, utilisateur) : deux boutons au-dessus de la liste, cases de Nova comprises ;
+    // chacun grisé quand il n'a plus d'effet.
+    if (liste) {
+      var toutes = function () { return liste.querySelectorAll('input[type="checkbox"]'); };
+      var barreTout = document.createElement('div');
+      barreTout.className = 'nova-tout';
+      var bouton = function (cle, defaut, valeur) {
+        var bt = document.createElement('button');
+        bt.type = 'button';
+        bt.className = 'nova-tout-' + (valeur ? 'cocher' : 'decocher');
+        bt.textContent = (textes && textes.getAttribute('data-texte-propager-' + cle)) || defaut;
+        bt.addEventListener('click', function () {
+          Array.prototype.forEach.call(toutes(), function (c) { if (!c.disabled) c.checked = valeur; });
+          etat();
+        });
+        barreTout.appendChild(bt);
+        return bt;
       };
-      bouton.addEventListener('click', function () {
-        champ.type = champ.type === 'password' ? 'text' : 'password';
-        majour();
-      });
-      if (champ.form) champ.form.addEventListener('submit', function () { champ.type = 'password'; majour(); });
-      majour();
-      boite.appendChild(bouton);
-    });
-  }
-
-  /* Champs de réponse d'un exercice (scripts/anstype/*.input : le type n'est pas visible dans le HTML) :
-   * - ni correction automatique, ni vérification d'orthographe (qui trahirait une faute dans une réponse en
-   *   mots), ni majuscule automatique (WIMS n'en protège pas « units » et « sigunits ») ;
-   * - pas de pavé numérique : un champ « numeric » accepte le signe moins et les fractions (2/3), absents
-   *   des pavés décimal ou téléphone (iPhone surtout) ; le clavier texte reste le seul complet ;
-   * - Entrée dans un champ alors qu'un autre est vide : passe au champ vide suivant au lieu d'envoyer
-   *   (WIMS refuserait l'envoi) ; touche Entrée du téléphone « Suivant », puis « OK » sur le dernier ;
-   * - focus sur le premier champ à l'ouverture.
-   * Demande de l'utilisateur, 2026-10-06. */
-  function claviersReponse() {
-    var form = document.forms.replyform;
-    if (!form) return;
-    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"], textarea[name^="reply"]'), function (c) {
-      return c.tagName === 'TEXTAREA' || !c.type || c.type === 'text';
-    });
-    champs.forEach(function (c) {
-      c.setAttribute('autocapitalize', 'off');
-      c.setAttribute('autocorrect', 'off');
-      c.setAttribute('spellcheck', 'false');
-      c.setAttribute('autocomplete', 'off');
-    });
-    var lignes = champs.filter(function (c) { return c.tagName === 'INPUT' && !c.readOnly; });
-    var vide = function (c) { return !c.value.trim(); };
-    var majour = function () {
-      lignes.forEach(function (c) {
-        var autreVide = lignes.some(function (d) { return d !== c && vide(d); });
-        c.setAttribute('enterkeyhint', autreVide ? 'next' : 'go');
-      });
-    };
-    lignes.forEach(function (c, i) {
-      c.addEventListener('input', majour);
-      c.addEventListener('keydown', function (ev) {
-        if (ev.key !== 'Enter' || ev.isComposing || ev.shiftKey || ev.altKey || ev.ctrlKey || ev.metaKey) return;
-        var suivants = lignes.slice(i + 1).concat(lignes.slice(0, i));
-        var cible = suivants.filter(vide)[0];
-        if (!cible) return;                       // tout est rempli : envoi normal
-        ev.preventDefault();
-        cible.focus();
-      });
-    });
-    majour();
-    // Focus sur le premier champ de réponse (demande de l'utilisateur, 2026-10-06) : champ texte ou zone de
-    // texte, sans défilement (l'énoncé reste en vue), seulement si rien d'autre n'a le focus.
-    var premier = champs.filter(function (c) { return !c.readOnly && !c.disabled && c.getClientRects().length; })[0];
-    var actif = document.activeElement;
-    if (premier && (!actif || actif === document.body || actif === document.documentElement)) {
-      try { premier.focus({ preventScroll: true }); } catch (e) { premier.focus(); }
-    }
-  }
-
-  /* Tuiles à déplacer des exercices (dragfill, correspond… : bibliothèque Dynapi de WIMS, DragEvent, qui
-   * n'écoute que la souris) : au doigt, le téléphone faisait défiler la page au lieu de déplacer la tuile.
-   * Pont tactile (demande de l'utilisateur, 2026-10-06) : un toucher qui commence sur une couche Dynapi
-   * déplaçable (écouteur DragEvent.lyrListener) ne fait plus défiler ; dès que le doigt bouge, il devient
-   * mousedown / mousemove / mouseup pour Dynapi. Un simple toucher reste un « clic » (tuile puis
-   * destination). */
-  function glisserTactile() {
-    var dyn = window.DynObject, drag = window.DragEvent;
-    if (!dyn || !dyn.all || !drag || !drag.lyrListener || !('ontouchstart' in window)) return;
-    var deplacable = function (el) {
-      for (; el && el !== document.body; el = el.parentElement) {
-        var obj = el.id && dyn.all[el.id];
-        if (obj && obj._listeners && obj._listeners.indexOf(drag.lyrListener) >= 0) return el;
-      }
-      return null;
-    };
-    // Dynapi remplace window.MouseEvent par sa propre classe : évènement natif par document.createEvent.
-    var souris = function (type, cible, x, y) {
-      var e = document.createEvent('MouseEvents');
-      e.initMouseEvent(type, true, true, window, 1, x, y, x, y, false, false, false, false, 0, null);
-      (cible || document.body).dispatchEvent(e);
-    };
-    // Hors de l'écran, elementFromPoint ne renvoie rien : le body (Dynapi ne sait pas traiter le document).
-    var sous = function (x, y) { return document.elementFromPoint(x, y) || document.body; };
-    var etat = null;
-    document.addEventListener('touchstart', function (ev) {
-      etat = null;
-      if (ev.touches.length !== 1 || !deplacable(ev.target)) return;
-      var t = ev.touches[0];
-      etat = { cible: ev.target, x: t.clientX, y: t.clientY, glisse: false };
-    }, { capture: true, passive: true });
-    document.addEventListener('touchmove', function (ev) {
-      if (!etat) return;
-      ev.preventDefault();                       // dès le premier mouvement : la page ne défile pas
-      var t = ev.touches[0];
-      if (!etat.glisse) {
-        if (Math.abs(t.clientX - etat.x) + Math.abs(t.clientY - etat.y) < 6) return;
-        etat.glisse = true;
-        souris('mousedown', etat.cible, etat.x, etat.y);
-      }
-      souris('mousemove', sous(t.clientX, t.clientY), t.clientX, t.clientY);
-    }, { capture: true, passive: false });
-    var finir = function (ev) {
-      if (!etat) return;
-      var e = etat; etat = null;
-      if (!e.glisse) return;                     // simple toucher : le navigateur fait son « clic »
-      if (ev.cancelable) ev.preventDefault();    // pas de clic en plus après un glissement
-      var t = ev.changedTouches[0];
-      souris('mouseup', sous(t.clientX, t.clientY), t.clientX, t.clientY);
-    };
-    document.addEventListener('touchend', finir, { capture: true, passive: false });
-    document.addEventListener('touchcancel', finir, { capture: true, passive: false });
-  }
-
-  /* Clavier mathématique tactile (disposition A choisie par l'utilisateur, 2026-10-06), activé par une
-   * surcharge CSS (:root { --nova-clavier-maths: oui; }, jetons.css), sur un écran tactile seulement. Il
-   * remplace le clavier du téléphone (inputmode="none") dans tous les champs texte de réponse ; « ABC » rend
-   * le clavier du téléphone pour le champ, un petit bouton « 123 » à côté du champ ramène au clavier Nova.
-   * x² → ^2, x³ → ^3, √ → sqrt() (curseur entre les parenthèses), ×10ˣ → *10^, × → *, ÷ → /. Entrée :
-   * « Suivant » vers le champ vide suivant, sinon « OK » (bouton d'envoi de WIMS, sa vérification comprise).
-   * Les touches ne prennent pas le focus (pointerdown sans action par défaut) : le curseur reste dans le
-   * champ. */
-  function clavierMaths() {
-    var form = document.forms.replyform;
-    if (!form || !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
-    if (!/^["']?(oui|yes|on|1)["']?$/.test(reglage)) return;
-    var textes = document.getElementById('nova-textes');
-    var t = function (n, d) { return (textes && textes.getAttribute('data-texte-clavier' + (n ? '-' + n : ''))) || d; };
-    var champs = Array.prototype.filter.call(form.querySelectorAll('input[name^="reply"]'), function (c) {
-      return (!c.type || c.type === 'text') && !c.readOnly && !c.disabled;
-    });
-    if (!champs.length) return;
-    var natifs = [];
-    var svg = function (d) {
-      return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" ' +
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
-    };
-    var exp = function (b, e) { return b + '<sup>' + e + '</sup>'; };
-    // Disposition A, colonnes permutées (demande de l'utilisateur, 2026-10-06) : chiffres et opérations à
-    // gauche, fonctions et navigation à droite, « Suivant » en bas à droite. c = classe, v = texte écrit ou
-    // action, a = nom accessible.
-    var touches = [
-      { l: '7' }, { l: '8' }, { l: '9' }, { l: '\u00F7', c: 'f', v: '/' },
-      { l: exp('x', '2'), c: 'f', v: '^2', a: t('carre', 'Squared') }, { l: exp('x', '3'), c: 'f', v: '^3', a: t('cube', 'Cubed') },
-      { l: '\u221A', c: 'f', v: 'racine', a: t('racine', 'Square root') },
-      { l: '4' }, { l: '5' }, { l: '6' }, { l: '\u00D7', c: 'f', v: '*' },
-      { l: '(' }, { l: ')' }, { l: '\u00D710' + '<sup>x</sup>', c: 'f', v: '*10^', a: t('puissance10', 'Times ten to the power') },
-      { l: '1' }, { l: '2' }, { l: '3' }, { l: '\u2212', c: 'f', v: '-' },
-      { l: svg('<path d="M15 6l-6 6 6 6"/>'), c: 'nav', v: 'gauche', a: t('gauche', 'Move left') },
-      { l: svg('<path d="M9 6l6 6-6 6"/>'), c: 'nav', v: 'droite', a: t('droite', 'Move right') },
-      { l: svg('<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>'), c: 'nav', v: 'effacer', a: t('effacer', 'Delete') },
-      { l: '0', c: 's2' }, { l: '.' }, { l: '+', c: 'f' },
-      { l: 'ABC', c: 'abc', v: 'abc', a: t('abc', 'Phone keyboard') }, { l: '', c: 'ok s2', v: 'entree' }
-    ];
-    var clavier = document.createElement('div');
-    clavier.className = 'nova-clavier';
-    clavier.setAttribute('role', 'group');
-    clavier.setAttribute('aria-label', t('', 'Math keyboard'));
-    clavier.hidden = true;
-    var entree = null;
-    touches.forEach(function (k) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.tabIndex = -1;
-      b.className = 'nova-touche' + (k.c ? ' ' + k.c : '');
-      b.innerHTML = '<span>' + k.l + '</span>';
-      b.setAttribute('data-v', k.v || k.l);
-      if (k.a) b.setAttribute('aria-label', k.a);
-      if (k.v === 'entree') entree = b;
-      clavier.appendChild(b);
-    });
-    document.body.appendChild(clavier);
-
-    var champ = null;
-    var evenement = function (c) { var e = document.createEvent('Event'); e.initEvent('input', true, true); c.dispatchEvent(e); };
-    var vide = function (c) { return !c.value.trim(); };
-    var suivantVide = function () {
-      var i = champs.indexOf(champ);
-      return champs.slice(i + 1).concat(champs.slice(0, i)).filter(vide)[0] || null;
-    };
-    var majEntree = function () {
-      if (!entree || !champ) return;
-      var suite = suivantVide();
-      entree.querySelector('span').textContent = suite ? t('suivant', 'Next') : t('ok', 'OK');
-    };
-    var inserer = function (txt, recul) {
-      var a = champ.selectionStart, b = champ.selectionEnd;
-      champ.setRangeText(txt, a, b, 'end');
-      if (recul) { var q = champ.selectionStart - recul; champ.setSelectionRange(q, q); }
-      evenement(champ);
-    };
-    var agir = function (v) {
-      if (!champ) return;
-      var a = champ.selectionStart, b = champ.selectionEnd;
-      if (v === 'gauche') { var g = a === b ? Math.max(0, a - 1) : a; champ.setSelectionRange(g, g); }
-      else if (v === 'droite') { var d = a === b ? Math.min(champ.value.length, b + 1) : b; champ.setSelectionRange(d, d); }
-      else if (v === 'effacer') {
-        if (a !== b) champ.setRangeText('', a, b, 'end');
-        else if (a > 0) champ.setRangeText('', a - 1, a, 'end');
-        evenement(champ);
-      }
-      else if (v === 'racine') inserer('sqrt()', 1);
-      else if (v === 'abc') natif(champ);
-      else if (v === 'entree') {
-        var suite = suivantVide();
-        if (suite) { suite.focus(); return; }
-        var envoi = form.querySelector('.send_answer input[type="submit"], input[type="submit"]');
-        if (envoi) envoi.click(); else form.submit();
-      }
-      else inserer(v);
-      majEntree();
-    };
-    // Les touches ne prennent pas le focus : le curseur reste dans le champ.
-    clavier.addEventListener('pointerdown', function (ev) { if (ev.target.closest('.nova-touche')) ev.preventDefault(); });
-    clavier.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-    clavier.addEventListener('click', function (ev) {
-      var b = ev.target.closest('.nova-touche');
-      if (b) agir(b.getAttribute('data-v'));
-    });
-
-    var afficher = function (c) {
-      champ = c;
-      clavier.hidden = false;
-      document.documentElement.classList.add('nova-clavier-ouvert');
-      document.documentElement.style.setProperty('--nova-clavier-h', clavier.offsetHeight + 'px');
-      majEntree();
-      // Le champ reste visible au-dessus du clavier.
-      var r = c.getBoundingClientRect(), bas = window.innerHeight - clavier.offsetHeight - 12;
-      if (r.bottom > bas) window.scrollBy(0, r.bottom - bas);
-      else if (r.top < 72) window.scrollBy(0, r.top - 72);
-    };
-    var cacher = function () {
-      clavier.hidden = true;
-      document.documentElement.classList.remove('nova-clavier-ouvert');
-    };
-    // « ABC » : clavier du téléphone pour ce champ ; « 123 » à côté du champ pour revenir.
-    var natif = function (c) {
-      if (natifs.indexOf(c) < 0) natifs.push(c);
-      c.setAttribute('inputmode', 'text');
-      c.classList.add('nova-champ-natif');
-      cacher();
-      c.blur();
-      c.focus();
-    };
-    champs.forEach(function (c) {
-      c.setAttribute('inputmode', 'none');
-      // Liste de suggestions vide de WIMS (list="emptylist", contre la saisie automatique) : une flèche ▼
-      // apparaît sur le champ au téléphone ; inutile ici (autocomplete déjà coupé par claviersReponse).
-      c.removeAttribute('list');
-      c.addEventListener('input', majEntree);
-    });
-    // Pastille flottante en bas à droite, quand le clavier Nova est rangé : le rouvre sur le dernier champ
-    // utilisé (demande de l'utilisateur, 2026-10-06). Elle suit le haut du clavier du téléphone s'il est
-    // ouvert (visualViewport).
-    var dernier = champs[0];
-    var pastille = document.createElement('button');
-    pastille.type = 'button';
-    pastille.className = 'nova-pastille-clavier';
-    pastille.setAttribute('aria-label', t('123', 'Math keyboard'));
-    pastille.title = t('123', 'Math keyboard');
-    pastille.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg>';
-    pastille.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
-    pastille.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
-    pastille.addEventListener('click', function () {
-      var c = dernier;
-      var n = natifs.indexOf(c);
-      if (n >= 0) natifs.splice(n, 1);
-      c.classList.remove('nova-champ-natif');
-      c.setAttribute('inputmode', 'none');
-      c.blur();
-      c.focus();
-      afficher(c);
-    });
-    document.body.appendChild(pastille);
-    document.documentElement.classList.add('nova-clavier-permis');
-    if (window.visualViewport) {
-      var suivreClavier = function () {
-        var vv = window.visualViewport;
-        var bas = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-        document.documentElement.style.setProperty('--nova-vv-bas', bas + 'px');
+      var cocher = bouton('tout', 'Select all', true), decocher = bouton('rien', 'Clear all', false);
+      var etat = function () {
+        var l = Array.prototype.slice.call(toutes());
+        cocher.disabled = l.every(function (c) { return c.checked || c.disabled; });
+        decocher.disabled = !l.some(function (c) { return c.checked; });
       };
-      window.visualViewport.addEventListener('resize', suivreClavier);
-      window.visualViewport.addEventListener('scroll', suivreClavier);
+      liste.addEventListener('change', etat);
+      liste.parentNode.insertBefore(barreTout, liste);
+      etat();
     }
-    // Toucher ailleurs (énoncé, figure…) range le clavier Nova et rend la page entière ; la pastille le rouvre.
-    document.addEventListener('pointerdown', function (ev) {
-      if (clavier.hidden || clavier.contains(ev.target) || pastille.contains(ev.target) || champs.indexOf(ev.target) >= 0) return;
-      cacher();
-      if (champs.indexOf(document.activeElement) >= 0) document.activeElement.blur();
-    }, true);
-    document.addEventListener('focusin', function (ev) {
-      if (champs.indexOf(ev.target) >= 0) dernier = ev.target;
-      if (champs.indexOf(ev.target) >= 0 && natifs.indexOf(ev.target) < 0) afficher(ev.target);
-      else if (!clavier.contains(ev.target)) cacher();
+    form.addEventListener('submit', function (e) {
+      var choisies = nova.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
+      if (!choisies.length) return;
+      // Propagation faite par header.phtml dans la requête même du formulaire (2026-11-09 ; avant : par l'accueil, où
+      // l'enseignant restait) : paramètre dans l'adresse (lue par QUERY_STRING), le formulaire part normalement.
+      var p = 'nova_propager=' + (choisies.length > 1 ? 'tout' : choisies[0]);
+      if ((form.getAttribute('method') || 'get').toLowerCase() === 'post') {
+        var cible = (form.getAttribute('action') || 'wims.cgi').replace(/[?&]nova_propager=[a-z]+/, '');
+        form.setAttribute('action', cible + (cible.indexOf('?') < 0 ? '?' : '&') + p);
+      } else {
+        var cache = form.querySelector('input[name="nova_propager"]') || document.createElement('input');
+        cache.type = 'hidden'; cache.name = 'nova_propager'; cache.value = p.split('=')[1];
+        form.appendChild(cache);
+      }
     });
-    document.addEventListener('focusout', function () {
-      setTimeout(function () {
-        var actif = document.activeElement;
-        if (champs.indexOf(actif) < 0 || natifs.indexOf(actif) >= 0) cacher();
-      }, 0);
+  }
+
+  /* Page Réglages de Nova d'un portail ou d'un groupement (demande de l'utilisateur, 2026-11-07) : alerte en
+   * tête de la carte quand des zones dépendantes ont d'autres réglages Nova (#nova-ecarts, header.phtml), avec la liste
+   * repliée, « Appliquer ces réglages à toutes les zones » (propagation par l'accueil, réglages ENREGISTRÉS : bouton
+   * désactivé dès qu'un champ de la page change) et « Plus tard » (referme jusqu'à la prochaine visite). */
+  function ecartsZones() {
+    var src = document.getElementById('nova-ecarts');
+    if (!src) return;
+    var t = function (n) { return src.getAttribute('data-' + n) || ''; };
+    // Page Réglages de Nova (2026-11-08) : une seule alerte pour ses deux blocs ; « Appliquer » propage ce qui diffère.
+    var bloc = document.querySelector('.wimsbody .nova-reglages');
+    if (!bloc || bloc.querySelector('.nova-ecarts')) return;
+    var parties = ['apparence', 'badges'].filter(function (p) { return src.querySelector('li[data-partie="' + p + '"]'); });
+    if (!parties.length) return;
+    var partie = parties.length > 1 ? 'tout' : parties[0];
+    var vus = {};
+    var zones = [].filter.call(src.querySelectorAll('li[data-partie]'), function (z) {
+      var k = z.textContent.trim();
+      if (vus[k]) return false;
+      vus[k] = true;
+      return true;
     });
-    if (champs.indexOf(document.activeElement) >= 0) afficher(document.activeElement);
+    (function () {
+      var el = function (balise, classe, texte) {
+        var e = document.createElement(balise);
+        if (classe) e.className = classe;
+        if (texte != null) e.textContent = texte;
+        return e;
+      };
+      var n = zones.length;
+      var alerte = el('div', 'nova-ecarts wims_msg warning');
+      alerte.setAttribute('role', 'status');
+      alerte.appendChild(el('p', 'nova-ecarts-titre', (n === 1 ? t('titre1') : t('titre').replace('%n', n)).replace('%q', t('quoi-' + partie))));
+      alerte.appendChild(el('p', '', n === 1 ? t('texte1') : t('texte')));
+      var details = el('details', 'nova-app-detail');
+      details.appendChild(el('summary', '', t('voir')));
+      var ul = el('ul');
+      [].forEach.call(zones, function (z) { ul.appendChild(el('li', '', z.textContent)); });
+      details.appendChild(ul);
+      alerte.appendChild(details);
+      var actions = el('p', 'nova-ecarts-actions');
+      var appliquer = el('a', 'wims_button', t('appliquer'));
+      // Propagation faite par header.phtml sur la page même (2026-11-09) : lien de la rubrique + nova_propager.
+      var rubrique = document.querySelector('#wimsmenumodubox .nova_reglages > a');
+      appliquer.href = rubrique ? rubrique.href.split('#')[0] + '&nova_propager=' + partie + '#nova-reglages' : lienAccueil('&nova_propager=' + partie);
+      var plusTard = el('button', 'nova-ecarts-plus-tard wims_button wims_secondary_button', t('plus-tard'));
+      plusTard.type = 'button';
+      plusTard.addEventListener('click', function () { alerte.remove(); });
+      actions.appendChild(appliquer); actions.appendChild(plusTard);
+      alerte.appendChild(actions);
+      var attente = el('p', 'nova-ecarts-attente', t('attente'));
+      attente.hidden = true;
+      alerte.appendChild(attente);
+      bloc.insertBefore(alerte, bloc.firstChild);
+      var modifie = function (e) {
+        if (alerte.contains(e.target)) return;
+        appliquer.setAttribute('aria-disabled', 'true');
+        appliquer.removeAttribute('href');
+        attente.hidden = false;
+      };
+      bloc.addEventListener('input', modifie);
+      bloc.addEventListener('change', modifie);
+    })();
   }
 
-  /* Page de réponse d'un exercice : le focus va au seul bouton pour continuer, « Exercice suivant »
-   * (a#oef_serie_nextexo, le lien lui-même) ou, en fin de série, « Revenir à la liste » (boutonsCollants) : Entrée suffit pour
-   * passer à la suite (demande de l'utilisateur, 2026-10-05). Sans défilement, et pas si le focus est déjà
-   * ailleurs. */
-  function focusSuite() {
-    if (!document.querySelector('.wimsbody .oefanswer')) return;
-    var actif = document.activeElement;
-    if (actif && actif !== document.body && actif !== document.documentElement) return;
-    var bouton = document.querySelector('a#oef_serie_nextexo[href], #oef_serie_nextexo a[href]') || document.querySelector('#oef_actions a.nova-revenir-liste[href]');
-    if (!bouton) return;
-    try { bouton.focus({ preventScroll: true }); } catch (e) { bouton.focus(); }
-  }
-
-  /* Connexion à une classe (adm/class/classes, authparticipant et authsupervisor) : focus sur
-   * l'identifiant, ou sur le mot de passe s'il est déjà rempli (retour après une erreur) ou seul
-   * (enseignant). Rien si le visiteur a déjà placé le focus ailleurs avant le passage du script.
-   */
-  function focusConnexion() {
-    var actif = document.activeElement;
-    if (actif && actif !== document.body && actif !== document.documentElement) return;
-    var login = document.querySelector('input#login[name="auth_user"]');
-    var motDePasse = document.querySelector('input#password[name="auth_password"]');
-    var cible = login && !login.value ? login : motDePasse;
-    if (cible && cible.form) cible.focus();
-  }
-
+  /* ===== js/src/80-reglages.js : pages Apparence et « Réglages de Nova », réglages lus dans les feuilles ===== */
   /* Page Apparence de la maintenance du site (gestionnaire ; demande de l'utilisateur, 2026-10-06,
    * maquette A) : carte « Réglages de Nova » (template#nova-apparence, header.phtml) au-dessus du formulaire
    * de WIMS, avec les champs cachés de celui-ci (session, module…) ; les réglages de WIMS sans effet avec Nova
@@ -4290,157 +6258,6 @@
     var apres = app.closest('li');
     apres.parentNode.insertBefore(li, apres.nextSibling);
   }
-
-  /* Configuration et maintenance d'une classe, d'un groupement ou d'un portail (adm/class/config, page d'entrée ;
-   * 2026-11-11, utilisateur : comme l'administration du serveur, maquette B). Les listes de WIMS deviennent des cartes :
-   * un groupe sans titre = une carte ; « <strong>titre</strong> (aide) + sous-liste » = titre de groupe, puis sa carte.
-   * Ligne = icône (d'après la cible du lien), libellé, description sans parenthèses, chevron ; ligne entière cliquable
-   * (les autres liens de la ligne restent au-dessus). « Actualiser les index » garde ses boutons. Nœuds déplacés, pas
-   * copiés (onclick de WIMS gardés) ; cartes gardent la classe wims_nopuce (rubriqueReglages, liensConnexion). Réglage
-   * standard « listes ». */
-  var CONFIG_ICONES = [
-    [/#nova-reglages/, 'nova'], [/job=connectlink/, 'lien'], [/job=arch/, 'disque'], [/job=security/, 'bouclier'],
-    [/job=clean/, 'balai'], [/job=propagate/, 'propager'], [/job=authtype/, 'cle'], [/job=list(?![a-z])/, 'curseurs'],
-    [/adm(%2F|\/)class(%2F|\/)sequence/, 'sequence'], [/job=oefdefault/, 'crayon'], [/job=present/, 'palette'],
-    [/adm(%2F|\/)forum/, 'forum'], [/adm(%2F|\/)class(%2F|\/)motd/, 'portevoix'], [/adm(%2F|\/)class(%2F|\/)cdt/, 'cahier'],
-    [/adm(%2F|\/)class(%2F|\/)livret/, 'livret'], [/job=access/, 'cadenas'], [/job=grestrict/, 'jauge'],
-    [/job=neighbor/, 'users'], [/job=connect(?![a-z])/, 'serveur'], [/adm(%2F|\/)light/, 'oeil']
-  ];
-  function configurationClasse() {
-    if (standard('listes')) return;
-    var corps = document.querySelector('.wimsbody');
-    if (!corps) return;
-    var config = /adm(%2F|\/)class(%2F|\/)config/;
-    var arch = corps.querySelector('ul.wims_nopuce > li > a[href*="job=arch"]');
-    if (!arch || !config.test(arch.href) || corps.querySelector('.nova-cfg')) return;
-    var enfants = function (el, tag) { return Array.prototype.filter.call(el.children, function (c) { return c.tagName === tag; }); };
-    var nettoyer = function (s) { return s.replace(/\s+/g, ' ').trim().replace(/^\(\s*/, '').replace(/\s*\)?[\s.,]*$/, '').replace(/\s*\)$/, ''); };
-    // Description : nœuds qui suivent le libellé (texte, autres liens), parenthèses de WIMS retirées.
-    var description = function (noeuds) {
-      var span = document.createElement('span');
-      span.className = 'nova-cfg-desc';
-      noeuds.forEach(function (n) { span.appendChild(n); });
-      span.normalize();
-      while (span.firstChild && span.firstChild.nodeType === 3 && !span.firstChild.nodeValue.trim()) span.removeChild(span.firstChild);
-      var premier = span.firstChild, dernier = span.lastChild;
-      if (premier && premier.nodeType === 3) premier.nodeValue = premier.nodeValue.replace(/^\s*\(\s*/, '');
-      if (dernier && dernier.nodeType === 3) dernier.nodeValue = dernier.nodeValue.replace(/\s*\)?[\s.,]*$/, '');
-      return span.textContent.trim() ? span : null;
-    };
-    var icone = function (h) {
-      for (var i = 0; i < CONFIG_ICONES.length; i++) if (CONFIG_ICONES[i][0].test(h)) return CONFIG_ICONES[i][1];
-      return '';
-    };
-    var ligne = function (li) {
-      var ico = document.createElement('span');
-      ico.className = 'nova-cfg-ico';
-      ico.setAttribute('aria-hidden', 'true');
-      var noeuds = Array.prototype.slice.call(li.childNodes);
-      var boutons = noeuds.filter(function (n) { return n.nodeType === 1 && n.matches('a.wims_button, a.wims_button_help'); });
-      li.classList.add('nova-cfg-ligne');
-      if (boutons.length) {
-        // « Actualiser les index » : libellé (texte avant le premier bouton), puis les boutons.
-        li.classList.add('nova-cfg-index');
-        ico.setAttribute('data-icone', 'maj');
-        var tete = document.createElement('span');
-        tete.className = 'nova-cfg-tete nova-cfg-libelle';
-        tete.textContent = noeuds.filter(function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ').replace(/\s+/g, ' ').trim();
-        var div = document.createElement('div');
-        div.className = 'nova-cfg-boutons';
-        boutons.forEach(function (b) { div.appendChild(b); });
-        li.textContent = '';
-        li.appendChild(ico); li.appendChild(tete); li.appendChild(div);
-        return li;
-      }
-      var a = noeuds.filter(function (n) { return n.nodeType === 1 && n.tagName === 'A'; })[0];
-      if (!a) return li;
-      ico.setAttribute('data-icone', icone(a.getAttribute('href') || ''));
-      a.classList.add('nova-cfg-lien');
-      var tete2 = document.createElement('span');
-      tete2.className = 'nova-cfg-tete';
-      var apres = noeuds.slice(noeuds.indexOf(a) + 1);
-      var tags = apres.filter(function (n) { return n.nodeType === 1 && n.classList.contains('nova-tag-nouveau'); });
-      apres = apres.filter(function (n) { return tags.indexOf(n) < 0; });
-      noeuds.slice(0, noeuds.indexOf(a)).forEach(function (n) { if (n.nodeType === 3) li.removeChild(n); });
-      tete2.appendChild(a);
-      tags.forEach(function (t) { tete2.appendChild(t); });
-      var d = description(apres);
-      li.textContent = '';
-      li.appendChild(ico); li.appendChild(tete2);
-      if (d) li.appendChild(d);
-      return li;
-    };
-    var listes = Array.prototype.filter.call(corps.querySelectorAll('ul.wims_nopuce'), function (ul) {
-      return !ul.closest('ul.wims_nopuce ul') && Array.prototype.some.call(ul.querySelectorAll('a[href]'), function (x) { return config.test(x.href); });
-    });
-    listes.forEach(function (ul) {
-      var bloc = document.createElement('div');
-      bloc.className = 'nova-cfg';
-      var carte = null;
-      var nouvelleCarte = function () {
-        carte = document.createElement('ul');
-        carte.className = 'wims_nopuce nova-cfg-carte';
-        bloc.appendChild(carte);
-      };
-      var ajouter = function (li) { if (!carte) nouvelleCarte(); carte.appendChild(ligne(li)); };
-      var prec = ul.previousElementSibling;
-      if (prec && prec.tagName === 'H2') bloc.appendChild(prec);
-      enfants(ul, 'LI').forEach(function (li) {
-        var titre = enfants(li, 'STRONG')[0];
-        var sous = enfants(li, 'UL')[0];
-        if (titre) {
-          var t = document.createElement('div');
-          t.className = 'nova-cfg-titre';
-          t.textContent = titre.textContent.trim();
-          var texte = Array.prototype.filter.call(li.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ');
-          texte = nettoyer(texte);
-          if (texte) {
-            var sd = document.createElement('span');
-            sd.className = 'nova-cfg-desc';
-            sd.textContent = texte;
-            t.appendChild(sd);
-          }
-          bloc.appendChild(t);
-          carte = null;
-          if (sous) { enfants(sous, 'LI').forEach(ajouter); carte = null; }
-        } else if (sous && !enfants(li, 'A').length) {
-          enfants(sous, 'LI').forEach(ajouter);
-          carte = null;
-        } else ajouter(li);
-      });
-      // Préférences d'affichage : paragraphe qui suit la liste de configuration, mis en carte à la suite.
-      var p = ul.nextElementSibling;
-      if (p && p.tagName === 'P' && p.firstElementChild && p.firstElementChild.tagName === 'A' && /adm(%2F|\/)light/.test(p.firstElementChild.href)) {
-        var lp = document.createElement('li');
-        while (p.firstChild) lp.appendChild(p.firstChild);
-        p.parentNode.removeChild(p);
-        nouvelleCarte();
-        carte.appendChild(ligne(lp));
-      }
-      ul.parentNode.replaceChild(bloc, ul);
-    });
-    // Deux onglets (2026-11-11, utilisateur) : « Sauvegarde et maintenance » et « Configuration », titres = h2 de WIMS.
-    var blocs = [].slice.call(corps.querySelectorAll('.nova-cfg'));
-    var titres = blocs.map(function (b) { var h = b.querySelector(':scope > h2'); return h ? h.textContent.trim() : ''; });
-    if (blocs.length < 2 || titres.some(function (t) { return !t; })) return;
-    var onglets = document.createElement('div');
-    onglets.className = 'nova-cfg-onglets';
-    blocs[0].parentNode.insertBefore(onglets, blocs[0]);
-    blocs.forEach(function (b, i) {
-      var sec = document.createElement('section');
-      sec.className = 'nova-onglet';
-      sec.setAttribute('data-onglet', i ? 'configuration' : 'maintenance');
-      sec.setAttribute('data-titre', titres[i]);
-      sec.appendChild(b);
-      onglets.appendChild(sec);
-    });
-    ongletsReglages(onglets, titres.join(', '), 'nova-cfg-onglet');
-  }
-
-  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
-   * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
-   * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
-  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'];
   function reglagesStandard() {
     var d = document.documentElement;
     var cs = getComputedStyle(d);
@@ -4468,7 +6285,6 @@
     try { choix = localStorage.getItem('nova_menu' + (nmr && nmr.suffixe || '')); } catch (e) { /* sans stockage */ }
     if (choix === null && !(nmr && nmr.inverse)) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
   }
-  function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
   // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien
   // --nova-communication-eleves: non.
   function rubriquesMasquees(cs) {
@@ -4508,1802 +6324,7 @@
     document.head.appendChild(style);
   }
 
-  /* Rubrique « Profil » en tête du menu latéral (demande de l'utilisateur, 2026-10-07, maquette A ; même style
-   * qu'une rubrique ordinaire) : le menu du compte de la barre (nom, préférences, conditions, déconnexion), le
-   * choix de la langue s'il y en a un, quittent la barre ; « Aide » de la barre passe dans la rubrique « Aide et
-   * outils » si elle existe, sinon dans « Profil ». Élève et enseignant ; chez l'élève, le menu latéral est un
-   * tiroir ☰ à toutes les largeurs (CSS). Pages sans menu latéral : la barre garde son menu du compte. Pendant
-   * une session d'examen, modeExamen a déjà sa section « Profil ». */
-  /* Entrée « Langue : <langue actuelle> » de la rubrique Profil, qui déplie la liste des autres langues (drapeau + nom,
-   * langue actuelle cochée en tête). Libellés de WIMS ($wims_name_Language, lang_name_*). Clé profil_langue. */
-  function choixLangue(selecteur, autres) {
-    var d = document.createElement('div');
-    d.className = 'menuitem profil_langue nova-langue';
-    var bouton = document.createElement('a');
-    bouton.href = '#';
-    bouton.setAttribute('role', 'button');
-    bouton.setAttribute('aria-expanded', 'false');
-    var actuelle = selecteur.querySelector('a.current .legende, .disabled .legende');
-    var nomActuel = actuelle ? actuelle.textContent.trim() : (document.documentElement.lang || '');
-    var libelle = (selecteur.querySelector('a.lang') || selecteur).textContent.replace(/\s+/g, ' ').trim() || 'Language';
-    var texte = document.createElement('span');
-    texte.className = 'nova-langue-texte';
-    texte.textContent = libelle + ' : ' + nomActuel;
-    // Drapeau de la langue actuelle en guise d'icône : Font_Awesome n'a pas de globe, et le jeu « default » aucune icône.
-    var drapeau = selecteur.querySelector('a.current img, a.lang img');
-    if (drapeau) { var dr = drapeau.cloneNode(true); dr.alt = ''; dr.className = 'vignette'; bouton.appendChild(dr); }
-    bouton.appendChild(texte);
-    var liste = document.createElement('div');
-    liste.className = 'nova-langues';
-    liste.id = 'nova-langues';
-    liste.hidden = true;
-    bouton.setAttribute('aria-controls', liste.id);
-    var courant = selecteur.querySelector('a.current');
-    if (courant) {
-      var c = courant.cloneNode(true);
-      var precision = c.querySelector('.smaller');
-      if (precision) precision.remove();
-      c.setAttribute('aria-current', 'true');
-      liste.appendChild(c);
-    }
-    Array.prototype.forEach.call(autres, function (a) {
-      var copie = a.cloneNode(true);
-      copie.removeAttribute('id');
-      liste.appendChild(copie);
-    });
-    bouton.addEventListener('click', function (e) {
-      if (document.documentElement.classList.contains('nova-menu-edition')) return;   // menuPersonnel s'en charge
-      e.preventDefault();
-      var ouvrir = liste.hidden;
-      liste.hidden = !ouvrir;
-      bouton.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
-    });
-    d.appendChild(bouton);
-    d.appendChild(liste);
-    return d;
-  }
-
-  function profilLateral() {
-    var barre = document.getElementById('wimstopbox');
-    var menu = document.getElementById('wimsmenumodubox');
-    var racine = document.documentElement;
-    var fini = function () { racine.classList.add('nova-profil-pret'); };
-    if (standard('menus')) { fini(); return; }   // réglage « Menus du thème standard » : le compte reste dans la barre
-    if (!barre || !menu || menu.querySelector('.nova-profil')) { fini(); return; }
-    var compte = barre.querySelector('a.account');
-    var liCompte = compte && compte.closest('li');
-    if (!liCompte) { fini(); return; }
-    var textes = document.getElementById('nova-textes');
-    var cible = menu.querySelector('.modubox_content') || menu;
-    var titre = document.createElement('h2');
-    titre.className = 'menu_title nova-profil-titre';
-    titre.textContent = (textes && textes.getAttribute('data-profil')) || 'Profile';
-    var groupe = document.createElement('div');
-    groupe.className = 'wimsmenu menu nova-profil';
-    // Chaque entrée porte une clé « profil_<classe du lien> » : le menu simplifié peut la masquer, comme les
-    // autres (demande de l'utilisateur, 2026-10-07) ; la déconnexion (cmd=close, ou classe visitor des
-    // déconnexions CAS) n'en a pas : toujours visible (htmlheader.phtml).
-    var cleProfil = function (a) {
-      var c = ((a.getAttribute('class') || '').split(/\s+/).filter(function (x) { return /^[A-Za-z0-9_-]+$/.test(x); })[0]) || 'lien';
-      return 'profil_' + c;
-    };
-    var ajouter = function (lien, ou) {
-      if (!lien || !lien.getAttribute('href') || /^#/.test(lien.getAttribute('href'))) return;
-      var d = document.createElement('div');
-      d.className = 'menuitem';
-      if (/[?&+]cmd=close/.test(lien.getAttribute('href')) || lien.classList.contains('visitor')) d.classList.add('nova-deconnexion');
-      else d.classList.add(cleProfil(lien));
-      var copie = lien.cloneNode(true);
-      copie.removeAttribute('id');
-      copie.removeAttribute('aria-controls');
-      copie.removeAttribute('aria-expanded');
-      d.appendChild(copie);
-      (ou || groupe).appendChild(d);
-    };
-    var nom = document.createElement('div');
-    nom.className = 'menuitem profil_nom nova-profil-nom';
-    nom.textContent = compte.textContent.replace(/\s+/g, ' ').trim();
-    groupe.appendChild(nom);
-    // Langues (sélecteur de la barre, quand WIMS en met un : modtool, pages hors classe) : UNE entrée « Langue :
-    // Français » qui déplie la liste (maquette A, demande de l'utilisateur, 2026-11-04 ; avant : une entrée par langue).
-    var langues = barre.querySelector('#language_selector');
-    if (langues) {
-      var autres = langues.querySelectorAll('#lang_list a[href]');   // pas « ul a » : la liste de la barre contient le sélecteur
-      if (autres.length) groupe.appendChild(choixLangue(langues, autres));
-    }
-    Array.prototype.forEach.call(liCompte.querySelectorAll('#user_links > li:not(.nova-cgu-compte)' + (standard('navigation') ? '' : ':not(.nova-lien-complet)') + ' a[href]'), function (a) { ajouter(a); });
-    // Aide : rubrique « Aide et outils » (ou toute rubrique dont le titre parle d'aide), sinon Profil.
-    var aides = barre.querySelectorAll('.menuitem:is(.help, .whelp)');
-    if (aides.length) {
-      var rubriqueAide = null;
-      Array.prototype.forEach.call(menu.querySelectorAll('.menu_title'), function (t) {
-        if (!rubriqueAide && /aide|help/i.test(t.textContent) && t.nextElementSibling) rubriqueAide = t.nextElementSibling;
-      });
-      Array.prototype.forEach.call(aides, function (item) {
-        Array.prototype.forEach.call(item.querySelectorAll('a[href]'), function (a) {
-          var avant = rubriqueAide && rubriqueAide.firstChild;
-          var d = document.createElement('div');
-          d.className = 'menuitem ' + (item.classList.contains('whelp') ? 'whelp' : 'help');
-          var copie = a.cloneNode(true);
-          copie.removeAttribute('id');
-          d.appendChild(copie);
-          if (rubriqueAide) rubriqueAide.insertBefore(d, avant); else groupe.appendChild(d);
-        });
-        item.remove();
-      });
-    }
-    cible.insertBefore(groupe, cible.firstChild);
-    cible.insertBefore(titre, groupe);
-    liCompte.remove();
-    if (langues) langues.remove();
-    // Menu simplifié de l'enseignant : les entrées de Profil et l'Aide déplacée, nouvelles, sont gardées une
-    // première fois (repère profil_v1 dans la liste), pour qu'aucune ne disparaisse d'elle-même.
-    var nm = window.novaMenu;
-    if (nm && !nm.inverse && document.getElementById('nova-menu-bascule') && nm.garde.indexOf('profil_v1') < 0) {
-      Array.prototype.forEach.call(menu.querySelectorAll('.nova-profil .menuitem, .menuitem.help, .menuitem.whelp'), function (item) {
-        Array.prototype.forEach.call(item.classList, function (c) {
-          if ((/^profil_/.test(c) || c === 'help' || c === 'whelp') && nm.garde.indexOf(c) < 0) nm.garde.push(c);
-        });
-      });
-      nm.garde.push('profil_v1');
-      try {
-        localStorage.setItem('nova_menu_garde', JSON.stringify(nm.garde));
-        localStorage.setItem('nova_menu_envoi', valeurMenu());
-      } catch (e) { /* cette page seulement */ }
-      var regle = document.getElementById('nova-menu-style');
-      if (regle) regle.textContent = nm.style(nm.garde);
-    }
-    fini();
-  }
-
-  /* Images cliquables des exercices (<input type="image">, réponses « coord », droites graduées…) : le
-   * navigateur envoie la position du clic en pixels AFFICHÉS, que WIMS lit comme des pixels de l'image. Nova
-   * réduit les champs à la largeur de la page (max-width: 100 %) : sur un écran étroit ou zoomé, le point partait
-   * ailleurs (signalé par un collègue de l'utilisateur, 2026-10-07, H2/number/OEFevalwimsnbrel.fr ; pas avec Pion3,
-   * qui laisse l'image déborder). La position est ramenée à l'image d'origine avant l'envoi. Clavier (Entrée) :
-   * envoi ordinaire. */
-  function imagesCliquables() {
-    if (!document.querySelector('.wimsbody input[type="image"]')) return;
-    var tailles = {};
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody input[type="image"]'), function (i) {
-      var im = new Image();
-      im.onload = function () { tailles[i.src] = [im.naturalWidth, im.naturalHeight]; };
-      im.src = i.src;
-    });
-    document.addEventListener('click', function (e) {
-      var i = e.target;
-      if (!i || i.tagName !== 'INPUT' || i.type !== 'image' || !i.form || !i.closest('.wimsbody') || e.detail === 0) return;
-      var t = tailles[i.src];
-      var r = i.getBoundingClientRect();
-      var c = getComputedStyle(i);
-      var gauche = r.left + parseFloat(c.borderLeftWidth) + parseFloat(c.paddingLeft);
-      var haut = r.top + parseFloat(c.borderTopWidth) + parseFloat(c.paddingTop);
-      var largeur = r.width - parseFloat(c.borderLeftWidth) - parseFloat(c.borderRightWidth) - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight);
-      var hauteur = r.height - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth) - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom);
-      if (!t || !largeur || !hauteur || (Math.abs(largeur - t[0]) < 0.5 && Math.abs(hauteur - t[1]) < 0.5 && Math.abs(gauche - r.left) < 0.5 && Math.abs(haut - r.top) < 0.5)) return;   // taille réelle : rien à corriger
-      e.preventDefault();
-      var x = Math.round((e.clientX - gauche) * t[0] / largeur);
-      var y = Math.round((e.clientY - haut) * t[1] / hauteur);
-      x = Math.max(0, Math.min(t[0] - 1, x));
-      y = Math.max(0, Math.min(t[1] - 1, y));
-      var nom = i.name ? i.name + '.' : '';
-      Array.prototype.forEach.call(i.form.querySelectorAll('input.nova-clic-image'), function (h) { h.remove(); });
-      [['x', x], ['y', y]].forEach(function (v) {
-        var h = document.createElement('input');
-        h.type = 'hidden'; h.className = 'nova-clic-image'; h.name = nom + v[0]; h.value = v[1];
-        i.form.appendChild(h);
-      });
-      if (typeof i.form.requestSubmit === 'function') i.form.requestSubmit(); else i.form.submit();
-    }, true);
-  }
-
-  /* Exercices à dominos (étiquettes faites d'un tableau, scripts/anstype/fill.after ; demandes de l'utilisateur,
-   * 2026-10-08) :
-   *  - une consigne au-dessus des dominos (insérée avant que Dynapi ne place ses calques sur les repères
-   *    fillobj1…, après « load » : rien ne se décale) ;
-   *  - une seule taille de texte pour tous les dominos, la plus grande sans débordement (mesurée une fois les
-   *    formules affichées par MathJax) ;
-   *  - la case où le domino tomberait, en surbrillance pendant le glissement (règle de WIMS, f_cright : coin du
-   *    domino à moins des 2/3 de la case), ou la case sous le pointeur quand un domino est choisi d'un clic. */
-  function dominos() {
-    if (standard('dominos')) return;   // réglage « Dominos du thème standard »
-    var repere = document.getElementById('fillobj1');
-    var exercice = !!repere && Array.prototype.some.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent) && /wimsborder/.test(sc.textContent); });
-    // Page de correction (demande de l'utilisateur, 2026-10-08) : dominos réaffichés par WIMS (.drag_label >
-    // .drag_content > table, dans l'énoncé et l'analyse) et ceux de la solution de l'auteur (tableaux à une ligne de
-    // deux cases, marqués ici nova-domino-solution) : même habillage, même taille commune.
-    var correction = !exercice && !!document.querySelector('.drag_content > table.wimsborder');
-    if (!exercice && !correction) return;
-    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table.wimsborder'), function (t) {
-      var lignes = t.rows;
-      if (t.closest('.drag_content') || t.querySelector('table') || lignes.length !== 1 || lignes[0].cells.length !== 2) return;
-      t.classList.add('nova-domino-solution');
-    });
-    // Ligne de solution trop large (dominos à 205 px et « = 6 = ») : elle défile dans son cadre, la page ne s'élargit pas.
-    if (correction) Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table:has(table.nova-domino-solution)'), function (t) {
-      if (t.querySelector('table:has(table.nova-domino-solution)') || t.parentElement.classList.contains('nova-defile-x')) return;
-      var cadre = document.createElement('div');
-      cadre.className = 'nova-defile-x';
-      t.parentNode.insertBefore(cadre, t);
-      cadre.appendChild(t);
-    });
-    // Placement des calques par Dynapi (fill.after) : les cases d'un même groupe sont rangées en grille à partir du
-    // repère du groupe, f_cut cases par ligne, pas de 205 px (stretchH) en largeur et de 50 px (stretchV) en hauteur ;
-    // les dominos, sur leur repère fillobj<n> (décalage left de -205 px). Nova les fait plus hauts (80 px, CSS) : le
-    // pas vertical est agrandi d'autant, sinon des cases sur plusieurs lignes se chevaucheraient. Au téléphone
-    // (demande de l'utilisateur, 2026-10-08), ils sont moins larges (175 px ; 150 px d'abord : texte trop petit) :
-    // places réservées, largeur, décalages et nombre de cases par ligne (f_cut) réduits avant « load », quand Dynapi
-    // place ses calques.
-    if (exercice && window.DynLayer && DynLayer.prototype.setAnchor) {
-      var telephone = !!(window.matchMedia && matchMedia('(max-width: 639.98px)').matches);
-      var etroit = 175, haut = 80 + 8, origine = null, origineV = null;
-      Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, div:has(> a[id^="fillobj"]) > img'), function (im) {
-        var w = parseFloat(im.style.width);
-        if (!(w > 1)) return;
-        if (!origine) origine = w;
-        if (telephone) im.style.width = Math.round(w * etroit / origine) + 'px';
-      });
-      if (!telephone) etroit = origine;
-      if (telephone && origine && window.f_cut) {
-        var place = (document.querySelector('.wims_question') || repere.parentNode).clientWidth || 0;
-        var parLigne = Math.max(1, Math.floor(place / etroit));
-        for (var ic = 0; ic < f_cut.length; ic++) if (f_cut[ic] > parLigne) f_cut[ic] = parLigne;
-      }
-      if (origine) {
-        var ancrer = DynLayer.prototype.setAnchor;
-        DynLayer.prototype.setAnchor = function (a) {
-          if (a && a.stretchH === origine) {
-            var b = {};
-            for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
-            if (origineV === null && typeof a.stretchV === 'number') origineV = a.stretchV;
-            b.stretchH = etroit;
-            if (typeof b.left === 'number') b.left = Math.round(b.left * etroit / origine);
-            if (typeof b.top === 'number' && origineV) b.top = Math.round(b.top * haut / origineV);
-            a = b;
-          }
-          return ancrer.call(this, a);
-        };
-      }
-    }
-    // Page à dominos : marquée avant « load » (le CSS agrandit dominos, cases et places réservées avant que Dynapi ne
-    // calcule ses positions).
-    document.documentElement.classList.add('nova-dominos');
-    var textes = document.getElementById('nova-textes');
-    var consigne = textes && textes.getAttribute('data-texte-consigne-dominos');
-    var bloc = repere && repere.parentElement;
-    if (exercice && consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
-      var pc = document.createElement('p');
-      pc.className = 'nova-consigne-glisser';
-      pc.textContent = consigne;
-      bloc.parentNode.insertBefore(pc, bloc);
-    }
-    // Taille commune : essais à 20 px, puis la plus grande qui tient partout, sur la face la plus large ou la plus
-    // haute (bornée à 26 px).
-    var essais = 0;
-    var taille = function () {
-      var faces = Array.prototype.slice.call(document.querySelectorAll('.wims_grabbable .fill_content > table.wimsborder :is(th, td), .drag_content > table.wimsborder :is(th, td), table.nova-domino-solution :is(th, td)'));
-      var pretes = faces.length && faces.every(function (c) { return !c.querySelector('math') || c.querySelector('mjx-container'); });
-      if (!pretes) { if (++essais < 40) setTimeout(taille, 200); return; }
-      // Même taille pour tous les dominos affichés ensemble (cette page) ; elle peut changer d'un exercice à l'autre
-      // (précision de l'utilisateur, 2026-10-08). Par un zoom commun sur les formules, et non par la taille de police :
-      // MathJax recalcule l'échelle de ses formules d'après la police qui les entoure et annulait le changement (vécu :
-      // largeurs inchangées de 10 à 26 px). Mesure au naturel (zoom 1), puis le plus grand zoom qui tient partout.
-      var mesure = function (c) {
-        // Rendu visible de MathJax (le MathML gardé pour les lecteurs d'écran fausserait la mesure), sinon le texte.
-        var mj = c.querySelectorAll('mjx-container');
-        if (mj.length) {
-          var g = Infinity, d = -Infinity, h = Infinity, bas = -Infinity;
-          Array.prototype.forEach.call(mj, function (m) { var q = m.getBoundingClientRect(); g = Math.min(g, q.left); d = Math.max(d, q.right); h = Math.min(h, q.top); bas = Math.max(bas, q.bottom); });
-          return { width: d - g, height: bas - h };
-        }
-        var r = document.createRange(); r.selectNodeContents(c); return r.getBoundingClientRect();
-      };
-      var contenus = faces.map(function (c) { return c.querySelector('.wims_mathml') || c; });
-      contenus.forEach(function (e) { e.style.zoom = ''; });
-      var z = Infinity;
-      faces.forEach(function (c) {
-        var b = mesure(c), cs = getComputedStyle(c);
-        var largeur = c.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 4;   // 2 px d'air de plus de chaque côté
-        var hauteur = c.closest('.wims_grabbable, .drag_label, .nova-domino-solution').clientHeight - 12;  // marges et air
-        if (b.width > 0) z = Math.min(z, largeur / b.width);
-        if (b.height > 0) z = Math.min(z, hauteur / b.height);
-      });
-      if (!isFinite(z)) return;
-      z = Math.max(0.5, Math.min(3, Math.floor(z * 100) / 100));   // la hauteur du domino borne déjà la taille
-      contenus.forEach(function (e) { e.style.zoom = String(z); });
-      document.documentElement.setAttribute('data-nova-dominos-zoom', String(z));
-    };
-    // MathJax retouche encore ses formules plusieurs secondes après « load » (fontes, taille relative à la police) :
-    // mesures répétées toutes les 500 ms pendant 8 s, puis à chaque fin de rendu MathJax (vécu : 20 px posés d'après
-    // une mesure prise trop tôt, texte qui débordait). Mesure et taille finale dans la même tâche : rien ne clignote.
-    var relancer = function () { essais = 0; taille(); };
-    window.addEventListener('load', function () {
-      var n = 0;
-      var tic = setInterval(function () { relancer(); if (++n >= 16) clearInterval(tic); }, 500);
-      if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(function () { setTimeout(relancer, 150); });
-    });
-    if (!exercice) return;
-    // Téléphone en portrait, dominos ou cases sur plusieurs lignes : fenêtre flottante qui propose le mode paysage
-    // (demande de l'utilisateur, 2026-10-08). Elle part en paysage ou quand on la ferme (pas de retour de la session).
-    var portrait = window.matchMedia ? matchMedia('(orientation: portrait)') : null;
-    var surUneLigne = function (sel) {
-      var hauts = Array.prototype.map.call(document.querySelectorAll(sel), function (e) { return Math.round(e.getBoundingClientRect().top + window.scrollY); });
-      return !hauts.length || Math.max.apply(null, hauts) - Math.min.apply(null, hauts) < 4;
-    };
-    var fenetre = null;
-    var paysage = function () {
-      var ferme = false;
-      try { ferme = sessionStorage.getItem('nova-paysage-ferme') === '1'; } catch (e) { /* sans stockage */ }
-      var montrer = !ferme && portrait && portrait.matches && document.querySelector('.wims_droppable') &&
-        !(surUneLigne('.wims_droppable') && surUneLigne('.wims_grabbable'));
-      if (!montrer) { if (fenetre) fenetre.hidden = true; return; }
-      if (!fenetre) {
-        fenetre = document.createElement('div');
-        fenetre.className = 'nova-paysage';
-        fenetre.setAttribute('role', 'status');
-        fenetre.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="16" rx="2"/><path d="M3 15a9 9 0 0 0 15 6"/><path d="M18 17v4h-4"/></svg><span></span><button type="button"></button>';
-        fenetre.querySelector('span').textContent = (textes && textes.getAttribute('data-texte-paysage')) || 'Turn your phone sideways.';
-        var bouton = fenetre.querySelector('button');
-        bouton.textContent = '\u00d7';
-        bouton.setAttribute('aria-label', (textes && textes.getAttribute('data-texte-fermer')) || 'Close');
-        bouton.addEventListener('click', function () {
-          fenetre.hidden = true;
-          try { sessionStorage.setItem('nova-paysage-ferme', '1'); } catch (e) { /* cette page seulement */ }
-        });
-        document.body.appendChild(fenetre);
-      }
-      fenetre.hidden = false;
-    };
-    window.addEventListener('load', function () { setTimeout(paysage, 1200); });
-    if (portrait && portrait.addEventListener) portrait.addEventListener('change', function () { setTimeout(paysage, 600); });
-    // Case visée.
-    var glisse = null, rafId = 0, derniere = null;
-    var marquer = function (z) {
-      if (z === derniere) return;
-      if (derniere) derniere.classList.remove('nova-survolee');
-      if (z) z.classList.add('nova-survolee');
-      derniere = z;
-    };
-    var choisi = function () { return document.querySelector('.wims_grabbable[style*="rgb(96, 96, 255)"]'); };
-    document.addEventListener('mousedown', function (e) { var g = e.target.closest && e.target.closest('.wims_grabbable'); glisse = g || null; }, true);
-    document.addEventListener('mouseup', function () { glisse = null; setTimeout(function () { marquer(null); }, 0); }, true);
-    document.addEventListener('mousemove', function (e) {
-      if (rafId) return;
-      rafId = requestAnimationFrame(function () {
-        rafId = 0;
-        var zones = document.querySelectorAll('.wims_droppable');
-        var vise = null;
-        if (glisse) {
-          var g = glisse.getBoundingClientRect();
-          Array.prototype.some.call(zones, function (z) {
-            var r = z.getBoundingClientRect();
-            if (Math.abs(g.left - r.left) <= r.width * 2 / 3 && Math.abs(g.top - r.top) <= r.height * 2 / 3) { vise = z; return true; }
-            return false;
-          });
-        } else if (choisi()) {
-          Array.prototype.some.call(zones, function (z) {
-            var r = z.getBoundingClientRect();
-            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { vise = z; return true; }
-            return false;
-          });
-        }
-        marquer(vise);
-      });
-    }, true);
-  }
-
-  /* Indication et Aide d'un exercice pendant un examen : WIMS les écrit en texte inactif (scripts/oef/Main.phtml :
-   * <span class="disabled_link"> au lieu du bouton, dans une session _exam), y compris avec le thème Standard. Nova
-   * les montre comme ses boutons d'aide, grisés, avec une info-bulle (demande de l'utilisateur, 2026-10-08). Main.phtml
-   * écrit l'Indication puis l'Aide ; l'Aide se reconnaît à son texte (wims_name_help). */
-  function aideExamen() {
-    var inactifs = document.querySelectorAll('#oef_helphint > span.disabled_link');
-    if (!inactifs.length) return;
-    var textes = document.getElementById('nova-textes');
-    var bulle = (textes && textes.getAttribute('data-texte-indisponible-examen')) || 'Not available during an exam';
-    Array.prototype.forEach.call(inactifs, function (sp) {
-      var aide = /^(aide|help|hilfe|ayuda|aiuto)$/i.test(sp.textContent.trim());
-      sp.classList.add('wims_button_help', 'nova-inactif');
-      if (!document.getElementById(aide ? 'oef_help' : 'oef_hint')) sp.id = aide ? 'oef_help' : 'oef_hint';   // icône du jeu de WIMS
-      sp.setAttribute('aria-disabled', 'true');
-      sp.setAttribute('role', 'button');
-      sp.title = bulle;
-    });
-  }
-
-  /* « Dernière connexion le 07/10/2026 - 23:03:05 » (modules/home/main.phtml, date de scripts/adm/date.phtml, hors du
-   * thème) : jour/mois et heures:minutes seulement, « 07/10 à 23:03 » (demande de l'utilisateur, 2026-10-08). */
-  function derniereConnexion() {
-    var a = /^en/i.test(document.documentElement.lang || '') ? 'at' : '\u00e0';
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .wims_msg.info'), function (m) {
-      var re = /(\d{1,2})\/(\d{1,2})\/\d{4}\s*-\s*(\d{1,2}):(\d{2}):\d{2}/;
-      if (!re.test(m.textContent)) return;
-      var marche = document.createTreeWalker(m, NodeFilter.SHOW_TEXT);
-      for (var t = marche.nextNode(); t; t = marche.nextNode()) {
-        if (re.test(t.nodeValue)) { t.nodeValue = t.nodeValue.replace(re, '$1/$2 ' + a + ' $3:$4'); return; }
-      }
-    });
-  }
-
-  /* Menu latéral rangé dans #wimspagebox par WIMS sur certaines pages (page de réponse d'un exercice de feuille)
-   * au lieu d'être enfant de #wimsbodybox comme partout ailleurs : remis à sa place habituelle, sinon ni le tiroir
-   * ni la grille de Nova ne s'appliquent (vécu le 2026-10-08 : menu ☰ en bas de page, sous les boutons collés et
-   * le voile). */
-  /* Page « Mon activité » de l'élève (demande de l'utilisateur, 2026-10-08, maquette A) : le lien de WIMS
-   * (module adm/class/activity) mène à la page Nova de l'accueil (nova_activite=1, _widgets/activite.phtml), sauf
-   * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
-  function activiteLien() {
-    if (!document.getElementById('nova-eleve') || standard('menus')) return;
-    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
-    if (v === 'non') return;
-    document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
-      a.href = a.href.replace(/module=adm%2Fclass%2Factivity(&\+job=[^&]*)?/, 'module=home&+nova_activite=1');
-    });
-  }
-
-  /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
-   * ?session= sans compteur ouvre l'accueil du contexte. */
-  function lienAccueil(suite) {
-    var m = /[?&]session=([^&.]+)/.exec(location.search), session = m ? m[1] : '';
-    // Juste après la connexion, l'adresse porte « session=new.… », qui ne vaut plus rien (vu le 2026-11-07) : la vraie
-    // session est dans les liens de la page.
-    if (session === 'new') session = '';
-    if (!session) {
-      var champ = document.querySelector('input[name="session"]');
-      if (champ) session = champ.value.split('.')[0];
-    }
-    if (!session) {
-      var a = document.querySelector('a[href*="session="]');
-      m = a && /session=([^&.]+)/.exec(a.getAttribute('href'));
-      if (m) session = m[1];
-    }
-    return 'wims.cgi?session=' + encodeURIComponent(session) + '&lang=' + encodeURIComponent(racineLangue()) + '&module=home' + suite;
-  }
-  // Lien de la session vers un autre module (cmd=new : valable depuis n'importe quelle page ; 2026-11-09).
-  function lienSession(suite) { return lienAccueil('').replace('&module=home', '') + suite; }
-
-  /* Action faite sur l'accueil (module de confiance) SANS y aller (2026-11-09, utilisateur : « je me retrouve sur la page
-   * de mon portail ») : requête en arrière-plan, message de #nova-propage gardé pour la page suivante (messageReporte),
-   * puis page de retour, ouverte par cmd=new (après une requête à l'accueil, les liens cmd=reply de la page ne valent
-   * plus) et au moins 1,5 s après (deux requêtes à moins d'1 s : la seconde est mal servie). Sans fetch : l'accueil. */
-  function actionAccueil(suite, retour) {
-    var accueil = lienAccueil(suite);
-    if (!window.fetch || !window.TextDecoder) { location.href = accueil; return; }
-    var debut = Date.now();
-    fetch(accueil, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
-      var html = new TextDecoder('windows-1252').decode(buf);
-      var m = new DOMParser().parseFromString(html, 'text/html').getElementById('nova-propage');
-      if (m && m.textContent.trim()) {
-        try { sessionStorage.setItem('nova-message', JSON.stringify({ texte: m.textContent.trim(), etat: m.getAttribute('data-etat') || '', quand: Date.now() })); } catch (e) { /* message perdu */ }
-      }
-      setTimeout(function () { location.href = retour; }, Math.max(0, 1500 - (Date.now() - debut)));
-    }).catch(function () { location.href = accueil; });
-  }
-  // Message d'une action faite en arrière-plan (actionAccueil), en tête de la page de retour.
-  function messageReporte() {
-    var v = null;
-    try { v = JSON.parse(sessionStorage.getItem('nova-message') || 'null'); sessionStorage.removeItem('nova-message'); } catch (e) { v = null; }
-    var corps = document.querySelector('.wimsbody');
-    if (!v || !v.texte || Date.now() - v.quand > 60000 || !corps) return;
-    var msg = document.createElement('div');
-    msg.className = 'wims_msg ' + (v.etat === 'erreur' ? 'alert' : 'success');
-    msg.setAttribute('role', 'status');
-    msg.textContent = v.texte;
-    corps.insertBefore(msg, corps.firstChild);
-  }
-
-  /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : cases « Apparence du thème
-   * Nova » et « Badges Nova » (séparées le 2026-11-07, utilisateur) ajoutées à la liste de WIMS. Cochées, l'envoi envoie
-   * d'abord les autres cases à WIMS (s'il y en a), puis ouvre l'accueil avec nova_propager=apparence|badges|tout :
-   * header.phtml (module de confiance) y recopie les blocs Nova choisis de la feuille de la structure dans celles de ses
-   * zones et pose #nova-propage, message affiché ici en tête de page. */
-  function propagationNova() {
-    var fait = document.getElementById('nova-propage');
-    var corps = document.querySelector('.wimsbody');
-    if (fait && fait.textContent.trim() && corps) {
-      var msg = document.createElement('div');
-      msg.className = 'wims_msg ' + (fait.getAttribute('data-etat') === 'erreur' ? 'alert' : 'success');
-      msg.setAttribute('role', 'status');
-      msg.textContent = fait.textContent.trim();
-      corps.insertBefore(msg, corps.firstChild);
-    }
-    var cases = document.querySelectorAll('.wimsbody input[type="checkbox"][name="propagate"]');
-    if (!cases.length || !cases[0].form || document.getElementById('propagate_nova_apparence')) return;
-    var form = cases[0].form, liste = cases[0].closest('ul');
-    var textes = document.getElementById('nova-textes');
-    var ajouter = function (partie, defaut) {
-      var li = document.createElement('li');
-      var c = document.createElement('input');
-      c.type = 'checkbox'; c.id = 'propagate_nova_' + partie; c.value = partie;
-      var label = document.createElement('label');
-      label.htmlFor = c.id;
-      label.textContent = (textes && textes.getAttribute('data-texte-propager-' + partie)) || defaut;
-      li.appendChild(c); li.appendChild(label);
-      if (liste) liste.appendChild(li); else cases[cases.length - 1].parentNode.appendChild(li);
-      return c;
-    };
-    var nova = [ajouter('apparence', 'Nova theme appearance'), ajouter('badges', 'Nova badges')];
-    // Tout cocher / tout décocher (2026-11-11, utilisateur) : deux boutons au-dessus de la liste, cases de Nova comprises ;
-    // chacun grisé quand il n'a plus d'effet.
-    if (liste) {
-      var toutes = function () { return liste.querySelectorAll('input[type="checkbox"]'); };
-      var barreTout = document.createElement('div');
-      barreTout.className = 'nova-tout';
-      var bouton = function (cle, defaut, valeur) {
-        var bt = document.createElement('button');
-        bt.type = 'button';
-        bt.className = 'nova-tout-' + (valeur ? 'cocher' : 'decocher');
-        bt.textContent = (textes && textes.getAttribute('data-texte-propager-' + cle)) || defaut;
-        bt.addEventListener('click', function () {
-          Array.prototype.forEach.call(toutes(), function (c) { if (!c.disabled) c.checked = valeur; });
-          etat();
-        });
-        barreTout.appendChild(bt);
-        return bt;
-      };
-      var cocher = bouton('tout', 'Select all', true), decocher = bouton('rien', 'Clear all', false);
-      var etat = function () {
-        var l = Array.prototype.slice.call(toutes());
-        cocher.disabled = l.every(function (c) { return c.checked || c.disabled; });
-        decocher.disabled = !l.some(function (c) { return c.checked; });
-      };
-      liste.addEventListener('change', etat);
-      liste.parentNode.insertBefore(barreTout, liste);
-      etat();
-    }
-    form.addEventListener('submit', function (e) {
-      var choisies = nova.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
-      if (!choisies.length) return;
-      // Propagation faite par header.phtml dans la requête même du formulaire (2026-11-09 ; avant : par l'accueil, où
-      // l'enseignant restait) : paramètre dans l'adresse (lue par QUERY_STRING), le formulaire part normalement.
-      var p = 'nova_propager=' + (choisies.length > 1 ? 'tout' : choisies[0]);
-      if ((form.getAttribute('method') || 'get').toLowerCase() === 'post') {
-        var cible = (form.getAttribute('action') || 'wims.cgi').replace(/[?&]nova_propager=[a-z]+/, '');
-        form.setAttribute('action', cible + (cible.indexOf('?') < 0 ? '?' : '&') + p);
-      } else {
-        var cache = form.querySelector('input[name="nova_propager"]') || document.createElement('input');
-        cache.type = 'hidden'; cache.name = 'nova_propager'; cache.value = p.split('=')[1];
-        form.appendChild(cache);
-      }
-    });
-  }
-
-  /* Page Réglages de Nova d'un portail ou d'un groupement (demande de l'utilisateur, 2026-11-07) : alerte en
-   * tête de la carte quand des zones dépendantes ont d'autres réglages Nova (#nova-ecarts, header.phtml), avec la liste
-   * repliée, « Appliquer ces réglages à toutes les zones » (propagation par l'accueil, réglages ENREGISTRÉS : bouton
-   * désactivé dès qu'un champ de la page change) et « Plus tard » (referme jusqu'à la prochaine visite). */
-  function ecartsZones() {
-    var src = document.getElementById('nova-ecarts');
-    if (!src) return;
-    var t = function (n) { return src.getAttribute('data-' + n) || ''; };
-    // Page Réglages de Nova (2026-11-08) : une seule alerte pour ses deux blocs ; « Appliquer » propage ce qui diffère.
-    var bloc = document.querySelector('.wimsbody .nova-reglages');
-    if (!bloc || bloc.querySelector('.nova-ecarts')) return;
-    var parties = ['apparence', 'badges'].filter(function (p) { return src.querySelector('li[data-partie="' + p + '"]'); });
-    if (!parties.length) return;
-    var partie = parties.length > 1 ? 'tout' : parties[0];
-    var vus = {};
-    var zones = [].filter.call(src.querySelectorAll('li[data-partie]'), function (z) {
-      var k = z.textContent.trim();
-      if (vus[k]) return false;
-      vus[k] = true;
-      return true;
-    });
-    (function () {
-      var el = function (balise, classe, texte) {
-        var e = document.createElement(balise);
-        if (classe) e.className = classe;
-        if (texte != null) e.textContent = texte;
-        return e;
-      };
-      var n = zones.length;
-      var alerte = el('div', 'nova-ecarts wims_msg warning');
-      alerte.setAttribute('role', 'status');
-      alerte.appendChild(el('p', 'nova-ecarts-titre', (n === 1 ? t('titre1') : t('titre').replace('%n', n)).replace('%q', t('quoi-' + partie))));
-      alerte.appendChild(el('p', '', n === 1 ? t('texte1') : t('texte')));
-      var details = el('details', 'nova-app-detail');
-      details.appendChild(el('summary', '', t('voir')));
-      var ul = el('ul');
-      [].forEach.call(zones, function (z) { ul.appendChild(el('li', '', z.textContent)); });
-      details.appendChild(ul);
-      alerte.appendChild(details);
-      var actions = el('p', 'nova-ecarts-actions');
-      var appliquer = el('a', 'wims_button', t('appliquer'));
-      // Propagation faite par header.phtml sur la page même (2026-11-09) : lien de la rubrique + nova_propager.
-      var rubrique = document.querySelector('#wimsmenumodubox .nova_reglages > a');
-      appliquer.href = rubrique ? rubrique.href.split('#')[0] + '&nova_propager=' + partie + '#nova-reglages' : lienAccueil('&nova_propager=' + partie);
-      var plusTard = el('button', 'nova-ecarts-plus-tard wims_button wims_secondary_button', t('plus-tard'));
-      plusTard.type = 'button';
-      plusTard.addEventListener('click', function () { alerte.remove(); });
-      actions.appendChild(appliquer); actions.appendChild(plusTard);
-      alerte.appendChild(actions);
-      var attente = el('p', 'nova-ecarts-attente', t('attente'));
-      attente.hidden = true;
-      alerte.appendChild(attente);
-      bloc.insertBefore(alerte, bloc.firstChild);
-      var modifie = function (e) {
-        if (alerte.contains(e.target)) return;
-        appliquer.setAttribute('aria-disabled', 'true');
-        appliquer.removeAttribute('href');
-        attente.hidden = false;
-      };
-      bloc.addEventListener('input', modifie);
-      bloc.addEventListener('change', modifie);
-    })();
-  }
-
-  /* Pied de page (demande de l'utilisateur, 2026-10-08) : CGU et Aide (_widgets/footer.phtml, barre .nova-pied au format
-   * du pied de page de l'enseignant) rejoignent, sur l'accueil de l'enseignant, sa barre #wimsmenubox.footer. */
-  function piedDePage() {
-    var barre = document.querySelector('#wimsmenubox.footer');
-    var pied = document.querySelector('body > .nova-pied');
-    var groupe = pied && pied.querySelector('.nova-pied-groupe');
-    if (!barre || !groupe) return;
-    barre.appendChild(groupe);
-    pied.parentNode.removeChild(pied);
-  }
-
-  /* Élève sur une page sans menu latéral (préférences d'affichage, liste des examens, devoirs libres ; 2026-11-11,
-   * utilisateur) : Nova crée un menu vide, que profilLateral remplit avec le menu du compte (nom, « Changer le mot de
-   * passe », déconnexion) ; le bouton ☰ (initialiser) l'ouvre, comme sur les autres pages. Réglage « Menus du thème
-   * standard » : rien (le compte reste dans la barre). */
-  function menuEleve() {
-    var corps = document.getElementById('wimsbodybox');
-    var barre = document.getElementById('wimstopbox');
-    if (!corps || !barre || document.getElementById('wimsmenumodubox') || !document.getElementById('nova-eleve')) return;
-    if (standard('menus') || !barre.querySelector('a.account')) return;
-    var menu = document.createElement('div');
-    menu.id = 'wimsmenumodubox';
-    menu.className = 'nova-menu-cree';
-    var contenu = document.createElement('div');
-    contenu.className = 'modubox_content';
-    menu.appendChild(contenu);
-    corps.insertBefore(menu, corps.firstChild);
-  }
-
-  function placerMenu() {
-    var menu = document.getElementById('wimsmenumodubox');
-    // Classe connue du jeu Font_Awesome de WIMS ; le jeu default reste sans icone.
-    if (menu) {
-      var suivi = menu.querySelector('.nova_suivi > a');
-      if (suivi) suivi.classList.add('eye');
-      // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
-      var reglagesNova = menu.querySelector('.nova_reglages > a');
-      if (reglagesNova) { reglagesNova.classList.add('config_module'); tagNouveau(reglagesNova); }
-    }
-    var corps = document.getElementById('wimsbodybox');
-    if (!menu || !corps || menu.parentElement === corps) return;
-    // Le menu doit etre un enfant de #wimsbodybox. WIMS le met dans #wimspagebox sur la page de reponse d'un
-    // exercice de feuille ; un module au HTML desequilibre (adm/class/sequence, job=addseq : </div> en trop)
-    // fait refermer #wimsbodybox trop tot par le navigateur, et le menu finit sous la page, enfant de <body>.
-    // data-nova-deplace garde l'origine (relevee par l'inventaire du banc).
-    var origine = menu.parentElement;
-    menu.setAttribute('data-nova-deplace', origine === document.body ? 'body' : (origine.id || origine.tagName.toLowerCase()));
-    var page = document.getElementById('wimspagebox');
-    if (page && !page.contains(corps) && page.parentElement !== corps && !corps.contains(page)) corps.appendChild(page);
-    corps.insertBefore(menu, page && page.parentElement === corps ? page : corps.firstChild);
-  }
-
-  /* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B ; premier badge : Fidélité).
-   *  - « Mes badges » dans le menu du compte de l'élève, sur toutes ses pages, quand --nova-badges vaut oui
-   *    (pas en session d'examen) : lien vers l'accueil de la classe, qui ouvre la fenêtre (#nova-badges) ;
-   *  - sur l'accueil (user.phtml) : pastille à côté de « Mes notes », annonce d'un nouveau niveau, et données
-   *    du badge (#nova-badges, calculées par _procs/badges.awk) pour la fenêtre, ouverte d'un toucher. */
-  function badges() {
-    var racine = document.documentElement;
-    var actif = getComputedStyle(racine).getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
-    if (getComputedStyle(racine).getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
-    var maison = document.querySelector('#wimstopbox .class_home a[href]');
-    var surAccueil = !!document.getElementById('nova-badges');
-    // « Mes badges » juste après « Mes notes », dans le même menu (le menu latéral ; demande de l'utilisateur,
-    // 2026-10-07). Classe « heart » : icône cœur du jeu Font_Awesome de WIMS (sans elle, un tiret), rien
-    // avec le jeu « default ».
-    var notes = document.querySelector('#wimsmenumodubox .menuitem > a.myscore');
-    var textes = document.getElementById('nova-textes');
-    if (actif && notes && document.getElementById('nova-eleve') && (maison || surAccueil) &&
-        !document.body.classList.contains('nova-examen-session') && !document.querySelector('.nova-mes-badges')) {
-      var item = notes.parentNode.cloneNode(false);
-      item.removeAttribute('id');
-      var lien = document.createElement('a');
-      lien.className = 'heart nova-mes-badges';
-      lien.href = maison ? maison.href.split('#')[0] + '#nova-badges' : '#nova-badges';   // accueil : sans lien de retour
-      lien.textContent = (textes && textes.getAttribute('data-texte-mes-badges')) || 'My badges';
-      item.appendChild(lien);
-      notes.parentNode.parentNode.insertBefore(item, notes.parentNode.nextSibling);
-    }
-
-    var d = document.getElementById('nova-badges');
-    if (!d) return;
-    var masquer = document.querySelector('.nova-badge-annonce .nova-badge-masquer');
-    if (masquer) masquer.addEventListener('click', function () { masquer.closest('.nova-badge-annonce').remove(); });
-    var fenetre = null;
-    var ouvrir = function (badge) {
-      if (!fenetre) fenetre = fenetreBadges(d);
-      if (badge && fenetre.choisir) fenetre.choisir(badge);
-      if (typeof fenetre.showModal === 'function') { if (!fenetre.open) fenetre.showModal(); }
-      else fenetre.setAttribute('open', '');
-    };
-    document.addEventListener('click', function (e) {
-      var a = e.target.closest && e.target.closest('a[href$="#nova-badges"]');
-      if (!a) return;
-      e.preventDefault();
-      ouvrir(a.getAttribute('data-badge'));
-    });
-    if (location.hash === '#nova-badges') {
-      try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* adresse gardée */ }
-      ouvrir();
-    }
-  }
-  // Fenêtre « Mes badges » : un onglet par badge proposé (Régularité, Persévérance, Échauffement ; maquette du 2026-10-09). Chaque
-  // panneau : image et niveau, règle, chiffres, ce qui reste, les 8 niveaux. Données de user.phtml (#nova-badges).
-  /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 3,5:1),
-   * débloquée par le niveau d'un badge choisi par l'enseignant (--nova-couleur-badge, --nova-couleur-niveau), puis 8 dégradés
-   * pré-établis à un niveau plus élevé du même badge (--nova-couleur-degrade ; maquette v2 validée le 2026-11-07). Choix gardé
-   * pour toute la structure sur le serveur (.nova_couleur_<login>, header.phtml) et, pour l'appliquer avant l'affichage de
-   * chaque page (htmlheader.phtml), dans localStorage sous nova-couleur|<structure ou classe>|<login> : « #accent » ou
-   * « #accent #seconde » (dégradé : html.nova-degrade et --nova-degrade, _css/couleur.css). Le choix se fait dans la fenêtre
-   * « Ma couleur », ouverte par le menu Profil (sur l'accueil seulement : l'envoi au serveur passe par l'accueil). */
-  // Palette (2026-11-07, utilisateur : 10 couleurs, du spectre entier, claires et foncées, texte blanc lisible ≥ 3,5:1).
-  var PALETTE = [['corail', '#E0442E'], ['orange', '#D35400'], ['ambre', '#B87400'], ['vert', '#1E9447'], ['sapin', '#2E6B3A'],
-    ['turquoise', '#008C95'], ['azur', '#0A7BD6'], ['nuit', '#1F3A6E'], ['violet', '#7B1FE0'], ['rose', '#D1106B']];
-  // Dégradés : deux couleurs de la palette, texte blanc ≥ 3,8:1 sur toute la longueur (calculé le 2026-11-07).
-  var DEGRADES = [['crepuscule', 'corail', 'violet'], ['braise', 'orange', 'rose'], ['framboise', 'rose', 'violet'], ['soleil', 'ambre', 'corail'],
-    ['ocean', 'azur', 'turquoise'], ['aurore', 'turquoise', 'violet'], ['foret', 'sapin', 'turquoise'], ['etoilee', 'nuit', 'violet']];
-  function hexPalette(nom) { var c = PALETTE.filter(function (p) { return p[0] === nom; })[0]; return c ? c[1] : ''; }
-  function couleursDe(nom) {   // [accent, seconde] ; [] = couleur de la classe
-    var g = DEGRADES.filter(function (x) { return x[0] === nom; })[0];
-    if (g) return [hexPalette(g[1]), hexPalette(g[2])];
-    var c = hexPalette(nom);
-    return c ? [c] : [];
-  }
-  function cleCouleur() {
-    var meta = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.content : ''; };
-    var racine = meta('nova-structure') || meta('nova-classe').split('/')[0], u = meta('nova-utilisateur');
-    return racine && u ? 'nova-couleur|' + racine + '|' + u : '';
-  }
-  function poserCouleur(nom) {
-    var c = couleursDe(nom), cle = cleCouleur(), r = document.documentElement;
-    if (c[0]) r.style.setProperty('--nova-accent', c[0]); else r.style.removeProperty('--nova-accent');
-    if (c[1]) { r.style.setProperty('--nova-degrade', 'linear-gradient(90deg, ' + c[0] + ', ' + c[1] + ')'); r.classList.add('nova-degrade'); }
-    else { r.style.removeProperty('--nova-degrade'); r.classList.remove('nova-degrade'); }
-    try { if (cle) { if (c[0]) localStorage.setItem(cle, c.join(' ')); else localStorage.removeItem(cle); } } catch (e) { /* sans stockage : cette page seulement */ }
-  }
-  // Droits de l'élève d'après l'accueil (#nova-badges) : 0 rien, 1 couleur, 2 dégradés ; null = récompense non proposée.
-  function droitsCouleur(d) {
-    if (!d) return null;
-    var reg = (d.getAttribute('data-reglages') || '').split(/\s+/), badge = reg[9] || 'aucun';
-    if (badge === 'aucun') return null;
-    var ligne = (d.getAttribute('data-' + badge) || '').split(/\s+/);
-    if (ligne[1] !== 'on') return null;
-    var niveau = +ligne[2] || 0, requis = +reg[10] || 2, requisDeg = +reg[11] || requis + 2;
-    var court = { fidelite: 'fid', perseverance: 'per', echauffement: 'ech', top: 'top' };
-    // Dégradés : badge à part (12e champ, 2026-11-08 ; absent = celui de la couleur, aucun = pas de dégradés). Ils ne
-    // s'ouvrent qu'une fois la couleur débloquée.
-    var badgeDeg = reg[12] || badge;
-    if (badgeDeg === badge) requisDeg = Math.max(requis, requisDeg);
-    var ligneDeg = badgeDeg === badge ? ligne : (d.getAttribute('data-' + badgeDeg) || '').split(/\s+/);
-    var niveauDeg = badgeDeg !== 'aucun' && ligneDeg[1] === 'on' ? +ligneDeg[2] || 0 : -1;
-    var degOk = niveauDeg >= 0 && niveauDeg >= requisDeg;
-    return { badge: badge, nomBadge: d.getAttribute('data-' + court[badge] + '-nom') || badge, niveau: niveau, requis: requis, requisDeg: requisDeg,
-      badgeDeg: niveauDeg >= 0 ? badgeDeg : 'aucun', nomBadgeDeg: d.getAttribute('data-' + court[badgeDeg] + '-nom') || badgeDeg,
-      etat: niveau >= requis ? (degOk ? 2 : 1) : 0 };
-  }
-  function cleMenuCouleur() { var c = cleCouleur(); return c ? c + '|menu' : ''; }
-  function lireMenuCouleur() { try { var c = cleMenuCouleur(); return c ? JSON.parse(localStorage.getItem(c) || 'null') : null; } catch (e) { return null; } }
-  function garderMenuCouleur(v) { try { var c = cleMenuCouleur(); if (c) { if (v) localStorage.setItem(c, JSON.stringify(v)); else localStorage.removeItem(c); } } catch (e) { /* rien */ } }
-  // Accueil de l'élève (#nova-couleur, user.phtml) : la valeur du serveur fait foi (vide : badges ou réglage coupés).
-  // Puis l'entrée « Ma couleur » du menu Profil, sur toutes les pages ordinaires (mémoire de l'accueil).
-  function couleurPerso() {
-    var source = document.getElementById('nova-couleur'), d = document.getElementById('nova-badges');
-    // Badges coupés dans cette zone (data-bdg) : la couleur choisie ailleurs dans la structure reste, l'entrée du menu part.
-    var bdg = source && source.getAttribute('data-bdg') === 'on';
-    if (bdg) poserCouleur(source.getAttribute('data-couleur') || '');
-    if (!document.getElementById('nova-eleve')) return;
-    var memo = lireMenuCouleur();
-    if (source) {
-      var dr = bdg && droitsCouleur(d);
-      if (!dr) { memo = null; garderMenuCouleur(null); }
-      else {
-        memo = { etat: dr.etat, vu: memo && typeof memo.vu === 'number' ? memo.vu : 0,
-          titre: d.getAttribute('data-coul-menu') || 'My colour', nouveau: d.getAttribute('data-coul-nouveau') || '' };
-        garderMenuCouleur(memo);
-      }
-    }
-    if (!memo) return;
-    var barre = document.getElementById('wimstopbox');
-    if (barre && !barreOrdinaire(barre)) return;
-    var profil = document.querySelector('#wimsmenumodubox .nova-profil');
-    if (!profil || profil.querySelector('.profil_couleur')) return;
-    var item = document.createElement('div');
-    item.className = 'menuitem profil_couleur';
-    var a = document.createElement('a');
-    a.className = 'tint';   // Font_Awesome : goutte (« .menuitem .tint »), rien avec le jeu « default »
-    // Toujours une adresse wims.cgi : « Liens externes masqués aux élèves » (--nova-masques-eleves) cache toute rubrique qui
-    // contient un lien hors de wims.cgi ; un simple « #… » y faisait disparaître tout le Profil (vécu, portail, 2026-11-07).
-    a.href = lienAccueil('') + '#nova-ma-couleur';
-    var span = document.createElement('span');
-    span.textContent = memo.titre;
-    a.appendChild(span);
-    if (memo.etat > memo.vu && memo.nouveau) {
-      a.classList.add('nova-couleur-neuf');
-      var n = document.createElement('span');
-      n.className = 'nova-couleur-nouveau';
-      n.textContent = memo.nouveau;
-      a.appendChild(n);
-    }
-    item.appendChild(a);
-    var avant = profil.querySelector('.profil_avatar') || profil.querySelector('.nova-profil-nom');
-    profil.insertBefore(item, avant ? avant.nextSibling : profil.firstChild);
-    if (!d) return;
-    var fenetre = null;
-    var ouvrir = function () {
-      if (!fenetre) fenetre = fenetreCouleur(d);
-      if (typeof fenetre.showModal === 'function') { if (!fenetre.open) fenetre.showModal(); } else fenetre.setAttribute('open', '');
-      var m = lireMenuCouleur();
-      if (m) { m.vu = Math.max(m.vu || 0, m.etat); garderMenuCouleur(m); }
-      var neuf = document.querySelector('.profil_couleur .nova-couleur-nouveau');
-      if (neuf) { neuf.remove(); a.classList.remove('nova-couleur-neuf'); }
-    };
-    window.novaOuvrirCouleur = ouvrir;
-    document.addEventListener('click', function (e) {
-      var l = e.target.closest && e.target.closest('a[href$="#nova-ma-couleur"]');
-      if (!l) return;
-      e.preventDefault();
-      var badgesOuverte = document.querySelector('dialog.nova-badges-fenetre[open]:not(.nova-couleur-fenetre)');
-      if (badgesOuverte && badgesOuverte.close) badgesOuverte.close();
-      ouvrir();
-    });
-    if (location.hash === '#nova-ma-couleur') {
-      try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* adresse gardée */ }
-      ouvrir();
-    }
-  }
-  // Fenêtre « Ma couleur » (maquette v2 validée le 2026-11-07) : couleurs unies, couleur de la classe, dégradés.
-  function fenetreCouleur(d) {
-    var a = function (n) { return d.getAttribute('data-' + n) || ''; };
-    var el = function (balise, classe, texte) {
-      var e = document.createElement(balise);
-      if (classe) e.className = classe;
-      if (texte != null) e.textContent = texte;
-      return e;
-    };
-    var dr = droitsCouleur(d) || { etat: 0, requis: 2, requisDeg: 4, nomBadge: '' };
-    var niveaux = a('niveaux').split(',');
-    var nomNiv = function (n) { return niveaux[n - 1] || String(n); };
-    var f = el('dialog', 'nova-badges-fenetre nova-couleur-fenetre');
-    f.setAttribute('aria-labelledby', 'nova-couleur-titre');
-    var tete = el('div', 'nova-badges-entete');
-    var h = el('h2', '', a('coul-menu'));
-    h.id = 'nova-couleur-titre';
-    var fermer = el('button', 'nova-badges-fermer', '\u00d7');
-    fermer.type = 'button';
-    fermer.setAttribute('aria-label', a('fermer'));
-    fermer.addEventListener('click', function () { f.close ? f.close() : f.removeAttribute('open'); });
-    tete.appendChild(h); tete.appendChild(fermer);
-    f.appendChild(tete);
-    f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
-    var corps = el('div', 'nova-couleur-corps');
-    f.appendChild(corps);
-    var verrou = function (texte, n, nomBadge) {
-      var v = el('p', 'nova-couleur-verrou', texte.replace('%s', nomNiv(n)).replace('%b', nomBadge || dr.nomBadge));
-      return v;
-    };
-    var actuelle = (document.getElementById('nova-couleur') || d).getAttribute('data-couleur') || '';
-    var etat = el('p', 'nova-couleur-etat');
-    etat.setAttribute('aria-live', 'polite');
-    var boutons = [];
-    var nomsU = a('coul-noms').split(','), nomsD = a('coul-degrades-noms').split(',');
-    var nomDe = function (nom) {
-      var i = PALETTE.findIndex(function (p) { return p[0] === nom; });
-      if (i >= 0) return nomsU[i] || nom;
-      i = DEGRADES.findIndex(function (p) { return p[0] === nom; });
-      return i >= 0 ? nomsD[i] || nom : '';
-    };
-    var choisir = function (nom, envoyer) {
-      actuelle = nom;
-      boutons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-couleur') === nom ? 'true' : 'false'); });
-      var n = nomDe(nom);
-      etat.textContent = n ? a('coul-choisie').replace('%s', n) : '';
-      poserCouleur(nom);
-      var source = document.getElementById('nova-couleur');
-      if (source) source.setAttribute('data-couleur', nom === 'classe' ? '' : nom);
-      if (envoyer) { var u = lienAccueil('&nova_couleur=' + nom); if (u) fetch(u, { credentials: 'same-origin' }).catch(function () {}); }
-    };
-    // Couleur unie
-    var b1 = el('section', 'nova-couleur-bloc');
-    b1.appendChild(el('h3', '', a('coul-unie')));
-    if (dr.etat < 1) b1.appendChild(verrou(a('coul-verrou'), dr.requis));
-    else {
-      b1.appendChild(el('p', 'nova-couleur-aide', a('coul-aide')));
-      var liste = el('div', 'nova-couleur-liste');
-      PALETTE.forEach(function (p, i) {
-        var b = el('button', 'nova-couleur-pastille');
-        b.type = 'button';
-        b.style.background = p[1];
-        b.setAttribute('data-couleur', p[0]);
-        b.setAttribute('aria-label', nomsU[i] || p[0]);
-        b.title = nomsU[i] || p[0];
-        b.addEventListener('click', function () { choisir(p[0], true); });
-        boutons.push(b);
-        liste.appendChild(b);
-      });
-      b1.appendChild(liste);
-      var classe = el('button', 'nova-couleur-classe', a('coul-classe'));
-      classe.type = 'button';
-      classe.addEventListener('click', function () { choisir('classe', true); });
-      b1.appendChild(classe);
-    }
-    corps.appendChild(b1);
-    // Dégradés
-    var b2 = el('section', 'nova-couleur-bloc');
-    b2.appendChild(el('h3', '', a('coul-degrades')));
-    b2.appendChild(el('p', 'nova-couleur-aide', a('coul-degrades-aide')));
-    if (dr.etat < 2) b2.appendChild(dr.badgeDeg && dr.badgeDeg !== dr.badge ? verrou(a('coul-verrou-degrade2') || a('coul-verrou-degrade'), dr.requisDeg, dr.nomBadgeDeg) : verrou(a('coul-verrou-degrade'), dr.requisDeg));
-    else {
-      var grille = el('div', 'nova-couleur-degrades');
-      DEGRADES.forEach(function (g, i) {
-        var b = el('button', 'nova-couleur-degrade', nomsD[i] || g[0]);
-        b.type = 'button';
-        b.style.background = 'linear-gradient(90deg, ' + hexPalette(g[1]) + ', ' + hexPalette(g[2]) + ')';
-        b.setAttribute('data-couleur', g[0]);
-        b.addEventListener('click', function () { choisir(g[0], true); });
-        boutons.push(b);
-        grille.appendChild(b);
-      });
-      b2.appendChild(grille);
-    }
-    corps.appendChild(b2);
-    corps.appendChild(etat);
-    choisir(actuelle, false);
-    etat.textContent = '';
-    document.body.appendChild(f);
-    return f;
-  }
-  // Fenêtre des badges, onglet du badge qui débloque la couleur : rappel de la récompense et lien vers « Ma couleur ».
-  // cle : badge de l'onglet ; la carte n'y montre que ses paliers (couleur, dégradés : badges à part depuis le 2026-11-08).
-  function carteCouleur(d, cle) {
-    var a = function (n) { return d.getAttribute('data-' + n) || ''; };
-    var dr = droitsCouleur(d);
-    var niveaux = a('niveaux').split(',');
-    var nomNiv = function (n) { return niveaux[n - 1] || String(n); };
-    var carte = document.createElement('div');
-    carte.className = 'nova-couleur-carte' + (dr && dr.etat ? '' : ' nova-couleur-verrou');
-    var h = document.createElement('p');
-    h.className = 'nova-couleur-titre';
-    h.textContent = a('coul-titre');
-    carte.appendChild(h);
-    if (!dr) return carte;
-    var paliers = [];
-    if (!cle || cle === dr.badge) paliers.push([a('coul-recompense'), dr.requis, dr.etat >= 1]);
-    if (dr.badgeDeg !== 'aucun' && (!cle || cle === dr.badgeDeg)) paliers.push([dr.badgeDeg === dr.badge ? a('coul-recompense-deg') : (a('coul-recompense-deg2') || a('coul-recompense-deg')), dr.requisDeg, dr.etat >= 2]);
-    paliers.forEach(function (x) {
-      var p = document.createElement('p');
-      p.className = 'nova-couleur-aide' + (x[2] ? ' nova-couleur-acquis' : '');
-      p.textContent = x[0].replace('%s', nomNiv(x[1]));
-      carte.appendChild(p);
-    });
-    if (dr.etat >= 1) {
-      var l = document.createElement('a');
-      l.className = 'nova-couleur-choisir';
-      l.href = '#nova-ma-couleur';
-      l.textContent = a('coul-choisir');
-      carte.appendChild(l);
-    }
-    return carte;
-  }
-
-  /* Avatar de l'élève (demande de l'utilisateur, maquette validée le 2026-11-07) : Avataaars de DiceBear (js/avatar.js,
-   * chargé seulement quand il faut dessiner). Jetons gagnés en réussissant des exercices, éléments ouverts avec eux ou
-   * par les badges : tout est calculé et vérifié sur le serveur (_procs/avatar.awk, _widgets/avatar.phtml) ; ici,
-   * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
-   * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
-   * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
-  var AVATAR_CATEGORIES = ['top', 'hatColor', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
-    'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
-  function cleAvatar() {
-    var cle = cleCouleur();
-    return cle ? cle.replace(/^nova-couleur\|/, 'nova-avatar|') : '';
-  }
-  function lireAvatar() {
-    try { return JSON.parse(localStorage.getItem(cleAvatar()) || 'null'); } catch (e) { return null; }
-  }
-  function garderAvatar(v) {
-    try { var cle = cleAvatar(); if (!cle) return; if (v) localStorage.setItem(cle, JSON.stringify(v)); else localStorage.removeItem(cle); } catch (e) { /* sans stockage : rien */ }
-  }
-  // Fonds en dégradé du catalogue (récompenses de badges ; maquette v3 validée le 2026-11-07).
-  // Coiffures qui sont des chapeaux : seules à montrer l'onglet « Chapeau (couleur) » (hatColor).
-  var AVATAR_CHAPEAUX = ['hat', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04'];
-  function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0; }
-  function porteLunettes(c) { return !!c.accessories && c.accessories !== 'aucun' && c.accessories !== 'eyepatch'; }
-  function porteBarbe(c) { return !!c.facialHair && c.facialHair !== 'aucun'; }
-  // Onglets de couleur montrés seulement quand ils changent quelque chose (2026-11-07, utilisateur) : chapeau porté,
-  // lunettes portées ; cheveux cachés par un chapeau, sauf barbe (elle prend la couleur des cheveux).
-  function ongletUtile(k, c) {
-    if (k === 'hatColor') return porteChapeau(c);
-    if (k === 'accessoriesColor') return porteLunettes(c);
-    if (k === 'hairColor') return !porteChapeau(c) || porteBarbe(c);
-    return true;
-  }
-  var AVATAR_DEGRADES = { coucher: ['ff6b6b', 'ffd60a'], ocean: ['00b4d8', '3a86ff'], aurore: ['06d6a0', '8338ec'],
-    bonbon: ['ff006e', 'ffafcc'], lagon: ['9ef01a', '00b4d8'], galaxie: ['1d3557', '8338ec'] };
-  // Choix « top.bob,eyes.happy,… » -> options de DiceBear.
-  function optionsAvatar(choix) {
-    var c = {};
-    (choix || '').split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) c[e.slice(0, i)] = e.slice(i + 1); });
-    var o = { seed: 'nova', nose: ['default'], topProbability: 100 };
-    ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'clothing', 'clothesColor', 'clothingGraphic', 'backgroundColor'].forEach(function (k) {
-      if (c[k]) o[k] = [c[k]];
-    });
-    // Couleur du chapeau (2026-11-07) : la sienne, sinon celle du vêtement (avatars enregistrés avant).
-    if (c.hatColor || c.clothesColor) o.hatColor = [c.hatColor || c.clothesColor];
-    if (AVATAR_DEGRADES[c.backgroundColor]) { o.backgroundColor = AVATAR_DEGRADES[c.backgroundColor]; o.backgroundType = ['gradientLinear']; o.backgroundRotation = [135]; }
-    if (c.accessoriesColor) o.accessoriesColor = [c.accessoriesColor];
-    if (!c.accessories || c.accessories === 'aucun') o.accessoriesProbability = 0; else { o.accessories = [c.accessories]; o.accessoriesProbability = 100; }
-    if (!c.facialHair || c.facialHair === 'aucun') o.facialHairProbability = 0;
-    else { o.facialHair = [c.facialHair]; o.facialHairProbability = 100; if (c.hairColor) o.facialHairColor = [c.hairColor]; }
-    return o;
-  }
-  var avatarScript = null;
-  function chargerAvatar(src) {
-    if (window.novaAvatar) return Promise.resolve(window.novaAvatar);
-    if (!avatarScript) avatarScript = new Promise(function (ok, ko) {
-      var s = document.createElement('script');
-      s.src = src;
-      s.onload = function () { if (window.novaAvatar) ok(window.novaAvatar); else ko(new Error('avatar')); };
-      s.onerror = function () { avatarScript = null; ko(new Error('avatar')); };
-      document.head.appendChild(s);
-    });
-    return avatarScript;
-  }
-  function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
-  // Suivi en salle (js/suivi.js) : dessin d'un avatar d'élève d'après son choix enregistré.
-  window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(optionsAvatar(choix)); }); };
-  // Avatar de la barre : fenêtres ordinaires seulement (demande de l'utilisateur, 2026-11-07 : la place manque à côté
-  // de « Terminer » et du chronomètre). Pas en examen (session _exam, chronomètre, Terminer, pastille « Examen en
-  // cours »), ni dans une fenêtre d'aide, d'outil ou allégée.
-  function barreOrdinaire(barre) {
-    var session = (location.search.match(/[?&]session=([^&]*)/) || [])[1] || '';
-    if (/_(exam|tool|help|mhelp|light)/.test(session)) return false;
-    if (document.getElementById('wimsexam') || document.getElementById('wimsmhelp') || document.getElementById('wimslightpopup')) return false;
-    if (document.body.classList.contains('nova-examen') || document.body.classList.contains('nova-examen-session')) return false;
-    return !barre.querySelector('.menuitem.chrono, #chrono_exam, a.endexam, .nova-terminer, .nova-examencours');
-  }
-  // Pièce des jetons : logo de WIMS (img/logo-wims-blanc-v2.svg) cadré sur le centre de son cercle invisible
-  // (93,24 ; 153,74), pour qu'il tombe au centre du disque (demande de l'utilisateur, 2026-11-07, maquette A : pièce dorée).
-  var PIECE_SVG = '<svg viewBox="33.24 93.74 120 120" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="m 68.398532,197.05166 c 15.058946,8.57956 34.389228,-15.02121 34.822798,-43.94077 0.41266,-27.52561 -17.133498,-51.43258 -34.718402,-42.12108 -17.584914,9.31149 -4.468906,36.96212 20.148988,52.58723 23.724794,15.05825 52.099204,11.57787 53.173974,-7.95129 1.07477,-19.52916 -30.77363,-24.11146 -55.82547,-9.84162 -25.624939,14.59628 -32.660849,42.68797 -17.601888,51.26753 z"/></svg>';
-  function pieceJeton() {
-    var p = document.createElement('span');
-    p.className = 'nova-piece';
-    p.setAttribute('aria-hidden', 'true');
-    p.innerHTML = PIECE_SVG;
-    return p;
-  }
-  // Singulier pour 1, et pour 0 en français (« 0 pièce »).
-  function singulier(n) { return n === 1 || (n === 0 && /^fr/.test(document.documentElement.lang || 'fr')); }
-  function texteJetons(memo, n) { return ((singulier(n) ? memo.tJeton : memo.tJetons) || '%n').replace('%n', n); }
-  // Barre : compteur de jetons puis avatar, à droite. Gain depuis le dernier affichage (memo.vu) : animation A de la
-  // maquette (la pièce tourne, « +1 » monte), jouée même si les animations de Nova sont coupées (récompense ponctuelle,
-  // utilisateur), jamais si l'appareil demande de réduire les animations (CSS).
-  function poserAvatarBarre(memo, gain) {
-    var barre = document.getElementById('wimstopbox');
-    var ancien = document.querySelector('.nova-avatar-zone');
-    if (!barre || !memo || !memo.actif || !barreOrdinaire(barre) || (!memo.uri && typeof memo.jetons !== 'number')) { if (ancien) ancien.remove(); return; }
-    var zone = ancien || document.createElement('span');
-    zone.className = 'nova-avatar-zone';
-    zone.textContent = '';
-    if (typeof memo.jetons === 'number') {
-      var c = document.createElement('a');
-      c.className = 'nova-jetons-barre';
-      c.href = lienMonAvatar();
-      c.setAttribute('aria-label', texteJetons(memo, memo.jetons) + ' \u2013 ' + (memo.titre || ''));
-      c.title = texteJetons(memo, memo.jetons);
-      c.appendChild(pieceJeton());
-      var nb = document.createElement('span');
-      nb.className = 'nova-jetons-nb';
-      nb.textContent = gain ? memo.jetons - gain : memo.jetons;
-      c.appendChild(nb);
-      if (gain) {
-        var plus = document.createElement('span');
-        plus.className = 'nova-jetons-plus';
-        plus.setAttribute('aria-hidden', 'true');
-        plus.textContent = '+' + gain;
-        c.appendChild(plus);
-        c.classList.add('nova-jetons-gain');
-        setTimeout(function () { nb.textContent = memo.jetons; }, 550);
-        setTimeout(function () { c.classList.remove('nova-jetons-gain'); if (plus.parentNode) plus.remove(); }, 1600);
-      }
-      zone.appendChild(c);
-    }
-    if (memo.uri) {
-      var a = document.createElement('a');
-      a.className = 'nova-avatar-barre';
-      a.href = lienMonAvatar();
-      a.title = memo.titre || '';
-      a.setAttribute('aria-label', memo.titre || '');
-      var img = document.createElement('img');
-      img.src = memo.uri;
-      img.alt = '';
-      a.appendChild(img);
-      zone.appendChild(a);
-    }
-    if (!ancien) barre.appendChild(zone);
-  }
-  function avatarBarre() {
-    if (!document.getElementById('nova-eleve') || !cleAvatar()) return;
-    var source = document.getElementById('nova-avatar-barre');
-    var memo = lireAvatar();
-    var gain = 0;
-    if (source) {
-      var actif = source.getAttribute('data-actif') === 'oui';
-      var choix = source.getAttribute('data-choix') || '';
-      if (!actif) { memo = null; garderAvatar(null); }
-      else {
-        var j = source.getAttribute('data-jetons');
-        var ancien = memo || {};
-        memo = { actif: 1, choix: choix, titre: source.getAttribute('data-titre') || '', uri: ancien.choix === choix ? ancien.uri : '',
-          tJeton: source.getAttribute('data-t-jeton') || '', tJetons: source.getAttribute('data-t-jetons') || '',
-          jetons: /^[0-9]+$/.test(j || '') ? +j : ancien.jetons, vu: ancien.vu };
-        if (typeof memo.jetons === 'number') {
-          if (typeof memo.vu === 'number' && memo.jetons > memo.vu) gain = memo.jetons - memo.vu;
-          memo.vu = memo.jetons;
-        }
-        garderAvatar(memo);
-        if (choix && !memo.uri) chargerAvatar(source.getAttribute('data-script')).then(function (dessin) {
-          memo.uri = dessin(optionsAvatar(choix));
-          garderAvatar(memo);
-          poserAvatarBarre(memo);
-        }).catch(function () {});
-      }
-    }
-    if (!memo || !memo.actif) return;
-    poserAvatarBarre(memo, gain);
-    // Menu Profil : « Mon avatar » après le nom.
-    var profil = document.querySelector('#wimsmenumodubox .nova-profil');
-    if (profil && !profil.querySelector('.profil_avatar')) {
-      var d = document.createElement('div');
-      d.className = 'menuitem profil_avatar';
-      var a = document.createElement('a');
-      a.href = lienMonAvatar();
-      a.className = 'account';   // Font_Awesome : silhouette (\f007, « .menuitem .account ») ; « user » perdait contre le tiret générique
-      var span = document.createElement('span');
-      span.textContent = memo.titre;
-      a.appendChild(span);
-      d.appendChild(a);
-      var nom = profil.querySelector('.nova-profil-nom');
-      profil.insertBefore(d, nom ? nom.nextSibling : profil.firstChild);
-    }
-  }
-
-  function avatarPage() {
-    var d = document.getElementById('nova-avatar');
-    if (!d) return;
-    var t = function (n) { return d.getAttribute('data-t-' + n) || ''; };
-    var el = function (balise, classe, texte) {
-      var e = document.createElement(balise);
-      if (classe) e.className = classe;
-      if (texte != null) e.textContent = texte;
-      return e;
-    };
-    var etat = {};
-    var lire = function (source) {
-      var j = (source.getAttribute('data-jetons') || '').split(' ');
-      etat.jetons = { dispo: +j[3] || 0, total: +j[4] || 0, jour: +j[5] || 0, max: +j[6] || 10, reste: +j[7] || 1, pc: +j[8] || 0 };
-      etat.message = (source.getAttribute('data-message') || '').split(' ')[1] || '-';
-      var c = (source.getAttribute('data-choix') || '').split(' ')[1] || '-';
-      etat.enregistre = c === '-' ? '' : c;
-      etat.elements = {};
-      etat.ordre = {};
-      (source.getAttribute('data-elements') || '').split(' ').slice(1).forEach(function (x) {
-        var p = x.split(':');
-        if (p.length !== 3) return;
-        (etat.ordre[p[0]] = etat.ordre[p[0]] || []).push(p[1]);
-        etat.elements[p[0] + '.' + p[1]] = p[2];
-      });
-    };
-    lire(d);
-    var regles = (d.getAttribute('data-regles') || '7 15 10').split(' ');
-    var ouvert = function (e) { var s = etat.elements[e] || ''; return s === 'libre' || s === 'achete' || /-1$/.test(s); };
-    // Choix courant : l'enregistré, sinon un tirage fixe parmi les éléments libres (d'après le login : chacun le sien).
-    var choix = {};
-    var graine = 0;
-    (d.getAttribute('data-utilisateur') || '').split('').forEach(function (ch) { graine = (graine * 31 + ch.charCodeAt(0)) % 100003; });
-    AVATAR_CATEGORIES.forEach(function (k, i) {
-      var libres = (etat.ordre[k] || []).filter(function (v) { return etat.elements[k + '.' + v] === 'libre'; });
-      if (k === 'accessories' || k === 'facialHair') libres = ['aucun'];
-      if (k === 'hatColor') return;   // sans choix : couleur du vêtement
-      // Peau : tirage parmi les teintes naturelles (le jaune et l'orange restent au choix de l'élève).
-      if (k === 'skinColor') libres = libres.filter(function (v) { return v !== 'f8d25c' && v !== 'fd9841'; });
-      if (libres.length) choix[k] = libres[(graine + i * 7) % libres.length];
-    });
-    etat.enregistre.split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) choix[e.slice(0, i)] = e.slice(i + 1); });
-    if (!choix.clothingGraphic) choix.clothingGraphic = (etat.ordre.clothingGraphic || ['pizza'])[0];
-    if (!choix.hatColor && choix.clothesColor && ouvert('hatColor.' + choix.clothesColor)) choix.hatColor = choix.clothesColor;
-    var chaine = function (c) {
-      return AVATAR_CATEGORIES.filter(function (k) { return c[k] && ouvert(k + '.' + c[k]); }).map(function (k) { return k + '.' + c[k]; }).join(',');
-    };
-    var badgesAvatar = {};
-    (d.getAttribute('data-niveaux') || '').split(' ').slice(1).forEach(function (x) { var p = x.split(':'); badgesAvatar[p[0]] = [+p[1] || 0, p[2] === '1']; });
-    var noms = t('categories').split(',');
-    var niveaux = t('niveaux').split(',');
-    var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
-    // Élément de badge débloqué : image du badge au niveau qui l'a ouvert (dossiers d'images des badges, voir CLAUDE.md)
-    // et phrase « Débloqué grâce à ton badge … » (demande de l'utilisateur, 2026-11-07).
-    var IMAGES_BADGES = { fidelite: 'regularite/coeur', perseverance: 'perseverance/flamme', echauffement: 'entrainement/halteres', top: 'etoile/etoile' };
-    var baseTheme = (d.getAttribute('data-script') || '').replace(/js\/avatar\.js$/, '');
-    var badgeObtenu = function (s) { return /^badge-[a-z]+-[0-9]+-1$/.test(s); };
-    var texteBadge = function (s) { var p = s.split('-'); return t('badge-ok').replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])); };
-    var imageBadge = function (s) {
-      var p = s.split('-'), dossier = IMAGES_BADGES[p[1]], n = Math.max(1, Math.min(8, +p[2] || 1));
-      return dossier ? baseTheme + 'img/badges/' + dossier + '_0' + n + '.webp' : '';
-    };
-
-    // Squelette.
-    var page = el('div', 'nova-avatar-editeur');
-    var cote = el('div', 'nova-avatar-apercu');
-    var portrait = el('div', 'nova-avatar-portrait');
-    var grand = el('img');
-    grand.alt = '';
-    portrait.appendChild(grand);
-    // Aperçu d'un élément pas encore débloqué sur le grand portrait (maquette validée le 2026-11-07, utilisateur).
-    var cadre = el('div', 'nova-avatar-cadre');
-    cadre.appendChild(portrait);
-    cadre.appendChild(el('span', 'nova-avatar-pastille', t('apercu')));
-    cote.appendChild(cadre);
-    var ligneJetons = el('p', 'nova-avatar-jetons');
-    var jeton = pieceJeton();
-    var nbJetons = el('span', 'nova-avatar-nb');
-    ligneJetons.appendChild(jeton);
-    ligneJetons.appendChild(nbJetons);
-    cote.appendChild(ligneJetons);
-    var jauge = el('div', 'nova-avatar-jauge');
-    jauge.setAttribute('aria-hidden', 'true');
-    var barreJauge = el('span');
-    jauge.appendChild(barreJauge);
-    cote.appendChild(jauge);
-    var prochain = el('p', 'nova-avatar-petit nova-avatar-prochain');
-    var jour = el('p', 'nova-avatar-petit');
-    cote.appendChild(prochain);
-    cote.appendChild(jour);
-    var actions = el('div', 'nova-avatar-actions');
-    var boutonEnr = el('button', 'wims_button nova-avatar-enregistrer', t('enregistrer'));
-    boutonEnr.type = 'button';
-    var boutonHasard = el('button', 'wims_button wims_secondary_button nova-avatar-hasard', t('hasard'));
-    boutonHasard.type = 'button';
-    actions.appendChild(boutonEnr);
-    actions.appendChild(boutonHasard);
-    cote.appendChild(actions);
-    var message = el('p', 'nova-avatar-message');
-    message.setAttribute('role', 'status');
-    cote.appendChild(message);
-    page.appendChild(cote);
-
-    var droite = el('div', 'nova-avatar-choix');
-    var onglets = el('div', 'nova-avatar-onglets');
-    onglets.setAttribute('role', 'tablist');
-    // Rangée des catégories défilante : fondu et flèche du côté où il reste des onglets (utilisateur, 2026-11-07).
-    // Flèches pour la souris et le doigt seulement (le clavier passe d'un onglet à l'autre).
-    var defile = el('div', 'nova-avatar-defile');
-    var flecheG = el('button', 'nova-avatar-fleche nova-avatar-fleche-g', '\u2039');
-    var flecheD = el('button', 'nova-avatar-fleche nova-avatar-fleche-d', '\u203a');
-    [flecheG, flecheD].forEach(function (f, i) {
-      f.type = 'button';
-      f.tabIndex = -1;
-      f.setAttribute('aria-hidden', 'true');
-      f.addEventListener('click', function () {
-        onglets.scrollBy({ left: (i ? 1 : -1) * Math.max(120, onglets.clientWidth * 0.7), behavior: animationsCoupees() ? 'auto' : 'smooth' });
-      });
-    });
-    defile.appendChild(flecheG);
-    defile.appendChild(onglets);
-    defile.appendChild(flecheD);
-    var bordsOnglets = function () {
-      var g = onglets.scrollLeft > 2, dr = onglets.scrollLeft + onglets.clientWidth < onglets.scrollWidth - 2;
-      defile.classList.toggle('nova-avatar-a-gauche', g);
-      defile.classList.toggle('nova-avatar-a-droite', dr);
-    };
-    onglets.addEventListener('scroll', bordsOnglets, { passive: true });
-    window.addEventListener('resize', bordsOnglets);
-    var note = el('p', 'nova-avatar-note');
-    var grille = el('div', 'nova-avatar-grille');
-    grille.setAttribute('role', 'tabpanel');
-    var confirmer = el('div', 'nova-avatar-confirmer');
-    confirmer.hidden = true;
-    var confImg = el('img');
-    confImg.alt = '';
-    var confTexte = el('p');
-    var confOui = el('button', 'wims_button', t('ouvrir'));
-    confOui.type = 'button';
-    var confNon = el('button', 'wims_button wims_secondary_button', t('annuler'));
-    confNon.type = 'button';
-    [confImg, confTexte, confOui, confNon].forEach(function (x) { confirmer.appendChild(x); });
-    var legende = el('p', 'nova-avatar-legende');
-    [['1', 'nova-avatar-prix', t('leg1')], ['2', 'nova-avatar-prix', t('leg2')], ['\u2605', 'nova-avatar-prix nova-avatar-etoile', t('leg3')]].forEach(function (l) {
-      var s = el('span');
-      s.appendChild(el('span', l[1], l[0]));
-      s.appendChild(document.createTextNode(' ' + l[2]));
-      legende.appendChild(s);
-    });
-    [defile, note, grille, confirmer, legende].forEach(function (x) { droite.appendChild(x); });
-    page.appendChild(droite);
-
-    var aide = el('div', 'nova-avatar-regles');
-    aide.appendChild(el('h2', '', t('regles')));
-    var ul = el('ul');
-    // regle3 (délai) retirée de l'affichage le 2026-11-07 (utilisateur) ; le délai compte toujours.
-    [t('regle1').replace('%n', regles[0]), t('regle2'), t('regle4').replace('%n', regles[2]), t('regle5')].forEach(function (x) { ul.appendChild(el('li', '', x)); });
-    aide.appendChild(ul);
-    d.appendChild(page);
-    d.appendChild(aide);
-
-    var catActive = 0, enAttente = null, occupe = false, dessin = null;
-    var rendu = function (c) { return dessin ? dessin(optionsAvatar(AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
-    var dire = function (texte) { message.textContent = texte || ''; };
-    // Éléments proposés : tous, sauf ceux d'un badge qui n'est pas activé dans la classe (utilisateur, 2026-11-07).
-    var proposes = function (k) {
-      return (etat.ordre[k] || []).filter(function (v) {
-        var p = (etat.elements[k + '.' + v] || '').split('-');
-        return p[0] !== 'badge' || (badgesAvatar[p[1]] || [0, false])[1];
-      });
-    };
-    var nbOuverts = function (k) { return proposes(k).filter(function (v) { return ouvert(k + '.' + v); }).length; };
-    var dessiner = function () {
-      var j = etat.jetons;
-      nbJetons.textContent = (singulier(j.dispo) ? t('jeton') : t('jetons')).replace('%n', j.dispo);
-      barreJauge.style.width = Math.max(0, Math.min(100, j.pc)) + '%';
-      prochain.textContent = j.reste === 1 ? t('prochain1') : t('prochain').replace('%n', j.reste);
-      jour.textContent = t('jour').replace('%n', j.jour).replace('%m', j.max);
-      if (!dessin) return;
-      // Aperçu : le choix courant avec l'élément en attente ; « Enregistrer » désactivé tant qu'il est affiché.
-      var vu = Object.assign({}, choix);
-      if (enAttente) {
-        vu[enAttente.k] = enAttente.v;
-        if (enAttente.k === 'clothingGraphic') vu.clothing = 'graphicShirt';
-        if (enAttente.k === 'accessoriesColor' && (!vu.accessories || vu.accessories === 'aucun' || vu.accessories === 'eyepatch')) vu.accessories = 'prescription02';
-      }
-      grand.src = rendu(vu);
-      cadre.classList.toggle('nova-avatar-essai', !!enAttente);
-      boutonEnr.disabled = !!enAttente || occupe;
-      boutonEnr.title = enAttente ? t('enr-bloque') : '';
-      onglets.textContent = '';
-      if (!ongletUtile(AVATAR_CATEGORIES[catActive], choix)) catActive = 0;
-      AVATAR_CATEGORIES.forEach(function (k, i) {
-        if (!etat.ordre[k]) return;
-        if (!ongletUtile(k, choix)) return;   // d'après ce qui est porté (pas seulement essayé)
-        var b = el('button', 'nova-avatar-onglet');
-        b.type = 'button';
-        b.setAttribute('role', 'tab');
-        b.setAttribute('aria-selected', i === catActive ? 'true' : 'false');
-        b.appendChild(document.createTextNode(noms[i] || k));
-        b.appendChild(el('span', 'nova-avatar-compte', nbOuverts(k) + '/' + proposes(k).length));
-        b.addEventListener('click', function () { catActive = i; enAttente = null; dessiner(); });
-        onglets.appendChild(b);
-      });
-      var k = AVATAR_CATEGORIES[catActive];
-      var valeurs = proposes(k);
-      note.textContent = k === 'clothingGraphic' ? t('motif') : t('ouverts').replace('%n', nbOuverts(k)).replace('%m', valeurs.length);
-      if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) note.textContent += ' ' + t('lunettes');
-      grille.textContent = '';
-      valeurs.forEach(function (v) {
-        var e = k + '.' + v, s = etat.elements[e] || '';
-        var essai = Object.assign({}, choix);
-        essai[k] = v;
-        if (k === 'clothingGraphic') essai.clothing = 'graphicShirt';
-        // Couleur des lunettes : aperçu sur des lunettes, même si l'élève n'en porte pas.
-        if (k === 'accessoriesColor' && (!choix.accessories || choix.accessories === 'aucun' || choix.accessories === 'eyepatch')) essai.accessories = 'prescription02';
-        var porte = choix[k] === v && (k !== 'clothingGraphic' || choix.clothing === 'graphicShirt');
-        var essaye = enAttente && enAttente.k === k && enAttente.v === v;
-        var b = el('button', 'nova-avatar-tuile' + (ouvert(e) ? '' : ' nova-avatar-ferme') + (porte ? ' nova-avatar-porte' : '') + (essaye ? ' nova-avatar-essaye' : '') + (v === 'transparent' ? ' nova-avatar-transparent' : ''));
-        b.type = 'button';
-        b.setAttribute('aria-pressed', porte ? 'true' : 'false');
-        var nomV = v === 'aucun' ? t('aucun') : v;
-        var img = el('img');
-        img.alt = '';
-        img.src = rendu(essai);
-        b.appendChild(img);
-        if (!ouvert(e)) {
-          var cad = el('span', 'nova-avatar-cadenas');
-          cad.setAttribute('aria-hidden', 'true');
-          cad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
-          b.appendChild(cad);
-        }
-        if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }
-        else if (badgeObtenu(s) && imageBadge(s)) {
-          var mini = el('img', 'nova-avatar-badge');
-          mini.src = imageBadge(s);
-          mini.alt = '';
-          b.appendChild(mini);
-          nomV += ' (' + texteBadge(s) + ')';
-        }
-        else if (/^badge-/.test(s)) { b.appendChild(el('span', 'nova-avatar-prix nova-avatar-etoile', '\u2605')); nomV += ' (' + t('leg3') + ')'; }
-        b.title = nomV;
-        b.setAttribute('aria-label', nomV);
-        b.addEventListener('click', function () { cliquer(k, v, b.querySelector('img').src); });
-        grille.appendChild(b);
-      });
-      confirmer.hidden = !enAttente;
-      // Onglet choisi visible dans la rangée, puis fondus et flèches à jour.
-      var actif = onglets.querySelector('[aria-selected="true"]');
-      if (actif && (actif.offsetLeft < onglets.scrollLeft || actif.offsetLeft + actif.offsetWidth > onglets.scrollLeft + onglets.clientWidth)) {
-        onglets.scrollLeft = actif.offsetLeft - (onglets.clientWidth - actif.offsetWidth) / 2;
-      }
-      bordsOnglets();
-    };
-    var cliquer = function (k, v, uri) {
-      var e = k + '.' + v, s = etat.elements[e] || '';
-      dire('');
-      if (ouvert(e)) {
-        choix[k] = v;
-        if (k === 'clothingGraphic') choix.clothing = 'graphicShirt';
-        enAttente = null;
-        if (badgeObtenu(s)) dire(texteBadge(s));
-        dessiner();
-        return;
-      }
-      enAttente = { k: k, v: v, s: s };
-      confImg.src = uri;
-      if (/^badge-/.test(s)) {
-        // badge-<clé>-<niveau requis>-<0|1> ; niveau atteint et badge proposé : data-niveaux (« clé:niveau:1|0 »).
-        var p = s.split('-'), b = badgesAvatar[p[1]] || [0, 0];
-        confTexte.textContent = (b[1] ? t('badge') : t('badge-off')).replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])).replace('%m', nomNiv(b[0]));
-        confOui.hidden = true;
-      } else {
-        var prix = +s;
-        confOui.hidden = false;
-        confOui.disabled = etat.jetons.dispo < prix;
-        confTexte.textContent = etat.jetons.dispo < prix ? (prix === 1 ? t('manque1') : t('manque').replace('%n', prix))
-          : (prix === 1 ? t('question') : t('question2')).replace('%n', prix);
-      }
-      dessiner();
-      confirmer.scrollIntoView({ block: 'nearest', behavior: animationsCoupees() ? 'auto' : 'smooth' });
-    };
-    // Envoi au serveur (accueil, module de confiance) ; sa réponse est la page à jour, dont on relit #nova-avatar.
-    var envoyer = function (suite) {
-      if (occupe) return Promise.reject(new Error('occupe'));
-      occupe = true;
-      [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = true; });
-      return fetch(lienAccueil('&nova_avatar=1' + suite), { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (html) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
-        var source = doc.getElementById('nova-avatar');
-        if (!source) throw new Error('page');
-        lire(source);
-        return etat.message;
-      }).finally(function () {
-        occupe = false;
-        [boutonEnr, boutonHasard, confOui].forEach(function (b) { b.disabled = false; });
-      });
-    };
-    confOui.addEventListener('click', function () {
-      if (!enAttente) return;
-      var a = enAttente;
-      envoyer('&nova_avatar_ouvrir=' + a.k + '.' + a.v).then(function (m) {
-        enAttente = null;
-        if (m === 'ouvert') { choix[a.k] = a.v; if (a.k === 'clothingGraphic') choix.clothing = 'graphicShirt'; dire(t('ouvert')); }
-        else dire(t('refus'));
-        // Compteur de la barre à jour, sans animation (une dépense n'est pas un gain).
-        var mj = lireAvatar();
-        if (mj) { mj.jetons = mj.vu = etat.jetons.dispo; garderAvatar(mj); poserAvatarBarre(mj); }
-        dessiner();
-      }).catch(function () { dire(t('refus')); });
-    });
-    confNon.addEventListener('click', function () { enAttente = null; dessiner(); });
-    boutonEnr.addEventListener('click', function () {
-      var c = chaine(choix);
-      envoyer('&nova_avatar_choix=' + c).then(function (m) {
-        if (m !== 'choix' && etat.enregistre !== c) { dire(t('refus')); return; }
-        dire(t('enregistre'));
-        var memo = lireAvatar() || {};
-        memo.actif = 1; memo.choix = etat.enregistre; memo.titre = memo.titre || t('titre') || ''; memo.uri = rendu(choix);
-        memo.jetons = memo.vu = etat.jetons.dispo;
-        garderAvatar(memo);
-        poserAvatarBarre(memo);
-      }).catch(function () { dire(t('refus')); });
-    });
-    boutonHasard.addEventListener('click', function () {
-      AVATAR_CATEGORIES.forEach(function (k) {
-        if (k === 'clothingGraphic') return;
-        var ok = (etat.ordre[k] || []).filter(function (v) { return ouvert(k + '.' + v); });
-        if (ok.length) choix[k] = ok[Math.floor(Math.random() * ok.length)];
-      });
-      enAttente = null;
-      dire(t('tire'));
-      dessiner();
-    });
-    dessiner();
-    if (!etat.enregistre) dire(t('premier'));
-    chargerAvatar(d.getAttribute('data-script')).then(function (f) { dessin = f; dessiner(); }).catch(function () { dire(t('erreur')); });
-  }
-
-  function fenetreBadges(d) {
-    var a = function (nom) { return d.getAttribute('data-' + nom) || ''; };
-    var el = function (balise, classe, texte) {
-      var e = document.createElement(balise);
-      if (classe) e.className = classe;
-      if (texte != null) e.textContent = texte;
-      return e;
-    };
-    var noms = a('niveaux').split(',');
-    var reg = a('reglages').split(/\s+/);   // reglages <exercices/semaine> <réussite> <échec> <échecs> <examens>
-    var parsem = +reg[1] || 1, reussite = reg[2] || '7', echec = reg[3] || '5', nechecs = reg[4] || '2', examens = reg[5] !== '0';
-    var nsess = +reg[7] || 2;   // Échauffement : sessions d'entraînement demandées avant le DM noté
-    var f = el('dialog', 'nova-badges-fenetre');
-    f.setAttribute('aria-labelledby', 'nova-badges-titre');
-    var tete = el('div', 'nova-badges-entete');
-    var h = el('h2', '', a('titre'));
-    h.id = 'nova-badges-titre';
-    var fermer = el('button', 'nova-badges-fermer', '\u00d7');
-    fermer.type = 'button';
-    fermer.setAttribute('aria-label', a('fermer'));
-    fermer.addEventListener('click', function () { f.close ? f.close() : f.removeAttribute('open'); });
-    tete.appendChild(h); tete.appendChild(fermer);
-    f.appendChild(tete);
-    // Toucher à côté de la fenêtre : la ferme.
-    f.addEventListener('click', function (e) { if (e.target === f && f.close) f.close(); });
-
-    var dateLongue = function (o) {
-      if (!/^\d{8}$/.test(o)) return '';
-      return new Date(+o.slice(0, 4), +o.slice(4, 6) - 1, +o.slice(6, 8)).toLocaleDateString(racineLangue(), { day: 'numeric', month: 'long', year: 'numeric' });
-    };
-    // Panneau commun : en-tête (image, nom, niveau, date, règle), chiffres, état, grille des niveaux, aide.
-    var panneau = function (cle, nom, niveau, np, paliers, obtenu, regle, chiffresListe, etatClasse, etatTexte, unite, aide, images) {
-      var carte = el('section', 'nova-badge-detail');
-      carte.setAttribute('data-badge', cle);
-      var image = function (n) { return images + Math.max(1, n) + '.webp'; };
-      var haut = el('div', 'nova-badge-haut');
-      var img = el('img', niveau ? '' : 'nova-badge-verrou');
-      img.src = image(niveau); img.alt = ''; img.width = 96; img.height = 96;
-      haut.appendChild(img);
-      var titre = el('div');
-      titre.appendChild(el('h3', '', nom));
-      titre.appendChild(el('p', 'nova-badge-niveau', niveau ? noms[niveau - 1] + ' \u00b7 ' + a('niveau') + ' ' + niveau + '/' + np : a('aucun')));
-      var dt = niveau ? dateLongue(obtenu) : '';
-      if (dt) titre.appendChild(el('p', '', a('obtenu') + ' ' + dt + '.'));
-      titre.appendChild(el('p', '', regle));
-      haut.appendChild(titre);
-      carte.appendChild(haut);
-      var chiffres = el('div', 'nova-badge-chiffres');
-      chiffresListe.forEach(function (c) {
-        var b = el('div');
-        b.appendChild(el('b', '', String(c[0])));
-        b.appendChild(el('span', '', c[1]));
-        chiffres.appendChild(b);
-      });
-      carte.appendChild(chiffres);
-      if (etatTexte) carte.appendChild(el('p', 'nova-badge-etat nova-badge-etat-' + etatClasse, etatTexte));
-      var grille = el('ol', 'nova-badge-niveaux');
-      paliers.forEach(function (p, i) {
-        var n = i + 1;
-        var li = el('li', n < niveau ? 'nova-atteint' : (n === niveau ? 'nova-atteint nova-actuel' : 'nova-verrou'));
-        var im = el('img');
-        im.src = image(n); im.alt = ''; im.width = 52; im.height = 52; im.loading = 'lazy';
-        li.appendChild(im);
-        li.appendChild(el('span', '', noms[i] || String(n)));
-        li.appendChild(el('b', '', unite ? p + ' ' + unite : String(p)));
-        grille.appendChild(li);
-      });
-      carte.appendChild(grille);
-      if (aide) carte.appendChild(el('p', 'nova-badge-aide', aide));
-      return carte;
-    };
-    var panneaux = [];
-    // Régularité (ex-Fidélité ; compteur de semaines depuis le 2026-11-07, maquette validée par l'utilisateur) :
-    // fidelite on niveau total total etat prochain nouveau obtenu np paliers… (etat : fait | attente).
-    var mf = a('fidelite').split(/\s+/);
-    if (mf[1] === 'on') {
-      var niveau = +mf[2], totalF = +mf[3], etat = mf[5] === 'fait' ? 'fait' : 'attente', prochain = +mf[6], np = +mf[9];
-      var paliers = mf.slice(10, 10 + np).map(Number);
-      var suite = niveau < np ? (prochain === 1 ? a('fid-suite1') : a('fid-suite')).replace('%n', prochain).replace('%s', noms[niveau]) : a('max');
-      var etatTexte = etat === 'fait' ? (a('fid-etat-fait') + ' ' + suite).trim()
-        : (parsem === 1 ? a('fid-etat-attente1') : a('fid-etat-attente')).replace('%e', parsem);
-      var chiffresF = [[totalF, a('fid-total')]];
-      if (niveau < np) chiffresF.push([prochain, a('avant').replace('%s', noms[niveau])]);
-      panneaux.push(['fidelite', a('fid-nom'), panneau('fidelite', a('fid-nom'), niveau, np, paliers, mf[8],
-        (parsem === 1 ? a('fid-regle1') : a('fid-regle')).replace('%e', parsem), chiffresF, etat, etatTexte, a('sem'), a('fid-aide'), a('images-fidelite'))]);
-    }
-    // Persévérance : perseverance on niveau total prochain nouveau obtenu np paliers…
-    var mp = a('perseverance').split(/\s+/);
-    if (mp[1] === 'on') {
-      var nivP = +mp[2], total = +mp[3], prochP = +mp[4], npP = +mp[7];
-      var palP = mp.slice(8, 8 + npP).map(Number);
-      var chiffresP = [[total, a('per-total')]];
-      if (nivP < npP) chiffresP.push([prochP, a('avant').replace('%s', noms[nivP])]);
-      // « En cours » : exercice qui n'attend qu'une réussite (titre|échecs), sinon ce qui reste.
-      var enc = a('encours'), etatP, texteP;
-      if (enc && enc.indexOf('|') > 0) {
-        var t = enc.split('|');
-        etatP = 'attente';
-        texteP = a('per-encours').replace('%t', t[0]).replace('%n', t[1]).replace('%e', echec);
-      } else {
-        etatP = 'fait';
-        texteP = nivP < npP ? (prochP === 1 ? a('per-suite1') : a('per-suite')).replace('%n', prochP).replace('%s', noms[nivP]) : a('max');
-      }
-      panneaux.push(['perseverance', a('per-nom'), panneau('perseverance', a('per-nom'), nivP, npP, palP, mp[6],
-        a('per-regle').replace('%r', reussite).replace('%n', nechecs).replace('%e', echec), chiffresP, etatP, texteP, '',
-        a(examens ? 'per-examens-oui' : 'per-examens-non'), a('images-perseverance'))]);
-    }
-    // Échauffement (DM WIMS, 2026-11-06) : echauffement on niveau total prochain nouveau obtenu np paliers… ;
-    // data-dm = « faites demandées titre » du DM noté ouvert et pas encore commencé, ou « - ».
-    var mh = a('echauffement').split(/\s+/);
-    if (mh[1] === 'on') {
-      var nivH = +mh[2], totalH = +mh[3], prochH = +mh[4], npH = +mh[7];
-      var palH = mh.slice(8, 8 + npH).map(Number);
-      var chiffresH = [[totalH, a('ech-total')]];
-      if (nivH < npH) chiffresH.push([prochH, a('avant').replace('%s', noms[nivH])]);
-      var dm = /^dm (\d+) (\d+) (.+)$/.exec(a('dm')), etatH, texteH;
-      if (dm) {
-        var reste = +dm[2] - +dm[1];
-        etatH = reste > 0 ? 'attente' : 'fait';
-        texteH = (reste > 1 ? a('ech-dm').replace('%n', reste) : (reste === 1 ? a('ech-dm1') : a('ech-pret'))).replace('%t', dm[3]);
-      } else {
-        etatH = 'fait';
-        texteH = nivH < npH ? (prochH === 1 ? a('ech-suite1') : a('ech-suite')).replace('%n', prochH).replace('%s', noms[nivH]) : a('max');
-      }
-      panneaux.push(['echauffement', a('ech-nom'), panneau('echauffement', a('ech-nom'), nivH, npH, palH, mh[6],
-        (nsess === 1 ? a('ech-regle1') : a('ech-regle')).replace('%n', nsess), chiffresH, etatH, texteH, '',
-        a('ech-aide'), a('images-echauffement'))]);
-    }
-    // Au top (DM WIMS notés réussis, 2026-11-07) : top on niveau total prochain nouveau obtenu np paliers… ;
-    // data-topdm = « topdm <note retenue | -> <seuil> <titre> » du DM noté ouvert le plus récent, ou « topdm - ».
-    var mt = a('top').split(/\s+/);
-    if (mt[1] === 'on') {
-      var nivT = +mt[2], totalT = +mt[3], prochT = +mt[4], npT = +mt[7];
-      var palT = mt.slice(8, 8 + npT).map(Number);
-      var chiffresT = [[totalT, a('top-total')]];
-      if (nivT < npT) chiffresT.push([prochT, a('avant').replace('%s', noms[nivT])]);
-      var td = /^topdm (\S+) (\S+) (.+)$/.exec(a('topdm')), etatT, texteT;
-      var virgule = function (n) { return String(Math.round(n * 10) / 10).replace('.', racineLangue() === 'fr' ? ',' : '.'); };
-      var seuilT = +reg[8] || (td ? +td[2] : 9);
-      if (td && td[1] === '-') { etatT = 'attente'; texteT = a('top-afaire'); }
-      else if (td && +td[1] >= seuilT) { etatT = 'fait'; texteT = a('top-reussi'); }
-      else if (td) { etatT = 'attente'; texteT = a('top-encore'); }
-      if (td) texteT = texteT.replace('%t', td[3]).replace('%n', virgule(+td[1])).replace('%s', virgule(seuilT));
-      else {
-        etatT = 'fait';
-        texteT = nivT < npT ? (prochT === 1 ? a('top-suite1') : a('top-suite')).replace('%n', prochT).replace('%s', noms[nivT]) : a('max');
-      }
-      panneaux.push(['top', a('top-nom'), panneau('top', a('top-nom'), nivT, npT, palT, mt[6],
-        a('top-regle').replace('%s', virgule(seuilT)), chiffresT, etatT, texteT, '', a('top-aide'), a('images-top'))]);
-    }
-    // Couleur personnelle : carte dans l'onglet du badge choisi par l'enseignant (reglages : 9e champ badge, 10e niveau).
-    var drC = droitsCouleur(d);
-    panneaux.forEach(function (p) {
-      if (!drC || (p[0] !== drC.badge && p[0] !== drC.badgeDeg)) return;
-      var detail = p[2], aide = detail.querySelector('.nova-badge-aide');
-      var carte = carteCouleur(d, p[0]);
-      detail.insertBefore(carte, detail.querySelector('.nova-badge-niveaux') || aide);
-    });
-    // Onglets, s'il y a plus d'un badge.
-    var onglets = null;
-    f.choisir = function (cle) {
-      panneaux.forEach(function (p) {
-        var on = p[0] === cle;
-        p[2].hidden = !on;
-        if (p[3]) { p[3].setAttribute('aria-selected', on ? 'true' : 'false'); p[3].classList.toggle('nova-actif', on); p[3].tabIndex = on ? 0 : -1; }
-      });
-    };
-    if (panneaux.length > 1) {
-      onglets = el('div', 'nova-badges-onglets');
-      onglets.setAttribute('role', 'tablist');
-      panneaux.forEach(function (p) {
-        var b = el('button', 'nova-badges-onglet');
-        b.type = 'button';
-        b.setAttribute('role', 'tab');
-        b.id = 'nova-onglet-' + p[0];
-        var im = el('img');
-        var niv = +({ fidelite: mf, perseverance: mp, echauffement: mh, top: mt }[p[0]][2]);
-        im.src = a('images-' + p[0]) + Math.max(1, niv) + '.webp'; im.alt = ''; im.width = 28; im.height = 28;
-        if (!niv) im.className = 'nova-badge-verrou';
-        b.appendChild(im);
-        b.appendChild(el('span', 'nova-badges-onglet-nom', p[1]));
-        b.title = p[1];
-        b.addEventListener('click', function () { f.choisir(p[0]); });
-        p[2].setAttribute('role', 'tabpanel');
-        p[2].setAttribute('aria-labelledby', b.id);
-        p[3] = b;
-        onglets.appendChild(b);
-      });
-      onglets.addEventListener('keydown', function (e) {
-        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-        var i = panneaux.findIndex(function (p) { return !p[2].hidden; });
-        var n = (i + (e.key === 'ArrowRight' ? 1 : panneaux.length - 1)) % panneaux.length;
-        f.choisir(panneaux[n][0]); panneaux[n][3].focus();
-      });
-      f.appendChild(onglets);
-    }
-    panneaux.forEach(function (p) { f.appendChild(p[2]); });
-    if (panneaux.length) f.choisir(panneaux[0][0]);
-    document.body.appendChild(f);
-    return f;
-  }
-  function racineLangue() { return document.documentElement.lang || 'fr'; }
-
-  /* Fin d'une session d'examen dans une classe CAS (demande de l'utilisateur, 2026-10-06) : WIMS efface la
-   * session (scorereg.proc) et montre la connexion de la classe, sans bouton CAS. Un clic sur « Terminer »
-   * ou sur le « Oui » qui le confirme est noté (sessionStorage, 2 min) ; si la page suivante porte l'adresse
-   * de connexion CAS de la classe (#nova-cas, header.phtml), l'élève y est renvoyé : le CAS, qui le connaît
-   * encore, le ramène dans la classe, prêt pour un autre examen. Toute autre page efface la marque. */
-  function reconnexionCas() {
-    var cle = 'nova-fin-examen', quand = 0;
-    try { quand = +sessionStorage.getItem(cle) || 0; sessionStorage.removeItem(cle); } catch (e) { quand = 0; }
-    document.addEventListener('click', function (ev) {
-      var a = ev.target.closest && ev.target.closest('a[href*="job=scorereg"], a[href*="confirm_end=yes"]');
-      if (a) { try { sessionStorage.setItem(cle, String(Date.now())); } catch (e) { /* sans stockage : rien */ } }
-    }, true);
-    var cas = document.getElementById('nova-cas');
-    if (cas && quand && Date.now() - quand < 120000) {
-      location.replace(cas.getAttribute('data-cas') + '/login?service=' + encodeURIComponent(cas.getAttribute('data-service')));
-    }
-  }
-
-  /* Feuille perimee (2026-11-09, utilisateur) : WIMS appelle css.css a une adresse fixe (?ver=<version de WIMS>),
-   * qu'une mise a jour du theme ne change pas ; un navigateur peut garder des jours l'ancienne feuille avec le
-   * nouveau nova.js (vecu sur le serveur de l'utilisateur, version 1.3). css.css porte l'empreinte de ses sources
-   * (--nova-css, _css/empreinte.css), htmlheader.phtml celle attendue (meta nova-css), toutes deux ecrites par
-   * construire-css.sh. Si elles different : la feuille est redemandee au serveur en remplacant l'entree du cache
-   * (fetch, cache: 'reload' : les pages suivantes la trouvent a jour), puis rechargee dans cette page. Une seule
-   * redemande par session et par empreinte ; un serveur dont le css.css est lui-meme ancien (mkcss.pl lance sur un
-   * autre dossier, installation incomplete) est note et laisse tel quel, avec un message dans la console. */
-  function feuilleAJour() {
-    var m = document.querySelector('meta[name="nova-css"]');
-    var attendu = m ? m.getAttribute('content') : '';
-    if (!attendu) return;
-    var lue = function () {
-      return getComputedStyle(document.documentElement).getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
-    };
-    if (lue() === attendu) return;
-    var lien = [].filter.call(document.querySelectorAll('link[rel="stylesheet"][href]'), function (l) {
-      return /(^|\/)html\/themes\/[^\/?]+\/css\.css(\?|$)/.test(l.getAttribute('href'));
-    })[0];
-    if (!lien) return;
-    var cle = 'nova-css-recharge', deja = null;
-    try { deja = sessionStorage.getItem(cle); } catch (e) { deja = null; }
-    if (deja === attendu + ' serveur') return;
-    var href = lien.href;
-    function remplacer() {
-      var neuf = lien.cloneNode(false);
-      neuf.href = href + (href.indexOf('?') < 0 ? '?' : '&') + 'nova=' + attendu;
-      neuf.addEventListener('load', function () {
-        if (lien.parentNode) lien.parentNode.removeChild(lien);
-        if (lue() !== attendu) {
-          try { sessionStorage.setItem(cle, attendu + ' serveur'); } catch (e) { /* sans stockage : rien */ }
-          if (window.console) console.warn('Nova : css.css du serveur (' + (lue() || 'sans empreinte') + ') ne correspond pas a nova.js (' +
-            attendu + ') : reconstruire la feuille ou reinstaller le theme.');
-        }
-        window.dispatchEvent(new Event('resize'));
-      });
-      lien.parentNode.insertBefore(neuf, lien.nextSibling);
-    }
-    if (deja === attendu || !window.fetch) { remplacer(); return; }
-    try { sessionStorage.setItem(cle, attendu); } catch (e) { /* sans stockage : une redemande par page */ }
-    fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
-  }
-
-  // Participant connecte (2026-11-11) : le point vert de .wims_connected::after devient un vrai element, qui peut
-  // porter une info-bulle (\u00ab En ligne \u00bb) et un texte pour les lecteurs d'ecran. Pas sur la phrase de
-  // l'accueil (p), qui le dit deja.
-  function enLigne() {
-    var els = document.querySelectorAll('.wims_connected:not(p)');
-    var textes = document.getElementById('nova-textes');
-    var mot = (textes && textes.getAttribute('data-texte-en-ligne')) || 'Online';
-    // WIMS ecrit aussi title="connected" (anglais, en dur) sur le lien du nom (usermanage userlist, regmanage :
-    // wims_ref_title) et sur le nom de la fiche d'un participant, CONNECTE OU NON (usermanage/userprop.phtml).
-    Array.prototype.forEach.call(document.querySelectorAll('[title="connected"]'), function (x) {
-      if (x.closest('.wims_connected')) x.title = mot; else x.removeAttribute('title');
-    });
-    if (!els.length) return;
-    Array.prototype.forEach.call(els, function (el) {
-      if (el.querySelector('.nova-en-ligne')) return;
-      var point = document.createElement('span');
-      point.className = 'nova-en-ligne';
-      point.title = mot;
-      point.setAttribute('role', 'img');
-      point.setAttribute('aria-label', mot);
-      el.appendChild(point);
-      el.classList.add('nova-en-ligne-pose');
-      // WIMS ecrit l'info-bulle du nom en anglais, en dur (adm/class/livret/user.phtml : title="connected").
-      if (el.hasAttribute('title')) el.title = mot;
-    });
-  }
-
+  /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
   function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();

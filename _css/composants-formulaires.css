@@ -1,0 +1,144 @@
+/* Encadrés et légendes */
+/* ---------- Cadres de formulaire (fieldset) — tous, de la même façon (2026-10-02) ----------
+ * WIMS les dessine en dégradé, champs zébrés et bordés, légende encadrée posée dans le trait
+ * (.property_fields de forms.css). Nova : une carte comme celles de l'accueil — surface, bord fin,
+ * coins arrondis, ombre légère — dont la légende est le titre, à l'intérieur. Restent à part : la
+ * légende des cartes d'activités (.wims_work_legend) et les filtres du moteur de recherche
+ * (#affined_search, un accordéon) ; le moteur de l'accueil du site garde sa carte (accueil.css). */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) {
+  /* Pas de min-width: 0 : un fieldset s'élargit par défaut jusqu'à son contenu ; réduit, il laissait
+   * déborder le contenu hors de la page (« Statistique de participants », vérification du 2026-10-02). */
+  margin-block: var(--nova-e4);
+  padding: var(--nova-e4) var(--nova-e5) var(--nova-e5);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: var(--nova-ombre);
+}
+/* Un cadre dans un cadre : sans ombre, sur le fond doux. */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) .wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) {
+  padding: var(--nova-e3) var(--nova-e4) var(--nova-e4);
+  background: var(--nova-surface-2);
+  box-shadow: none;
+}
+/* La légende, titre de la carte. Flottante, elle n'est plus dessinée dans le trait du cadre ; dans un
+ * .property_fields (flex), elle prend une ligne entière. */
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 var(--nova-e3);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--nova-texte);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+}
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend > a { color: var(--nova-lien); }
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) > legend + * { clear: both; }
+/* Les champs : plus de zébrage ni de bordure, libellé au-dessus, aide en gris. */
+.property_fields .field, .property_fields .field.box,
+.property_fields .field:nth-child(odd), .property_fields .field:nth-child(even) {
+  min-height: 0;
+  padding: var(--nova-e2) 0;
+  border: 0;
+  background: none;
+}
+.property_fields .field > label:first-child {
+  display: block;
+  margin-bottom: var(--nova-e1);
+  font-size: .875rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--nova-texte);
+}
+.property_fields .formHelp, .formHelp { margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
+/* Cartes de réglages (Configuration globale de la classe…, demande de l'utilisateur, 2026-10-08) : largeur limitée,
+ * centrées ; le bouton « Aide » flottant d'un champ garde une marge à droite (il touchait la colonne voisine ou le bord). */
+.wimsbody fieldset.property_fields { max-width: 54rem; margin-inline: auto; box-sizing: border-box; }
+.property_fields .field .wims_button_help.float_right { margin-right: var(--nova-e3); }
+/* Champs de réglages plus lisibles (2026-10-08, validé par l'utilisateur) : champ de texte à une largeur raisonnable ;
+ * bouton « Aide » collé au libellé qu'il explique, plus discret, au lieu d'être rejeté à droite de la colonne. Seulement
+ * pour un champ simple (libellé, aide, une commande) : un champ composé (« Meilleures notes : nombre / anonymat ») reste tel quel. */
+.property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"]) { width: min(100%, 26rem); max-width: 100%; box-sizing: border-box; }
+/* Largeur donnée par WIMS (attribut size : 5 pour un nombre, 40 pour un nom) : respectée, dans la limite de la colonne. */
+.property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"])[size] { width: auto; }
+/* Téléphone : un champ long (size de WIMS au-delà de 10) prend la largeur disponible, sinon il élargirait la carte. */
+@media (max-width: 639.98px) {
+  .property_fields .field :is(input[type="text"], input[type="email"], input[type="url"], input:not([type]), input[type="password"])[size]:not([size="1"], [size="2"], [size="3"], [size="4"], [size="5"], [size="6"], [size="7"], [size="8"], [size="9"], [size="10"]) { width: 100%; }
+  .property_fields .field.halfwidth { padding-right: 0; }
+}
+/* Deux demi-colonnes côte à côte : une gouttière, les champs ne se touchent plus. */
+.property_fields .field.halfwidth { box-sizing: border-box; padding-right: var(--nova-e5); }
+/* Un libellé qui suit un champ (« Coordonnées GPS » après « Localisation ») commence une ligne ; pas celui d'un
+ * bouton radio ou d'une case (!formradio : « ( ) Non, ( ) Oui »), qui reste à côté (configuration d'une feuille, 2026-11-03). */
+.property_fields .field:has(> label:first-child) > :is(input, select, textarea) ~ label:not(:is(input[type="radio"], input[type="checkbox"]) + label) { display: block; margin-top: var(--nova-e2); }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--nova-e2); align-items: center;
+}
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > * { grid-column: 1 / -1; justify-self: start; }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > label:first-child { grid-column: 1; margin-bottom: 0; }
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > .wims_button_help {
+  grid-column: 2; grid-row: 1; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem;
+}
+.property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > :is(input, select, textarea) { margin-top: var(--nova-e1); }
+/* Configuration d'une feuille (adm/sheet/sheetinfo.phtml ; demande de l'utilisateur, 2026-11-03). Un champ nombre ignore
+ * l'attribut size : largeur raisonnable, au lieu de toute la colonne. Des champs côte à côte : une gouttière, comme les
+ * demi-colonnes. « Règle de calcul » : Aide collé au libellé, puis la règle et « I= » sur une même ligne. */
+.property_fields .field input[type="number"] { width: 8rem; max-width: 100%; box-sizing: border-box; }
+@media (min-width: 640px) { .property_fields .field.box:not(.fullwidth, .halfwidth) { box-sizing: border-box; padding-right: var(--nova-e5); } }
+@media (max-width: 639.98px) { .wimsbody fieldset.property_fields { min-width: 0; } }
+.property_fields .field:has(> #formulaB) { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--nova-e2); }
+.property_fields .field:has(> #formulaB)::after { content: ""; order: 3; flex-basis: 100%; }
+.property_fields .field:has(> #formulaB) > label:first-child { order: 1; margin-bottom: 0; }
+.property_fields .field:has(> #formulaB) > .wims_button_help { order: 2; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem; }
+.property_fields .field:has(> #formulaB) > :not(label:first-child, .wims_button_help) { order: 4; margin-top: var(--nova-e1); }
+.property_fields .field:has(> #formulaB) > label[for="formulaB"] { margin-left: var(--nova-e2); font-weight: 700; }
+.property_fields p { padding: 0; }
+.property_fields .actions, .property_fields .wimsform {
+  flex-wrap: wrap;
+  gap: var(--nova-e2);
+  margin-top: var(--nova-e2);
+  padding: var(--nova-e2) 0 0;
+}
+.wimsbody fieldset:not(.wims_work_legend, [id="affined_search"]) :is(input[type="submit"], input[type="button"], button.wims_button, a.wims_button:not(.wims_button_help)) { font-size: .9375rem; }
+/* Filtres du moteur de recherche (accordéon jQuery UI) : mêmes champs, sans cases bordées. */
+#affined_search > legend.ui-accordion-header {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nova-e1);
+  min-height: 40px;
+  margin: 0;
+  padding: 0 var(--nova-e4);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  background-image: none;
+  color: var(--nova-texte);
+  font-size: .9375rem;
+  font-weight: 700;
+}
+#affined_search > legend.ui-accordion-header:hover { background: var(--nova-surface-2); }
+#affined_search .ui-accordion-content { padding: var(--nova-e3) 0 0; border: 0; background: none; }
+#affined_search .field.box { min-height: 0; padding: var(--nova-e2) var(--nova-e3) var(--nova-e2) 0; border: 0; background: none; }
+#affined_search .field.box > label:first-child { font-size: .875rem; font-weight: 700; color: var(--nova-texte); }
+/* Bouton secondaire (« Mot de passe oublié »…) : à contour, au lieu du dégradé gris de WIMS. */
+.main_body a.wims_button.wims_secondary_button, a.wims_button.wims_secondary_button, button.wims_secondary_button {
+  background: var(--nova-surface);
+  background-image: none;
+  color: var(--nova-texte);
+  border: 1px solid var(--nova-bord-fort);
+  box-shadow: none;
+  text-shadow: none;
+}
+.main_body a.wims_button.wims_secondary_button:hover, a.wims_button.wims_secondary_button:hover, button.wims_secondary_button:hover {
+  background: var(--nova-surface-2);
+  color: var(--nova-texte);
+  border-color: var(--nova-texte-2);
+}
+.legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_emph { color: var(--nova-lien); }
+

@@ -51,7 +51,15 @@
 # 4. Nova : surcharges, en dernier. Le cadre de Standard (theme.css, general.css, typo.css,
 #    breadcrumbs.css, menumodubox-accordion.css, menumodubox_fixed.css, logo.css, std_l2w.css) est
 #    remplacé par cadre.css et composants.css, qui en reprennent les contextes particuliers.
---- Nova/_css/composants.css ---
+#    composants.css découpé le 2026-11-11 en feuilles composants-*.css (même contenu, même ordre : l'ordre compte).
+--- Nova/_css/composants-base.css ---
+--- Nova/_css/composants-formulaires.css ---
+--- Nova/_css/composants-messages-zones.css ---
+--- Nova/_css/composants-fenetres.css ---
+--- Nova/_css/composants-connexion-clavier.css ---
+--- Nova/_css/composants-reglages-badges.css ---
+--- Nova/_css/composants-dominos.css ---
+--- Nova/_css/composants-enseignant.css ---
 --- Nova/_css/cadre.css ---
 --- Nova/_css/chrono.css ---
 --- Nova/_css/contenu.css ---

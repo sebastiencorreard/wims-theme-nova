@@ -1,0 +1,275 @@
+/* Indication et Aide inactives pendant un examen (nova.js, aideExamen) : bouton d'aide grisé. */
+body.main_body .wims_button_help.nova-inactif,
+body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-allowed; filter: grayscale(.6); }
+
+/* Alerte des zones dépendantes aux réglages Nova différents (pages Apparence et Badges Nova d'une structure, 2026-11-07,
+ * utilisateur ; nova.js ecartsZones). Même largeur que les cartes de réglages. */
+.wimsbody .nova-ecarts { width: 100%; max-width: 54rem; margin: 0 auto var(--nova-e4); box-sizing: border-box; }
+.nova-ecarts p { margin: 0 0 var(--nova-e2); }
+.nova-ecarts .nova-ecarts-titre { font-weight: 700; }
+.nova-ecarts details.nova-app-detail { margin-bottom: var(--nova-e3); }
+.nova-ecarts details.nova-app-detail > ul { columns: 14rem auto; column-gap: var(--nova-e5); }
+.nova-ecarts .nova-ecarts-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: 0; }
+.nova-ecarts .nova-ecarts-actions > * { margin: 0; }
+.nova-ecarts a.wims_button:not([href]) { opacity: .5; pointer-events: none; }
+.nova-ecarts .nova-ecarts-attente { margin: var(--nova-e2) 0 0; font-weight: 600; }
+
+/* Couleur personnelle de l'élève (2026-11-07) : carte « Ta récompense » dans l'onglet du badge qui la débloque (nova.js
+   carteCouleur) ; pastilles rondes, la choisie cerclée ; verrouillée : texte seul, grisé. */
+.nova-couleur-carte { display: grid; gap: var(--nova-e2); padding: var(--nova-e3); border: 1px solid var(--nova-bord); border-radius: 12px; background: var(--nova-accent-doux); }
+.nova-couleur-carte.nova-couleur-verrou { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+.nova-couleur-carte.nova-couleur-verrou .nova-couleur-titre::before { content: "\1F512\00A0"; }
+.nova-couleur-carte p { margin: 0; }
+.nova-couleur-titre { font-weight: 700; }
+.nova-couleur-liste { display: flex; flex-wrap: nowrap; gap: clamp(3px, 1.2vw, 8px); }   /* une seule ligne (utilisateur, 2026-11-07) */
+.wimsbody .nova-couleur-pastille, .nova-couleur-pastille { all: unset; box-sizing: border-box; flex: 1 1 0; min-width: 0; max-width: 40px; aspect-ratio: 1; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--nova-bord-fort); cursor: pointer; }
+.nova-couleur-pastille[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--nova-texte); }
+.nova-couleur-pastille:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 3px; }
+.wimsbody .nova-couleur-classe, .nova-couleur-classe { all: unset; box-sizing: border-box; justify-self: start; min-height: 40px; padding: 0 var(--nova-e3); border: 2px solid var(--nova-accent); border-radius: 999px; color: var(--nova-accent); background: var(--nova-surface); font-weight: 700; cursor: pointer; }
+.nova-couleur-classe:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 2px; }
+.nova-couleur-etat:empty { display: none; }
+.nova-bdg-couleur select.nova-app-choix { min-height: 40px; margin: 0 .25rem; max-width: 100%; }
+/* « Désactiver quand même » (nova.js forcerDesactivation, 2026-11-08) : bouton sous le refus de WIMS, alerte. */
+.wimsbody .nova-forcer-ligne { margin: var(--nova-e2) 0 var(--nova-e3); }
+.nova-dialogue.nova-forcer { max-width: 34rem; }
+.nova-dialogue.nova-forcer ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--nova-e2); }
+/* Réglage dangereux de la carte Apparence (« Désactiver malgré le partage », 2026-11-08) : avertissement en rouge. */
+.nova-app-ligne.nova-app-danger .nova-app-alerte { display: block; margin-top: var(--nova-e1); padding: var(--nova-e2) var(--nova-e3); border-left: 3px solid var(--nova-erreur); border-radius: 6px; background: var(--nova-erreur-fond); color: var(--nova-erreur); font-size: .8125rem; font-weight: 600; }
+.wimsbody .nova-forcer-refus { color: var(--nova-texte-2); font-size: var(--nova-petit); }
+/* Réglages de « Mon activité » sur la page Réglages de Nova : dépliés sans titre repliable, masqués sur « Non »
+ * (2026-11-08, utilisateur ; nova.js apparenceClasse). */
+.nova-reglages details.nova-rg-deplie > summary { display: none; }
+.nova-reglages details.nova-rg-deplie[hidden] { display: none; }
+/* Étiquette « Nouveau » (Réglages de Nova, 2026-11-08 ; nova.js tagNouveau). */
+.nova-tag-nouveau { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--nova-accent); color: var(--nova-sur-accent, #fff);
+  font-size: .6875rem; font-weight: 700; line-height: 1.5; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; text-transform: none; }
+/* Onglet DM WIMS : où servent ses réglages (2026-11-09, utilisateur). */
+.nova-app-carte .nova-rg-usage-titre { margin: .5rem 0 .2rem; }
+.nova-app-carte ul.nova-rg-usage { margin: 0 0 0 1.2rem; padding: 0; list-style: disc; }
+.nova-app-carte ul.nova-rg-usage li { margin: .2rem 0; }
+
+/* Restriction d'accès d'une classe (2026-11-10, maquette A, utilisateur ; nova.js accesClasse) : cartes du formulaire
+ * (fieldset, habillés comme les autres), lignes « De … à … », champ de WIMS dans « Réglage expert » replié. */
+.nova-acces { display: flex; flex-direction: column; gap: var(--nova-e4); max-width: 54rem; margin: 0 auto var(--nova-e4); text-align: left; }
+.nova-acces .nova-acces-carte { margin: 0; }
+.nova-acces-aide { color: var(--nova-texte-2); margin: 0 0 var(--nova-e3); }
+.nova-acces-liste { display: flex; flex-direction: column; gap: var(--nova-e2); }
+.nova-acces-liste:empty { display: none; }
+.nova-acces-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); padding: var(--nova-e2) var(--nova-e3); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-fond); }
+.nova-acces-ligne label { margin: 0; }
+.nova-acces-moitie { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+.nova-acces-moitie label { min-width: 1.6em; }
+.nova-acces-ligne .nova-acces-champ { width: auto; min-height: 40px; margin: 0; }
+.nova-acces-note { font-size: .9em; color: #8A4B00; background: #FFF4E0; border-radius: 6px; padding: 1px 8px; }
+.nova-acces-retirer { margin-left: auto; width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: var(--nova-texte-2); cursor: pointer; box-shadow: none; }
+.nova-acces-retirer:hover { background: var(--nova-surface-2); color: #A12C2C; }
+.nova-acces-retirer svg, .nova-acces-actions svg { width: 18px; height: 18px; vertical-align: -3px; margin-right: 4px; }
+.nova-acces-actions { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin-top: var(--nova-e3); }
+.nova-acces-actions .wims_button { margin: 0; }
+.nova-acces-choix { display: flex; flex-wrap: wrap; gap: var(--nova-e2) var(--nova-e5); }
+.nova-acces-choix label { display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 40px; margin: 0; cursor: pointer; }
+.nova-acces-resume { margin: 0 0 var(--nova-e2); }
+.nova-acces details > summary { cursor: pointer; color: var(--nova-texte-2); min-height: 40px; display: flex; align-items: center; }
+.nova-acces-lignes pre { font-family: var(--nova-police-mono, ui-monospace, monospace); font-size: .85em; background: var(--nova-surface-2); border-radius: 8px; padding: var(--nova-e2) var(--nova-e3); margin: 0; overflow-x: auto; white-space: pre; }
+.nova-acces-expert { border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); padding: var(--nova-e2) var(--nova-e4); }
+.nova-acces-expert[open] { padding-bottom: var(--nova-e4); }
+.nova-acces-expert textarea { width: 100%; box-sizing: border-box; font-family: var(--nova-police-mono, ui-monospace, monospace); }
+.nova-acces-tete { display: flex; align-items: center; gap: var(--nova-e2); flex-wrap: wrap; margin-bottom: var(--nova-e2); }
+@media (max-width: 639px) {
+  .nova-acces-ligne { position: relative; padding-right: 48px; }
+  .nova-acces-ligne .nova-acces-retirer { position: absolute; top: 4px; right: 4px; }
+  .nova-acces-moitie .nova-acces-champ[type="time"] { margin-left: calc(1.6em + var(--nova-e2)); }
+}
+.nova-acces-propager { max-width: 54rem; margin: 0 auto var(--nova-e4); box-sizing: border-box; padding: var(--nova-e4) var(--nova-e5); border: 1px solid #F1D29B; border-radius: var(--nova-rayon-carte); background: #FFF4E0; color: #4A2800; text-align: left; }
+.nova-acces-propager p { margin: 0 0 var(--nova-e2); }
+.nova-acces-propager .nova-acces-propager-titre { font-weight: 700; font-size: 1.05em; }
+.nova-acces-propager summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; }
+.nova-acces-propager ul { columns: 2; margin: var(--nova-e1) 0 0; }
+.wimsbody .wims_msg:has(+ .nova-acces-propager), .wimsbody .wims_msg:has(+ .nova-acces) { max-width: 54rem; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+.wimsbody .nova-acces-propager details { background: none; border: 0; box-shadow: none; padding: 0; margin: 0 0 var(--nova-e2); }
+
+/* « Désactiver quand même » : sauvegarde de la classe d'abord (2026-11-10, maquette, utilisateur ; nova.js forcerDesactivation). */
+.nova-forcer-sauver { display: flex; gap: var(--nova-e3); align-items: flex-start; margin: var(--nova-e3) 0; padding: var(--nova-e3) var(--nova-e4); border-radius: var(--nova-rayon); background: var(--nova-accent-doux); cursor: pointer; text-align: left; }
+.nova-forcer-sauver input { width: 20px; height: 20px; margin: 2px 0 0; flex: none; accent-color: var(--nova-accent); }
+.nova-forcer-sauver-aide { display: block; color: var(--nova-texte-2); font-size: .92em; margin-top: 2px; }
+.nova-forcer-etapes { list-style: none; margin: var(--nova-e3) 0; padding: 0; text-align: left; }
+.nova-forcer-etapes li { display: flex; align-items: center; gap: var(--nova-e3); padding: 6px 0; color: var(--nova-texte-2); }
+.nova-forcer-etapes li::before { content: ""; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--nova-bord); box-sizing: border-box; flex: none; }
+.nova-forcer-etapes li.encours { color: var(--nova-texte); font-weight: 700; }
+.nova-forcer-etapes li.encours::before { border: 3px solid var(--nova-bord); border-top-color: var(--nova-accent); animation: nova-tourne .9s linear infinite; }
+.nova-forcer-etapes li.fait { color: var(--nova-texte); }
+.nova-forcer-etapes li.fait::before { border: 0; background: #2D7243 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+.nova-forcer-etapes li.echec { color: #A12C2C; }
+.nova-forcer-etapes li.echec::before { border-color: #A12C2C; }
+.nova-forcer-echec { color: #A12C2C; font-weight: 700; margin: 0 0 var(--nova-e3); }
+@keyframes nova-tourne { to { transform: rotate(360deg); } }
+html.nova-sans-animation .nova-forcer-etapes li.encours::before { animation: none; border-color: var(--nova-accent); }
+dialog.nova-forcer [hidden] { display: none !important; }
+
+/* Liens de connexion (2026-11-10, maquette A, utilisateur ; nova.js liensConnexion). Liste de WIMS masquée au plus 3 s
+   en attendant nova.js (repérée à son lien enseignant ou à un lien « enter= »). */
+html.nova-js:not(.nova-std-textes) .wimsbody ul:has(> li > a[href*="type=authsupervisor"]):not(.nova-liens-source) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-liens { max-width: 54rem; margin: var(--nova-e4) auto; display: flex; flex-direction: column; gap: var(--nova-e4); text-align: left; }
+.nova-lien-carte { background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); padding: var(--nova-e4) var(--nova-e5); display: flex; flex-direction: column; gap: var(--nova-e2); box-sizing: border-box; }
+.nova-lien-carte .nova-lien-titre { margin: 0; font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: var(--nova-e3); }
+.nova-lien-puce { width: 32px; height: 32px; border-radius: 50%; background: var(--nova-accent-doux); color: var(--nova-accent); display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.nova-lien-aide { margin: 0; color: var(--nova-texte-2); line-height: 1.45; }
+.nova-lien-ligne { display: flex; gap: var(--nova-e2); align-items: stretch; flex-wrap: wrap; }
+.wimsbody .nova-lien-ligne .nova-lien-url { flex: 1 1 20rem; min-width: 0; width: auto; margin: 0; font-family: var(--nova-police-chiffres); font-size: .875rem; background: var(--nova-fond); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); padding: 10px 12px; color: var(--nova-texte); box-sizing: border-box; min-height: 44px; }
+.nova-lien-ligne .wims_button { margin: 0; min-height: 44px; flex: none; }
+.nova-lien-qr { display: flex; gap: var(--nova-e4); align-items: center; margin-top: var(--nova-e1); }
+.nova-lien-qr .wimscenter { margin: 0; flex: none; }
+.nova-lien-qr .wimscenter img { max-width: 140px; height: auto; }
+.nova-lien-carte.nova-lien-numero-carte { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--nova-e3); }
+.nova-lien-num-texte { flex: 1 1 18rem; display: flex; flex-direction: column; gap: var(--nova-e1); }
+.nova-lien-numero-carte .nova-lien-titre { font-size: 1.05rem; }
+.nova-lien-num { font-family: var(--nova-police-chiffres); margin-left: .35em; }
+.nova-lien-numero-carte .wims_button { margin: 0; min-height: 44px; }
+.nova-lien-etat { margin: 0; color: var(--nova-texte-2); min-height: 0; }
+.nova-lien-etat:empty { display: none; }
+@media (max-width: 639px) {
+  .nova-lien-carte { padding: var(--nova-e4); }
+  .nova-lien-ligne .wims_button { flex: 1 1 100%; }
+  .nova-lien-qr { flex-direction: column; align-items: flex-start; }
+}
+/* QR code des élèves (Nova ou WIMS), Agrandir et Télécharger (2026-11-10, utilisateur). */
+.nova-lien-qr-image { flex: none; }
+.nova-lien-qr-image img { display: block; width: 140px; height: 140px; image-rendering: pixelated; border: 1px solid var(--nova-bord); border-radius: 8px; }
+.nova-lien-qr-image .wimscenter { margin: 0; }
+.nova-lien-qr-texte { display: flex; flex-direction: column; gap: var(--nova-e2); }
+.nova-lien-qr-actions { display: flex; gap: var(--nova-e2); flex-wrap: wrap; }
+.nova-lien-qr-actions .wims_button { margin: 0; min-height: 44px; }
+dialog.nova-qr-grand { width: min(92vw, 88vh, 760px); max-width: none; box-sizing: border-box; text-align: center; padding: var(--nova-e5); }
+dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
+.nova-qr-grand .nova-qr-grand-titre { margin: 0 0 var(--nova-e3); font-weight: 700; font-size: 1.4rem; }
+.nova-qr-grand img { display: block; width: 100%; height: auto; max-height: 68vh; object-fit: contain; image-rendering: pixelated; margin: 0 auto; }
+.nova-qr-grand .nova-qr-grand-url { margin: var(--nova-e3) 0; font-family: var(--nova-police-chiffres); font-size: .8rem; color: var(--nova-texte-2); word-break: break-all; }
+.nova-qr-grand .wims_button { margin: 0; min-height: 44px; }
+/* Flyers à imprimer (2026-11-10, utilisateur, 21 par page). */
+.nova-lien-flyers { display: flex; flex-direction: column; gap: var(--nova-e2); margin-top: var(--nova-e2); padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); }
+.nova-lien-flyers label { font-weight: 700; }
+.wimsbody .nova-lien-flyers .nova-lien-nom { flex: 1 1 14rem; min-width: 0; width: auto; margin: 0; min-height: 44px; box-sizing: border-box; border-radius: var(--nova-rayon); }
+
+/* Administration du serveur (adm/manage, page principale, 2026-11-10, maquette B, utilisateur) : chaque groupe de WIMS
+ * (une liste) en carte, une ligne par entrée : icône dans une pastille d'accent, libellé, chevron. Icône choisie d'après
+ * la cible du lien (job, confcat) : vaut dans toutes les langues. Titre répété sous l'onglet masqué. Réglage std-listes. */
+:where(html:not(.nova-std-listes)) #widget_conf_list.ui-tabs > div > h2 { display: none; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul { list-style: none; margin: 0 auto var(--nova-e4); padding: 0; max-width: 46rem; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; text-align: left; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li { position: relative; display: flex; align-items: center; margin: 0; padding: 0; color: var(--nova-texte-2); list-style: none; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li + li { border-top: 1px solid var(--nova-bord); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li:hover { background: var(--nova-accent-doux); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li::before { content: ""; position: absolute; left: .9rem; top: 50%; width: 34px; height: 34px; margin-top: -17px; border-radius: 9px; background: var(--nova-accent-doux); pointer-events: none; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li:hover::before { background: var(--nova-surface, #fff); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li::after { content: "\203A"; flex: none; margin-left: auto; padding: 0 .9rem 0 .5rem; font-size: 1.35rem; line-height: 1; color: var(--nova-texte-2); pointer-events: none; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a { flex: 1 1 auto; position: relative; display: block; min-height: 2.75rem; box-sizing: border-box; padding: .7rem .5rem .7rem calc(1.8rem + 34px); color: var(--nova-texte); text-decoration: none; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: -3px; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a::before { content: ""; position: absolute; left: calc(.9rem + 8px); top: 50%; width: 18px; height: 18px; margin-top: -9px; background: var(--nova-accent); -webkit-mask: var(--nova-maint-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3C/svg%3E")) center / contain no-repeat; mask: var(--nova-maint-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3C/svg%3E")) center / contain no-repeat; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=1"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z'/%3E%3Ccircle cx='13.5' cy='6.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='17.5' cy='10.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='6.5' cy='12.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='8.5' cy='7.5' r='.5' fill='currentColor'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=7"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'/%3E%3Cpath d='M2 12h20'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=2"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Cpath d='M16 3.128a4 4 0 0 1 0 7.744'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=3"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z'/%3E%3Cpath d='M14 2v5a1 1 0 0 0 1 1h5'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=4"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z'/%3E%3Cpath d='M7 11h10'/%3E%3Cpath d='M7 15h6'/%3E%3Cpath d='M7 7h8'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=geolocoption"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=optionalmod"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=6"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3Cpath d='M12 7v5l4 2'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=8"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 14 4-4'/%3E%3Cpath d='M3.34 19a10 10 0 1 1 17.32 0'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=9"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=12"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=10"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6h4'/%3E%3Cpath d='M2 10h4'/%3E%3Cpath d='M2 14h4'/%3E%3Cpath d='M2 18h4'/%3E%3Crect width='16' height='20' x='4' y='2' rx='2'/%3E%3Cpath d='M9.5 8h5'/%3E%3Cpath d='M9.5 12H16'/%3E%3Cpath d='M9.5 16H14'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=13"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'/%3E%3Ccircle cx='16.5' cy='7.5' r='.5' fill='currentColor'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=attrib"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=5"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'/%3E%3Ccircle cx='9' cy='9' r='2'/%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href$="confcat=11"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 19h8'/%3E%3Cpath d='m4 17 6-6-6-6'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=class&"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Cpath d='M16 3.128a4 4 0 0 1 0 7.744'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=classrestore"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='5' x='2' y='3' rx='1'/%3E%3Cpath d='M4 8v11a2 2 0 0 0 2 2h2'/%3E%3Cpath d='M20 8v11a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='m9 15 3-3 3 3'/%3E%3Cpath d='M12 12v9'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=developer"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 18 6-6-6-6'/%3E%3Cpath d='m8 6-6 6 6 6'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="module=adm%2Fdoc"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z'/%3E%3Cpath d='M14 2v5a1 1 0 0 0 1 1h5'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=modules"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z'/%3E%3Cpath d='M12 22V12'/%3E%3Cpolyline points='3.29 7 12 12 20.71 7'/%3E%3Cpath d='m7.5 4.27 9 5.15'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=sendmail"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7'/%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=motd"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z'/%3E%3Cpath d='M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14'/%3E%3Cpath d='M8 6v8'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=activ"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=backup"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'/%3E%3Cpath d='M3 5V19A9 3 0 0 0 21 19V5'/%3E%3Cpath d='M3 12A9 3 0 0 0 21 12'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=upload"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v12'/%3E%3Cpath d='m17 8-5-5-5 5'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=update"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M8 16H3v5'/%3E%3C/svg%3E"); }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li > a[href*="job=fs&"] { --nova-maint-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E"); }
+
+/* Configuration et maintenance d'une classe, d'un groupement ou d'un portail (adm/class/config, page d'entrée ; 2026-11-11,
+ * utilisateur : comme l'administration du serveur, maquette B). nova.js configurationClasse range les listes de WIMS en
+ * cartes (titre de groupe, ligne = icône, libellé, description sans parenthèses, chevron ; ligne entière cliquable).
+ * Listes masquées au plus 3 s en attendant nova.js. Réglage std-listes. */
+html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte):is(:has(> li > a[href*="adm%2Fclass%2Fconfig"][href*="job=arch"]), :has(a[href*="adm%2Fclass%2Fconfig"][href*="job=oefdefault"])) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-cfg { max-width: 46rem; margin: 0 auto var(--nova-e5); text-align: left; }
+.nova-cfg > h2 { margin: var(--nova-e5) 0 var(--nova-e3); }
+.nova-cfg-titre { margin: var(--nova-e3) .25rem var(--nova-e1); font-weight: 700; }
+/* Onglets (2026-11-11, utilisateur) : barre de Réglages de Nova ; deux onglets côte à côte même au téléphone. */
+.nova-cfg-onglets { max-width: 46rem; margin: var(--nova-e4) auto var(--nova-e5); }
+.nova-cfg-onglets > .nova-onglets { margin-bottom: var(--nova-e3); }
+.nova-cfg-onglets section.nova-onglet[hidden] { display: none; }
+.nova-cfg-onglets .nova-cfg { margin-bottom: 0; }
+.nova-cfg-onglets .nova-cfg > h2 { display: none; }
+.nova-cfg-onglets .nova-cfg > .nova-cfg-titre:first-of-type { margin-top: 0; }
+@media (max-width: 639.98px) {
+  .nova-cfg-onglets > .nova-onglets { display: flex; }
+  .nova-cfg-onglets > .nova-onglets .nova-onglet-bouton { flex: 1 1 0; white-space: normal; justify-content: center; text-align: center; padding: var(--nova-e1) var(--nova-e2); }
+}
+.nova-cfg-titre .nova-cfg-desc { display: block; font-weight: 400; }
+.wimsbody ul.nova-cfg-carte { list-style: none; margin: 0 0 var(--nova-e2); padding: 0; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; }
+.wimsbody ul.nova-cfg-carte > li { position: relative; margin: 0; padding: .4rem 2.4rem .4rem calc(1.5rem + 30px); min-height: 2.75rem; box-sizing: border-box; list-style: none; display: flex; flex-direction: column; justify-content: center; }
+.wimsbody ul.nova-cfg-carte > li + li { border-top: 1px solid var(--nova-bord); }
+.wimsbody ul.nova-cfg-carte > li:hover { background: var(--nova-accent-doux); }
+.wimsbody ul.nova-cfg-carte > li::after { content: "\203A"; position: absolute; right: .9rem; top: 50%; transform: translateY(-50%); font-size: 1.35rem; line-height: 1; color: var(--nova-texte-2); pointer-events: none; }
+.wimsbody ul.nova-cfg-carte > li.nova-cfg-index::after { content: none; }
+.nova-cfg-ligne > .nova-cfg-tete { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+.wimsbody .nova-cfg-ligne a.nova-cfg-lien { color: var(--nova-texte); text-decoration: none; font-weight: 600; display: inline-block; }
+.wimsbody .nova-cfg-ligne a.nova-cfg-lien::first-letter { text-transform: uppercase; }
+.wimsbody .nova-cfg-ligne a.nova-cfg-lien::after { content: ""; position: absolute; inset: 0; }
+.wimsbody .nova-cfg-ligne a.nova-cfg-lien:focus-visible { outline: none; }
+.wimsbody .nova-cfg-ligne a.nova-cfg-lien:focus-visible::after { outline: 3px solid var(--nova-accent); outline-offset: -3px; border-radius: var(--nova-rayon-carte); }
+.nova-cfg-desc { color: var(--nova-texte-2); font-size: .85rem; line-height: 1.3; }
+.nova-cfg-desc a, .nova-cfg-boutons a { position: relative; z-index: 1; }
+.nova-cfg-ligne .nova-tag-nouveau { position: relative; z-index: 1; }
+.nova-cfg-boutons { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .3rem; }
+.wimsbody .nova-cfg-boutons a { margin: 0; }
+.nova-cfg-ico { position: absolute; left: .75rem; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 8px; background: var(--nova-accent-doux); pointer-events: none; }
+.nova-cfg-index > .nova-cfg-ico { top: .4rem; margin-top: 0; }
+.wimsbody ul.nova-cfg-carte > li:hover > .nova-cfg-ico { background: var(--nova-surface, #fff); }
+.nova-cfg-ico::before { content: ""; position: absolute; left: 7px; top: 7px; width: 16px; height: 16px; background: var(--nova-accent); -webkit-mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3C/svg%3E")) center / contain no-repeat; mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3C/svg%3E")) center / contain no-repeat; }
+.nova-cfg-ico[data-icone="lien"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="disque"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'/%3E%3Cpath d='M3 5V19A9 3 0 0 0 21 19V5'/%3E%3Cpath d='M3 12A9 3 0 0 0 21 12'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="bouclier"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="balai"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 22-1-4'/%3E%3Cpath d='M19 14a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2h-3a1 1 0 0 1-1-1V4a2 2 0 0 0-4 0v5a1 1 0 0 1-1 1H6a2 2 0 0 0-2 2v1a1 1 0 0 0 1 1'/%3E%3Cpath d='M19 14H5l-1.973 6.767A1 1 0 0 0 4 22h16a1 1 0 0 0 .973-1.233z'/%3E%3Cpath d='m8 22 1-4'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="maj"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M8 16H3v5'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="propager"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cline x1='8.59' x2='15.42' y1='13.51' y2='17.49'/%3E%3Cline x1='15.41' x2='8.59' y1='6.51' y2='10.49'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="cle"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z'/%3E%3Ccircle cx='16.5' cy='7.5' r='.5' fill='currentColor'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="curseurs"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 8h4'/%3E%3Cpath d='M12 21v-9'/%3E%3Cpath d='M12 8V3'/%3E%3Cpath d='M17 16h4'/%3E%3Cpath d='M19 12V3'/%3E%3Cpath d='M19 21v-5'/%3E%3Cpath d='M3 14h4'/%3E%3Cpath d='M5 10V3'/%3E%3Cpath d='M5 21v-7'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="sequence"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 5h10'/%3E%3Cpath d='M11 12h10'/%3E%3Cpath d='M11 19h10'/%3E%3Cpath d='M4 4h1v5'/%3E%3Cpath d='M4 9h2'/%3E%3Cpath d='M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="crayon"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="palette"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z'/%3E%3Ccircle cx='13.5' cy='6.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='17.5' cy='10.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='6.5' cy='12.5' r='.5' fill='currentColor'/%3E%3Ccircle cx='8.5' cy='7.5' r='.5' fill='currentColor'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="nova"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z'/%3E%3Cpath d='M20 2v4'/%3E%3Cpath d='M22 4h-4'/%3E%3Ccircle cx='4' cy='20' r='2'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="forum"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z'/%3E%3Cpath d='M7 11h10'/%3E%3Cpath d='M7 15h6'/%3E%3Cpath d='M7 7h8'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="portevoix"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z'/%3E%3Cpath d='M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14'/%3E%3Cpath d='M8 6v8'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="cahier"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="livret"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526'/%3E%3Ccircle cx='12' cy='8' r='6'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="cadenas"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="jauge"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 14 4-4'/%3E%3Cpath d='M3.34 19a10 10 0 1 1 17.32 0'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="users"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Cpath d='M16 3.128a4 4 0 0 1 0 7.744'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="serveur"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='8' x='2' y='2' rx='2' ry='2'/%3E%3Crect width='20' height='8' x='2' y='14' rx='2' ry='2'/%3E%3Cline x1='6' x2='6.01' y1='6' y2='6'/%3E%3Cline x1='6' x2='6.01' y1='18' y2='18'/%3E%3C/svg%3E"); }
+.nova-cfg-ico[data-icone="oeil"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+
+/* Zones dépendantes (adm/class/config, job=propagate) : « Tout cocher », « Tout décocher » au-dessus de la liste
+ * (js/nova.js propagationNova, 2026-11-11, utilisateur). Boutons secondaires (contour), grisés quand sans effet. */
+.wimsbody .nova-tout { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: var(--nova-e3) 0; }
+.wimsbody .nova-tout button {
+  min-height: 36px;
+  padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-accent);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  color: var(--nova-accent);
+  font: inherit;
+  font-size: var(--nova-petit);
+  font-weight: 700;
+  cursor: pointer;
+}
+.wimsbody .nova-tout button:hover:not(:disabled) { background: var(--nova-accent-doux); }
+.wimsbody .nova-tout button:disabled { border-color: var(--nova-bord); color: var(--nova-texte-2); cursor: default; opacity: .7; }

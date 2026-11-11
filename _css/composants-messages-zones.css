@@ -1,0 +1,161 @@
+/* Couleurs de rôle que des modules demandent par classe */
+.wims_color1 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+.wims_color2 { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.wims_color3 { background-color: var(--nova-aide); color: #FFFFFF; }
+
+/* Documents (adm/doc) et infobulles */
+.container h4 { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_pendant, #menu_html { background-color: var(--nova-accent); color: var(--nova-sur-accent); }
+#menu_avant, #menu_apres { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
+.infobulle { background-color: var(--nova-neutre-fort); color: #FFFFFF; }
+
+/* Messages */
+.wims_msg { border-radius: var(--nova-rayon); padding-left: var(--nova-e3); padding-right: var(--nova-e3); }   /* icône moins collée au bord (2026-10-08) */
+.wims_msg.info { background-color: var(--nova-accent-doux); color: var(--nova-texte); border-color: transparent; }
+.wims_msg.success { background-color: var(--nova-succes-fond); color: var(--nova-succes); }
+.wims_msg.warning { background-color: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.wims_msg.alert { background-color: var(--nova-erreur-fond); color: var(--nova-erreur); }
+/* Icône des messages (jeux d'icônes de WIMS : ::before en police d'icônes, 20 px, abaissée de 3 px, parfois en bloc) :
+ * en ligne, à la taille du texte et centrée sur sa première ligne, aux couleurs du thème (demande de l'utilisateur,
+ * 2026-10-08). */
+html body .wims_msg::before {
+  display: inline-block; float: none; width: auto; min-width: 1em; /* jeu Lucide : icône en masque, sans glyphe */
+  font-size: 1.15em; line-height: 1; vertical-align: -0.12em;
+  margin: 0 .45em 0 0;
+}
+html body .wims_msg.info::before, html body .wims_msg.help::before { color: var(--nova-accent); }
+html body .wims_msg.warning::before { color: var(--nova-attention); }
+html body .wims_msg.alert::before { color: var(--nova-erreur); }
+html body .wims_msg.success::before { color: var(--nova-succes); }
+
+/* Participant connecté (2026-11-11, maquette A, utilisateur) : WIMS pose la main levée U+270B après tout
+ * .wims_connected (_css/utilities2.css) : accueil enseignant (p), tableaux du suivi d'un parcours et des devoirs libres
+ * (td), livret (i seul, span du titre). Point vert de présence à la place ; sur l'accueil, phrase en pilule, point devant. */
+.wims_connected::after, .nova-en-ligne {
+  content: ""; display: inline-block; width: .6em; height: .6em; border-radius: 50%;
+  margin-left: .45em; vertical-align: .08em; font-size: inherit; color: inherit;
+  background: var(--nova-en-ligne); box-shadow: 0 0 0 3px var(--nova-succes-fond);
+  padding: 0; border: 0; min-width: 0; flex: none; aspect-ratio: 1;
+}
+/* Point posé par nova.js (enLigne), avec son info-bulle « En ligne » : il remplace le ::after. */
+.wims_connected.nova-en-ligne-pose::after { content: none; }
+/* Livret : icône seule dans une info-bulle de WIMS (pointillés, marges de .wims_tooltip). */
+.wims_connected.wims_tooltip { border-bottom: 0; text-decoration: none; padding: 0; cursor: default; }
+p.wims_connected {
+  display: flex; align-items: center; gap: .6em; width: fit-content; max-width: 100%;
+  padding: .4em .95em; border-radius: 1.3em; background: var(--nova-succes-fond); color: var(--nova-texte);
+}
+p.wims_connected::after { content: none; }
+p.wims_connected::before {
+  content: ""; flex: none; width: .6em; height: .6em; border-radius: 50%;
+  background: var(--nova-en-ligne); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nova-en-ligne) 25%, transparent);
+}
+
+/* Typographie de contenu (reprise de _css/typo.css, retiré du modèle) */
+img { max-width: 100%; }
+blockquote { margin: .5rem 0 1rem; padding: .5rem 1.25rem; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); }
+cite { display: block; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+abbr[title] { border-bottom: 1px dotted currentColor; cursor: help; text-decoration: none; }
+a { background-color: transparent; text-decoration: none; cursor: pointer; }
+a img { border: 0; }
+.link_icon.erase { color: var(--nova-erreur); }
+a.erase:hover { color: color-mix(in oklab, var(--nova-erreur) 80%, black); }
+.table-scroll { overflow-x: auto; }
+.wims_warning { color: var(--nova-attention-texte); font-weight: 700; }
+div.wims_warning { padding: .5em 20px; }
+span.tooltip { color: var(--nova-lien); }
+.debug { background: #000; padding: .5em; color: darkorange; font-family: monospace; }
+
+/* Zones de travail (établissement, groupement) : niveau, classe, programme, cours.
+ * WIMS les marque d'un liseré épais de couleur vive (_css/classuser.css) : dans le bloc « Vos zones de
+ * travail », sa légende, le titre d'une zone (_widgets/classtitle.phtml) et le texte de l'aide.
+ * Nova : une pastille de teinte douce et une icône par type (décision du 2026-10-02). Les teintes
+ * gardent les familles de WIMS, que l'aide nomme (« cadres bleus » pour les classes, « verts » pour
+ * les programmes, « violets » pour les cours). Valeurs fixes : la zone de contenu reste claire. */
+.wims_classes_direct_level { --nova-zone-fond: #DDF1F3; --nova-zone-encre: #1E6B74; --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v16a2 2 0 0 0 2 2h16'/%3E%3Cpath d='M7 11h8'/%3E%3Cpath d='M7 16h12'/%3E%3Cpath d='M7 6h3'/%3E%3C/svg%3E"); }
+.wims_classes_direct_class { --nova-zone-fond: #E3ECF9; --nova-zone-encre: #2D5C9C; --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Cpath d='M16 3.128a4 4 0 0 1 0 7.744'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E"); }
+.wims_classes_direct_program { --nova-zone-fond: #E1F2E5; --nova-zone-encre: #2D7243; --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v16'/%3E%3Cpath d='M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z'/%3E%3C/svg%3E"); }
+.wims_classes_direct_course { --nova-zone-fond: #EFE7F8; --nova-zone-encre: #6A4595; --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h20'/%3E%3Cpath d='M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3'/%3E%3Cpath d='m7 21 5-5 5 5'/%3E%3C/svg%3E"); }
+.wims_classes_direct_portal { --nova-zone-fond: var(--nova-surface-2); --nova-zone-encre: var(--nova-texte-2); --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 21v-3a2 2 0 0 0-4 0v3'/%3E%3Cpath d='M18 4.933V21'/%3E%3Cpath d='m4 6 7.106-3.79a2 2 0 0 1 1.788 0L20 6'/%3E%3Cpath d='m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11'/%3E%3Cpath d='M6 4.933V21'/%3E%3Ccircle cx='12' cy='9' r='2'/%3E%3C/svg%3E"); }
+.wims_classes_direct_testclass { --nova-zone-fond: var(--nova-attention-fond); --nova-zone-encre: var(--nova-attention); --nova-zone-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2'/%3E%3Cpath d='M6.453 15h11.094'/%3E%3Cpath d='M8.5 2h7'/%3E%3C/svg%3E"); }
+.wims_classes_direct_level, .wims_classes_direct_class, .wims_classes_direct_program, .wims_classes_direct_course, .wims_classes_direct_portal, .wims_classes_direct_testclass {
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--nova-zone-fond);
+  padding: .1em .55em .1em .45em;
+  margin: 0;
+  -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
+}
+.wims_classes_direct_level::before, .wims_classes_direct_class::before, .wims_classes_direct_program::before, .wims_classes_direct_course::before, .wims_classes_direct_portal::before, .wims_classes_direct_testclass::before {
+  content: "";
+  display: inline-block;
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: .35em;
+  vertical-align: -.17em;
+  background-color: var(--nova-zone-encre);
+  -webkit-mask: var(--nova-zone-picto) center / contain no-repeat;
+          mask: var(--nova-zone-picto) center / contain no-repeat;
+}
+/* L'arbre des zones : plus de flèches ; des filets de rattachement fins. */
+.wims_subclasses { list-style: none; margin: 0; padding: 0; }
+.wims_subclasses li { list-style: none; margin: 0; padding: var(--nova-e1) 0; }
+.wims_subclasses li::before { content: none; }
+.wims_subclasses ul { list-style: none; margin: var(--nova-e1) 0 0 .9em; padding-left: var(--nova-e4); border-left: 1px solid var(--nova-bord); }
+.wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"] { display: inline-block; padding-block: .3em; line-height: 1.35; }
+.wims_subclasses .program, .wims_subclasses .course { background-color: transparent; }
+/* Classes d'un niveau repliées (accueil d'une structure, enseignant ; 2026-11-10, maquette A, utilisateur) : bouton
+ * « Replier les n classes » posé par nova.js (replisClasses) à côté du niveau ; replié, il ne reste que les programmes et
+ * leurs cours. Choix gardé sur le serveur (header.phtml, .nova_replis_<login>). */
+.wims_subclasses > li.nova-replie > ul > li:has(> .wims_classes_direct_class) { display: none; }
+.wims_subclasses .nova-replis-bouton {
+  display: inline-flex; align-items: center; gap: .35em; vertical-align: middle;
+  min-height: 36px; margin: 0 0 0 var(--nova-e3); padding: 4px 12px;
+  border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface);
+  color: var(--nova-texte-2); font: inherit; font-size: .85em; line-height: 1.2; cursor: pointer; box-shadow: none;
+}
+.wims_subclasses .nova-replis-bouton:hover { border-color: var(--nova-accent); color: var(--nova-accent); background: var(--nova-surface); }
+.wims_subclasses .nova-replis-bouton:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.wims_subclasses .nova-replis-bouton::before {
+  content: ""; width: .9em; height: .9em; flex: none; background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.wims_subclasses .nova-replis-bouton[aria-expanded="false"]::before { transform: rotate(180deg); }
+/* Titre d'une zone : la pastille, en plus grand, sans cadre. */
+h1.wims_title [class^="wims_classes_direct_"] { padding: .05em .45em .1em .35em; border-radius: 12px; }
+/* Légende : les mêmes pastilles, en petit, alignées. */
+.wims_work_legend { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--nova-e2); font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wims_work_legend p, .wims_work_legend ul { margin: 0; padding: 0; }
+.wims_work_legend ul { display: flex; flex-wrap: wrap; gap: var(--nova-e2); list-style: none; }
+/* `.inline>li` de WIMS ajoute 2em à droite de chaque entrée : les écarts viennent du gap. */
+.wims_work_legend li { color: var(--nova-texte); margin: 0; float: none; padding: .1em .55em .1em .45em; }
+/* Légende des cartes d'activités (fieldset de WIMS : Documents, Feuilles, Examens…) : comme celle
+ * des zones, une ligne sans cadre ni fond, « Légende » en petit puis les pastilles. La legend
+ * flottante n'est plus dessinée dans le trait du cadre : elle devient un élément de la ligne. */
+fieldset.wims_work_legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--nova-e2);
+  min-width: 0;
+  margin: var(--nova-e3) 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+/* La liste s'efface : « Légende » et les pastilles forment une seule ligne, alignée à droite. */
+fieldset.wims_work_legend > ul { display: contents; }
+fieldset.wims_work_legend > ul > li { margin: 0; }   /* pas la marge des cartes (contenu.css) */
+fieldset.wims_work_legend > legend {
+  float: left;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: var(--nova-petit);
+  color: var(--nova-texte-2);
+}
+

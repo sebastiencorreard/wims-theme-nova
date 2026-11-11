@@ -231,13 +231,16 @@ par défaut et la cadence d'actualisation avec un DOM en mémoire, sans navigate
 | `_css/polices.css`, `polices/` | Atkinson Hyperlegible Next et Mono, servies localement (OFL) |
 | `img/logo-wims-blanc.svg` | logo de WIMS (blanc) devant « WIMS » dans la barre (`_widgets/headhome.phtml`) |
 | `_css/jetons.css` | toutes les couleurs, tailles, espaces ; clair, sombre, et contenu clair en sombre |
-| `_css/composants.css` | boutons, champs, tableaux, légendes, messages (couleurs que Standard écrivait dans htmlheader) |
+| `_css/composants-*.css` | composants partagés avec les modules de WIMS, en huit feuilles dont l'ordre compte (voir `css.css.template`) : `base` (boutons, champs, tableaux), `formulaires` (cartes, réglages), `messages-zones`, `fenetres` (accordéons, dialogues), `connexion-clavier`, `reglages-badges`, `dominos`, `enseignant` (restriction d'accès, liens de connexion, configuration) |
 | `_css/cadre.css` | barre du haut, fil d'Ariane, menu latéral (grille sur ordinateur, replié sur téléphone), contextes particuliers |
 | `_css/chrono.css` | chronomètre d'examen et ses états |
 | `_css/contenu.css` | contenu des modules : onglets, séquences, débordements, contrastes repris |
 | `_css/foundation-min.css` | le sous-ensemble de Foundation encore utilisé |
 | `_css/base.css` | police et couleurs de page, en dernier |
-| `js/nova.js` | bouton du menu sur téléphone ; états du chronomètre, bandeau de fin, « Fin à » |
+| `js/nova.js` | tout le JavaScript commun de Nova. **Fichier assemblé** : ne pas le modifier, mais ses sources |
+| `js/src/*.js` | sources de `nova.js`, par domaine (`00-commun`, `10-barre-menus`, `20-composants`, `30-examen`, `40-feuilles-notes`, `50-exercice`, `60-eleve`, `61-couleur`, `62-avatar`, `70-enseignant`, `80-reglages`, `99-demarrage`) : morceaux d'une seule fonction englobante, concaténés dans l'ordre des noms |
+| `construire-js.sh` | assemble `js/nova.js`, vérifie sa syntaxe, pose son empreinte dans `htmlheader.phtml` (sans conteneur) |
+| `verifier.sh` | contrôles avant livraison (assemblage à jour, syntaxe, caractères non ASCII dans le code, feuilles du modèle, encodage des gabarits, textes des langues, chemins `themes/Nova` en dur) ; lancé par `livrer.sh` |
 | `_widgets/headmenu.phtml`, `user_links.phtml` | copies des widgets WIMS ; l'entrée `chrono` devient le chronomètre Nova |
 | `lang/name.phtml.{fr,en,nl}` | textes propres au thème (**latin-1**) |
 | `htmlheader.phtml` | variables `--wims_*` reliées aux jetons, `nova.js` (HTML seulement : lu par le C) |
@@ -245,7 +248,7 @@ par défaut et la cadence d'actualisation avec un DOM en mémoire, sans navigate
 | `VERSION`, `_procs/version.sh`, `_widgets/version.phtml` | numéro de version (choisi à la main dans `VERSION` ; `livrer.sh` y ajoute commit et date), affiché en bas des cartes « Réglages de Nova » |
 | `CHANGELOG.md`, `nouveautes.html` | nouveautés de chaque version ; la page (ouverte par le numéro de version, nouvel onglet) affiche `CHANGELOG.md` |
 
-Après toute modification de `_css/` : `./construire-css.sh`.
+Après toute modification de `_css/` : `./construire-css.sh`. Après toute modification de `js/src/` : `./construire-js.sh`.
 
 ## Points de surcharge d'un thème WIMS (vérifiés dans 4.32)
 

@@ -66,9 +66,6 @@ open(f, 'w', encoding='latin-1').write(t.strip() + '\n')
 PY
 fi
 cp "$tmp" css.css
-# nova.js : son adresse porte l'empreinte de son contenu, pour qu'un navigateur (un téléphone
-# surtout) ne garde pas une ancienne version en cache ; htmlheader.phtml est mis à jour ici.
-empreinte=$(sha256sum js/nova.js | cut -c1-10)
-# Chemin par $wims_theme (remplacé par le C de WIMS) : le dossier du thème peut porter un autre nom (Nova12…).
-sed -i "s|html/themes/[^/]*/js/nova.js[^\"]*\"|html/themes/\$wims_theme/js/nova.js?v=$empreinte\"|" htmlheader.phtml
+# nova.js : assemblé depuis js/src et empreinte posée dans htmlheader.phtml par construire-js.sh (2026-11-11).
+./construire-js.sh
 echo "css.css : $(wc -c < css.css) octets, $feuilles feuilles${LISIBLE:+ (lisible)}"

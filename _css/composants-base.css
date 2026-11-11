@@ -1,0 +1,142 @@
+/* Nova — composants partagés avec les modules de WIMS.
+ * Reprend, sur les jetons, les règles de couleur que htmlheader.phtml de Standard écrivait en
+ * dur à partir des réglages de la classe (tableaux, légendes, boutons, wims_color1..3…). */
+
+/* Boutons */
+input[type="submit"], input[type="button"], .main_body .wims_button, button.wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  border: 0;
+  border-radius: var(--nova-rayon);
+  font-family: var(--nova-police);
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 var(--nova-e4);
+  cursor: pointer;
+}
+input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:hover {
+  background-color: color-mix(in oklab, var(--nova-accent) 85%, black);
+  color: var(--nova-sur-accent);
+}
+.main_body .wims_button_help, .main_body a.wims_button_help {
+  background-color: var(--nova-aide);
+  color: #FFFFFF;
+  border-radius: var(--nova-rayon);
+}
+.main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+/* Un bouton qui est un lien (<a class="wims_button"> : « Entrer », « Modifier », « Présentation en
+ * séquences »…) ou un bloc (<div class="wims_button"> autour d'un lien, feuilles programmées : « Niveau 1 »,
+ * signalé le 2026-10-03) : la hauteur minimale ne centre pas son texte, qui restait en haut. */
+:is(a, div, span).wims_button, .main_body :is(a, div, span).wims_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* Moteur de recherche de WIMS (accueil du site, accueil d'une classe…) : champ et bouton
+ * « Chercher » accolés, 40 px de haut, le champ arrondi à gauche seulement, le bouton à droite
+ * (5 px, comme le bouton d'un input-group de Foundation). */
+fieldset.wims_search_engine .search_field { display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+fieldset.wims_search_engine .search_field > input[type="search"],
+#search_classes .input-group-field {
+  box-sizing: border-box;
+  flex: 1 1 12rem;
+  min-width: 0;
+  width: auto;
+  height: 40px;
+  margin: 0;
+  border-radius: var(--nova-rayon) 0 0 var(--nova-rayon);
+}
+fieldset.wims_search_engine .search_field > button,
+#search_classes .input-group-button button {
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 var(--nova-e4);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 0 calc(var(--nova-rayon) / 2) calc(var(--nova-rayon) / 2) 0;
+}
+fieldset.wims_search_engine .search_field > button .Searching { font-size: inherit; }
+fieldset.wims_search_engine .wims_button_help.float_right { margin-left: var(--nova-e3); }
+fieldset.wims_search_engine .search_field > span { flex-basis: 100%; margin: var(--nova-e3) 0 0 !important; }   /* style en ligne de WIMS */
+
+/* Champs */
+input[type="text"], input[type="password"], input[type="email"], input[type="number"],
+input[type="date"], input[type="url"], input[type="search"], input:not([type]), select, textarea {
+  font-family: var(--nova-police);
+  font-size: 1rem;
+  color: var(--nova-texte);
+  background-color: var(--nova-surface);
+  border: 1px solid var(--nova-bord-fort);
+  border-radius: var(--nova-rayon);
+}
+/* Champs d'un exercice : 36 px de haut dans des lignes de 26 px, sans marge, deux champs sur des lignes
+ * successives se touchaient (ex. H5/stat/OEFevalwimsstat.fr diagboite2) : 4 px au-dessus et au-dessous,
+ * soit 8 px entre eux (demande de l'utilisateur, 2026-10-05). */
+.wimsbody :is(.oefstatement, .oefform) :is(input[type="text"], input[type="number"], input:not([type]), select, textarea) { margin-block: 4px; }
+
+/* Tableaux WIMS */
+/* ---------- Tableaux de WIMS (wimstable, wimsborder) — 2026-10-02 ----------
+ * Même mise en page que WIMS (largeur, marges, retraits, alignements : wimstable.css) ; plus de
+ * grille grise ni de zébrage franc. Une carte au bord fin et aux coins arrondis, des filets
+ * horizontaux, un en-tête sur fond doux (filets verticaux seulement là, pour les groupes de
+ * colonnes), un zébrage léger et la ligne survolée teintée. Le zébrage est posé sur les lignes :
+ * une cellule colorée (notes) garde sa couleur. */
+.wimstable, table.wimsborder {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  overflow: hidden;
+}
+.wimstable :is(caption, th, td), table.wimsborder :is(caption, tr, th, td) { border: 0; }
+.wimstable td, table.wimsborder td { border-top: 1px solid var(--nova-bord); }
+/* Pas de filet en double : sous une ligne d'en-tête (qui a déjà le sien), ni en tête du tableau. */
+.wimstable tbody > tr:first-child > td, table.wimsborder tbody > tr:first-child > td,
+.wimstable tr:not(:has(> td)) + tr > td, table.wimsborder tr:not(:has(> td)) + tr > td { border-top: 0; }
+.wimstable th, table.wimsborder th {
+  background-color: var(--nova-surface-2);
+  color: var(--nova-texte);
+  font-weight: 700;
+  border-bottom: 1px solid var(--nova-bord);
+}
+.wimstable th + th, table.wimsborder th + th { border-left: 1px solid var(--nova-bord); }
+.wimstable tr:nth-child(odd), table.wimsborder tr:nth-child(odd) { background-color: var(--nova-surface); }
+.wimstable tr:nth-child(even), table.wimsborder tr:nth-child(even) { background-color: var(--nova-fond); }
+.wimstable tr:hover:has(> td), table.wimsborder tr:hover:has(> td) { background-color: color-mix(in oklab, var(--nova-accent) 6%, var(--nova-surface)); }
+.wimstable th a { color: inherit; }
+/* Élèves : ni tableau ni cellule à coins arrondis (demande de l'utilisateur, 2026-10-03) — les coins de la
+ * carte rognaient les cellules d'angle, et WIMS arrondit les cellules de note (_css/sheet.css,
+ * .wims_sheet_score : 2 px et un filet #666). */
+body:has(#nova-eleve) .wimsbody :is(.wimstable, table.wimsborder) { border-radius: 0; }
+body:has(#nova-eleve) .wimsbody :is(td, th) { border-radius: 0; }
+body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-right: 0; border-bottom: 0; margin: 0; }
+/* Tableaux dans un exercice (OEF : énoncé, réponses, correction — pages de feuille, d'examen, de course) :
+ * quadrillage complet et filet plus marqué, pour lire les cases (demande de l'utilisateur, 2026-10-03). */
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) { border-color: var(--nova-bord-fort); }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) :is(td, th) { border-top: 1px solid var(--nova-bord-fort); border-left: 1px solid var(--nova-bord-fort); }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) tr > :first-child { border-left: 0; }
+.wimsbody:has(.oefstatement) :is(.wimstable, table.wimsborder) tr:first-child > * { border-top: 0; }
+.wims_title_seq, .wims_widget_box .title_box {
+  background-color: var(--nova-accent-doux);
+  color: var(--nova-texte);
+}
+/* Titre d'un tableau : un titre en gras au-dessus, sans fond ni cadre (alignement de WIMS gardé). */
+.wimstable > caption, table.wimsborder > caption {
+  padding: 0 0 var(--nova-e2);
+  background: none;
+  color: var(--nova-texte);
+  font-weight: 700;
+}
+.wimstable > caption a { color: inherit; }
+.wimstable > caption .wims_button, .wimstable th .wims_button {
+  background-color: var(--nova-accent);
+  color: var(--nova-sur-accent);
+}
+

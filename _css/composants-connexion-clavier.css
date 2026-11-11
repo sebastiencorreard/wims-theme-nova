@@ -1,0 +1,132 @@
+/* Page de connexion d'une classe, d'un groupement, d'un portail (adm/class/classes, authparticipant) : les
+ * textes « Vous avez un compte… », « Pour entrer dans… », « Vous n'avez pas de compte… » sont vidés par
+ * lang/adm_class_classes_lang_names.phtml.* (demande de l'utilisateur, 2026-10-03) ; leurs balises vides
+ * ne prennent pas de place. */
+.wimsbody:has(input[name="auth_password"]) > :is(h3, p):empty { display: none; }
+
+/* Changement de mot de passe (adm/class/passwd) : les trois champs l'un sous l'autre, même sur un très
+ * grand écran (property_fields est en ligne, avec retour) — demande de l'utilisateur, 2026-10-03. */
+.wimsbody fieldset.property_fields:has(#pw1) { flex-direction: column; flex-wrap: nowrap; width: auto; max-width: 36rem; margin-inline: auto; }
+.wimsbody fieldset.property_fields:has(#pw1) > .field { flex: 0 0 auto; width: auto; }
+/* Connexion : identifiant et mot de passe sur toute la largeur de la carte (la règle « largeur = size » des cartes de
+ * réglages, 2026-10-08, les avait rétrécis à 20 caractères, de longueurs différentes ; signalé par l'utilisateur). */
+.wimsbody fieldset.property_fields:is(:has(input[name="auth_password"]), :has(#pw1)) .field :is(input[type="text"], input[type="password"], input[type="email"], input:not([type])) { width: 100%; }
+.wimsbody fieldset.property_fields:is(:has(input[name="auth_password"]), :has(#pw1)) .nova-mdp { display: block; }
+
+/* Œil du mot de passe (js/nova.js, oeilMotDePasse ; demande de l'utilisateur, 2026-10-05) : bouton dans le
+ * champ, à droite ; œil barré quand le mot de passe est en clair. */
+.nova-mdp { position: relative; display: inline-block; max-width: 100%; vertical-align: middle; }
+.nova-mdp.nova-mdp-plein { display: block; }
+.nova-mdp.nova-mdp-plein > input { width: 100%; box-sizing: border-box; }
+.nova-mdp > input { padding-right: 44px; }
+.nova-mdp-oeil {
+  --nova-oeil-mdp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
+  width: 40px;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+.nova-mdp-oeil::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  background-color: var(--nova-texte-2);
+  -webkit-mask: var(--nova-oeil-mdp) center / contain no-repeat;
+          mask: var(--nova-oeil-mdp) center / contain no-repeat;
+}
+.nova-mdp-oeil[aria-pressed="true"] {
+  --nova-oeil-mdp: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49'/%3E%3Cpath d='M14.084 14.158a3 3 0 0 1-4.242-4.242'/%3E%3Cpath d='M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143'/%3E%3Cpath d='m2 2 20 20'/%3E%3C/svg%3E");
+}
+.nova-mdp-oeil:hover { background: var(--nova-accent-doux); }
+.nova-mdp-oeil:hover::before, .nova-mdp-oeil[aria-pressed="true"]::before { background-color: var(--nova-accent); }
+.nova-mdp-oeil:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+
+/* Clavier mathématique tactile (js/nova.js, clavierMaths ; disposition A choisie par l'utilisateur,
+ * 2026-10-06) : 4 rangées de 7 touches, collé en bas de l'écran ; la page garde de la place en dessous. */
+.nova-clavier {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in oklab, var(--nova-texte) 14%, var(--nova-fond));
+  box-shadow: 0 -2px 12px rgb(0 0 0 / 12%);
+}
+.nova-clavier[hidden] { display: none; }
+.nova-clavier .nova-touche {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 46px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: var(--nova-surface);
+  color: var(--nova-texte);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 25%);
+  font: 600 1.25rem var(--nova-police);
+  text-transform: none;
+  letter-spacing: 0;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+          user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.nova-clavier .nova-touche > span { display: inline-block; line-height: 1; white-space: nowrap; }
+.nova-clavier .nova-touche sup { font-size: .62em; line-height: 0; vertical-align: .6em; }
+.nova-clavier .nova-touche:is(.f, .nav, .abc) { background: color-mix(in oklab, var(--nova-texte) 9%, var(--nova-surface)); }
+.nova-clavier .nova-touche.f { font-size: 1.125rem; }
+.nova-clavier .nova-touche.abc { font-size: .875rem; font-weight: 700; letter-spacing: .03em; }
+.nova-clavier .nova-touche.ok { background: var(--nova-accent); color: var(--nova-sur-accent); font-size: 1rem; font-weight: 700; }
+.nova-clavier .nova-touche.s2 { grid-column: span 2; }
+.nova-clavier .nova-touche:active { background: var(--nova-accent-doux); }
+.nova-clavier .nova-touche.ok:active { background: color-mix(in oklab, var(--nova-accent) 80%, black); }
+html.nova-clavier-ouvert body { padding-bottom: var(--nova-clavier-h, 0px); }
+/* Les boutons collés en bas (« Valider »…) et le retour en haut cèdent la place au clavier (sa touche Entrée valide). */
+html.nova-clavier-ouvert :is(.nova-collant, .wims_topback) { display: none !important; }
+/* Pastille flottante (icône de clavier, en bas à droite) quand le clavier Nova est rangé : le rouvre
+ * (js/nova.js, clavierMaths ; demande de l'utilisateur, 2026-10-06). Au-dessus du clavier du téléphone s'il
+ * est ouvert (--nova-vv-bas), et des boutons collés en bas ; la pastille « retour en haut » passe au-dessus. */
+.nova-pastille-clavier { display: none; }
+html.nova-clavier-permis:not(.nova-clavier-ouvert) .nova-pastille-clavier {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 0px)) + var(--nova-vv-bas, 0px));
+  z-index: 290;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--nova-accent);
+  color: var(--nova-sur-accent);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 18%), 0 8px 20px rgb(0 0 0 / 18%);
+  -webkit-tap-highlight-color: transparent;
+}
+html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .nova-pastille-clavier { bottom: calc(76px + var(--nova-vv-bas, 0px)); }
+html.nova-clavier-permis:not(.nova-clavier-ouvert) .wims_topback { bottom: 76px; }
+html.nova-clavier-permis.nova-boutons-collants:not(.nova-clavier-ouvert) .wims_topback { bottom: 136px; }
+

@@ -1,0 +1,208 @@
+/* Page Apparence de la maintenance du site : carte « Réglages de Nova » et repli des réglages sans effet
+ * (js/nova.js, apparenceNova ; header.phtml, _widgets/apparence.phtml ; maquette A, 2026-10-06). */
+.nova-app { margin: 0 0 var(--nova-e5); }
+/* Le cadre property_fields de WIMS dispose ses enfants en flex : la carte reste en bloc, lignes pleine largeur. */
+fieldset.nova-app-carte { display: block; }
+fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
+.nova-app-fait { margin: 0 0 var(--nova-e4); }
+.nova-app-pastille { margin-left: .4em; padding: 1px 8px; border-radius: 999px; background: var(--nova-accent-doux); color: var(--nova-lien); font-size: .75rem; font-weight: 700; vertical-align: middle; }
+.nova-app-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--nova-e3); align-items: center; padding: var(--nova-e2) 0; border-top: 1px solid var(--nova-bord); }
+.nova-app-ligne:first-of-type { border-top: 0; }
+.nova-app-nom { font-weight: 600; }
+.nova-app-aide { display: block; font-weight: 400; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-app-choix { display: inline-flex; border: 1px solid var(--nova-bord-fort); border-radius: 999px; overflow: hidden; }
+.nova-app-choix label { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--nova-e4); margin: 0; font-weight: 700; color: var(--nova-texte-2); cursor: pointer; }
+.nova-app-choix input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.nova-app-choix label:has(input:checked) { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.nova-app-choix label:has(input:focus-visible) { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+.nova-app-note { margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-app-version { margin: var(--nova-e2) 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); text-align: right; }
+.nova-app-version .nova-app-commit { font-family: var(--nova-police-chiffres); }
+.nova-app-actions { display: flex; justify-content: flex-end; margin-top: var(--nova-e3); }
+/* Réglages repliés : l'attribut hidden seul perdait contre « li.field { display: block } » de WIMS (vécu, 2026-10-06). */
+.nova-sans-effet[hidden] { display: none !important; }
+.nova-app-repli { flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 8px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.nova-app-repli-bouton { min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+@media (max-width: 639.98px) { .nova-app-ligne { grid-template-columns: 1fr; } .nova-app-choix { justify-self: start; } }
+/* Paliers et vacances des badges (2026-10-07) : libellé au-dessus, champ sur toute la largeur. */
+.nova-app-ligne.nova-app-texte { grid-template-columns: 1fr; gap: var(--nova-e2); }
+.nova-app-ligne.nova-app-texte :is(input, textarea) { width: 100%; box-sizing: border-box; margin: 0; font-family: var(--nova-police-chiffres); }
+.nova-app-ligne.nova-app-texte textarea { min-height: 6.5rem; resize: vertical; }
+.nova-app-erreur { margin: var(--nova-e2) 0 0; }
+/* Pages Apparence (site, classe) : largeur limitée sur un grand écran ; bouton d'aide à droite de son réglage,
+ * avec une marge qui le sépare du réglage voisin (demandes de l'utilisateur, 2026-10-06). */
+body.nova-page-apparence .wimsbody { max-width: 60rem; margin-left: auto; margin-right: auto; }
+body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.float_right { margin-right: var(--nova-e6); }
+/* Menus déroulants juste à droite de leur étiquette, comme dans les thèmes de WIMS (demande de l'utilisateur,
+ * 2026-10-06) ; les champs texte restent sous leur libellé. */
+body.nova-page-apparence .wimsbody :is(.field, li.field):has(> select) > label { display: inline-block; margin-right: var(--nova-e3); vertical-align: middle; }
+body.nova-page-apparence .wimsbody :is(.field, li.field) > select { display: inline-block; width: auto; max-width: 100%; vertical-align: middle; }
+
+/* Page Apparence d'une classe, d'un groupement ou d'un portail (formulaire avec #pr_cssfile) : chaque réglage
+ * simple sur une ligne, étiquette, champ, aide ; la zone « Insérer des définitions de style css » sur toute la
+ * largeur (demandes de l'utilisateur, 2026-10-07). */
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nova-e2) var(--nova-e3);
+}
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > label { order: 0; display: inline-block; margin: 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > :is(input, select) { order: 1; flex: 0 1 auto; min-width: 0; margin: 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > input:is([type="text"], :not([type])) { flex: 1 1 8rem; width: auto; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(> input:not([type="hidden"]), > select) > .wims_button_help { order: 2; float: none; margin: 0 var(--nova-e6) 0 0; }
+body.nova-page-apparence form:has(#pr_cssfile) .field:has(#pr_cssfile) { flex: 1 1 100%; width: 100%; max-width: none; }
+body.nova-page-apparence form:has(#pr_cssfile) #pr_cssfile { width: 100%; box-sizing: border-box; min-height: 10rem; font-family: var(--nova-police-chiffres); font-size: .9375rem; }
+
+/* Badges de l'élève (demande de l'utilisateur, 2026-10-07, maquette B) : pastille à côté de « Mes notes »,
+ * annonce d'un nouveau niveau, fenêtre « Mes badges » (js/nova.js, badges ; user.phtml). */
+.nova-mes-notes:has(.nova-pastille-badge) { display: flex; justify-content: center; align-items: center; gap: var(--nova-e2); }
+@media (max-width: 639.98px) {
+  .nova-mes-notes:has(.nova-pastille-badge) a.nova-mes-notes-bouton { width: auto; flex: 1 1 auto; min-width: 0; padding: 0 var(--nova-e3); }
+}
+a.nova-pastille-badge {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  min-height: 48px; padding: 0 14px 0 6px; border-radius: 999px;
+  background: var(--nova-surface); border: 1px solid var(--nova-bord); color: var(--nova-texte);
+  font-weight: 700; font-size: .9375rem; text-decoration: none; white-space: nowrap;
+}
+a.nova-pastille-badge:hover { border-color: var(--nova-accent); color: var(--nova-texte); }
+a.nova-pastille-badge:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 3px; }
+a.nova-pastille-badge img { width: 36px; height: 36px; }
+/* Une seule pastille « Badges » (maquette B, 2026-10-09) : une icône par badge proposé, qui se chevauchent ; grise
+ * tant que le badge n'a pas de niveau. */
+a.nova-pastille-badge img + img { margin-left: -14px; }
+a.nova-pastille-badge img.nova-badge-niv-0, .nova-badges-fenetre img.nova-badge-verrou { filter: grayscale(1) opacity(.45); }
+
+.nova-badge-annonce {
+  display: grid; grid-template-columns: 72px 1fr; gap: var(--nova-e3); align-items: center;
+  margin: 0 auto var(--nova-e4); max-width: 40rem; padding: var(--nova-e3);
+  background: var(--nova-accent-doux); border: 1px solid color-mix(in oklab, var(--nova-accent) 25%, transparent);
+  border-radius: var(--nova-rayon-carte);
+}
+.nova-badge-annonce img { width: 72px; height: 72px; }
+.nova-badge-annonce b { display: block; }
+.nova-badge-annonce div p { margin: 2px 0 0; color: var(--nova-texte-2); }
+.nova-badge-annonce .nova-badge-annonce-liens { grid-column: 1 / -1; display: flex; gap: var(--nova-e4); margin: 0; font-weight: 700; }
+.nova-badge-annonce .nova-badge-annonce-liens a { color: var(--nova-accent); }
+.nova-badge-annonce .nova-badge-masquer { all: unset; cursor: pointer; color: var(--nova-texte-2); }
+.nova-badge-annonce .nova-badge-masquer:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+
+dialog.nova-badges-fenetre {
+  width: min(32rem, calc(100vw - 32px)); max-height: calc(100dvh - 32px); box-sizing: border-box;
+  padding: 0; border: 0; border-radius: var(--nova-rayon-carte); overflow: auto;
+  background: var(--nova-fond); color: var(--nova-texte); box-shadow: 0 16px 48px rgb(0 0 0 / 25%);
+}
+dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
+.nova-badges-entete { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: var(--nova-e2) var(--nova-e2) var(--nova-e2) var(--nova-e4); background: var(--nova-accent); color: var(--nova-sur-accent); }
+.nova-badges-entete h2 { margin: 0; font-size: 1.125rem; color: inherit; }
+.nova-badges-fermer { all: unset; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 1.75rem; line-height: 1; cursor: pointer; }
+.nova-badges-fermer:focus-visible { outline: 3px solid var(--nova-sur-accent); outline-offset: -3px; }
+.nova-badge-detail { display: grid; gap: var(--nova-e3); padding: var(--nova-e4); }
+/* Onglets de la fenêtre (un par badge, 2026-10-09). */
+.nova-badges-onglets { display: flex; gap: 6px; padding: var(--nova-e3) var(--nova-e4) 0; border-bottom: 1px solid var(--nova-bord); }
+.nova-badges-onglet { all: unset; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 var(--nova-e2); border: 1px solid var(--nova-bord); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--nova-surface-2); color: var(--nova-texte-2); font-weight: 700; cursor: pointer; }
+.nova-badges-onglet.nova-actif { background: var(--nova-surface); color: var(--nova-lien); margin-bottom: -1px; padding-bottom: 1px; }
+.nova-badges-onglet:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: -3px; }
+.nova-badges-onglet img { width: 28px; height: 28px; }
+/* Icône seule, à toutes les largeurs (2026-11-07, utilisateur : les noms ne tenaient plus, le nom est en titre du
+ * panneau) ; nom en info-bulle (title) et pour les lecteurs d'écran. Onglets de même largeur. */
+.nova-badges-onglet { flex: 1 1 0; min-width: 0; position: relative; min-height: 48px; padding: 6px 4px; }
+.nova-badges-onglet img { width: 36px; height: 36px; }
+.nova-badges-onglet-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 32rem) { .nova-badges-onglets { gap: 4px; padding-inline: var(--nova-e2); } }
+.nova-badges-onglets ~ .nova-badge-detail { background: var(--nova-surface); }
+.nova-badge-detail[hidden] { display: none; }
+.nova-badge-haut { display: grid; grid-template-columns: 96px 1fr; gap: var(--nova-e3); align-items: center; }
+.nova-badge-haut img { width: 96px; height: 96px; }
+.nova-badge-haut h3 { margin: 0; font-size: 1.125rem; }
+.nova-badge-haut p { margin: 2px 0 0; font-size: .875rem; color: var(--nova-texte-2); }
+.nova-badge-haut p.nova-badge-niveau { font-weight: 700; color: var(--nova-accent); font-size: 1rem; }
+.nova-badge-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: var(--nova-e2); }
+.nova-badge-chiffres div { background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); padding: var(--nova-e2); text-align: center; }
+.nova-badge-chiffres b { display: block; font: 600 1.375rem var(--nova-police-chiffres); }
+.nova-badge-chiffres span { font-size: .8125rem; color: var(--nova-texte-2); }
+.nova-badge-etat { margin: 0; padding: var(--nova-e2) var(--nova-e3); border-radius: var(--nova-rayon); background: var(--nova-surface-2); font-size: .9375rem; }
+.nova-badge-etat-pause { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+.nova-badge-etat-danger { background: color-mix(in oklab, var(--nova-attention) 14%, white); }
+.nova-badge-niveaux { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--nova-e2); }
+.nova-badge-niveaux li { display: grid; justify-items: center; gap: 2px; padding: 6px 4px; background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); font-size: .8125rem; text-align: center; }
+.nova-badge-niveaux li img { width: 52px; height: 52px; }
+.nova-badge-niveaux li b { font: 500 .8125rem var(--nova-police-chiffres); color: var(--nova-texte-2); }
+.nova-badge-niveaux li.nova-verrou { color: var(--nova-texte-2); }
+.nova-badge-niveaux li.nova-verrou img { filter: grayscale(1) opacity(.35); }
+.nova-badge-niveaux li.nova-actuel { border: 2px solid var(--nova-accent); }
+.nova-badge-aide { margin: 0; font-size: .8125rem; color: var(--nova-texte-2); }
+
+/* Page « Réglages de Nova » (rubrique de la configuration ; 2026-10-07 « Badges Nova », 2026-11-08 tous les réglages, en
+ * onglets, maquette B) : la page Apparence de WIMS, dont seule la carte de Nova reste visible (js/nova.js, apparenceClasse) ;
+ * masquée au plus 3 s en attendant le script. */
+html.nova-page-reglages:not(.nova-reglages-prete) .wimsbody { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-page-reglages .wimsbody :is(form:has(#pr_cssfile), .nova-rg-lien) { display: none !important; }
+.nova-reglages { display: grid; gap: var(--nova-e4); width: 100%; max-width: 54rem; margin-inline: auto; }
+.nova-reglages .nova-app-carte { margin: 0; }
+.nova-reglages section.nova-onglet { display: grid; gap: var(--nova-e4); }
+.nova-reglages section.nova-onglet[hidden] { display: none; }
+.nova-reglages .nova-app-actions { display: flex; justify-content: center; }
+/* Barre d'onglets ; liste déroulante sous 640 px (comme les onglets compacts de Nova). */
+.nova-onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--nova-bord); overflow-x: auto; scrollbar-width: none; }
+.nova-onglet-bouton { all: unset; box-sizing: border-box; flex: 0 0 auto; min-height: 44px; padding: 0 var(--nova-e3); display: inline-flex; align-items: center;
+  border-bottom: 3px solid transparent; color: var(--nova-texte-2); font-weight: 600; cursor: pointer; white-space: nowrap; }
+.nova-onglet-bouton:hover { color: var(--nova-texte); }
+.nova-onglet-bouton.nova-actif { color: var(--nova-lien); border-bottom-color: var(--nova-accent); font-weight: 700; }
+.nova-onglet-bouton:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: -3px; border-radius: 6px; }
+.nova-onglet-bouton.nova-onglet-danger { color: var(--nova-erreur); }
+.nova-onglet-bouton.nova-onglet-danger.nova-actif { border-bottom-color: var(--nova-erreur); }
+.nova-onglets-liste { display: none; }
+@media (max-width: 639.98px) {
+  .nova-onglets { display: none; }
+  .nova-reglages select.nova-onglets-liste { display: block; width: 100%; min-height: 44px; font-weight: 700; }
+}
+.nova-rg-avances legend { color: var(--nova-erreur); }
+/* Mots-clés en étiquettes (DM WIMS, js/nova.js motsCles) : le champ d'origine garde la valeur, caché. */
+.nova-reglages input.nova-puces-source { display: none; }
+.nova-puces { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin-top: var(--nova-e1); }
+.nova-puce { display: inline-flex; align-items: center; gap: 2px; min-height: 32px; padding: 0 4px 0 12px; border-radius: 999px;
+  background: color-mix(in srgb, var(--nova-accent) 12%, var(--nova-surface)); color: var(--nova-lien); font-weight: 700; }
+.nova-puce:not(:has(button)) { padding-right: 12px; }
+.nova-puce-retirer { all: unset; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1.125rem; line-height: 1; }
+.nova-puce-retirer:hover { background: color-mix(in srgb, var(--nova-accent) 20%, var(--nova-surface)); }
+.nova-puce-retirer:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+.nova-puces-defaut { font-size: .8125rem; color: var(--nova-texte-2); background: var(--nova-fond); border-radius: 999px; padding: 2px 10px; }
+.nova-puces-ajout { display: inline-flex; gap: var(--nova-e1); align-items: center; }
+.wimsbody .nova-puces-ajout input { font: inherit; font-weight: 400; width: 10rem; min-height: 32px; margin: 0; border-radius: 999px; padding: 0 12px; }
+.wimsbody .nova-puces-ajout .wims_button { margin: 0; min-height: 32px; padding-block: 0; }
+.nova-puces-retablir { all: unset; cursor: pointer; color: var(--nova-lien); text-decoration: underline; font-size: .875rem; }
+.nova-puces-retablir:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+/* Page Apparence : lien vers les réglages de Nova. */
+.wimsbody .nova-rg-lien { max-width: 54rem; margin-inline: auto; }
+.wimsbody .nova-rg-lien a { font-weight: 700; }
+.nova-bdg-coche { display: flex; align-items: center; gap: var(--nova-e3); cursor: pointer; }
+.nova-bdg-coche input { width: 22px; height: 22px; margin: 0; accent-color: var(--nova-accent); flex: none; }
+.nova-bdg-coche img { width: 48px; height: 48px; flex: none; }
+.nova-bdg-detail[hidden] { display: none; }
+/* Détails de chaque badge repliés par défaut (2026-11-07, utilisateur) : « ▸ Réglages » sous la case du badge. */
+.nova-bdg-contenu { display: grid; gap: var(--nova-e2); margin-top: var(--nova-e2); }
+.nova-app-ligne.nova-bdg-detail { border-top: 0; padding-top: 0; }
+.wimsbody details.nova-app-detail.nova-bdg-replie > summary { margin-left: calc(22px + 48px + 2 * var(--nova-e3)); }
+
+/* Section repliée « Rapprocher du thème standard » des cartes Apparence (_widgets/apparence-standard.phtml, 2026-10-07). */
+details.nova-app-std { border-top: 1px solid var(--nova-bord); padding-top: var(--nova-e2); margin-top: var(--nova-e2); }
+details.nova-app-std > summary { display: flex; align-items: center; gap: var(--nova-e2); cursor: pointer; list-style: none; padding: var(--nova-e2) 0; }
+details.nova-app-std > summary::-webkit-details-marker, details.nova-app-detail > summary::-webkit-details-marker { display: none; }
+details.nova-app-std > summary::after { content: ""; flex: none; margin-left: auto; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+details.nova-app-std[open] > summary::after { transform: rotate(-135deg); }
+details.nova-app-std > summary:focus-visible, details.nova-app-detail > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; border-radius: var(--nova-rayon); }
+.nova-app-ligne.nova-app-ligne-std { grid-template-columns: minmax(0, 1fr) auto; }
+.nova-app-ligne-std > details.nova-app-detail { grid-column: 1 / -1; }
+details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: .875rem; }
+details.nova-app-detail > summary::before { content: "\25B8"; }
+details.nova-app-detail[open] > summary::before { content: "\25BE"; }
+details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem; display: grid; gap: 4px; font-size: .875rem; color: var(--nova-texte-2); }
+/* Les details de la section ne sont pas des cartes (règle générale des details de .wimsbody, plus haut). */
+.wimsbody details.nova-app-std, .wimsbody details.nova-app-detail { background: none; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none; border-radius: 0; padding-left: 0; padding-right: 0; margin-bottom: 0; }
+.wimsbody details.nova-app-detail { border-top: 0; padding: 0; margin: 0; }
+.wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { background: none; padding-left: 0; padding-right: 0; }
+.wimsbody details.nova-app-std { margin-left: 0; margin-right: 0; }
+.wimsbody details.nova-app-std > summary, .wimsbody details.nova-app-detail > summary { margin-left: 0; margin-right: 0; }
+

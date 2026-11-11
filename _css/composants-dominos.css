@@ -80,6 +80,10 @@
   background-color: color-mix(in oklab, var(--nova-accent) 22%, white) !important;
   border: 2px solid var(--nova-accent) !important;
 }
+:where(html:not(.nova-std-dominos)) body:has(.wims_grabbable .fill_content > table.wimsborder) .wims_grabbable.nova-remplacee{
+  background-color: color-mix(in oklab, var(--nova-accent) 22%, white) !important;
+  outline: 2px solid var(--nova-accent); outline-offset: -2px;
+}
 /* Aucune transition dans les faces des dominos : nova.js (dominos) y mesure le rendu juste après avoir remis le zoom
  * à 1 ; une transition ferait lire l'état précédent (vécu : zoom retombé à 1 sans elle). */
 :where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td), :where(html:not(.nova-std-dominos)) .fill_content table.wimsborder :is(th, td) *{ transition: none !important; }
@@ -250,6 +254,12 @@ html.nova-tuiles:not(.nova-std-dominos):has(.wims_grabbable[style*="rgb(96, 96, 
 /* Classe répétée : la règle des cases libres pendant le glisser (:has + :not, spécificité 0,6,1) l'emportait, la case
  * visée restait de la couleur des autres (signalé par l'utilisateur, 2026-11-12 ; maquette « Actuel »). */
 html.nova-tuiles:not(.nova-std-dominos) .wims_droppable.nova-survolee.nova-survolee.nova-survolee{
+  background-color: color-mix(in oklab, var(--nova-accent) 30%, white) !important;
+  box-shadow: inset 0 0 0 2px var(--nova-accent);
+}
+/* Tuile déjà posée sur la case visée (nova.js caseVisee) : allumée comme la case, qu'elle recouvre ; elle repartira dans
+ * la réserve (demande de l'utilisateur, 2026-11-12). */
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable.nova-remplacee.nova-remplacee{
   background-color: color-mix(in oklab, var(--nova-accent) 30%, white) !important;
   box-shadow: inset 0 0 0 2px var(--nova-accent);
 }

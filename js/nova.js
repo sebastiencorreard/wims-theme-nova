@@ -3583,8 +3583,25 @@
   }
   // Case visée pendant le glissement ou quand une étiquette est choisie (dominos et tuiles).
   function caseVisee() {
-    var glisse = null, rafId = 0, derniere = null;
+    var glisse = null, rafId = 0, derniere = null, remplacee = null;
+    // Tuile déjà posée sur la case visée (glisser-déposer : elle la recouvre) : allumée aussi, WIMS la renverra dans la
+    // réserve (demande de l'utilisateur, 2026-11-12). Reconnue par sa position : coin à 2 px de celui de la case.
+    var posee = function (z) {
+      if (!z) return null;
+      var r = z.getBoundingClientRect(), tenue = glisse || choisi();
+      return Array.prototype.filter.call(document.querySelectorAll('.wims_grabbable'), function (g) {
+        if (g === tenue) return false;
+        var q = g.getBoundingClientRect();
+        return Math.abs(q.left - r.left) < 2 && Math.abs(q.top - r.top) < 2;
+      })[0] || null;
+    };
     var marquer = function (z) {
+      var t = posee(z);
+      if (t !== remplacee) {
+        if (remplacee) remplacee.classList.remove('nova-remplacee');
+        if (t) t.classList.add('nova-remplacee');
+        remplacee = t;
+      }
       if (z === derniere) return;
       if (derniere) derniere.classList.remove('nova-survolee');
       if (z) z.classList.add('nova-survolee');

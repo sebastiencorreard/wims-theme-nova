@@ -137,9 +137,11 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 .wimsbody { padding: var(--nova-e6) var(--nova-e7); margin-left: 0; }
 
 /* ---------- Menu latéral ---------- */
+/* Marges à gauche réduites (2026-11-11, utilisateur) : icône à 16 px du bord (24 avant), pour que les entrées
+ * tiennent sur une ligne (« Sauvegarde et restauration »). Titres, nom du profil et encart de score alignés. */
 #wimsmenumodubox {
   box-sizing: border-box;
-  padding: var(--nova-e4) var(--nova-e3);
+  padding: var(--nova-e4) var(--nova-e2);
   background: var(--nova-surface);
   border-right: 1px solid var(--nova-bord);
   color: var(--nova-texte);
@@ -154,7 +156,7 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   align-items: center;
   gap: var(--nova-e2);
   min-height: 40px;
-  padding: 0 var(--nova-e3);
+  padding: 0 var(--nova-e3) 0 var(--nova-e2);
   border-radius: var(--nova-rayon);
   color: var(--nova-texte);
   text-decoration: none;
@@ -170,7 +172,7 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   box-sizing: border-box;
   width: 100%;
   margin: var(--nova-e2) 0;
-  padding: var(--nova-e2) var(--nova-e3);
+  padding: var(--nova-e2) var(--nova-e3) var(--nova-e2) var(--nova-e2);
   background: var(--nova-surface-2);
   color: var(--nova-texte-2);
   border: 0;
@@ -186,7 +188,7 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 #wimsmenumodubox .ui-accordion-header.ui-state-default,
 #wimsmenumodubox .ui-accordion-header.ui-state-active {
   margin: var(--nova-e4) 0 var(--nova-e1);
-  padding: 0 var(--nova-e3);
+  padding: 0 var(--nova-e3) 0 var(--nova-e2);
   font-family: var(--nova-police);
   font-size: .8125rem;
   font-weight: 700;
@@ -486,7 +488,7 @@ body.nova-examen-session #wimstopbox .nova-classe { display: none; }
   #wimstopbox .nova-terminer-examen .nova-long { display: none; }
   #wimstopbox .nova-terminer-examen .nova-court { display: inline; }
 }
-#wimsmenumodubox .nova-profil-nom { padding: var(--nova-e1) var(--nova-e3) var(--nova-e2); font-weight: 700; color: var(--nova-texte); }
+#wimsmenumodubox .nova-profil-nom { padding: var(--nova-e1) var(--nova-e3) var(--nova-e2) var(--nova-e2); font-weight: 700; color: var(--nova-texte); }
 /* Examen en session : nom et Aide dans la barre à partir de 1024 px (menu latéral déployé, place dans la
  * barre) ; en dessous, dans le groupe « Profil » du menu latéral (js/nova.js, modeExamen). */
 @media (max-width: 1023.98px) { body.nova-examen-session #wimstopbox .nova-examen-large { display: none !important; } }
@@ -1111,7 +1113,7 @@ html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-
   border-bottom: 2px solid var(--nova-accent);
   transform: rotate(45deg);
 }
-#wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3); font-weight: 700; box-sizing: border-box; width: 100%; min-width: 0; overflow-wrap: anywhere; }
+#wimsmenumodubox .nova-profil-nom { display: flex; align-items: center; min-height: 40px; padding: 0 var(--nova-e3) 0 var(--nova-e2); font-weight: 700; box-sizing: border-box; width: 100%; min-width: 0; overflow-wrap: anywhere; }
 /* Le menu du compte de la barre, qui va passer dans le menu latéral : masqué en attendant nova.js (3 s au plus),
  * pour qu'il n'apparaisse pas un instant. */
 /* Menu lateral hors de #wimsbodybox (page de reponse, HTML de module desequilibre) : nova.js placerMenu le

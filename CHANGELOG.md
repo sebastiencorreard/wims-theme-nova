@@ -29,6 +29,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
 ### Installation
+- Les icônes propres à Nova sont elles aussi des icônes Lucide : barre du haut (maison, aide, compte, Terminer, Fermer, Retour), chronomètre, « Configuration et maintenance », « Administration du serveur », niveaux, classes, programmes et cours d'un portail, types de travail (feuille, examen, document…), liens de connexion, menu ☰ et « Plus ».
 - **Jeu d'icônes « Lucide »** : nouveau choix dans « Jeu d'icônes » (Config / Maintenance › Présentation d'une classe, Configuration du site) ; icônes fines au trait, à la couleur du texte, pour toutes les entrées de WIMS (menus, barre, fil d'Ariane, messages, boutons). « Nouvelle feuille » et « Nouvel examen » ont des icônes assorties (presse-papiers + et presse-papiers horloge). Le jeu est livré avec Nova : il s'ajoute à la liste à la première visite d'une page de configuration.
 - **Logo WIMS** : nouveau logo animé en SVG (net à toutes les tailles) dans la barre.
 - **Administration du serveur** (gestionnaire du site) : chaque groupe de liens dans une carte, une ligne par entrée avec son icône et un chevron, comme les réglages d'un téléphone.

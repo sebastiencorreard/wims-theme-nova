@@ -25,7 +25,7 @@
     bouton.setAttribute('aria-expanded', 'false');
     bouton.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'Menu' : 'Menu de la classe');
     bouton.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+      'stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>';
     barre.insertBefore(bouton, barre.firstChild);
 
     function basculer(ouvrir) {
@@ -247,8 +247,7 @@
     // Pilule à pictogramme de chronomètre, comme « Examen en cours » (_widgets/examencours.phtml), et le même
     // lien sous le message (demande de l'utilisateur, 2026-10-05).
     var chronoSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
-      '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>';
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>';
     var versExamen = null;
     if (corps && job === 'scorereg' && !document.querySelector('a[href*="confirm_end=yes"]')) {
       versExamen = fin.getAttribute('href').replace(/job=scorereg(?=&|$)/, 'job=student');
@@ -314,8 +313,7 @@
     item.className = 'menuitem chrono';
     item.innerHTML = '<div class="nova-chrono" data-etat="normal">' +
       '<svg class="nova-chrono-icone" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle>' +
-      '<path d="M12 9v4l2.5 2.5M9 2h6"></path></svg><span class="nova-chrono-libelle"></span>' +
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span class="nova-chrono-libelle"></span>' +
       '<span class="nova-chrono-temps" role="timer"><span class="nova-chrono-miroir"></span></span></div>';
     var boite = item.firstChild;
     var attributs = examen ? ['texte-5min', 'texte-1min', 'texte-fin', 'texte-fin-detail'] : ['texte-fin', 'texte-fin-detail'];
@@ -821,7 +819,7 @@
       bouton.setAttribute('aria-expanded', 'false');
       bouton.setAttribute('aria-label', document.documentElement.lang === 'en' ? 'More' : 'Plus');
       bouton.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
-        '<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+        '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>';
       panneau = document.createElement('div');
       panneau.className = 'nova-plus-panneau';
       panneau.hidden = true;
@@ -1319,8 +1317,8 @@
     var remplir = function (txt, v) { return v.reduce(function (s, x, i) { return s.replace('%' + (i + 1), x); }, txt); };
 
     var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
-    var croix = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-    var plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+    var croix = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+    var plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
     var bouton = function (classe, texte, icone) { var b = el('button', classe); b.type = 'button'; b.innerHTML = icone || ''; b.appendChild(document.createTextNode(texte)); return b; };
     var champ = function (type, valeur, etiquette, id) {
       var i = el('input', 'nova-acces-champ'); i.type = type; i.value = valeur || ''; if (id) i.id = id; if (etiquette) i.setAttribute('aria-label', etiquette); return i;
@@ -1537,11 +1535,11 @@
     if (!liste || source) return;
     var structure = /^[234]$/.test(t.getAttribute('data-type') || '') || items.some(function (x) { return x.role === 'ens' || x.role === 'insc'; });
     var icones = {
-      vous: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-      eleves: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-      ens: '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',
-      insc: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
-      numero: '<path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/>'
+      vous: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+      eleves: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>',
+      ens: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
+      insc: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
+      numero: '<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>'
     };
     var etat = null;
     var copier = function (texte, bouton, champ) {
@@ -3621,8 +3619,7 @@
     pastille.setAttribute('aria-label', t('123', 'Math keyboard'));
     pastille.title = t('123', 'Math keyboard');
     pastille.innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" ' +
-      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/>' +
-      '<path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M10 13h.01M14 13h.01M18 13h.01M8 16h8"/></svg>';
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg>';
     pastille.addEventListener('pointerdown', function (ev) { ev.preventDefault(); });
     pastille.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
     pastille.addEventListener('click', function () {
@@ -5826,7 +5823,7 @@
         if (!ouvert(e)) {
           var cad = el('span', 'nova-avatar-cadenas');
           cad.setAttribute('aria-hidden', 'true');
-          cad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+          cad.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
           b.appendChild(cad);
         }
         if (s === '1' || s === '2') { b.appendChild(el('span', 'nova-avatar-prix', s)); nomV += ' (' + (s === '1' ? t('leg1') : t('leg2')) + ')'; }

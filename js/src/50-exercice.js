@@ -251,6 +251,13 @@
     }
     reponse.insertBefore(boite, reponse.firstChild);
     reponse.classList.add('nova-retour', 'nova-retour-pret');
+    // Renvois [k] de l'énoncé sans usage (demande de l'utilisateur, 2026-11-12) : le verdict ne les cite pas quand tout est
+    // juste ou qu'il n'y a qu'une réponse, et le tableau de WIMS qu'ils désignent est masqué. Masqués (pas retirés).
+    if (toutes || lignes.length === 1) {
+      document.querySelectorAll('.oefstatement div.inline[class*="oef_"] + sup').forEach(function (sup) {
+        if (/^\[[^\]]*\]$/.test(sup.textContent.trim())) sup.classList.add('nova-renvoi-inutile');
+      });
+    }
     if (toutesFausses) vibrer();
   }
 

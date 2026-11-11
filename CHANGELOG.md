@@ -49,6 +49,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 ### Corrections
 - Téléphone : les tuiles à déplacer se glissent au doigt sans que la page défile (le navigateur commençait parfois à faire défiler la page avant que Nova ne l'en empêche) ; l'appui long sur une tuile n'ouvre plus la loupe ni la sélection.
 - Téléphone, tuiles à déplacer : sur un écran étroit, les cases ne restent plus collées au bout de la ligne précédente (marge perdue à gauche, trou vide entre deux rangées) ; cases dans un tableau (addition posée) : plus de trou entre les rangées ni de cases qui se chevauchent, tableau centré sur l'écran s'il déborde.
+- Page de réponse : les renvois [1], [2]… de l'énoncé corrigé disparaissent quand le verdict ne les cite pas (tout est juste, ou une seule réponse).
 - Page de réponse des tuiles dans un tableau (addition posée, tableau de signes) : la tuile porte elle-même sa bordure verte ou rouge, le renvoi [k] est en petit sous la tuile ; au téléphone, le tableau tient dans l'écran.
 - Tuiles à déplacer : pendant un glisser, la case visée se distingue de nouveau des autres cases libres (plus foncée, contour de la couleur de la classe) ; une tuile déjà posée sur la case visée s'allume aussi (elle sera remplacée).
 - Bouton « Valider » flottant (écran étroit) : une tuile à côté du bouton se laisse de nouveau prendre.

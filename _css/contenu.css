@@ -919,6 +919,7 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 .oefstatement .nova-choix:not(.nova-choix-image) { padding-right: 14px; margin-block: 4px; }
 .oefstatement .nova-choix:not(.nova-choix-image) img { vertical-align: middle; }
 .oefstatement .nova-choix + sup { display: none; }
+.oefstatement sup.nova-renvoi-inutile { display: none !important; }   /* nova.js retourReponse : renvoi [k] que le verdict ne cite pas */
 .oefstatement .nova-choix-juste { border-color: var(--nova-succes); }
 .oefstatement .nova-choix-faux { border-color: var(--nova-erreur); }
 .oefstatement .nova-choix-oublie { border-style: dashed; border-color: var(--nova-attention); }

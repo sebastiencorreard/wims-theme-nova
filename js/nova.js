@@ -211,9 +211,12 @@
       var restants = Array.prototype.filter.call(liCompte.querySelectorAll('#user_links > li:not(.nova-lien-complet) a[href]'), function (a) {
         return a.getAttribute('href') !== '#user_links';
       });
+      // Sinon (changer le mot de passe, depuis le 2026-10-08), il rejoint ce groupe, a droite : reste seul
+      // dans la barre, il se retrouvait au milieu (signale le 2026-11-11).
       if (!restants.length) liCompte.remove();
       var droite = document.createElement('div');
-      droite.className = 'wimsmenu menu nova-avant-terminer';
+      droite.className = 'wimsmenu menu dropdown nova-avant-terminer';
+      if (restants.length) droite.appendChild(liCompte);
       Array.prototype.forEach.call(barre.querySelectorAll('.wimsmenu > .menuitem'), function (item) {
         if (item.classList.contains('class_home') || item.classList.contains('chrono') ||
             item.classList.contains('nova-terminer') || item.classList.contains('nova-examencours') || item === liCompte) return;

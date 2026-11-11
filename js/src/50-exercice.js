@@ -950,34 +950,21 @@
   /* Éléments à associer (OEF correspond, scripts/anstype/correspond.input et correspond ; variante A « Trait » choisie par
    * l'utilisateur sur maquette, 2026-11-11 ; réglage « dominos »). Saisie : calques Dynapi globaux c<i>_lleft, _lright
    * (rangé par c<i>_ys), _lmid, état c<i>_det (paire faite par ligne), c<i>_clx (1 gauche, 2 droite) et c<i>_cly (ligne
-   * choisie) ; c<i>_update, appelée à chaque changement, est enveloppée pour poser les classes : tuile blanche, choisie
-   * (contour de l'accent), cibles de l'autre colonne, trait plein entre deux tuiles liées, trait en pointillés vers un
-   * rond « ? » depuis la tuile choisie. Images de flèches de WIMS masquées. Correction : tableau gauche | image corrlr |
-   * droite (fond #ffe1e9 = fausse, #40c040 ou #d9eec7 = juste) : tuiles vertes ou rouges, trait de la même couleur,
-   * pastille ✓ / ✕ dans l'énoncé. */
+   * choisie) ; c<i>_update, appelée à chaque changement, est enveloppée pour poser les classes d'ÉTAT : choisie, cibles
+   * de l'autre colonne, liée, et sur le milieu trait plein ou pointillés vers un rond « ? » (flèches de WIMS alors
+   * masquées). L'aspect de repos (tuiles, cadre, correction) est dans le CSS, d'après la structure de WIMS, sans
+   * attendre nova.js (2026-11-11). Correction : seule la pastille ✓ / ✕ de l'énoncé est ajoutée ici. */
   function associations() {
     if (standard('dominos')) return;
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody table'), function (t) {
-      var lignes = Array.prototype.filter.call(t.querySelectorAll(':scope > tbody > tr'), function (tr) {
-        return tr.children.length === 3 && tr.children[1].querySelector(':scope > img[src*="arrows/corrlr"]');
-      });
-      if (!lignes.length) return;
-      var enonce = !!t.closest('.oefstatement');
-      t.classList.add('nova-assoc-corr');
-      lignes.forEach(function (tr) {
-        var td = tr.children;
-        var faux = /#ffe1e9/i.test(td[2].getAttribute('style') || '');
-        td[0].classList.add('nova-assoc-case');
-        td[1].classList.add('nova-assoc-trait');
-        td[2].classList.add('nova-assoc-case', faux ? 'nova-assoc-faux' : 'nova-assoc-bon');
-        if (faux) td[1].classList.add('nova-assoc-faux');
-        if (enonce && !td[2].querySelector('.nova-choix-pastille')) {
-          var p = document.createElement('span');
-          p.className = 'nova-choix-pastille';
-          p.setAttribute('aria-hidden', 'true');
-          td[2].appendChild(p);
-        }
-      });
+    // Correction : l'aspect est tout entier dans le CSS (structure de WIMS) ; ici, seulement la pastille de l'énoncé, que
+    // le CSS colore et remplit (✓ / ✕ selon le fond de la cellule).
+    Array.prototype.forEach.call(document.querySelectorAll('.oefstatement table > tbody > tr > td:nth-child(2) > img[src*="arrows/corrlr"]'), function (im) {
+      var td = im.parentElement.nextElementSibling;
+      if (!td || td.nextElementSibling || td.querySelector('.nova-choix-pastille')) return;
+      var p = document.createElement('span');
+      p.className = 'nova-choix-pastille';
+      p.setAttribute('aria-hidden', 'true');
+      td.appendChild(p);
     });
 
     var noms = [];
@@ -986,19 +973,17 @@
       while ((m = re.exec(sc.textContent))) if (noms.indexOf(m[1]) < 0) noms.push(m[1]);
     });
     if (!noms.length) return;
-    document.documentElement.classList.add('nova-assoc');
     var textes = document.getElementById('nova-textes');
     var consigne = textes && textes.getAttribute('data-texte-consigne-associer');
     var marquer = function (z) {
       var L = window[z + '_lleft'], R = window[z + '_lright'], M = window[z + '_lmid'], det = window[z + '_det'], ys = window[z + '_ys'];
       if (!L || !R || !M || !det || !ys || !L[0] || !L[0].elm) return;
       var clx = window[z + '_clx'], cly = window[z + '_cly'];
-      if (L[0].elm.parentElement) L[0].elm.parentElement.classList.add('nova-assoc-cadre');
       for (var k = 0; k < L.length; k++) {
         var g = L[k] && L[k].elm, d = R[ys[k]] && R[ys[k]].elm, m = M[k] && M[k].elm;
         if (!g || !d || !m) continue;
         var lie = det[k] > 0, prisG = cly === k && clx === 1, prisD = cly === k && clx === 2;
-        g.classList.add('nova-assoc-tuile'); d.classList.add('nova-assoc-tuile'); m.classList.add('nova-assoc-lien');
+        m.classList.add('nova-assoc-lien');
         g.classList.toggle('nova-assoc-liee', lie); d.classList.toggle('nova-assoc-liee', lie);
         g.classList.toggle('nova-assoc-prise', prisG); d.classList.toggle('nova-assoc-prise', prisD);
         g.classList.toggle('nova-assoc-cible', clx === 2); d.classList.toggle('nova-assoc-cible', clx === 1);

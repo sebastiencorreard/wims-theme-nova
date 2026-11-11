@@ -283,7 +283,7 @@ html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-fausse .no
  * Aspect de repos reconnu par la structure de WIMS (div > .corr_label, img corrlr, fond #ffe1e9), sans attendre nova.js :
  * les calques Dynapi naissent au chargement, avant que nova.js puisse les marquer (ancien aspect visible un instant,
  * signalé par l'utilisateur le 2026-11-11). Les classes de nova.js ne servent qu'aux états (choisie, cible, liée).
- * nova.js associations : html.nova-assoc, calques Dynapi .nova-assoc-tuile (gauche et droite) et .nova-assoc-lien (milieu,
+ * Calques Dynapi : tuiles div:has(> .corr_label) (gauche et droite), milieu .nova-assoc-lien posé par nova.js (
  * 100 px de large chez WIMS). La tuile est dessinée par ::before, 3 px en retrait en haut et en bas (9 px entre deux lignes,
  * 3 px chez WIMS) ; le calque garde la couleur de WIMS en ligne, rendue transparente. Couleurs d'état de WIMS : choisie ou
  * glissée #8080ff (rgb(128, 128, 255)). */

@@ -80,6 +80,7 @@
   /* Fil d'Ariane des profs et admins fixe sous la barre du haut, sur grand écran (2026-10-09) : « oui » ; « non » le
    * laisse défiler avec la page. Page Apparence (site, portail, classe). nova.js pose html.nova-fil-libre. */
   --nova-fil-fixe: oui;
+  --nova-decorations: oui;   /* decorations de saison de la barre (_css/decorations.css), 2026-11-11 */
   --nova-desactivation-forcee: non;   /* « Désactiver quand même » (partage) : oui sur la page Apparence de la classe (2026-11-08) */
   --nova-activite-seuil: 2;
   --nova-activite-objectif: 3;

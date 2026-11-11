@@ -50,6 +50,12 @@
   !set nova_fl=non
 !endif
 !set nova_checked_fil_$nova_fl=checked
+!! Decorations de saison (2026-11-11, utilisateur) : activees par defaut.
+!set nova_dc=oui
+!if --nova-decorations: non isin $nova_f
+  !set nova_dc=non
+!endif
+!set nova_checked_dc_$nova_dc=checked
 !set nova_checked_a_$nova_a=checked
 !set nova_checked_e_$nova_e=checked
 !set nova_checked_k_$nova_k=checked
@@ -138,6 +144,13 @@
           <label><input type="radio" name="nova_fil" value="non" $(nova_checked_fil_non)> $nova_app_non</label>
         </span>
       </div>
+      <div class="nova-app-ligne">
+        <span class="nova-app-nom" id="nova-app-l8">$nova_app_deco<span class="nova-app-aide">$nova_app_deco_aide</span></span>
+        <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l8">
+          <label><input type="radio" name="nova_deco" value="oui" $(nova_checked_dc_oui)> $nova_app_oui</label>
+          <label><input type="radio" name="nova_deco" value="non" $(nova_checked_dc_non)> $nova_app_non</label>
+        </span>
+      </div>
       <div class="nova-app-ligne nova-app-activite">
         <span class="nova-app-nom" id="nova-app-l6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
         <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-l6">
@@ -165,6 +178,7 @@
   </form>
 </template>
 !reset nova_fl nova_checked_fil_oui nova_checked_fil_non
+!reset nova_dc nova_checked_dc_oui nova_checked_dc_non
 !reset nova_ml nova_checked_mc nova_checked_ml
 !reset nova_v nova_av nova_as nova_ao nova_ah nova_an nova_checked_v_oui nova_checked_v_non
 !reset nova_a nova_e nova_k nova_b nova_m nova_f nova_noms nova_conf nova_n nova_l nova_i nova_sans nova_theme

@@ -45,7 +45,7 @@ $wims_CSS
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
 <meta name="nova-type" content="$class_typename">
-<meta name="nova-css" content="a13459e21c">
+<meta name="nova-css" content="5d33a850c1">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -134,6 +134,13 @@ $wims_CSS
     }
     if (sans) d.classList.add('nova-sans-' + r);
   });
+  /* Decorations de saison (2026-11-11) : meme table que nova.js decorationsSaison (A TENIR A JOUR), reglage
+     --nova-decorations (jeton sans-deco de la classe, sinon structure et site), jamais en examen. */
+  var saisons = { noel: [12] }, mois = new Date().getMonth() + 1;
+  var sansDeco = connu !== null ? (' ' + connu + ' ').indexOf(' sans-deco ') >= 0 : premier('decorations') === 'non';
+  if (!sansDeco && !/[?&]session=[^&]*_exam/.test(location.search)) {
+    for (var sn in saisons) if (saisons[sn].indexOf(mois) >= 0) d.classList.add('nova-saison-' + sn);
+  }
   /* Couleur personnelle d'un eleve (2026-11-07) : gardee par nova.js (couleurPerso) sous nova-couleur|<structure ou
      classe>|<login>, posee ici avant l'affichage, examens compris. */
   try {
@@ -152,7 +159,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=4284666356" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=171688d1e1" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

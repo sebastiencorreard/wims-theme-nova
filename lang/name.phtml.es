@@ -346,6 +346,8 @@
 !set nova_bdg_reglages=Ajustes
 !set nova_app_fil=Ruta de navegación fija
 !set nova_app_fil_aide=Profesores y administradores, pantallas grandes: la ruta de navegación queda bajo la barra superior al desplazar la página.
+!set nova_app_deco=Decoraciones de temporada
+!set nova_app_deco_aide=Guirnalda y copos de nieve en la barra superior en diciembre (vendrán otras fiestas); nunca durante un examen.
 !set nova_av_titre=Mi avatar
 !set nova_av_jeton=%n moneda
 !set nova_av_jetons=%n monedas

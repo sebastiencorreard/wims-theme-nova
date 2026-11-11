@@ -363,6 +363,8 @@
 !set nova_bdg_reglages=Settings
 !set nova_app_fil=Fixed breadcrumb
 !set nova_app_fil_aide=Teachers and admins, large screens: the breadcrumb stays under the top bar when the page scrolls.
+!set nova_app_deco=Seasonal decorations
+!set nova_app_deco_aide=Lights and snowflakes on the top bar in December (more holidays to come); never during an exam.
 !! Student avatar (2026-11-07).
 !set nova_av_titre=My avatar
 !set nova_av_jeton=%n coin

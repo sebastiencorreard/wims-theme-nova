@@ -5886,7 +5886,7 @@
 
   // Bloc « Nova : reglages de la page Apparence » : champs nova_c_… (affichage, élèves, interrupteur des badges, avancés).
   function reglagesApparence(carte, zone, modele) {
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'desactivation-forcee'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'decorations', 'desactivation-forcee'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';
@@ -6305,6 +6305,10 @@
       d.classList.toggle('nova-sans-' + r, sans);
       if (sans) jetons.push('sans-' + r);
     });
+    // Décorations de saison (2026-11-11, utilisateur) : activées sauf « non » ; jeton « sans-deco » pour le script de tête.
+    var deco = cs.getPropertyValue('--nova-decorations').trim().replace(/["']/g, '') !== 'non';
+    if (!deco) jetons.push('sans-deco');
+    decorationsSaison(deco);
     // Pour le script de tête des pages suivantes de cette classe (la feuille de la classe arrive après lui).
     var mc = document.querySelector('meta[name="nova-classe"]');
     try { sessionStorage.setItem('nova-std-' + (mc ? mc.content : ''), jetons.join(' ')); } catch (e) { /* sans stockage */ }
@@ -6313,6 +6317,17 @@
     var nmr = window.novaMenu;
     try { choix = localStorage.getItem('nova_menu' + (nmr && nmr.suffixe || '')); } catch (e) { /* sans stockage */ }
     if (choix === null && !(nmr && nmr.inverse)) d.classList.toggle('nova-menu-simple', actifs.indexOf('menu-complet') < 0);
+  }
+  /* Décorations de saison de la barre (2026-11-11, utilisateur : guirlande et flocons en décembre ; d'autres fêtes
+   * viendront). html.nova-saison-<nom> (_css/decorations.css), posée tôt par le script de tête (même table des saisons,
+   * À TENIR À JOUR dans htmlheader.phtml), confirmée ici : réglage --nova-decorations, jamais en examen. Date de l'appareil. */
+  var SAISONS = [{ nom: 'noel', mois: [12] }];
+  function decorationsSaison(deco) {
+    var d = document.documentElement, mois = new Date().getMonth() + 1;
+    var session = (location.search.match(/[?&]session=([^&]*)/) || [])[1] || '';
+    var examen = /_exam/.test(session) || !!document.getElementById('wimsexam') || document.body.classList.contains('nova-examen') ||
+      document.body.classList.contains('nova-examen-session') || !!document.querySelector('#wimstopbox .menuitem.chrono, #chrono_exam, a.endexam');
+    SAISONS.forEach(function (s) { d.classList.toggle('nova-saison-' + s.nom, deco && !examen && s.mois.indexOf(mois) >= 0); });
   }
   // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien
   // --nova-communication-eleves: non.

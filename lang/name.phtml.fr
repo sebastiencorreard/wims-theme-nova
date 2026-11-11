@@ -363,6 +363,8 @@
 !set nova_bdg_reglages=Réglages
 !set nova_app_fil=Fil d'Ariane fixe
 !set nova_app_fil_aide=Profs et admins, grand écran : le fil d'Ariane reste sous la barre du haut quand la page défile.
+!set nova_app_deco=Décorations de saison
+!set nova_app_deco_aide=Guirlande et flocons sous la barre du haut en décembre (d'autres fêtes viendront) ; jamais pendant un examen.
 !! Avatar de l'eleve (2026-11-07, utilisateur, maquette validee) : page Mon avatar (_widgets/avatar.phtml, nova.js avatarPage).
 !set nova_av_titre=Mon avatar
 !set nova_av_jeton=%n pièce

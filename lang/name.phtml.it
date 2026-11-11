@@ -346,6 +346,8 @@
 !set nova_bdg_reglages=Impostazioni
 !set nova_app_fil=Percorso di navigazione fisso
 !set nova_app_fil_aide=Docenti e amministratori, schermi grandi: il percorso di navigazione resta sotto la barra in alto quando la pagina scorre.
+!set nova_app_deco=Decorazioni stagionali
+!set nova_app_deco_aide=Luci e fiocchi di neve sulla barra in alto a dicembre (arriveranno altre feste); mai durante un esame.
 !set nova_av_titre=Il mio avatar
 !set nova_av_jeton=%n moneta
 !set nova_av_jetons=%n monete

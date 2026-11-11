@@ -305,7 +305,7 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
  * en ligne, à la taille du texte et centrée sur sa première ligne, aux couleurs du thème (demande de l'utilisateur,
  * 2026-10-08). */
 html body .wims_msg::before {
-  display: inline-block; float: none; width: auto;
+  display: inline-block; float: none; width: auto; min-width: 1em; /* jeu Lucide : icône en masque, sans glyphe */
   font-size: 1.15em; line-height: 1; vertical-align: -0.12em;
   margin: 0 .45em 0 0;
 }

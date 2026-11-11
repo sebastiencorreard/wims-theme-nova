@@ -61,6 +61,14 @@ Le thème apparaît aussitôt dans les listes de choix (WIMS cherche les dossier
 - **Pour tout le site** : maintenance du site (`module=adm/manage`) → Configuration → thème par
   défaut : `Nova`. Vaut pour les visiteurs et pour les classes qui n'ont pas choisi de thème.
 
+- **Jeu d'icônes Lucide** (fourni avec Nova, dans `icones/Lucide`) : WIMS propose les dossiers de `gifs/themes`.
+  Nova y crée le lien `gifs/themes/Lucide` → `../../themes/<dossier>/icones/Lucide` à la première page de
+  configuration ouverte (classe ou site) ; un dossier `Lucide` déjà présent n'est jamais touché. À la main :
+  `ln -s ../../themes/Nova/icones/Lucide /home/wims/public_html/gifs/themes/Lucide`. Puis Présentation (classe)
+  ou Configuration du site → Jeu d'icônes : `Lucide`. Le jeu marche aussi avec les autres thèmes.
+  Pour le refaire après une mise à jour de WIMS : `icones/construire-lucide.py <gifs/themes/Font_Awesome/icon-min.css>
+  <icons/ du paquet npm lucide-static>` (il reprend toutes les règles du jeu Font Awesome).
+
 L'accent de Nova suit la « couleur de fond des menus » du site ou de la classe ; si elle est restée au gris
 par défaut de WIMS, Nova prend sa prune.
 

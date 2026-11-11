@@ -1,0 +1,7 @@
+title=Lucide
+description=Jeu d'icônes au trait du thème Nova, d'après les icônes Lucide (lucide.dev) : mêmes entrées que le jeu Font Awesome, en SVG, à la couleur du texte.
+copyright=Lucide Icons and Contributors, licence ISC - <a target="_blank" href="https://lucide.dev">lucide.dev</a>
+author=Thème Nova (Sébastien Correard)
+address=https://github.com/sebastiencorreard/wims-theme-nova
+version=1.0
+wims_version=4.32

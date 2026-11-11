@@ -12,6 +12,12 @@
 !! seulement ($wims_ismanager=2, calcule par WIMS).
 !! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
 !! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
+!! Jeu d'icones Lucide de Nova (2026-11-11) : lien gifs/themes/Lucide vers icones/Lucide du theme, pour qu'il
+!! figure dans le choix "Jeu d'icones" de WIMS (pages de configuration seulement : un test par page).
+!if $module=adm/class/config or $module=adm/manage
+  !set nova_ji=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/jeu-icones.sh "$wims_home" "$wims_theme"
+  !reset nova_ji
+!endif
 !if $module=adm/manage and $wims_ismanager=2
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q

@@ -32,10 +32,10 @@
     return (v || '').replace(/["']/g, '').replace(/\\([0-9a-fA-F]{1,6})\s?/g, function (m, h) { return String.fromCodePoint(parseInt(h, 16)); }).trim();
   }
 
-  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
+  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : réglages --nova-std-… (neuf depuis le 2026-11-11)
    * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
-  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'];
+  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux'];
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
 
   /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un

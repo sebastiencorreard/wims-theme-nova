@@ -45,7 +45,7 @@ $wims_CSS
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
 <meta name="nova-type" content="$class_typename">
-<meta name="nova-css" content="f13d7efea8">
+<meta name="nova-css" content="3b4d1606cb">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -116,7 +116,7 @@ $wims_CSS
   var mc = document.querySelector('meta[name="nova-classe"]');
   var connu = null;
   try { connu = sessionStorage.getItem('nova-std-' + (mc ? mc.content : '')); } catch (e) {}
-  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'].forEach(function (k) {
+  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux'].forEach(function (k) {
     var v = connu !== null ? ((' ' + connu + ' ').indexOf(' ' + k + ' ') >= 0 ? 'oui' : 'non') : (st[k] || site[k] || 'non');
     if (v === 'oui') d.classList.add('nova-std-' + k);
   });
@@ -159,7 +159,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=55a50a4e1d" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=c7ffb6e162" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

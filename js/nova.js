@@ -32,10 +32,10 @@
     return (v || '').replace(/["']/g, '').replace(/\\([0-9a-fA-F]{1,6})\s?/g, function (m, h) { return String.fromCodePoint(parseInt(h, 16)); }).trim();
   }
 
-  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
+  /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : réglages --nova-std-… (neuf depuis le 2026-11-11)
    * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
-  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos'];
+  var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux'];
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
 
   /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
@@ -1475,6 +1475,7 @@
    * (job=del…, deactivate, expire… : beaucoup d'« Effacer » de WIMS sont des GET ; ou confirm()). Pas de clic si
    * l'élève sélectionne du texte. Clic transmis par createEvent (Dynapi remplace MouseEvent), touches Ctrl/Maj gardées. */
   function cellulesCliquables() {
+    if (standard('tableaux')) return;   // réglage « Tableaux du thème standard »
     var CLIQUABLE = 'a[href], button, input[type="submit"], input[type="button"], input[type="reset"], input[type="checkbox"], input[type="radio"]';
     var BLOQUANT = 'input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, table, [contenteditable], img[usemap], .wims_grabbable';
     var ACTION = /[?&+](?:job|cmd)=(?:del|erase|remove|clean|deactiv|reactiv|activ|expire|close|restore|reset|purge|empty)/i;

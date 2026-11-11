@@ -448,6 +448,7 @@
    * (job=del…, deactivate, expire… : beaucoup d'« Effacer » de WIMS sont des GET ; ou confirm()). Pas de clic si
    * l'élève sélectionne du texte. Clic transmis par createEvent (Dynapi remplace MouseEvent), touches Ctrl/Maj gardées. */
   function cellulesCliquables() {
+    if (standard('tableaux')) return;   // réglage « Tableaux du thème standard »
     var CLIQUABLE = 'a[href], button, input[type="submit"], input[type="button"], input[type="reset"], input[type="checkbox"], input[type="radio"]';
     var BLOQUANT = 'input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, table, [contenteditable], img[usemap], .wims_grabbable';
     var ACTION = /[?&+](?:job|cmd)=(?:del|erase|remove|clean|deactiv|reactiv|activ|expire|close|restore|reset|purge|empty)/i;

@@ -107,6 +107,10 @@ span.tooltip { color: var(--nova-lien); }
 .wims_subclasses ul { list-style: none; margin: var(--nova-e1) 0 0 .9em; padding-left: var(--nova-e4); border-left: 1px solid var(--nova-bord); }
 .wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"] { display: inline-block; padding-block: .3em; line-height: 1.35; }
 .wims_subclasses .program, .wims_subclasses .course { background-color: transparent; }
+/* Toute la pastille (icône comprise) ouvre la zone, pas seulement son nom (2026-11-11, utilisateur) : le lien unique de
+ * WIMS (scripts/adm/class/graphclass, modules/home/subclasses*.phtml) est étendu à la pastille par un ::after. */
+.wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"]:has(> a) { position: relative; }
+.wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"] > a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 /* Classes d'un niveau repliées (accueil d'une structure, enseignant ; 2026-11-10, maquette A, utilisateur) : bouton
  * « Replier les n classes » posé par nova.js (replisClasses) à côté du niveau ; replié, il ne reste que les programmes et
  * leurs cours. Choix gardé sur le serveur (header.phtml, .nova_replis_<login>). */

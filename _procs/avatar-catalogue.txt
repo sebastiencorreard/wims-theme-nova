@@ -1,5 +1,7 @@
 # Nova : catalogue de l'avatar (Avataaars, DiceBear ; demande de l'utilisateur, maquette validee le 2026-11-07).
-# Une ligne par element, dans l'ordre d'affichage : <categorie> <valeur DiceBear> <prix>.
+# Une ligne par element, dans l'ordre d'affichage : <categorie> <valeur DiceBear> <prix> [mois=<m>,<m>...].
+# mois= (2026-11-11) : element de saison, propose et dessine ces mois-la seulement (1 = janvier). Hors saison : ni montre,
+# ni achetable, ni dessine ; achat et choix gardes pour la saison suivante.
 # prix : libre (ouvert d'office) | 1 | 2 (jetons ; 2 = rare) | <badge>:<niveau> (fidelite = Regularite, perseverance,
 # echauffement, top). Valeur aucun = sans accessoire / sans barbe. Retires a la demande de l'utilisateur : hijab, turban,
 # bouche vomit, motifs skull, skullOutline, resist. Lu par _procs/avatar.awk, qui transmet a nova.js l'etat de chaque element.
@@ -57,12 +59,13 @@ hatColor 8338ec 1
 hatColor 7b1e3a 1
 hatColor 1b4332 1
 # Noel (2026-11-11, utilisateur) : elements dessines pour Nova (_avatar/noel/*.svg, construire-avatar.py), poses
-# par-dessus Avataaars ; un element porte remplace le chapeau d'Avataaars. Prix provisoires (libres) pour l'essai.
-noel aucun libre
-noel bonnetNoel libre
-noel bonnetLutin libre
-noel serreTeteRenne libre
-noel cacheOreilles libre
+# par-dessus Avataaars ; un element porte remplace le chapeau d'Avataaars. 1 piece chacun, en decembre seulement
+# (utilisateur, 2026-11-11).
+noel aucun libre mois=12
+noel bonnetNoel 1 mois=12
+noel bonnetLutin 1 mois=12
+noel serreTeteRenne 1 mois=12
+noel cacheOreilles 1 mois=12
 hairColor 2c1b18 libre
 hairColor 4a312c libre
 hairColor 724133 libre

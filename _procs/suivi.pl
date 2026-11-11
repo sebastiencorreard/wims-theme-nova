@@ -19,6 +19,11 @@ sub read_file {
     local $/; my $s = <$fh> // ''; close $fh;
     return decode('cp1252', $s);
 }
+# Elements de saison de l'avatar (Nova, 2026-11-11) : « cat.val » -> « mois=12 », d'apres le catalogue voisin.
+my $saisons = {};
+for (split /\n/, read_file(dirname(__FILE__) . '/avatar-catalogue.txt', 1)) {
+    $saisons->{"$1.$2"} = $3 if /^(\w+) (\w+) \S+ (mois=[0-9,]+)\s*$/;
+}
 sub defs {
     my ($path) = @_; my %v;
     for (split /\n/, read_file($path)) { $v{$1} = $2 if /^(?:!set\s+)?([\w]+)\s*=(.*)$/; }
@@ -139,6 +144,9 @@ for my $r (values %students) {
     # Avatar de l'eleve (Nova, 2026-11-07) : choix enregistre pour sa structure (.nova_avatar_<login>), dessine par suivi.js.
     { my ($racine) = split m{/}, ($r->{owner} // $r->{class});
       my ($ch) = read_file("$home/log/classes/$racine/.nova_avatar_$r->{login}", 1) =~ /^choix ([A-Za-z0-9.,]+)$/m;
+      # Elements de saison (avatar-catalogue.txt, « mois=... ») hors de leur periode : pas dessines (comme avatar.awk).
+      if ($ch) { my $mois = (localtime)[4] + 1;
+        $ch = join ',', grep { !exists $saisons->{$_} || $saisons->{$_} !~ /(?:=|,)$mois(?:,|$)/ } split /,/, $ch; }
       $r->{avatar} = $ch if $ch; }
     delete $r->{owner};
     if ($r->{sheet} && $r->{exo} && $r->{module} !~ /^(?:home|adm\/)/) {

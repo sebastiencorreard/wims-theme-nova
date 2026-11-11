@@ -21,8 +21,8 @@
 #   avatar off | avatar on
 #   jetons <gagnes> <depenses> <disponibles> <exercices comptes> <comptes aujourd'hui> <max par jour> <reste> <pourcent>
 #   message - | ouvert | choix | refus
-#   choix - | cat.val,cat.val,...      (choix enregistre, verifie)
-#   elements cat:val:etat ...          (etat : libre, achete, 1, 2, badge-<cle>-<niveau>-<0 ou 1 = atteint>)
+#   choix - | cat.val,cat.val,...      (choix enregistre, verifie, sans les elements hors saison)
+#   elements cat:val:etat ...  (hors saison : absents)        (etat : libre, achete, 1, 2, badge-<cle>-<niveau>-<0 ou 1 = atteint>)
 #   ecrire 0|1, puis le nouveau contenu du fichier de l'eleve (2 lignes : choix, ouverts) ;
 #   enfin <note de reussite> <secondes> <max par jour> (pour les regles affichees a l'eleve) ;
 #   niveaux <cle>:<niveau atteint>:<badge propose 1|0> ... (fidelite, perseverance, echauffement, top).
@@ -58,13 +58,28 @@ function etat(e,    p, b) {
   split(p, b, ":")
   return "badge-" b[1] "-" b[2] "-" ((actif(b[1]) && niv[b[1]] >= b[2] + 0) ? 1 : 0)
 }
+# Element de saison (4e champ du catalogue, « mois=12 » ou « mois=11,12 ») hors de sa periode, d'apres auj.
+function horsSaison(e,    m) {
+  if (!(e in saison)) return 0
+  m = substr(auj, 5, 2) + 0
+  return saison[e] !~ ("(=|,)" m "(,|$)")
+}
+# Choix sans les elements hors saison (ce qui est montre et dessine).
+function deSaison(liste,    n, b, i, r) {
+  n = split(liste, b, ","); r = ""
+  for (i = 1; i <= n; i++) if (b[i] != "" && !horsSaison(b[i])) r = r (r == "" ? "" : ",") b[i]
+  return r
+}
 function ouvert(e,    s) { s = etat(e); return s == "libre" || s == "achete" || s ~ /-1$/ }
 
 BEGIN {
   while ((getline l < catalogue) > 0) {
-    if (l ~ /^#/ || split(l, c, " ") != 3) continue
+    if (l ~ /^#/) continue
+    n = split(l, c, " ")
+    if (n < 3 || n > 4 || (n == 4 && c[4] !~ /^mois=[0-9,]+$/)) continue
     e = c[1] "." c[2]
     ne++; ordre[ne] = e; prix[e] = c[3]; cat[e] = c[1]
+    if (n == 4) saison[e] = c[4]
   }
   close(catalogue)
 }
@@ -146,7 +161,7 @@ END {
   message = "-"
   depenses = 0; for (e in achete) if (prix[e] == "1" || prix[e] == "2") depenses += prix[e]
   if (ouvrir != "") {
-    s = (ouvrir in prix) ? etat(ouvrir) : ""
+    s = ((ouvrir in prix) && !horsSaison(ouvrir)) ? etat(ouvrir) : ""
     if ((s == "1" || s == "2") && gagnes - depenses >= s + 0) { achete[ouvrir] = 1; depenses += s; message = "ouvert" }
     else message = "refus"
   }
@@ -156,8 +171,15 @@ END {
     m = split(choix, brut, ",")
     for (i = 1; i <= m; i++) {
       e = brut[i]
-      if (!(e in prix) || !ouvert(e) || (cat[e] in pris)) continue
+      if (!(e in prix) || horsSaison(e) || !ouvert(e) || (cat[e] in pris)) continue
       pris[cat[e]] = 1; nouveau = nouveau (nouveau == "" ? "" : ",") e
+    }
+    # Elements hors saison de l'ancien choix : gardes pour leur saison (l'eleve ne les voit pas, il ne peut pas les retirer).
+    if (nouveau != "") {
+      m = split(ancienChoix, brut, ",")
+      for (i = 1; i <= m; i++) if (brut[i] in prix && horsSaison(brut[i]) && !(cat[brut[i]] in pris)) {
+        pris[cat[brut[i]]] = 1; nouveau = nouveau "," brut[i]
+      }
     }
     if (nouveau != "") message = (message == "refus") ? "refus" : "choix"
     else { nouveau = ancienChoix; message = "refus" }
@@ -166,9 +188,10 @@ END {
   dispo = gagnes - depenses; if (dispo < 0) dispo = 0
   print "jetons " gagnes " " depenses " " dispo " " total " " ajd " " maxj " " reste " " pc
   print "message " message
-  print "choix " (nouveau == "" ? "-" : nouveau)
+  montre = deSaison(nouveau)
+  print "choix " (montre == "" ? "-" : montre)
   ligne = "elements"
-  for (i = 1; i <= ne; i++) { e = ordre[i]; ligne = ligne " " cat[e] ":" substr(e, length(cat[e]) + 2) ":" etat(e) }
+  for (i = 1; i <= ne; i++) { e = ordre[i]; if (horsSaison(e)) continue; ligne = ligne " " cat[e] ":" substr(e, length(cat[e]) + 2) ":" etat(e) }
   print ligne
   liste = ""; for (i = 1; i <= ne; i++) if (ordre[i] in achete) liste = liste " " ordre[i]
   ecrire = (nouveau != ancienChoix || message == "ouvert") ? 1 : 0

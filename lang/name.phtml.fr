@@ -249,6 +249,8 @@
 !set nova_app_act_reglages=Réglages de la page
 !set nova_propage_case_apparence=Réglages de Nova : affichage, élèves, réglages avancés
 !set nova_propage_case_badges=Réglages de Nova : DM WIMS, badges et récompenses
+!set nova_propage_tout=Tout cocher
+!set nova_propage_rien=Tout décocher
 !set nova_propage_1=Réglages propagés à 1 zone dépendante : %2.
 !set nova_propage_n=Réglages propagés à %1 zones dépendantes : %2.
 !set nova_propage_quoi_tout=réglages de Nova

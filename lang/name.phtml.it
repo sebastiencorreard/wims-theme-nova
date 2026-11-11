@@ -238,6 +238,8 @@
 !set nova_app_act_reglages=Impostazioni della pagina
 !set nova_propage_case_apparence=Impostazioni di Nova: visualizzazione, studenti, impostazioni avanzate
 !set nova_propage_case_badges=Impostazioni di Nova: compiti WIMS, distintivi e ricompense
+!set nova_propage_tout=Seleziona tutto
+!set nova_propage_rien=Deseleziona tutto
 !set nova_propage_1=Impostazioni propagate a 1 zona dipendente: %2.
 !set nova_propage_n=Impostazioni propagate a %1 zone dipendenti: %2.
 !set nova_propage_quoi_tout=Impostazioni di Nova

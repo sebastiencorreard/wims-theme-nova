@@ -249,6 +249,8 @@
 !set nova_app_act_reglages=Page settings
 !set nova_propage_case_apparence=Nova settings: display, students, advanced settings
 !set nova_propage_case_badges=Nova settings: WIMS homework, badges and rewards
+!set nova_propage_tout=Select all
+!set nova_propage_rien=Clear all
 !set nova_propage_1=Settings propagated to 1 dependent zone: %2.
 !set nova_propage_n=Settings propagated to %1 dependent zones: %2.
 !set nova_propage_quoi_tout=Nova settings

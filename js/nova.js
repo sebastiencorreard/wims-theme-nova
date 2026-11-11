@@ -5023,6 +5023,34 @@
       return c;
     };
     var nova = [ajouter('apparence', 'Nova theme appearance'), ajouter('badges', 'Nova badges')];
+    // Tout cocher / tout décocher (2026-11-11, utilisateur) : deux boutons au-dessus de la liste, cases de Nova comprises ;
+    // chacun grisé quand il n'a plus d'effet.
+    if (liste) {
+      var toutes = function () { return liste.querySelectorAll('input[type="checkbox"]'); };
+      var barreTout = document.createElement('div');
+      barreTout.className = 'nova-tout';
+      var bouton = function (cle, defaut, valeur) {
+        var bt = document.createElement('button');
+        bt.type = 'button';
+        bt.className = 'nova-tout-' + (valeur ? 'cocher' : 'decocher');
+        bt.textContent = (textes && textes.getAttribute('data-texte-propager-' + cle)) || defaut;
+        bt.addEventListener('click', function () {
+          Array.prototype.forEach.call(toutes(), function (c) { if (!c.disabled) c.checked = valeur; });
+          etat();
+        });
+        barreTout.appendChild(bt);
+        return bt;
+      };
+      var cocher = bouton('tout', 'Select all', true), decocher = bouton('rien', 'Clear all', false);
+      var etat = function () {
+        var l = Array.prototype.slice.call(toutes());
+        cocher.disabled = l.every(function (c) { return c.checked || c.disabled; });
+        decocher.disabled = !l.some(function (c) { return c.checked; });
+      };
+      liste.addEventListener('change', etat);
+      liste.parentNode.insertBefore(barreTout, liste);
+      etat();
+    }
     form.addEventListener('submit', function (e) {
       var choisies = nova.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
       if (!choisies.length) return;

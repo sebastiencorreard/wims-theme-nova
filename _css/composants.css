@@ -1435,3 +1435,21 @@ html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte)
 .nova-cfg-ico[data-icone="users"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Cpath d='M16 3.128a4 4 0 0 1 0 7.744'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3C/svg%3E"); }
 .nova-cfg-ico[data-icone="serveur"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='8' x='2' y='2' rx='2' ry='2'/%3E%3Crect width='20' height='8' x='2' y='14' rx='2' ry='2'/%3E%3Cline x1='6' x2='6.01' y1='6' y2='6'/%3E%3Cline x1='6' x2='6.01' y1='18' y2='18'/%3E%3C/svg%3E"); }
 .nova-cfg-ico[data-icone="oeil"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E"); }
+
+/* Zones dépendantes (adm/class/config, job=propagate) : « Tout cocher », « Tout décocher » au-dessus de la liste
+ * (js/nova.js propagationNova, 2026-11-11, utilisateur). Boutons secondaires (contour), grisés quand sans effet. */
+.wimsbody .nova-tout { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: var(--nova-e3) 0; }
+.wimsbody .nova-tout button {
+  min-height: 36px;
+  padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-accent);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  color: var(--nova-accent);
+  font: inherit;
+  font-size: var(--nova-petit);
+  font-weight: 700;
+  cursor: pointer;
+}
+.wimsbody .nova-tout button:hover:not(:disabled) { background: var(--nova-accent-doux); }
+.wimsbody .nova-tout button:disabled { border-color: var(--nova-bord); color: var(--nova-texte-2); cursor: default; opacity: .7; }

@@ -18,7 +18,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 
 ### Enseignants
 - Réglage « Dominos du thème standard » renommé « Dominos et tuiles du thème standard » : il rend aussi aux tuiles à déplacer l'aspect du thème standard.
-- Accueil d'une structure : toute l'étiquette d'un niveau, d'une classe, d'un cours ou d'un programme est cliquable, icône comprise, plus seulement son nom.
+- Accueil d'une structure : toute l'étiquette d'un niveau, d'une classe, d'un cours ou d'un programme est cliquable, icône comprise, plus seulement son nom ; son fond fonce un peu au survol.
 - Accueil d'une structure : le nom des niveaux, classes, cours et programmes est écrit dans la couleur du texte, plus dans la couleur de la classe.
 - **Décorations de saison** : réglage « Décorations de saison » (onglet Affichage de « Réglages de Nova », et page Apparence du site), activé par défaut, pour les couper.
 - **Zones dépendantes** : boutons « Tout cocher » et « Tout décocher » au-dessus de la liste (cases de Nova comprises).

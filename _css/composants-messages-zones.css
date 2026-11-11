@@ -111,6 +111,8 @@ span.tooltip { color: var(--nova-lien); }
  * WIMS (scripts/adm/class/graphclass, modules/home/subclasses*.phtml) est étendu à la pastille par un ::after. */
 .wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"]:has(> a) { position: relative; }
 .wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"] > a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+/* Survol (2026-11-11, utilisateur, sans maquette) : fond un peu plus soutenu, dans la teinte du type de zone. */
+.wims_subclasses li > :is(span, div)[class^="wims_classes_direct_"]:has(> a):is(:hover, :focus-within) { background-color: color-mix(in srgb, var(--nova-zone-fond), var(--nova-zone-encre) 16%); }
 /* Classes d'un niveau repliées (accueil d'une structure, enseignant ; 2026-11-10, maquette A, utilisateur) : bouton
  * « Replier les n classes » posé par nova.js (replisClasses) à côté du niveau ; replié, il ne reste que les programmes et
  * leurs cours. Choix gardé sur le serveur (header.phtml, .nova_replis_<login>). */

@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- **Configuration et maintenance** d'une classe, d'un groupement ou d'un portail : chaque groupe de liens dans une carte, une ligne par entrée avec son icône, sa description en dessous et un chevron ; toute la ligne est cliquable.
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 - **Liens de connexion** : une carte par lien (« Lien pour vous », « Lien pour vos élèves », et sur un portail ceux des enseignants), le lien en entier et un bouton **Copier** ; un QR code du lien des élèves (dessiné par Nova si le serveur n'en produit pas), avec « Agrandir » pour le projeter et « Télécharger » en image, et des **flyers à imprimer** (PDF, 30 par page A4, « WIMS - <classe> » sous chaque QR code, à découper et coller dans le cahier) avec le nom de la classe modifiable, le numéro de la classe a aussi son bouton Copier.
 - **Désactiver quand même** : case cochée par défaut « Télécharger d'abord une sauvegarde de la classe (.zip) » ; la sauvegarde complète de WIMS est téléchargée, puis l'examen ou la feuille est désactivé. Si la sauvegarde échoue, rien n'est désactivé.

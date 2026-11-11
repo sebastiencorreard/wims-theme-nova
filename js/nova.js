@@ -4259,6 +4259,136 @@
     apres.parentNode.insertBefore(li, apres.nextSibling);
   }
 
+  /* Configuration et maintenance d'une classe, d'un groupement ou d'un portail (adm/class/config, page d'entrée ;
+   * 2026-11-11, utilisateur : comme l'administration du serveur, maquette B). Les listes de WIMS deviennent des cartes :
+   * un groupe sans titre = une carte ; « <strong>titre</strong> (aide) + sous-liste » = titre de groupe, puis sa carte.
+   * Ligne = icône (d'après la cible du lien), libellé, description sans parenthèses, chevron ; ligne entière cliquable
+   * (les autres liens de la ligne restent au-dessus). « Actualiser les index » garde ses boutons. Nœuds déplacés, pas
+   * copiés (onclick de WIMS gardés) ; cartes gardent la classe wims_nopuce (rubriqueReglages, liensConnexion). Réglage
+   * standard « listes ». */
+  var CONFIG_ICONES = [
+    [/#nova-reglages/, 'nova'], [/job=connectlink/, 'lien'], [/job=arch/, 'disque'], [/job=security/, 'bouclier'],
+    [/job=clean/, 'balai'], [/job=propagate/, 'propager'], [/job=authtype/, 'cle'], [/job=list(?![a-z])/, 'curseurs'],
+    [/adm(%2F|\/)class(%2F|\/)sequence/, 'sequence'], [/job=oefdefault/, 'crayon'], [/job=present/, 'palette'],
+    [/adm(%2F|\/)forum/, 'forum'], [/adm(%2F|\/)class(%2F|\/)motd/, 'portevoix'], [/adm(%2F|\/)class(%2F|\/)cdt/, 'cahier'],
+    [/adm(%2F|\/)class(%2F|\/)livret/, 'livret'], [/job=access/, 'cadenas'], [/job=grestrict/, 'jauge'],
+    [/job=neighbor/, 'users'], [/job=connect(?![a-z])/, 'serveur'], [/adm(%2F|\/)light/, 'oeil']
+  ];
+  function configurationClasse() {
+    if (standard('listes')) return;
+    var corps = document.querySelector('.wimsbody');
+    if (!corps) return;
+    var config = /adm(%2F|\/)class(%2F|\/)config/;
+    var arch = corps.querySelector('ul.wims_nopuce > li > a[href*="job=arch"]');
+    if (!arch || !config.test(arch.href) || corps.querySelector('.nova-cfg')) return;
+    var enfants = function (el, tag) { return Array.prototype.filter.call(el.children, function (c) { return c.tagName === tag; }); };
+    var nettoyer = function (s) { return s.replace(/\s+/g, ' ').trim().replace(/^\(\s*/, '').replace(/\s*\)?[\s.,]*$/, '').replace(/\s*\)$/, ''); };
+    // Description : nœuds qui suivent le libellé (texte, autres liens), parenthèses de WIMS retirées.
+    var description = function (noeuds) {
+      var span = document.createElement('span');
+      span.className = 'nova-cfg-desc';
+      noeuds.forEach(function (n) { span.appendChild(n); });
+      span.normalize();
+      while (span.firstChild && span.firstChild.nodeType === 3 && !span.firstChild.nodeValue.trim()) span.removeChild(span.firstChild);
+      var premier = span.firstChild, dernier = span.lastChild;
+      if (premier && premier.nodeType === 3) premier.nodeValue = premier.nodeValue.replace(/^\s*\(\s*/, '');
+      if (dernier && dernier.nodeType === 3) dernier.nodeValue = dernier.nodeValue.replace(/\s*\)?[\s.,]*$/, '');
+      return span.textContent.trim() ? span : null;
+    };
+    var icone = function (h) {
+      for (var i = 0; i < CONFIG_ICONES.length; i++) if (CONFIG_ICONES[i][0].test(h)) return CONFIG_ICONES[i][1];
+      return '';
+    };
+    var ligne = function (li) {
+      var ico = document.createElement('span');
+      ico.className = 'nova-cfg-ico';
+      ico.setAttribute('aria-hidden', 'true');
+      var noeuds = Array.prototype.slice.call(li.childNodes);
+      var boutons = noeuds.filter(function (n) { return n.nodeType === 1 && n.matches('a.wims_button, a.wims_button_help'); });
+      li.classList.add('nova-cfg-ligne');
+      if (boutons.length) {
+        // « Actualiser les index » : libellé (texte avant le premier bouton), puis les boutons.
+        li.classList.add('nova-cfg-index');
+        ico.setAttribute('data-icone', 'maj');
+        var tete = document.createElement('span');
+        tete.className = 'nova-cfg-tete nova-cfg-libelle';
+        tete.textContent = noeuds.filter(function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ').replace(/\s+/g, ' ').trim();
+        var div = document.createElement('div');
+        div.className = 'nova-cfg-boutons';
+        boutons.forEach(function (b) { div.appendChild(b); });
+        li.textContent = '';
+        li.appendChild(ico); li.appendChild(tete); li.appendChild(div);
+        return li;
+      }
+      var a = noeuds.filter(function (n) { return n.nodeType === 1 && n.tagName === 'A'; })[0];
+      if (!a) return li;
+      ico.setAttribute('data-icone', icone(a.getAttribute('href') || ''));
+      a.classList.add('nova-cfg-lien');
+      var tete2 = document.createElement('span');
+      tete2.className = 'nova-cfg-tete';
+      var apres = noeuds.slice(noeuds.indexOf(a) + 1);
+      var tags = apres.filter(function (n) { return n.nodeType === 1 && n.classList.contains('nova-tag-nouveau'); });
+      apres = apres.filter(function (n) { return tags.indexOf(n) < 0; });
+      noeuds.slice(0, noeuds.indexOf(a)).forEach(function (n) { if (n.nodeType === 3) li.removeChild(n); });
+      tete2.appendChild(a);
+      tags.forEach(function (t) { tete2.appendChild(t); });
+      var d = description(apres);
+      li.textContent = '';
+      li.appendChild(ico); li.appendChild(tete2);
+      if (d) li.appendChild(d);
+      return li;
+    };
+    var listes = Array.prototype.filter.call(corps.querySelectorAll('ul.wims_nopuce'), function (ul) {
+      return !ul.closest('ul.wims_nopuce ul') && Array.prototype.some.call(ul.querySelectorAll('a[href]'), function (x) { return config.test(x.href); });
+    });
+    listes.forEach(function (ul) {
+      var bloc = document.createElement('div');
+      bloc.className = 'nova-cfg';
+      var carte = null;
+      var nouvelleCarte = function () {
+        carte = document.createElement('ul');
+        carte.className = 'wims_nopuce nova-cfg-carte';
+        bloc.appendChild(carte);
+      };
+      var ajouter = function (li) { if (!carte) nouvelleCarte(); carte.appendChild(ligne(li)); };
+      var prec = ul.previousElementSibling;
+      if (prec && prec.tagName === 'H2') bloc.appendChild(prec);
+      enfants(ul, 'LI').forEach(function (li) {
+        var titre = enfants(li, 'STRONG')[0];
+        var sous = enfants(li, 'UL')[0];
+        if (titre) {
+          var t = document.createElement('div');
+          t.className = 'nova-cfg-titre';
+          t.textContent = titre.textContent.trim();
+          var texte = Array.prototype.filter.call(li.childNodes, function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ');
+          texte = nettoyer(texte);
+          if (texte) {
+            var sd = document.createElement('span');
+            sd.className = 'nova-cfg-desc';
+            sd.textContent = texte;
+            t.appendChild(sd);
+          }
+          bloc.appendChild(t);
+          carte = null;
+          if (sous) { enfants(sous, 'LI').forEach(ajouter); carte = null; }
+        } else if (sous && !enfants(li, 'A').length) {
+          enfants(sous, 'LI').forEach(ajouter);
+          carte = null;
+        } else ajouter(li);
+      });
+      // Préférences d'affichage : paragraphe qui suit la liste de configuration, mis en carte à la suite.
+      var p = ul.nextElementSibling;
+      if (p && p.tagName === 'P' && p.firstElementChild && p.firstElementChild.tagName === 'A' && /adm(%2F|\/)light/.test(p.firstElementChild.href)) {
+        var lp = document.createElement('li');
+        while (p.firstChild) lp.appendChild(p.firstChild);
+        p.parentNode.removeChild(p);
+        nouvelleCarte();
+        carte.appendChild(ligne(lp));
+      }
+      ul.parentNode.replaceChild(bloc, ul);
+    });
+  }
+
   /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…
    * (page Apparence, section repliée). Le script de tête pose html.nova-std-<réglage> avant l'affichage ;
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
@@ -6053,7 +6183,7 @@
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

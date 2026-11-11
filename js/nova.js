@@ -6217,6 +6217,8 @@
       point.setAttribute('aria-label', mot);
       el.appendChild(point);
       el.classList.add('nova-en-ligne-pose');
+      // WIMS ecrit l'info-bulle du nom en anglais, en dur (adm/class/livret/user.phtml : title="connected").
+      if (el.hasAttribute('title')) el.title = mot;
     });
   }
 

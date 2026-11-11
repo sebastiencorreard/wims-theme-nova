@@ -38,6 +38,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Élèves connectés : au survol du nom, « En ligne » au lieu de « connected » (anglais, écrit par WIMS) ; plus de curseur en point d'interrogation.
 - Examen, page « Vous n'avez pas fait tous les exercices… Voulez-vous vraiment terminer ? » : le menu de l'élève n'est plus au milieu de la barre, il est à droite avec Aide, devant « Terminer ».
 - Le symbole des messages d'information (« Dernière connexion le … ») ne disparaît plus avec un jeu d'icônes en images (Lucide).
 - **Import CSV depuis un portail ou un groupement** : les élèves inscrits dans une classe par le fichier (colonne participate) apparaissent tout de suite dans la classe et dans le nombre d'élèves de « Gestion de la structure », sans passer par « Actualiser les index › Participants ».

@@ -249,3 +249,23 @@ html.nova-tuiles:not(.nova-std-dominos) .wims_droppable[style*="rgb(192, 192, 19
 html.nova-tuiles-agrandies:not(.nova-std-dominos) :is(.wims_grabbable, .wims_droppable) .fill_content{ font-size: 1.125rem; }
 html.nova-tuiles:not(.nova-std-dominos):not(.nova-sans-animation) .wims_grabbable{ transition: box-shadow .15s, transform .15s; }
 html.nova-tuiles:not(.nova-std-dominos):not(.nova-sans-animation) .wims_droppable{ transition: background-color .15s, box-shadow .15s; }
+
+/* Tuiles de la page de correction (demande de l'utilisateur, 2026-11-11) : réaffichées par WIMS (.drag_label >
+ * .drag_content, dans l'énoncé et l'analyse, fond #87ceeb posé par une feuille du module) : même tuile blanche que
+ * dans l'exercice, sans ombre portée (elles ne se déplacent plus), 8 px entre deux tuiles ; dans l'énoncé, fond vert,
+ * rouge ou ambre selon le verdict de WIMS (oef_indgood, oef_indbad, oef_indpartial). Pages à dominos exclues. */
+html:not(.nova-std-dominos):not(.nova-dominos) .drag_label{
+  background-color: var(--nova-surface) !important;
+  border: 1px solid var(--nova-bord-fort) !important;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  color: var(--nova-texte);
+  margin: 2px 4px;
+  vertical-align: middle;
+}
+html:not(.nova-std-dominos):not(.nova-dominos) .oef_indgood .drag_label{ background-color: var(--nova-succes-fond) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oef_indbad .drag_label{ background-color: var(--nova-erreur-fond) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oef_indpartial .drag_label{ background-color: var(--nova-attention-fond) !important; }
+/* Leur conteneur : fond orange de WIMS retiré, largeur calculée par WIMS pour des marges de 1 px libérée (sinon la
+ * dernière tuile passe à la ligne). */
+html:not(.nova-std-dominos):not(.nova-dominos) .fill_container:has(> .drag_label){ background-color: transparent; width: auto !important; max-width: 100%; }

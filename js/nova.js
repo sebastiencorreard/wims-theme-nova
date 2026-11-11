@@ -3329,28 +3329,39 @@
     var sx = +m[1], sy = +m[2], racine = document.documentElement;
     racine.classList.add('nova-tuiles');
     if (sx >= 160) racine.classList.add('nova-tuiles-larges');
-    // Agrandir avant « load » : places réservées dans la page (images transparentes dans fill<nom> et devant
-    // fillobj<n>, et leur cale de 1 px de large), puis la taille et les décalages que Dynapi donne à ses calques.
-    var nsx = Math.max(sx, 44), nsy = Math.max(sy, 44);
-    if ((nsx !== sx || nsy !== sy) && window.DynLayer && DynLayer.prototype.setAnchor) {
+    // Avant « load » : petites tuiles agrandies à 44 px, et 8 px entre les cases d'un même groupe (Dynapi les colle :
+    // pas de fill_sx, f_cut cases par ligne ; demande de l'utilisateur, 2026-11-11). Places réservées dans la page
+    // (images transparentes dans fill<nom>, k cases de large et r de haut, et devant fillobj<n>, plus leurs cales de
+    // 1 px de large), puis taille et décalages que Dynapi donne à ses calques.
+    var nsx = Math.max(sx, 44), nsy = Math.max(sy, 44), ecart = 8;
+    if (window.DynLayer && DynLayer.prototype.setAnchor) {
       Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, img:has(+ a[id^="fill"])'), function (im) {
         var w = parseFloat(im.style.width), h = parseFloat(im.style.height);
-        if (w === sx) im.style.width = nsx + 'px';
-        if (h >= sy) im.style.height = (h + nsy - sy) + 'px';
+        var lien = /^fill/.test(im.parentElement.id || '') ? im.parentElement : im.nextElementSibling;
+        var groupe = !!lien && !/^fillobj/.test(lien.id || '');
+        var k = Math.round(w / sx), r = Math.floor(h / sy);
+        if (k >= 1 && Math.abs(w - k * sx) < 1) im.style.width = (k * nsx + (groupe ? (k - 1) * ecart : 0)) + 'px';
+        if (r >= 1) im.style.height = (h + r * (nsy - sy) + (groupe ? (r - 1) * ecart : 0)) + 'px';
       });
       var ancrer = DynLayer.prototype.setAnchor;
       DynLayer.prototype.setAnchor = function (a) {
         if (a && a.stretchH === sx && a.stretchV === sy) {
-          var b = {};
+          var b = {}, groupe = !/^fillobj/.test(a.leftA || '');
           for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
           b.stretchH = nsx; b.stretchV = nsy;
-          if (typeof b.left === 'number') b.left = Math.round(b.left * nsx / sx);
-          if (typeof b.top === 'number') b.top = Math.round(b.top * nsy / sy);
+          if (typeof b.left === 'number') {
+            var col = groupe ? Math.max(0, Math.floor(b.left / sx)) : 0;
+            b.left = Math.round(b.left * nsx / sx) + col * (groupe ? ecart : 0);
+          }
+          if (typeof b.top === 'number') {
+            var lig = groupe ? Math.max(0, Math.floor(b.top / sy)) : 0;
+            b.top = Math.round(b.top * nsy / sy) + lig * (groupe ? ecart : 0);
+          }
           a = b;
         }
         return ancrer.call(this, a);
       };
-      racine.classList.add('nova-tuiles-agrandies');
+      if (nsx !== sx || nsy !== sy) racine.classList.add('nova-tuiles-agrandies');
     }
     var textes = document.getElementById('nova-textes');
     var consigne = textes && textes.getAttribute('data-texte-consigne-tuiles');

@@ -377,7 +377,7 @@
 !set nova_av_enr_bloque=Unlock the previewed item first, or click Cancel.
 !set nova_av_tire=Picked from your unlocked items. Save it if you like it.
 !set nova_av_premier=Choose your avatar, then save it: it will appear at the top of your pages.
-!set nova_av_categories=Hair,Hat colour,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Glasses colour,Beard,Clothes,T-shirt print,Clothes colour,Background
+!set nova_av_categories=Hair,Hat colour,Christmas,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Glasses colour,Beard,Clothes,T-shirt print,Clothes colour,Background
 !set nova_av_ouverts=%n of %m unlocked.
 !set nova_av_motif=Choosing a print switches to the printed T-shirt.
 !set nova_av_lunettes=Also choose glasses (Glasses tab) to see this colour on your avatar.

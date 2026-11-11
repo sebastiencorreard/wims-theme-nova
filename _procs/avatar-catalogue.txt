@@ -56,6 +56,12 @@ hatColor 06d6a0 1
 hatColor 8338ec 1
 hatColor 7b1e3a 1
 hatColor 1b4332 1
+# Noel (2026-11-11, utilisateur) : elements dessines pour Nova (_avatar/noel/*.svg, construire-avatar.py), poses
+# par-dessus Avataaars ; un element porte remplace le chapeau d'Avataaars. Prix provisoires (libres) pour l'essai.
+noel aucun libre
+noel bonnetNoel libre
+noel bonnetLutin libre
+noel serreTeteRenne libre
 hairColor 2c1b18 libre
 hairColor 4a312c libre
 hairColor 724133 libre

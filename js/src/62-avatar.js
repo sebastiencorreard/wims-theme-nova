@@ -6,7 +6,7 @@
    * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
    * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
    * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
-  var AVATAR_CATEGORIES = ['top', 'hatColor', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
+  var AVATAR_CATEGORIES = ['top', 'hatColor', 'noel', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
     'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
   function cleAvatar() {
     var cle = cleCouleur();
@@ -21,7 +21,13 @@
   // Fonds en dégradé du catalogue (récompenses de badges ; maquette v3 validée le 2026-11-07).
   // Coiffures qui sont des chapeaux : seules à montrer l'onglet « Chapeau (couleur) » (hatColor).
   var AVATAR_CHAPEAUX = ['hat', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04'];
-  function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0; }
+  // Éléments dessinés pour Nova, hors DiceBear (2026-11-11, utilisateur : catégorie « Noël ») : js/avatar-extras.js,
+  // construit par construire-avatar.py depuis _avatar/<catégorie>/<valeur>.svg, posé PAR-DESSUS le dessin d'Avataaars.
+  // Un élément de Noël porté remplace le chapeau d'Avataaars (pas deux couvre-chefs) ; les cheveux restent.
+  var AVATAR_EXTRAS = ['noel'];
+  var AVATAR_EXTRAS_V = '33063e267d';
+  function porteNoel(c) { return !!c.noel && c.noel !== 'aucun'; }
+  function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0 && !porteNoel(c); }
   function porteLunettes(c) { return !!c.accessories && c.accessories !== 'aucun' && c.accessories !== 'eyepatch'; }
   function porteBarbe(c) { return !!c.facialHair && c.facialHair !== 'aucun'; }
   // Onglets de couleur montrés seulement quand ils changent quelque chose (2026-11-07, utilisateur) : chapeau porté,
@@ -38,7 +44,7 @@
   function optionsAvatar(choix) {
     var c = {};
     (choix || '').split(',').forEach(function (e) { var i = e.indexOf('.'); if (i > 0) c[e.slice(0, i)] = e.slice(i + 1); });
-    var o = { seed: 'nova', nose: ['default'], topProbability: 100 };
+    var o = { seed: 'nova', nose: ['default'], topProbability: (porteNoel(c) && AVATAR_CHAPEAUX.indexOf(c.top) >= 0) ? 0 : 100 };
     ['top', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'clothing', 'clothesColor', 'clothingGraphic', 'backgroundColor'].forEach(function (k) {
       if (c[k]) o[k] = [c[k]];
     });
@@ -51,21 +57,44 @@
     else { o.facialHair = [c.facialHair]; o.facialHairProbability = 100; if (c.hairColor) o.facialHairColor = [c.hairColor]; }
     return o;
   }
+  // Dessin complet d'un choix : Avataaars, puis les éléments de Nova dans le groupe masqué de la page (même repère).
+  function dessinerAvatar(f, choix) {
+    var uri = f(optionsAvatar(choix));
+    var dessins = window.novaAvatarExtras || {}, ajout = '';
+    (choix || '').split(',').forEach(function (e) {
+      var i = e.indexOf('.'), k = e.slice(0, i), v = e.slice(i + 1);
+      if (i > 0 && AVATAR_EXTRAS.indexOf(k) >= 0 && dessins[k] && dessins[k][v]) ajout += dessins[k][v];
+    });
+    if (!ajout) return uri;
+    var m = uri.match(/^(data:image\/svg\+xml;utf8,)(.*)$/);
+    if (!m) return uri;
+    var svg = decodeURIComponent(m[2]), fin = svg.lastIndexOf('</g></svg>');
+    if (fin < 0) return uri;
+    return m[1] + encodeURIComponent(svg.slice(0, fin) + ajout + svg.slice(fin));
+  }
   var avatarScript = null;
-  function chargerAvatar(src) {
-    if (window.novaAvatar) return Promise.resolve(window.novaAvatar);
-    if (!avatarScript) avatarScript = new Promise(function (ok, ko) {
+  function chargerScript(src, pret) {
+    return new Promise(function (ok, ko) {
       var s = document.createElement('script');
       s.src = src;
-      s.onload = function () { if (window.novaAvatar) ok(window.novaAvatar); else ko(new Error('avatar')); };
-      s.onerror = function () { avatarScript = null; ko(new Error('avatar')); };
+      s.onload = function () { if (pret()) ok(); else ko(new Error('avatar')); };
+      s.onerror = function () { ko(new Error('avatar')); };
       document.head.appendChild(s);
     });
+  }
+  // Résout avec une fonction choix -> adresse du dessin. Sans avatar-extras.js : Avataaars seul (rien de cassé).
+  function chargerAvatar(src) {
+    if (!avatarScript) avatarScript = Promise.all([
+      window.novaAvatar ? Promise.resolve() : chargerScript(src, function () { return !!window.novaAvatar; }),
+      window.novaAvatarExtras ? Promise.resolve() : chargerScript(src.replace(/avatar\.js(\?.*)?$/, 'avatar-extras.js?v=' + AVATAR_EXTRAS_V),
+        function () { return true; }).catch(function () {})
+    ]).then(function () { return function (choix) { return dessinerAvatar(window.novaAvatar, choix); }; },
+      function (e) { avatarScript = null; throw e; });
     return avatarScript;
   }
   function lienMonAvatar() { return lienAccueil('&nova_avatar=1'); }
   // Suivi en salle (js/suivi.js) : dessin d'un avatar d'élève d'après son choix enregistré.
-  window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(optionsAvatar(choix)); }); };
+  window.novaAvatarDessin = function (choix, src) { return chargerAvatar(src).then(function (f) { return f(choix); }); };
   // Avatar de la barre : fenêtres ordinaires seulement (demande de l'utilisateur, 2026-11-07 : la place manque à côté
   // de « Terminer » et du chronomètre). Pas en examen (session _exam, chronomètre, Terminer, pastille « Examen en
   // cours »), ni dans une fenêtre d'aide, d'outil ou allégée.
@@ -157,7 +186,7 @@
         }
         garderAvatar(memo);
         if (choix && !memo.uri) chargerAvatar(source.getAttribute('data-script')).then(function (dessin) {
-          memo.uri = dessin(optionsAvatar(choix));
+          memo.uri = dessin(choix);
           garderAvatar(memo);
           poserAvatarBarre(memo);
         }).catch(function () {});
@@ -217,7 +246,7 @@
     (d.getAttribute('data-utilisateur') || '').split('').forEach(function (ch) { graine = (graine * 31 + ch.charCodeAt(0)) % 100003; });
     AVATAR_CATEGORIES.forEach(function (k, i) {
       var libres = (etat.ordre[k] || []).filter(function (v) { return etat.elements[k + '.' + v] === 'libre'; });
-      if (k === 'accessories' || k === 'facialHair') libres = ['aucun'];
+      if (k === 'accessories' || k === 'facialHair' || k === 'noel') libres = ['aucun'];
       if (k === 'hatColor') return;   // sans choix : couleur du vêtement
       // Peau : tirage parmi les teintes naturelles (le jaune et l'orange restent au choix de l'élève).
       if (k === 'skinColor') libres = libres.filter(function (v) { return v !== 'f8d25c' && v !== 'fd9841'; });
@@ -344,7 +373,7 @@
     d.appendChild(aide);
 
     var catActive = 0, enAttente = null, occupe = false, dessin = null;
-    var rendu = function (c) { return dessin ? dessin(optionsAvatar(AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
+    var rendu = function (c) { return dessin ? dessin((AVATAR_CATEGORIES.map(function (k) { return c[k] ? k + '.' + c[k] : ''; }).filter(Boolean).join(','))) : ''; };
     var dire = function (texte) { message.textContent = texte || ''; };
     // Éléments proposés : tous, sauf ceux d'un badge qui n'est pas activé dans la classe (utilisateur, 2026-11-07).
     var proposes = function (k) {

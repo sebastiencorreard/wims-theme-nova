@@ -359,7 +359,7 @@
 !set nova_av_enr_bloque=Desbloquea primero el elemento de la vista previa, o haz clic en Cancelar.
 !set nova_av_tire=Elegido entre tus elementos desbloqueados. Guárdalo si te gusta.
 !set nova_av_premier=Elige tu avatar y guárdalo: aparecerá en la parte superior de tus páginas.
-!set nova_av_categories=Pelo,Color del sombrero,Color del pelo,Piel,Ojos,Cejas,Boca,Gafas,Color de las gafas,Barba,Ropa,Estampado de la camiseta,Color de la ropa,Fondo
+!set nova_av_categories=Pelo,Color del sombrero,Navidad,Color del pelo,Piel,Ojos,Cejas,Boca,Gafas,Color de las gafas,Barba,Ropa,Estampado de la camiseta,Color de la ropa,Fondo
 !set nova_av_ouverts=%n de %m desbloqueados.
 !set nova_av_motif=Elegir un estampado cambia a la camiseta estampada.
 !set nova_av_lunettes=Elige también unas gafas (pestaña Gafas) para ver este color en tu avatar.

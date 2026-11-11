@@ -359,7 +359,7 @@
 !set nova_av_enr_bloque=Sblocca prima l'elemento in anteprima, oppure clicca su Annulla.
 !set nova_av_tire=Scelto tra i tuoi elementi sbloccati. Salvalo se ti piace.
 !set nova_av_premier=Scegli il tuo avatar, poi salvalo: comparirà in cima alle tue pagine.
-!set nova_av_categories=Capelli,Colore del cappello,Colore dei capelli,Pelle,Occhi,Sopracciglia,Bocca,Occhiali,Colore degli occhiali,Barba,Vestiti,Stampa della maglietta,Colore dei vestiti,Sfondo
+!set nova_av_categories=Capelli,Colore del cappello,Natale,Colore dei capelli,Pelle,Occhi,Sopracciglia,Bocca,Occhiali,Colore degli occhiali,Barba,Vestiti,Stampa della maglietta,Colore dei vestiti,Sfondo
 !set nova_av_ouverts=%n su %m sbloccati.
 !set nova_av_motif=Scegliere una stampa passa alla maglietta stampata.
 !set nova_av_lunettes=Scegli anche degli occhiali (scheda Occhiali) per vedere questo colore sul tuo avatar.

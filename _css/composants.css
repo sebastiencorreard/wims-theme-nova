@@ -314,6 +314,27 @@ html body .wims_msg.warning::before { color: var(--nova-attention); }
 html body .wims_msg.alert::before { color: var(--nova-erreur); }
 html body .wims_msg.success::before { color: var(--nova-succes); }
 
+/* Participant connecté (2026-11-11, maquette A, utilisateur) : WIMS pose la main levée U+270B après tout
+ * .wims_connected (_css/utilities2.css) : accueil enseignant (p), tableaux du suivi d'un parcours et des devoirs libres
+ * (td), livret (i seul, span du titre). Point vert de présence à la place ; sur l'accueil, phrase en pilule, point devant. */
+.wims_connected::after {
+  content: ""; display: inline-block; width: .6em; height: .6em; border-radius: 50%;
+  margin-left: .45em; vertical-align: .08em; font-size: inherit; color: inherit;
+  background: var(--nova-en-ligne); box-shadow: 0 0 0 3px var(--nova-succes-fond);
+  padding: 0; border: 0; min-width: 0; flex: none; aspect-ratio: 1;
+}
+/* Livret : icône seule dans une info-bulle de WIMS (pointillés, marges de .wims_tooltip). */
+.wims_connected.wims_tooltip { border-bottom: 0; text-decoration: none; padding: 0; }
+p.wims_connected {
+  display: flex; align-items: center; gap: .6em; width: fit-content; max-width: 100%;
+  padding: .4em .95em; border-radius: 1.3em; background: var(--nova-succes-fond); color: var(--nova-texte);
+}
+p.wims_connected::after { content: none; }
+p.wims_connected::before {
+  content: ""; flex: none; width: .6em; height: .6em; border-radius: 50%;
+  background: var(--nova-en-ligne); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nova-en-ligne) 25%, transparent);
+}
+
 /* Typographie de contenu (reprise de _css/typo.css, retiré du modèle) */
 img { max-width: 100%; }
 blockquote { margin: .5rem 0 1rem; padding: .5rem 1.25rem; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); }

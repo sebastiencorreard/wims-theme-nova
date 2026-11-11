@@ -24,6 +24,7 @@
   --nova-lien-survol: color-mix(in oklab, var(--nova-accent) 60%, black);
   --nova-aide: #1F7A3A;
   --nova-succes: #17663B;       --nova-succes-fond: #E3F3EA;
+  --nova-en-ligne: #1E8E50;     /* point de présence « connecté » (2026-11-11) */
   --nova-attention: #9A5200;    --nova-attention-fond: #FFF1DC;  --nova-attention-texte: #7A4100;
   --nova-erreur: #A3221B;       --nova-erreur-fond: #FBE6E4;
   /* Couleurs des notes (palette A, utilisateur, 2026-10-03) : niveaux de WIMS sur la note /10 arrondie,

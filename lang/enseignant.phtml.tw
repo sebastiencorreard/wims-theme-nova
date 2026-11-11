@@ -1,0 +1,6 @@
+!! Nova : textes (tw) des restriction d'acces, ecarts des zones, desactivation forcee (_widgets/acces-classe, ecarts-zones, desactiver).
+!! Lus seulement par ces gabarits (2026-11-11) : name.phtml, lu sur CHAQUE page, faisait deborder le tampon des noms
+!! de variables de WIMS (32 Ko, src/var.c : variable_name_buffer_overflow sur un exercice d'une feuille).
+!! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!! Textes anglais d'abord (repli : un texte absent de cette langue s'affiche en anglais, jamais vide).
+!read themes/$wims_theme/lang/enseignant.phtml.en

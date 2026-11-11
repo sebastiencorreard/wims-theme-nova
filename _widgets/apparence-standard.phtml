@@ -2,6 +2,7 @@
 !! classe, portail, groupement : apparence-classe.phtml), demande de l'utilisateur, 2026-10-07. Pliee, ainsi que la
 !! liste des changements de chaque reglage. Posees avant : nova_std_nom (debut du nom des boutons), nova_std_sep
 !! (separateur dans la cle : _ ou -), nova_std_site=yes et nova_f (log/nova.conf) pour cocher ; sans, nova.js coche.
+!read themes/$wims_theme/lang/reglages.phtml.$lang
 <details class="nova-app-std">
   <summary><span class="nova-app-nom">$nova_std_titre<span class="nova-app-aide">$nova_std_aide</span></span></summary>
   !for nova_k in menus,navigation,reponse,examens,textes,listes,menu-complet,dominos,tableaux

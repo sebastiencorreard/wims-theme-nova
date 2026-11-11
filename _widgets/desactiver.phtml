@@ -5,6 +5,7 @@
 !! s'appliquent pas (statut, examen commence, reglage --nova-desactivation-forcee : _procs/desactiver.sh). Pas de test « structure » :
 !! dans un programme de portail, la « structure » est le partage avec ses cours (vu le 2026-11-08). Examen commence : dit sous le refus.
 !! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
+!read themes/$wims_theme/lang/enseignant.phtml.$lang
 !if ($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
   !reset nova_fs
   !if $module=adm/class/exam

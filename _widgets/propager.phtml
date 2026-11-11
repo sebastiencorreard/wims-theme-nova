@@ -6,6 +6,7 @@
 !! separes : nova_propager=apparence, badges ou tout (1 = tout, ancien lien).
 !! 2026-11-09 (utilisateur) : aussi sur adm/class/config (page Reglages de Nova, Zones dependantes), ou l'enseignant
 !! reste : propager.sh n'ecrit que par !sh, permis la aussi. L'accueil reste accepte (anciens liens).
+!read themes/$wims_theme/lang/reglages.phtml.$lang
 !set nova_q=!sh printf '%s' "$$QUERY_STRING"
 !set nova_q=!replace internal & by $ $ in $nova_q
 !set nova_q=!replace internal + by $ $ in $nova_q

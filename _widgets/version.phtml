@@ -1,5 +1,6 @@
 !! Nova : ligne de version en bas des cartes « Réglages de Nova » (apparence.phtml, apparence-classe.phtml), 2026-11-07.
 !! Numéro choisi par l'utilisateur (fichier VERSION du dépôt) ; commit et date ajoutés par livrer.sh (_procs/version.sh).
+!read themes/$wims_theme/lang/reglages.phtml.$lang
 !set nova_vr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/version.sh $wims_home/public_html/themes/$wims_theme
 !set nova_vn=!word 1 of $nova_vr
 !set nova_vc=!word 2 of $nova_vr

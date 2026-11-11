@@ -3,6 +3,7 @@
 !! de la feuille de style de la classe (pr_cssfile), enregistree par WIMS (scripts/setdefr.proc).
 !! La feuille complete est aussi transmise : WIMS remplit cette zone par !record 0, qui coupe au premier « : »
 !! en debut de ligne (une feuille commencant par « :root » y apparaissait vide, et l'enregistrer l'effacait).
+!read themes/$wims_theme/lang/reglages.phtml.$lang
 !set nova_cf=!sh if test -r $wims_home/log/classes/$wims_class/css; then cat $wims_home/log/classes/$wims_class/css; fi
 <script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
 !! Vacances de « Mon activite » (2026-11-07, utilisateur ; avant : page Badges Nova) : zone A, B, C (dates officielles

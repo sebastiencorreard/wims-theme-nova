@@ -6,7 +6,7 @@
   var dataEl = document.getElementById('nova-suivi-donnees'), data;
   var avatarEl = document.getElementById('nova-suivi-avatar-script'), avatarScript = avatarEl && avatarEl.getAttribute('data-script'), avatars = {};
   var state = document.getElementById('nova-suivi-etat');
-  // Textes traduits (lang/name.phtml.*, nova_svj_..., gabarit #nova-suivi-textes ; 2026-11-10) : %1, %2, %3 remplaces.
+  // Textes traduits (lang/suivi.phtml.*, nova_svj_..., gabarit #nova-suivi-textes ; 2026-11-10) : %1, %2, %3 remplaces.
   var textes = document.getElementById('nova-suivi-textes'), langue = document.documentElement.lang || 'fr';
   function T(k) {
     var v = (textes && textes.getAttribute('data-' + k.replace(/_/g, '-'))) || '', args = arguments;

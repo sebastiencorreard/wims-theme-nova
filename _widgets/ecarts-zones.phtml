@@ -2,6 +2,7 @@
 !! Pages Apparence et Badges Nova d'une structure (2026-11-07, utilisateur) : zones dependantes dont les blocs Nova
 !! different de ceux de la structure (copie ancienne ou reglage de la zone). nova.js (ecartsZones) en fait une alerte
 !! avec un bouton qui propage (accueil, nova_propager). Memes droits que la propagation.
+!read themes/$wims_theme/lang/enseignant.phtml.$lang
 !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
 !if $nova_ct isitemof 2,3,4
   !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def

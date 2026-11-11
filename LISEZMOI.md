@@ -242,7 +242,8 @@ par défaut et la cadence d'actualisation avec un DOM en mémoire, sans navigate
 | `construire-js.sh` | assemble `js/nova.js`, vérifie sa syntaxe, pose son empreinte dans `htmlheader.phtml` (sans conteneur) |
 | `verifier.sh` | contrôles avant livraison (assemblage à jour, syntaxe, caractères non ASCII dans le code, feuilles du modèle, encodage des gabarits, textes des langues, chemins `themes/Nova` en dur) ; lancé par `livrer.sh` |
 | `_widgets/headmenu.phtml`, `user_links.phtml` | copies des widgets WIMS ; l'entrée `chrono` devient le chronomètre Nova |
-| `lang/name.phtml.{fr,en,nl}` | textes propres au thème (**latin-1**) |
+| `lang/name.phtml.<l>` | textes propres au thème lus sur chaque page (barre, nova.js) (**latin-1**) |
+| `lang/{reglages,eleve,enseignant,suivi}.phtml.<l>` | textes lus seulement par les gabarits de ces pages (**latin-1**) |
 | `htmlheader.phtml` | variables `--wims_*` reliées aux jetons, `nova.js` (HTML seulement : lu par le C) |
 | `_widgets/accent.phtml` | accent = couleur des barres de la classe, sauf le gris par défaut |
 | `VERSION`, `_procs/version.sh`, `_widgets/version.phtml` | numéro de version (choisi à la main dans `VERSION` ; `livrer.sh` y ajoute commit et date), affiché en bas des cartes « Réglages de Nova » |

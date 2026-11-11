@@ -2,6 +2,7 @@
 !! semaine (jours de travail, seuil d'encouragement, objectif), temps de travail (seuil de pause), dernières notes.
 !! Calcul par _procs/activite.awk sur les réglages (site, structure, classe), log/ccaccount (sessions comptées par
 !! WIMS chaque nuit) et les journaux de notes de l'élève. Lu par _widgets/activite-entree.phtml.
+!read themes/$wims_theme/lang/eleve.phtml.$lang
 !set nova_cl=$wims_home/log/classes
 !set nova_cc=$wims_home/log/ccaccount
 !set nova_auj=!char 1 to 8 of $wims_now

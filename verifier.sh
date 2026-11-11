@@ -72,16 +72,27 @@ for f in sorted(glob.glob('*.phtml') + glob.glob('_widgets/*.phtml') + glob.glob
         try: servi.decode('utf-8'); ko('%s : texte en UTF-8 hors commentaire, WIMS le lit en latin-1' % f)
         except UnicodeDecodeError: pass
 
-# 6. Langues : toute langue autre que fr et en commence par lire l'anglais (jamais de texte vide).
-for f in sorted(glob.glob('lang/name.phtml.*')):
-    if f.rsplit('.', 1)[1] in ('fr', 'en'): continue
-    tete = open(f, encoding='latin-1').read(400)
-    if not re.search(r'^!read .*name\.phtml\.en', tete, re.M): ko('%s ne commence pas par !read …/name.phtml.en' % f)
-def cles(l): return set(re.findall(r'^!set (nova_\w+)', open('lang/name.phtml.' + l, encoding='latin-1').read(), re.M))
-fr = cles('fr')
-for l in ('en', 'es', 'it'):
-    m = sorted(fr - cles(l))
-    if m: ko('lang/name.phtml.%s : %d texte(s) Nova de fr absents : %s' % (l, len(m), ' '.join(m[:8])))
+# 6. Langues : toute langue autre que fr et en commence par lire l'anglais (jamais de texte vide). Textes en plusieurs
+#    fichiers (2026-11-11) : name (barre, chaque page) et ceux lus par les seuls gabarits qui en ont besoin ; chaque
+#    langue de name a chacun de ces fichiers.
+GROUPES = sorted({os.path.basename(f).split('.')[0] for f in glob.glob('lang/*.phtml.*') if '_lang_' not in f})
+LANGUES = sorted(f.rsplit('.', 1)[1] for f in glob.glob('lang/name.phtml.*'))
+for g in GROUPES:
+    for l in LANGUES:
+        f = 'lang/%s.phtml.%s' % (g, l)
+        if not os.path.exists(f): ko('%s absent (lu par les gabarits pour cette langue)' % f); continue
+        if l in ('fr', 'en'): continue
+        tete = open(f, encoding='latin-1').read(600)
+        if not re.search(r'^!read .*/%s\.phtml\.en' % g, tete, re.M): ko('%s ne commence pas par !read …/%s.phtml.en' % (f, g))
+    def cles(l): return set(re.findall(r'^!set (nova_\w+)', open('lang/%s.phtml.%s' % (g, l), encoding='latin-1').read(), re.M))
+    fr = cles('fr')
+    for l in ('en', 'es', 'it'):
+        m = sorted(fr - cles(l))
+        if m: ko('lang/%s.phtml.%s : %d texte(s) Nova de fr absents : %s' % (g, l, len(m), ' '.join(m[:8])))
+# Tampon des noms de variables de WIMS (32 Ko par page, src/var.c) : name.phtml est lu sur chaque page.
+noms = re.findall(r'^!set (\w+)=', open('lang/name.phtml.fr', encoding='latin-1').read(), re.M)
+if sum(len(n) + 1 for n in noms) > 4000:
+    ko('lang/name.phtml.fr : %d octets de noms de variables (> 4000) : ranger les nouveaux textes dans le fichier de leur page' % sum(len(n) + 1 for n in noms))
 
 # 7. Dossier du thème libre : jamais « themes/Nova/ » dans un fichier servi (toujours themes/$wims_theme/).
 for f in sorted(glob.glob('*.phtml') + glob.glob('_widgets/*.phtml') + glob.glob('_procs/*') + glob.glob('js/src/*.js')):

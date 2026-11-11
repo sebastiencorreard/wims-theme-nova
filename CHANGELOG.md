@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- Menu « Participants » : « Gestion des variables techniques » devient « Variables techniques ».
 - **Élèves connectés** : un point vert de présence remplace la main jaune levée ; sur l'accueil, la phrase « Il y a actuellement n participant(s) connecté(s) » est dans une pastille verte, point devant ; dans les tableaux (suivi d'un parcours, devoirs libres) et le livret, un point vert après le nom, qui affiche « En ligne » au survol.
 - **Configuration et maintenance** d'une classe, d'un groupement ou d'un portail : deux onglets (« Sauvegarde et maintenance », « Configuration », le dernier choisi est gardé pendant la session) ; chaque groupe de liens dans une carte, en lignes compactes, une ligne par entrée avec son icône, sa description en dessous et un chevron ; toute la ligne est cliquable.
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.

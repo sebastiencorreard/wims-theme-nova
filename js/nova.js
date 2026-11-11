@@ -6205,9 +6205,14 @@
   // l'accueil (p), qui le dit deja.
   function enLigne() {
     var els = document.querySelectorAll('.wims_connected:not(p)');
-    if (!els.length) return;
     var textes = document.getElementById('nova-textes');
     var mot = (textes && textes.getAttribute('data-texte-en-ligne')) || 'Online';
+    // WIMS ecrit aussi title="connected" (anglais, en dur) sur le lien du nom (usermanage userlist, regmanage :
+    // wims_ref_title) et sur le nom de la fiche d'un participant, CONNECTE OU NON (usermanage/userprop.phtml).
+    Array.prototype.forEach.call(document.querySelectorAll('[title="connected"]'), function (x) {
+      if (x.closest('.wims_connected')) x.title = mot; else x.removeAttribute('title');
+    });
+    if (!els.length) return;
     Array.prototype.forEach.call(els, function (el) {
       if (el.querySelector('.nova-en-ligne')) return;
       var point = document.createElement('span');

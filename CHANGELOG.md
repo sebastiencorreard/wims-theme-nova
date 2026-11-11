@@ -9,6 +9,9 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Lucide, liens de connexion avec QR code et
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
+### Élèves
+- Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
+
 ### Enseignants
 - **Menu de gauche personnalisable sur toutes les pages** (feuille, examen, notes, participants, configuration, modtool, accueil d'un portail, d'un groupement ou d'un niveau…) : un crayon en bas du menu pour cacher les entrées inutiles de cette page, choix gardé sur le serveur ; un interrupteur « Menu simplifié » remplace le bouton « Menu complet », et « Choisir les entrées » est plus clair (consigne, « Terminé »).
 - **Liens de connexion** : une carte par lien (« Lien pour vous », « Lien pour vos élèves », et sur un portail ceux des enseignants), le lien en entier et un bouton **Copier** ; un QR code du lien des élèves (dessiné par Nova si le serveur n'en produit pas), avec « Agrandir » pour le projeter et « Télécharger » en image, et des **flyers à imprimer** (PDF, 30 par page A4, « WIMS - <classe> » sous chaque QR code, à découper et coller dans le cahier) avec le nom de la classe modifiable, le numéro de la classe a aussi son bouton Copier.

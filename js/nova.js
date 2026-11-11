@@ -5115,6 +5115,24 @@
     pied.parentNode.removeChild(pied);
   }
 
+  /* Élève sur une page sans menu latéral (préférences d'affichage, liste des examens, devoirs libres ; 2026-11-11,
+   * utilisateur) : Nova crée un menu vide, que profilLateral remplit avec le menu du compte (nom, « Changer le mot de
+   * passe », déconnexion) ; le bouton ☰ (initialiser) l'ouvre, comme sur les autres pages. Réglage « Menus du thème
+   * standard » : rien (le compte reste dans la barre). */
+  function menuEleve() {
+    var corps = document.getElementById('wimsbodybox');
+    var barre = document.getElementById('wimstopbox');
+    if (!corps || !barre || document.getElementById('wimsmenumodubox') || !document.getElementById('nova-eleve')) return;
+    if (standard('menus') || !barre.querySelector('a.account')) return;
+    var menu = document.createElement('div');
+    menu.id = 'wimsmenumodubox';
+    menu.className = 'nova-menu-cree';
+    var contenu = document.createElement('div');
+    contenu.className = 'modubox_content';
+    menu.appendChild(contenu);
+    corps.insertBefore(menu, corps.firstChild);
+  }
+
   function placerMenu() {
     var menu = document.getElementById('wimsmenumodubox');
     // Classe connue du jeu Font_Awesome de WIMS ; le jeu default reste sans icone.
@@ -6258,7 +6276,7 @@
     });
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

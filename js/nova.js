@@ -3345,8 +3345,11 @@
       });
       var ancrer = DynLayer.prototype.setAnchor;
       DynLayer.prototype.setAnchor = function (a) {
-        if (a && a.stretchH === sx && a.stretchV === sy) {
-          var b = {}, groupe = !/^fillobj/.test(a.leftA || '');
+        // Une seule fois par ancrage : Dynapi repasse ici l'ancrage d'un calque créé avant d'être ajouté à la page
+        // (addChild, event.js) ; sans la marque, cases décalées deux fois quand la taille ne change pas (vécu,
+        // tuiles de 44 px et plus : tuiles posées à côté des cases, 2026-11-11).
+        if (a && !a.novaAjuste && a.stretchH === sx && a.stretchV === sy) {
+          var b = { novaAjuste: true }, groupe = !/^fillobj/.test(a.leftA || '');
           for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
           b.stretchH = nsx; b.stretchV = nsy;
           if (typeof b.left === 'number') {

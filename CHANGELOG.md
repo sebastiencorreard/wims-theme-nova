@@ -47,6 +47,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Éléments à associer, page de correction : les doubles flèches de WIMS sont centrées sur la ligne (elles étaient collées en haut), aussi avec le thème standard.
 - Bonne réponse : les étoiles partent de la réponse de l'élève dans l'énoncé (le choix coché, le champ rempli), plus du texte « Bonne réponse ».
 - Élèves connectés : au survol du nom (livret, gestion des participants), « En ligne » au lieu de « connected » (anglais, écrit par WIMS) ; plus de curseur en point d'interrogation.
 - Examen, page « Vous n'avez pas fait tous les exercices… Voulez-vous vraiment terminer ? » : le menu de l'élève n'est plus au milieu de la barre, il est à droite avec Aide, devant « Terminer ».

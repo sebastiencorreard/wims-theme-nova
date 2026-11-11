@@ -44,7 +44,7 @@ $wims_CSS
      L'accent selon la couleur de la classe est pose par _widgets/accent.phtml (gabarits interpretes). -->
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
-<meta name="nova-css" content="531ce10f19">
+<meta name="nova-css" content="6f73f94d70">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -56,7 +56,11 @@ $wims_CSS
      inverse : les entrees CACHEES, tout le menu par defaut. */
   var mm = document.querySelector('meta[name="nova-module"]');
   var mt = !!mm && mm.content === 'adm/modtool';
-  var suf = mt ? '_modtool' : '';  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
+  /* Toute autre page qu'un accueil (2026-11-11, utilisateur) : comme modtool, un choix par page (module), liste des
+     entrees cachees, tout le menu par defaut. Contexte = nom du module, / en _ (header.phtml fait de meme). */
+  var pg = !mt && mm && mm.content && mm.content !== 'home' ? mm.content.replace(/\//g, '_').replace(/[^A-Za-z0-9_]/g, '') : '';
+  var inv = mt || !!pg;
+  var suf = mt ? '_modtool' : pg ? '_p_' + pg : '';  /* le bouton de retour en haut ne se cache qu'avec JavaScript */
   /* Page Reglages de Nova (rubrique de la configuration, js/nova.js apparenceClasse ; ancienne ancre de la page Badges
      Nova acceptee) : la page Apparence de WIMS, masquee jusqu'au passage du script. */
   if (/^#nova(-|%2D)(badges(-|%2D))?reglages(?![\s\S])/i.test(location.hash) && /job=present/.test(location.search)) d.classList.add('nova-page-reglages');
@@ -66,12 +70,12 @@ $wims_CSS
     var rg = JSON.parse(sessionStorage.getItem('nova-reglages-enregistre') || 'null');
     if (rg && Date.now() - rg.quand < 60000) d.classList.add('nova-page-reglages', 'nova-reglages-retour');
   } catch (e) { /* sans stockage : page Apparence */ }
-  var defaut = mt ? [] : ['add_sheet', 'add_exam', 'participantview', 'nova_suivi', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
-  var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), inverse: mt, suffixe: suf, contexte: mt ? 'modtool-' : '', style: function (liste) {
+  var defaut = inv ? [] : ['add_sheet', 'add_exam', 'participantview', 'nova_suivi', 'Score1', 'SE_mod', 'backteacher', 'SE_config', 'modtool'];
+  var menu = window.novaMenu = { defaut: defaut, garde: defaut.slice(), inverse: inv, suffixe: suf, contexte: mt ? 'modtool-' : pg ? pg + '-' : '', style: function (liste) {
     var k = liste.filter(function (c) { return typeof c === 'string' && c && !/[^A-Za-z0-9_-]/.test(c); })
       .map(function (c) { return '.' + c; }).join(', ') || '.nova-aucune';
     var p = '.nova-menu-simple:not(.nova-menu-edition) body:has(#nova-menu-bascule) #wimsmenumodubox ';
-    if (mt) {
+    if (inv) {
       /* Entrees cachees ; un titre seulement quand toutes les entrees de sa famille le sont. */
       var tm = p + '.menu_title:has(+ * .menuitem):not(:has(+ * .menuitem:not(:is(' + k + '))))';
       return p + '.menuitem:is(' + k + '):not(.nova-deconnexion), ' + tm + ', ' + tm + ' + * { display: none !important; }';
@@ -144,7 +148,7 @@ $wims_CSS
   try { if (d.classList.contains('nova-std-menu-complet') && localStorage.getItem('nova_menu') === null) d.classList.remove('nova-menu-simple'); } catch (e) {}
 })();
 </script>
-<script src="html/themes/$wims_theme/js/nova.js?v=549e5cce57" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=562aecb8bc" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

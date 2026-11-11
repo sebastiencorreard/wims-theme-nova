@@ -962,23 +962,33 @@
         localStorage.setItem('nova_menu_envoi', valeurMenu());   // vers le serveur avec le lien suivant (menuServeur)
       } catch (e) { /* choix non retenu */ }
     };
+    // Variante A (2026-11-11, maquette, utilisateur) : interrupteur « Menu simplifié » et crayon, en barre collée au
+    // bas du menu ; en édition, « Revenir au menu par défaut » (icône) et « Terminé ».
     var bouton = document.createElement('button');
     bouton.type = 'button';
     bouton.className = 'nova-menu-bascule';
+    bouton.setAttribute('role', 'switch');
+    var piste = document.createElement('span');
+    piste.className = 'nova-menu-piste';
+    piste.setAttribute('aria-hidden', 'true');
+    var libelle = document.createElement('span');
+    libelle.textContent = texte('simplifie');
+    bouton.appendChild(piste);
+    bouton.appendChild(libelle);
+    var actions = document.createElement('div');
     var afficher = function () {
       var simple = racine.classList.contains('nova-menu-simple');
-      bouton.textContent = texte(simple ? 'voir-tout' : 'simplifier');
-      bouton.setAttribute('aria-pressed', simple ? 'false' : 'true');
-      // modtool (liste des entrées cachées) : rien de caché, rien à basculer.
+      bouton.setAttribute('aria-checked', simple ? 'true' : 'false');
+      // Liste des entrées cachées (modtool, pages de module) : rien de caché, rien à basculer ; le crayon garde son texte.
       var nm = window.novaMenu;
       bouton.hidden = racine.classList.contains('nova-menu-edition') || !!(nm && nm.inverse && !nm.garde.length);
+      actions.classList.toggle('nova-sans-inter', bouton.hidden);
     };
     bouton.addEventListener('click', function () {
       var simple = racine.classList.toggle('nova-menu-simple');
       memoriser('nova_menu', simple ? 'simple' : 'complet');
       afficher();
     });
-    var actions = document.createElement('div');
     actions.className = 'nova-menu-actions';
     actions.appendChild(bouton);
     var personnel = menuPersonnel(menu, racine, texte, memoriser, afficher);
@@ -1016,15 +1026,29 @@
       var items = bloc ? Array.prototype.filter.call(bloc.querySelectorAll('.menuitem'), cle) : [];
       if (items.length) familles.push([titre, items]);
     });
+    // Entrées sans titre de famille (pages de module) : personnalisables aussi.
+    var rangees = [];
+    familles.forEach(function (f) { rangees = rangees.concat(f[1]); });
+    var seules = Array.prototype.filter.call(menu.querySelectorAll('.menuitem'), function (item) {
+      return cle(item) && rangees.indexOf(item) < 0 && !item.classList.contains('nova-deconnexion');
+    });
+    if (seules.length) familles.push([null, seules]);
     if (!familles.length) return null;
     var editer = document.createElement('button');
     editer.type = 'button';
-    editer.className = 'nova-menu-bascule nova-menu-editer';
+    editer.className = 'nova-menu-editer';
+    var editerTexte = document.createElement('span');
+    editerTexte.className = 'nova-menu-libelle';
+    editer.appendChild(editerTexte);
     var defaut = document.createElement('button');
     defaut.type = 'button';
     defaut.className = 'nova-menu-defaut';
-    defaut.textContent = texte('defaut');
+    defaut.title = texte('defaut');
+    defaut.setAttribute('aria-label', texte('defaut'));
     defaut.hidden = true;
+    var consigne = document.createElement('p');
+    consigne.className = 'nova-menu-consigne';
+    consigne.textContent = texte('consigne');
     var oeil = function (parent) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -1044,6 +1068,7 @@
             b.setAttribute('aria-label', texte(vue ? 'cacher' : 'montrer') + ' : ' + nom(item));
           }
         });
+        if (!f[0]) return;
         f[0].classList.toggle('nova-masquee', !visibles);
         var bt = f[0].querySelector(':scope > .nova-oeil');
         if (bt) bt.setAttribute('aria-label', texte(visibles ? 'cacher' : 'montrer') + ' : ' + nom(f[0]));
@@ -1064,12 +1089,15 @@
     };
     var enEdition = function () { return racine.classList.contains('nova-menu-edition'); };
     var etiqueter = function () {
-      editer.textContent = texte(enEdition() ? 'termine' : 'personnaliser');
+      var t = texte(enEdition() ? 'termine' : 'personnaliser');
+      editerTexte.textContent = t;
+      editer.title = t;
       editer.setAttribute('aria-pressed', enEdition() ? 'true' : 'false');
     };
     editer.addEventListener('click', function () {
       if (!enEdition()) {
-        if (!menu.querySelector('.nova-oeil')) familles.forEach(function (f) { oeil(f[0]); f[1].forEach(oeil); });
+        if (!menu.querySelector('.nova-oeil')) familles.forEach(function (f) { if (f[0]) oeil(f[0]); f[1].forEach(oeil); });
+        if (!consigne.parentNode && consigne.textContent) menu.insertBefore(consigne, menu.firstChild);
         racine.classList.add('nova-menu-edition');
       } else {
         // Terminé : on revient au menu simplifié, celui qu'on vient de composer.
@@ -1097,7 +1125,7 @@
       var item = ev.target.closest('.menuitem');
       var titre = ev.target.closest('.menu_title');
       var f = null;
-      familles.forEach(function (x) { if (x[0] === titre) f = x; });
+      familles.forEach(function (x) { if (x[0] && x[0] === titre) f = x; });
       if (item && cle(item)) basculer([cle(item)], item.classList.contains('nova-masquee'));
       else if (f) basculer(f[1].map(cle), f[0].classList.contains('nova-masquee'));
       else return;
@@ -1105,7 +1133,7 @@
       ev.stopPropagation();
     }, true);
     etiqueter();
-    return [editer, defaut];
+    return [defaut, editer];
   }
 
   /* Sections repliables du menu de gauche (demandé le 2026-10-02) : un clic (ou Entrée, Espace) sur

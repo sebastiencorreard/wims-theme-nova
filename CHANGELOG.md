@@ -12,6 +12,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
 
 ### Enseignants
+- **Menu de gauche personnalisable sur toutes les pages** (feuille, examen, notes, participants, configuration…) : un crayon en bas du menu pour cacher les entrées inutiles de cette page, choix gardé sur le serveur ; un interrupteur « Menu simplifié » remplace le bouton « Menu complet », et « Choisir les entrées » est plus clair (consigne, « Terminé »).
 - Menu de gauche : icônes plus près du bord, les entrées tiennent sur une ligne (« Sauvegarde et restauration »).
 - Menu « Participants » : « Gestion des variables techniques » devient « Variables techniques ».
 - **Élèves connectés** : un point vert de présence remplace la main jaune levée ; sur l'accueil, la phrase « Il y a actuellement n participant(s) connecté(s) » est dans une pastille verte, point devant ; dans les tableaux (suivi d'un parcours, devoirs libres) et le livret, un point vert après le nom, qui affiche « En ligne » au survol.

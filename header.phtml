@@ -245,10 +245,22 @@
       !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof modtool-simple,modtool-complet,modtool-defaut
         !writefile $(nova_mf)modtool_$wims_user $nova_mv
       !endif
+      !! Une page de module (2026-11-11, utilisateur) : valeur << <module, / en _>-simple.entree... >> (htmlheader.phtml),
+      !! fichier .nova_menu_p_<module>_<login>. Par !sh : !writefile echoue depuis adm/class/... (pieges de CLAUDE.md).
+      !! Valeur deja filtree (lettres, chiffres, _ . -) : sans danger entre apostrophes.
+      !if $nova_mv!=$empty and $nova_mt=$nova_mv and - isin $nova_m1 and modtool- notin $nova_m1
+        !sh v='$nova_mv'; m=$${v%%.*}; c=$${m%-*}; e=$${m##*-}; case "$$e" in simple|complet|defaut) ;; *) exit 0;; esac; case "$$c" in ''|*[!A-Za-z0-9_]*) exit 0;; esac; printf '%s' "$$v" > "$wims_home/log/classes/$nova_mk/.nova_menu_p_$${c}_$wims_user"
+      !endif
     !endif
     !reset nova_ms
     !if $module=adm/modtool
       !set nova_ms=modtool_
+    !else
+      !if $module!=home
+        !set nova_ms=!replace internal / by _ in $module
+        !set nova_ms=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $nova_ms
+        !set nova_ms=p_$(nova_ms)_
+      !endif
     !endif
     !set nova_mv=!sh if test -r $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; then cat $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; fi
 <script type="text/plain" id="nova-menu-serveur">$nova_mv</script>

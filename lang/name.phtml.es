@@ -19,8 +19,8 @@
 !set nova_terminer=Terminar
 !set nova_examencours=Examen en curso
 !set nova_examen_court=Examen
-!set nova_menu_voir_tout=Menú completo
-!set nova_menu_simplifier=Simplificar el menú
+!set nova_menu_simplifie=Menú simplificado
+!set nova_menu_consigne=Haga clic en el ojo de una entrada para mostrarla u ocultarla.
 !set nova_menu_personnaliser=Elegir las entradas del menú
 !set nova_menu_termine=Hecho
 !set nova_menu_defaut=Volver al menú por defecto

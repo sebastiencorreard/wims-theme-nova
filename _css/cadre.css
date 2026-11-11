@@ -576,57 +576,118 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
  * du choix de l'enseignant (localStorage) ou de la liste de Pion ; js/nova.js la réécrit pendant
  * l'édition (menuPersonnel). */
 
-/* Bascule menu simplifié / complet de l'enseignant (js/nova.js, basculeMenu). */
+/* Menu personnalisable (js/nova.js, basculeMenu ; variante A choisie par l'utilisateur, 2026-11-11) : barre collée au
+ * bas du menu, interrupteur « Menu simplifié » et crayon (« Choisir les entrées du menu », texte en info-bulle) ; sans
+ * interrupteur (rien de caché sur une page de module), le crayon garde son texte. En édition : « Revenir au menu par
+ * défaut » (icône) et « Terminé » (bouton principal), consigne en tête du menu. */
+.nova-menu-actions {
+  position: sticky;
+  bottom: calc(-1 * var(--nova-e4));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e2);
+  margin: var(--nova-e4) calc(-1 * var(--nova-e2)) calc(-1 * var(--nova-e4));
+  padding: var(--nova-e2) var(--nova-e2) var(--nova-e3);
+  border-top: 1px solid var(--nova-bord);
+  background: var(--nova-surface);
+}
+.nova-menu-actions button { font: inherit; cursor: pointer; }
 .nova-menu-bascule {
-  display: block;
-  width: calc(100% - 2 * var(--nova-e3));
-  margin: var(--nova-e4) var(--nova-e3) var(--nova-e3);
+  display: flex;
+  align-items: center;
+  gap: var(--nova-e3);
+  flex: 1;
+  min-width: 0;
   min-height: var(--nova-cible);
-  padding: 0 var(--nova-e3);
-  border: 1px dashed var(--nova-bord-fort);
+  padding: 0 var(--nova-e2);
+  border: 0;
   border-radius: var(--nova-rayon);
-  background: transparent;
-  color: var(--nova-texte-2);
-  font: inherit;
-  font-size: .9375rem;
+  background: none;
+  color: var(--nova-texte);
+  font-size: .9375rem !important;
+  text-align: left;
   text-transform: none;
   letter-spacing: normal;
-  cursor: pointer;
 }
-.nova-menu-bascule:hover { color: var(--nova-texte); border-style: solid; background: var(--nova-surface); }
-/* « Choisir les entrées du menu » : un lien discret sous la bascule ; « Terminé », en édition, le
- * bouton principal, collé au bas de la colonne pour rester à portée pendant le défilement. */
-.nova-menu-defaut, .nova-menu-bascule.nova-menu-editer {
-  display: block;
-  margin: 0 var(--nova-e3) var(--nova-e3);
-  padding: var(--nova-e1) 0;
-  border: 0;
-  background: none;
-  color: var(--nova-lien);
-  font: inherit;
-  font-size: var(--nova-petit);
-  text-decoration: underline;
-  cursor: pointer;
+.nova-menu-bascule:hover { background: var(--nova-accent-doux); }
+.nova-menu-piste {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--nova-bord-fort);
+  transition: background-color .15s;
 }
-.nova-menu-bascule.nova-menu-editer { width: auto; min-height: 0; margin-top: calc(-1 * var(--nova-e2)); }
-.nova-menu-defaut[hidden], .nova-menu-bascule[hidden] { display: none; }
-.nova-menu-edition .nova-menu-actions {
-  position: sticky;
-  bottom: 0;
-  padding: var(--nova-e2) 0 var(--nova-e1);
-  background: var(--nova-surface);
-  border-top: 1px solid var(--nova-bord);
+.nova-menu-piste::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
+  transition: transform .15s;
 }
-.nova-menu-edition .nova-menu-bascule.nova-menu-editer {
-  width: calc(100% - 2 * var(--nova-e3));
+.nova-menu-bascule[aria-checked="true"] .nova-menu-piste { background: var(--nova-accent); }
+.nova-menu-bascule[aria-checked="true"] .nova-menu-piste::after { transform: translateX(16px); }
+html.nova-sans-animation .nova-menu-piste, html.nova-sans-animation .nova-menu-piste::after { transition: none; }
+@media (prefers-reduced-motion: reduce) { .nova-menu-piste, .nova-menu-piste::after { transition: none; } }
+.nova-menu-editer, .nova-menu-defaut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nova-e2);
+  flex: none;
+  min-width: var(--nova-cible);
   min-height: var(--nova-cible);
-  margin: var(--nova-e2) var(--nova-e3);
+  padding: 0 var(--nova-e2);
+  border: 1px solid var(--nova-bord);
   border-radius: var(--nova-rayon);
+  background: var(--nova-surface);
+  color: var(--nova-texte-2);
+  font-size: .9375rem !important;
+}
+.nova-menu-editer:hover, .nova-menu-defaut:hover { background: var(--nova-accent-doux); color: var(--nova-texte); }
+.nova-menu-editer::before, .nova-menu-defaut::before {
+  content: "";
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  -webkit-mask: var(--nova-menu-picto) center / contain no-repeat;
+          mask: var(--nova-menu-picto) center / contain no-repeat;
+}
+.nova-menu-editer { --nova-menu-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E"); }
+.nova-menu-defaut { --nova-menu-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8'/%3E%3Cpath d='M3 3v5h5'/%3E%3C/svg%3E"); }
+.nova-menu-editer .nova-menu-libelle { display: none; }
+/* Sans interrupteur : le crayon sur toute la ligne, avec son texte, comme une entrée du menu. */
+.nova-sans-inter .nova-menu-editer { flex: 1; justify-content: flex-start; gap: var(--nova-e3); padding: 0 var(--nova-e2); border-color: transparent; color: var(--nova-texte); text-align: left; }
+.nova-sans-inter .nova-menu-editer::before { width: 20px; height: 20px; }
+.nova-sans-inter .nova-menu-editer .nova-menu-libelle { display: inline; }
+.nova-menu-defaut[hidden], .nova-menu-bascule[hidden] { display: none; }
+.nova-menu-edition .nova-menu-editer {
+  flex: 1;
+  border-color: var(--nova-accent);
   background: var(--nova-accent);
   color: var(--nova-sur-accent);
-  font-size: .9375rem;
   font-weight: 700;
-  text-decoration: none;
+  --nova-menu-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+.nova-menu-edition .nova-menu-editer:hover { background: var(--nova-accent); color: var(--nova-sur-accent); filter: brightness(1.08); }
+.nova-menu-edition .nova-menu-editer .nova-menu-libelle { display: inline; }
+.nova-menu-consigne { display: none; }
+.nova-menu-edition #wimsmenumodubox .nova-menu-consigne {
+  display: block;
+  margin: 0 0 var(--nova-e3);
+  padding: var(--nova-e2) var(--nova-e3);
+  border-radius: var(--nova-rayon);
+  background: var(--nova-accent-doux);
+  color: var(--nova-texte);
+  font-size: var(--nova-petit);
 }
 
 /* Édition du menu simplifié (js/nova.js, menuPersonnel) : toutes les entrées, chacune avec un œil ;

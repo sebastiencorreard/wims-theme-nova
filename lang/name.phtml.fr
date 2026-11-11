@@ -130,6 +130,7 @@
 !set nova_txt_replis_afficher=Afficher les %1 classes
 !set nova_txt_replis_afficher1=Afficher la classe
 !set nova_sv_titre=Suivi en direct
+!set nova_avs_titre=Avatars des élèves
 !set nova_lc_vous=Lien pour vous
 !set nova_lc_vous_aide=Ouvre la connexion enseignant : feuilles, examens, élèves et leurs notes. Gardez-le dans vos favoris.
 !set nova_lc_eleves=Lien pour vos élèves

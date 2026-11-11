@@ -85,3 +85,19 @@
 !! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
 !set nova_cap_sur=%u of %t (%p%)
 !set nova_cap_plein=The class is nearing its maximum capacity.
+
+!! Page Avatars des eleves (2026-11-12, _widgets/avatars-classe.phtml) ; titre du menu : name.phtml (nova_avs_titre).
+!set nova_avs_resume=Students: %n · with an avatar: %a · without: %s
+!set nova_avs_gagnees=Coins earned
+!set nova_avs_depensees=Spent
+!set nova_avs_dispo=Available
+!set nova_avs_elements=Items unlocked: %n
+!set nova_avs_exercices=Successful exercises counted: %n
+!set nova_avs_niveau=lvl %n
+!set nova_avs_sans=No avatar saved yet.
+!set nova_avs_attente=Coins available: %n
+!set nova_avs_precedent=Previous
+!set nova_avs_suivant=Next
+!set nova_avs_fermer=Close
+!set nova_avs_inactif=Student avatars are not enabled here (Nova settings, "Badges and rewards" tab).
+!set nova_avs_vide=No students enrolled here.

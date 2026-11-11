@@ -1,0 +1,37 @@
+!! Nova : page « Avatars des eleves » (lue par _widgets/avatars-entree.phtml). Grille des eleves de la zone courante,
+!! silhouette grisee sans avatar enregistre ; detail dans une fenetre (nova.js avatarsClasse). Donnees par
+!! _procs/avatars-classe.sh (avatar.awk pour chaque eleve, en simple lecture), ecrites dans la session puis lues ici.
+!read themes/$wims_theme/lang/enseignant.phtml.$lang
+!set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+<section id="nova-avatars" aria-labelledby="nova-avatars-titre" data-script="themes/$wims_theme/js/avatar.js"
+  data-t-resume="$nova_avs_resume" data-t-gagnees="$nova_avs_gagnees" data-t-depensees="$nova_avs_depensees"
+  data-t-dispo="$nova_avs_dispo" data-t-elements="$nova_avs_elements" data-t-exercices="$nova_avs_exercices" data-t-niveau="$nova_avs_niveau"
+  data-t-sans="$nova_avs_sans" data-t-attente="$nova_avs_attente" data-t-precedent="$nova_avs_precedent" data-t-suivant="$nova_avs_suivant"
+  data-t-fermer="$nova_avs_fermer" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+<h1 id="nova-avatars-titre">$nova_avs_titre</h1>
+!if $nova_avb!=oui
+  <div class="wims_msg info">$nova_avs_inactif</div>
+!else
+  !set nova_sid=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $wims_session
+  !set nova_ak=$wims_superclass
+  !default nova_ak=!word 1 of $wims_class
+  !set nova_ak=!replace internal / by , in $nova_ak
+  !set nova_ak=$(nova_ak[1])
+  !set nova_auj=!char 1 to 8 of $wims_now
+  !if $nova_sid=$wims_session
+    !sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatars-classe.sh $wims_home $wims_theme $nova_ak $wims_class $nova_auj $nova_sid
+    !set nova_avn=!sh grep -c . $wims_home/sessions/$nova_sid/nova-avatars.phtml 2>/dev/null
+  !endif
+  !if $nova_avn>0
+<p class="nova-avatars-resume" id="nova-avatars-resume"></p>
+<ul class="nova-avatars-grille">
+    !read wimshome/sessions/$nova_sid/nova-avatars.phtml
+</ul>
+  !else
+  <div class="wims_msg info">$nova_avs_vide</div>
+  !endif
+  !reset nova_sid nova_ak nova_auj nova_avn
+!endif
+</section>
+!reset nova_avb

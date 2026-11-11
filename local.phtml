@@ -5,6 +5,12 @@
     !if nova_suivi notin $wims_rm_0
       !default nova_menu_participants=Participants
       !set wims_name_nova_suivi=$nova_sv_titre
+      !! Avatars des eleves (2026-11-12, utilisateur) : sous le suivi, seulement si l'avatar est active (comme avatar-barre.phtml).
+      !set nova_avm=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+      !if $nova_avm=oui
+        !default nova_avs_titre=Students' avatars
+        !set wims_name_nova_avatars=$nova_avs_titre
+      !endif
       !set nova_sp=0
       !set nova_sg=0
       !! Separateur sans titre en tete (adm/class/sequence...) : menumodubox.phtml le retire quand il est
@@ -34,6 +40,9 @@
       !if $nova_sp=0
         !set nova_sr=itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1
+        !if $nova_avm=oui
+          !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
+        !endif
         !if $nova_sc>0
           !set nova_sl=!line 1 of $wims_rm_0
           !if $(nova_sl[1])!=itemsep
@@ -51,12 +60,15 @@ nova_suivi,1,module=home&nova_suivi=1
         !if $nova_si=$nova_sp
           !set nova_sr=!append line itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
+          !if $nova_avm=oui
+            !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
+          !endif
         !else
           !set nova_sr=!append line $nova_sl to $nova_sr
         !endif
       !next nova_si
       !set wims_rm_0=$nova_sr
-      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn
+      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn nova_avm
     !endif
   !endif
 !endif

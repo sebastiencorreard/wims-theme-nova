@@ -132,6 +132,7 @@
 !set nova_txt_replis_afficher1=Mostrar la clase
 !! Suivi en direct (_widgets/suivi.phtml ; nova_svj_ : js/suivi.js), 2026-11-10.
 !set nova_sv_titre=Seguimiento en directo
+!set nova_avs_titre=Avatares de los alumnos
 !set nova_lc_vous=Enlace para usted
 !set nova_lc_vous_aide=Abre la conexión de profesor: hojas, exámenes, alumnos y sus notas. Guárdelo en sus favoritos.
 !set nova_lc_eleves=Enlace para sus alumnos

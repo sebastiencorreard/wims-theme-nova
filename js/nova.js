@@ -412,15 +412,16 @@
         if (regle) regle.textContent = nm.style(nm.garde);
       }
     }
-    // Nouvelle entree Participants : gardee une fois, puis personnalisable comme les autres.
-    if (nm && !nm.inverse && document.querySelector('#wimsmenumodubox .nova_suivi') && nm.garde.indexOf('suivi_v1') < 0) {
-      if (nm.garde.indexOf('nova_suivi') < 0) nm.garde.push('nova_suivi');
-      nm.garde.push('suivi_v1');
+    // Nouvelles entrees Participants (suivi ; avatars, 2026-11-12) : gardees une fois, puis personnalisables comme les autres.
+    [['nova_suivi', 'suivi_v1'], ['nova_avatars', 'avatars_v1']].forEach(function (n) {
+      if (!nm || nm.inverse || !document.querySelector('#wimsmenumodubox .' + n[0]) || nm.garde.indexOf(n[1]) >= 0) return;
+      if (nm.garde.indexOf(n[0]) < 0) nm.garde.push(n[0]);
+      nm.garde.push(n[1]);
       ecrire('nova_menu_garde', JSON.stringify(nm.garde));
       ecrire('nova_menu_envoi', valeurMenu());
       var styleSuivi = document.getElementById('nova-menu-style');
       if (styleSuivi) styleSuivi.textContent = nm.style(nm.garde);
-    }
+    });
     // Envoi d'un changement en attente avec le prochain lien de WIMS (même session).
     document.addEventListener('click', function (e) {
       var v = lire('nova_menu_envoi');
@@ -1009,6 +1010,9 @@
     if (menu) {
       var suivi = menu.querySelector('.nova_suivi > a');
       if (suivi) suivi.classList.add('eye');
+      // Avatars des élèves (2026-11-12) : silhouette du jeu Font_Awesome (comme « Mon avatar »).
+      var avatars = menu.querySelector('.nova_avatars > a');
+      if (avatars) avatars.classList.add('account');
       // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
       var reglagesNova = menu.querySelector('.nova_reglages > a');
       if (reglagesNova) { reglagesNova.classList.add('config_module'); tagNouveau(reglagesNova); }
@@ -4812,6 +4816,121 @@
     chargerAvatar(d.getAttribute('data-script')).then(function (f) { dessin = f; dessiner(); }).catch(function () { dire(t('erreur')); });
   }
 
+  // Page « Avatars des élèves » de l'enseignant (demande de l'utilisateur, maquette A validée le 2026-11-12) : grille
+  // écrite par le serveur (_widgets/avatars-classe.phtml, _procs/avatars-classe.sh), portraits dessinés ici ; détail
+  // dans une fenêtre avec Précédent / Suivant (flèches du clavier aussi). Sans avatar enregistré : silhouette grisée (CSS).
+  function avatarsClasse() {
+    var page = document.getElementById('nova-avatars');
+    if (!page) return;
+    var t = function (n) { return page.getAttribute('data-t-' + n) || ''; };
+    var el = function (balise, classe, texte) {
+      var e = document.createElement(balise);
+      if (classe) e.className = classe;
+      if (texte != null) e.textContent = texte;
+      return e;
+    };
+    var eleves = [].slice.call(page.querySelectorAll('.nova-avatars-eleve'));
+    if (!eleves.length) return;
+    var avec = eleves.filter(function (b) { return b.getAttribute('data-choix'); }).length;
+    var resume = document.getElementById('nova-avatars-resume');
+    if (resume && t('resume')) resume.textContent = t('resume').replace('%n', eleves.length).replace('%a', avec).replace('%s', eleves.length - avec);
+    var dessin = null, dessins = {};
+    function poser(cadre, choix) {
+      if (!cadre || !choix || !dessin) return;
+      if (!dessins[choix]) dessins[choix] = dessin(choix);
+      cadre.textContent = '';
+      var img = el('img');
+      img.alt = '';
+      img.src = dessins[choix];
+      cadre.appendChild(img);
+    }
+    var dialogue = el('dialog', 'nova-dialogue nova-avatars-dialogue');
+    if (typeof dialogue.showModal !== 'function') return;
+    dialogue.setAttribute('aria-labelledby', 'nova-avatars-detail-nom');
+    var fermer = el('button', 'close-button', '\u00d7');
+    fermer.type = 'button';
+    fermer.setAttribute('aria-label', t('fermer'));
+    var fiche = el('div', 'nova-avatars-fiche');
+    var nav = el('div', 'nova-avatars-nav');
+    var prec = el('button', 'wims_button wims_secondary_button nova-avatars-prec', t('precedent'));
+    var suiv = el('button', 'wims_button wims_secondary_button nova-avatars-suiv', t('suivant'));
+    prec.type = suiv.type = 'button';
+    nav.appendChild(prec);
+    nav.appendChild(suiv);
+    dialogue.appendChild(fermer);
+    dialogue.appendChild(fiche);
+    dialogue.appendChild(nav);
+    page.appendChild(dialogue);
+    var courant = 0;
+    function montrer(i) {
+      courant = (i + eleves.length) % eleves.length;
+      var b = eleves[courant], choix = b.getAttribute('data-choix') || '';
+      var j = (b.getAttribute('data-jetons') || '').split(' ').map(function (x) { return +x || 0; });
+      var exercices = t('exercices').replace('%n', j[3] || 0);
+      fiche.textContent = '';
+      var grand = el('div', 'nova-avatars-grand' + (choix ? '' : ' nova-avatars-sans'));
+      // Fond transparent (choisi, ou aucun fond) : damier, comme le grand aperçu de « Mon avatar ».
+      if (choix && !/(^|,)backgroundColor\.(?!transparent(,|$))/.test(choix)) grand.classList.add('nova-avatar-transparent');
+      poser(grand, choix);
+      var texte = el('div', 'nova-avatars-texte');
+      var nomEl = b.querySelector('.nova-avatars-nom');
+      var nom = el('h2', null, nomEl ? nomEl.textContent : '');
+      nom.id = 'nova-avatars-detail-nom';
+      texte.appendChild(nom);
+      texte.appendChild(el('p', 'nova-avatars-login', b.getAttribute('data-login') || ''));
+      if (!choix) {
+        texte.appendChild(el('p', 'nova-avatars-vide', t('sans')));
+        texte.appendChild(el('p', 'nova-avatars-ligne', t('attente').replace('%n', j[2] || 0) + ' \u00b7 ' + exercices));
+      } else {
+        var dl = el('dl', 'nova-avatars-chiffres');
+        [['gagnees', j[0], 1], ['depensees', j[1]], ['dispo', j[2]]].forEach(function (c) {
+          var d = el('div');
+          d.appendChild(el('dt', null, t(c[0])));
+          var dd = el('dd');
+          if (c[2]) dd.appendChild(pieceJeton());
+          dd.appendChild(document.createTextNode(String(c[1] || 0)));
+          d.appendChild(dd);
+          dl.appendChild(d);
+        });
+        texte.appendChild(dl);
+        // Badges proposés dans la classe seulement (troisième champ de « niveaux » d'avatar.awk).
+        var ul = el('ul', 'nova-avatars-badges');
+        (b.getAttribute('data-niveaux') || '').split(' ').forEach(function (x) {
+          var p = x.split(':');
+          if (p.length !== 3 || p[2] !== '1' || !t(p[0])) return;
+          var n = +p[1] || 0;
+          ul.appendChild(el('li', n ? null : 'nova-avatars-zero', t(p[0]) + ' \u00b7 ' + (n ? t('niveau').replace('%n', n) : '\u2013')));
+        });
+        if (ul.firstChild) texte.appendChild(ul);
+        texte.appendChild(el('p', 'nova-avatars-ligne', t('elements').replace('%n', b.getAttribute('data-elements') || '0') + ' \u00b7 ' + exercices));
+      }
+      fiche.appendChild(grand);
+      fiche.appendChild(texte);
+    }
+    eleves.forEach(function (b, i) {
+      b.addEventListener('click', function () {
+        montrer(i);
+        if (!dialogue.open) dialogue.showModal();
+        fermer.focus();
+      });
+    });
+    var retour = function () { var b = eleves[courant]; if (b) b.focus(); };
+    dialogue.addEventListener('close', retour);
+    fermer.addEventListener('click', function () { dialogue.close(); });
+    dialogue.addEventListener('click', function (e) { if (e.target === dialogue) dialogue.close(); });
+    prec.addEventListener('click', function () { montrer(courant - 1); });
+    suiv.addEventListener('click', function () { montrer(courant + 1); });
+    dialogue.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); montrer(courant - 1); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); montrer(courant + 1); }
+    });
+    chargerAvatar(page.getAttribute('data-script')).then(function (f) {
+      dessin = f;
+      eleves.forEach(function (b) { poser(b.querySelector('.nova-avatars-portrait'), b.getAttribute('data-choix')); });
+      if (dialogue.open) montrer(courant);
+    }).catch(function () {});
+  }
+
   /* ===== js/src/70-enseignant.js : pages de l'enseignant (replis, restriction d'accès, liens de connexion, désactivation, DM, configuration, zones dépendantes) ===== */
   /* Retour en haut : la pastille (cadre.css) n'apparaît qu'après une demi-hauteur d'écran de
    * défilement. WIMS ne pose son widget (_widgets/topback.phtml) que dans tail, doctail et user : pas
@@ -6752,7 +6871,7 @@
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); capaciteClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); capaciteClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

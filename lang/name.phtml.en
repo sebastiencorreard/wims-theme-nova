@@ -130,6 +130,7 @@
 !set nova_txt_replis_afficher=Show the %1 classes
 !set nova_txt_replis_afficher1=Show the class
 !set nova_sv_titre=Live monitoring
+!set nova_avs_titre=Students' avatars
 !set nova_lc_vous=Link for you
 !set nova_lc_vous_aide=Opens the teacher login: worksheets, exams, students and their scores. Keep it in your bookmarks.
 !set nova_lc_eleves=Link for your students

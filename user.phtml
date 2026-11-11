@@ -16,6 +16,13 @@
 </div><!--wimspagebox-->
   !goto nova_menu
 !endif
+!! Nova : page Avatars des eleves de l'enseignant (nova_avatars=1, 2026-11-12).
+!read themes/$wims_theme/_widgets/avatars-entree.phtml
+!if $nova_avatars_page=1
+</div><!--wimsbody-->
+</div><!--wimspagebox-->
+  !goto nova_menu
+!endif
 !! Nova : page « Mon activité » de l'eleve a la place de l'accueil (nova_activite=1, 2026-10-08).
 !read themes/$wims_theme/_widgets/activite-entree.phtml
 !if $nova_activite_page=1

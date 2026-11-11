@@ -278,15 +278,16 @@
         if (regle) regle.textContent = nm.style(nm.garde);
       }
     }
-    // Nouvelle entree Participants : gardee une fois, puis personnalisable comme les autres.
-    if (nm && !nm.inverse && document.querySelector('#wimsmenumodubox .nova_suivi') && nm.garde.indexOf('suivi_v1') < 0) {
-      if (nm.garde.indexOf('nova_suivi') < 0) nm.garde.push('nova_suivi');
-      nm.garde.push('suivi_v1');
+    // Nouvelles entrees Participants (suivi ; avatars, 2026-11-12) : gardees une fois, puis personnalisables comme les autres.
+    [['nova_suivi', 'suivi_v1'], ['nova_avatars', 'avatars_v1']].forEach(function (n) {
+      if (!nm || nm.inverse || !document.querySelector('#wimsmenumodubox .' + n[0]) || nm.garde.indexOf(n[1]) >= 0) return;
+      if (nm.garde.indexOf(n[0]) < 0) nm.garde.push(n[0]);
+      nm.garde.push(n[1]);
       ecrire('nova_menu_garde', JSON.stringify(nm.garde));
       ecrire('nova_menu_envoi', valeurMenu());
       var styleSuivi = document.getElementById('nova-menu-style');
       if (styleSuivi) styleSuivi.textContent = nm.style(nm.garde);
-    }
+    });
     // Envoi d'un changement en attente avec le prochain lien de WIMS (même session).
     document.addEventListener('click', function (e) {
       var v = lire('nova_menu_envoi');
@@ -875,6 +876,9 @@
     if (menu) {
       var suivi = menu.querySelector('.nova_suivi > a');
       if (suivi) suivi.classList.add('eye');
+      // Avatars des élèves (2026-11-12) : silhouette du jeu Font_Awesome (comme « Mon avatar »).
+      var avatars = menu.querySelector('.nova_avatars > a');
+      if (avatars) avatars.classList.add('account');
       // Réglages de Nova (2026-11-08) : roue dentée du jeu Font_Awesome (règle .menuitem>.config_module:before, plus forte que le tiret).
       var reglagesNova = menu.querySelector('.nova_reglages > a');
       if (reglagesNova) { reglagesNova.classList.add('config_module'); tagNouveau(reglagesNova); }

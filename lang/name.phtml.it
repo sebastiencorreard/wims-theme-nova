@@ -132,6 +132,7 @@
 !set nova_txt_replis_afficher1=Mostra la classe
 !! Suivi en direct (_widgets/suivi.phtml ; nova_svj_ : js/suivi.js), 2026-11-10.
 !set nova_sv_titre=Monitoraggio in diretta
+!set nova_avs_titre=Avatar degli studenti
 !set nova_lc_vous=Link per lei
 !set nova_lc_vous_aide=Apre l'accesso docente: fogli, esami, studenti e i loro voti. Lo salvi nei preferiti.
 !set nova_lc_eleves=Link per i suoi studenti

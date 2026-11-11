@@ -317,12 +317,15 @@ html body .wims_msg.success::before { color: var(--nova-succes); }
 /* Participant connecté (2026-11-11, maquette A, utilisateur) : WIMS pose la main levée U+270B après tout
  * .wims_connected (_css/utilities2.css) : accueil enseignant (p), tableaux du suivi d'un parcours et des devoirs libres
  * (td), livret (i seul, span du titre). Point vert de présence à la place ; sur l'accueil, phrase en pilule, point devant. */
-.wims_connected::after {
+.wims_connected::after, .nova-en-ligne {
   content: ""; display: inline-block; width: .6em; height: .6em; border-radius: 50%;
   margin-left: .45em; vertical-align: .08em; font-size: inherit; color: inherit;
   background: var(--nova-en-ligne); box-shadow: 0 0 0 3px var(--nova-succes-fond);
   padding: 0; border: 0; min-width: 0; flex: none; aspect-ratio: 1;
 }
+/* Point posé par nova.js (enLigne), avec son info-bulle « En ligne » : il remplace le ::after. */
+.wims_connected.nova-en-ligne-pose::after { content: none; }
+.nova-en-ligne { cursor: help; }
 /* Livret : icône seule dans une info-bulle de WIMS (pointillés, marges de .wims_tooltip). */
 .wims_connected.wims_tooltip { border-bottom: 0; text-decoration: none; padding: 0; }
 p.wims_connected {

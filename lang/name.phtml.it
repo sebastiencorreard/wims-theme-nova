@@ -194,6 +194,7 @@
 !set nova_std_dominos_liste=<li>Domino e caselle con i colori e le dimensioni standard (205 x 50, sfondo blu, caselle arancioni) invece di domino bianchi con cornice nera (205 x 80, 175 x 80 sul telefono) e caselle tratteggiate.</li><li>Nessuna dimensione comune del testo calcolata: quella standard.</li><li>Nessuna istruzione «Trascina ogni domino...» sopra i domino.</li><li>Nessuna casella evidenziata durante il trascinamento, nessuna casella illuminata quando si sceglie un domino.</li><li>Nessuna finestra che suggerisca la modalità orizzontale sul telefono.</li><li>Pagina di correzione: domino standard (testo, analisi, soluzione), nessuna cornice rossa o verde, e «Analisi della risposta» mostrata.</li>
 !set nova_paysage=Gira il telefono (in orizzontale) per vedere meglio i domino.
 !set nova_fermer=Chiudi
+!set nova_en_ligne=Online
 !set nova_indisponible_examen=Non disponibile durante un esame
 !set nova_act_regularite=La mia regolarità
 !set nova_act_temps=Il mio tempo di lavoro

@@ -6200,7 +6200,27 @@
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
   }
 
-  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); centrerBarre(); }
+  // Participant connecte (2026-11-11) : le point vert de .wims_connected::after devient un vrai element, qui peut
+  // porter une info-bulle (\u00ab En ligne \u00bb) et un texte pour les lecteurs d'ecran. Pas sur la phrase de
+  // l'accueil (p), qui le dit deja.
+  function enLigne() {
+    var els = document.querySelectorAll('.wims_connected:not(p)');
+    if (!els.length) return;
+    var textes = document.getElementById('nova-textes');
+    var mot = (textes && textes.getAttribute('data-texte-en-ligne')) || 'Online';
+    Array.prototype.forEach.call(els, function (el) {
+      if (el.querySelector('.nova-en-ligne')) return;
+      var point = document.createElement('span');
+      point.className = 'nova-en-ligne';
+      point.title = mot;
+      point.setAttribute('role', 'img');
+      point.setAttribute('aria-label', mot);
+      el.appendChild(point);
+      el.classList.add('nova-en-ligne-pose');
+    });
+  }
+
+  function demarrer() { feuilleAJour(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

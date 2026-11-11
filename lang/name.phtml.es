@@ -194,6 +194,7 @@
 !set nova_std_dominos_liste=<li>Dominós y casillas con los colores y tamaños estándar (205 x 50, fondo azul, casillas naranjas) en lugar de dominós blancos con marco negro (205 x 80, 175 x 80 en el teléfono) y casillas discontinuas.</li><li>Sin tamaño de texto común calculado: el estándar.</li><li>Sin la instrucción «Arrastra cada dominó...» sobre los dominós.</li><li>Sin casilla resaltada al arrastrar, sin casillas iluminadas al elegir un dominó.</li><li>Sin ventana que sugiera el modo horizontal en el teléfono.</li><li>Página de corrección: dominós estándar (enunciado, análisis, solución), sin marco rojo o verde, y se muestra «Análisis de su respuesta».</li>
 !set nova_paysage=Gira el teléfono (modo horizontal) para ver mejor los dominós.
 !set nova_fermer=Cerrar
+!set nova_en_ligne=En línea
 !set nova_indisponible_examen=No disponible durante un examen
 !set nova_act_regularite=Mi regularidad
 !set nova_act_temps=Mi tiempo de trabajo

@@ -50,6 +50,7 @@
 !! Restriction d'acces d'une classe : formulaire Nova (js/nova.js, accesClasse ; 2026-11-10).
 !if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
   !read themes/$wims_theme/_widgets/acces-classe.phtml
+  !read themes/$wims_theme/_widgets/capacite.phtml
 !endif
 !! Liens de connexion (scripts/adm/class/links.phtml) : cartes et boutons Copier (js/nova.js, liensConnexion ; 2026-11-10).
 !if adm/class isin $module and $wims_user!=$empty

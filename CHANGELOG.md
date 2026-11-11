@@ -19,6 +19,8 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Configuration › Sauvegarde et maintenance : la **capacité de la classe** devient une carte avec une jauge fine aux couleurs de la classe, orange avec un message au-delà de 80 % d'espace occupé.
+- Jeu d'icônes **Lucide** : Feuilles, Examens, Documents… (onglets et tableaux de l'accueil, listes) ont une icône Lucide au lieu des anciens symboles de WIMS.
 - Réglage « Dominos du thème standard » renommé « Dominos et tuiles du thème standard » : il rend aussi aux tuiles à déplacer l'aspect du thème standard.
 - **Tableaux** : une cellule qui contient un seul lien ou bouton (titre d'une feuille, numéro de séquence, « Modifier »…) est cliquable en entier et fonce au survol ; jamais pour une action comme Désactiver ou Effacer. Nouveau réglage « Tableaux du thème standard » pour le couper.
 - Accueil d'une structure : toute l'étiquette d'un niveau, d'une classe, d'un cours ou d'un programme est cliquable, icône comprise, plus seulement son nom ; son fond fonce un peu au survol.

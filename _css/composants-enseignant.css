@@ -273,3 +273,30 @@ html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte)
 }
 .wimsbody .nova-tout button:hover:not(:disabled) { background: var(--nova-accent-doux); }
 .wimsbody .nova-tout button:disabled { border-color: var(--nova-bord); color: var(--nova-texte-2); cursor: default; opacity: .7; }
+
+/* Capacité de la classe (adm/class/config, scripts/adm/class/quotafree.proc ; 2026-11-12, utilisateur, maquette A) : carte,
+ * titre à gauche et « occupé sur total » à droite (nova.js capaciteClasse), jauge fine de 10 px comme celle de Mon avatar,
+ * légende à pastilles ; orange et message au-delà de 80 %. La feuille de WIMS (quota_bar.css) est importée DANS la page,
+ * après celle du thème : sélecteurs à deux classes. Titre et légende de WIMS masqués au plus 3 s. Réglage std-listes. */
+:where(html:not(.nova-std-listes)) .wims_quotafree { --nova-cap: var(--nova-accent); --nova-cap-doux: var(--nova-accent-doux);
+  max-width: 46rem; margin: var(--nova-e4) auto; padding: var(--nova-e4) var(--nova-e5); box-sizing: border-box;
+  background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; text-align: left; }
+:where(html:not(.nova-std-listes)) .nova-cfg > .wims_quotafree { max-width: none; margin: var(--nova-e4) 0 0; }
+:where(html:not(.nova-std-listes)) .wims_quotafree.nova-capacite-pleine { --nova-cap: var(--nova-attention); --nova-cap-doux: var(--nova-attention-fond); }
+html.nova-js:not(.nova-std-listes) .wims_quotafree:not(.nova-capacite) > :is(.wimscenter, p.formHelp) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+:where(html:not(.nova-std-listes)) .wims_quotafree .quota-bar { display: flex; height: 10px; min-height: 0; margin: 0; border-radius: 99px;
+  background: var(--nova-piste); overflow: hidden; }
+:where(html:not(.nova-std-listes)) .wims_quotafree .quota-index { height: 100%; font-size: 0; color: transparent; cursor: help; }
+:where(html:not(.nova-std-listes)) .wims_quotafree .quota-index.alert { background: var(--nova-cap); }
+:where(html:not(.nova-std-listes)) .wims_quotafree .quota-index.warning { background: repeating-linear-gradient(135deg, var(--nova-cap) 0 3px, var(--nova-cap-doux) 3px 7px); }
+:where(html:not(.nova-std-listes)) .wims_quotafree .quota-index.blank { background: transparent; }
+.nova-capacite-tete { display: flex; justify-content: space-between; align-items: baseline; gap: var(--nova-e2); flex-wrap: wrap; margin-bottom: 10px; }
+.nova-capacite-tete span { color: var(--nova-texte-2); font-size: .9rem; }
+.wims_quotafree ul.nova-capacite-legende { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; list-style: none;
+  font-size: .88rem; color: var(--nova-texte-2); }
+.nova-capacite-legende li { display: flex; align-items: center; gap: 6px; margin: 0; }
+.nova-capacite-legende li::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--nova-piste); }
+.nova-capacite-legende li.nova-capacite-utilise::before { background: var(--nova-cap); }
+.nova-capacite-legende li.nova-capacite-reserve::before { background: color-mix(in oklab, var(--nova-cap) 55%, white); }
+.nova-capacite-alerte { margin: var(--nova-e3) 0 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 10px;
+  background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-size: .88rem; }

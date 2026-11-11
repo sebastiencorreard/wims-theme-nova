@@ -82,3 +82,6 @@
 !set nova_forcer_echec=La copia de seguridad ha fallado: no se ha desactivado nada.
 !set nova_forcer_reessayer=Reintentar
 !set nova_forcer_sans=Desactivar sin copia de seguridad
+!! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
+!set nova_cap_sur=%u de %t (%p %)
+!set nova_cap_plein=La clase se acerca a su capacidad máxima.

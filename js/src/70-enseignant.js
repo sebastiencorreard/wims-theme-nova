@@ -1081,6 +1081,72 @@
     ongletsReglages(onglets, titres.join(', '), 'nova-cfg-onglet');
   }
 
+  /* Capacité de la classe (adm/class/config, scripts/adm/class/quotafree.proc ; 2026-11-12, utilisateur, maquette A) :
+   * titre à gauche, « occupé sur total (p %) » à droite, jauge fine (la barre de WIMS, restylée par le CSS), légende à
+   * pastilles ; au-delà de 80 % occupés (utilisé + réservé), orange et message. Nombres lus dans le texte de WIMS
+   * (titre « … (150 Mo) », légende « Utilisé: 1Mo ») : s'il ne se lit pas, rien ne change. Réglage standard « listes ». */
+  function capaciteClasse() {
+    var q = document.querySelector('.wims_quotafree');
+    var tx = document.getElementById('nova-capacite-textes');
+    if (!q || !tx || q.classList.contains('nova-capacite') || standard('listes')) return;
+    var titre = q.querySelector(':scope > .wimscenter');
+    var barre = q.querySelector(':scope > .quota-bar');
+    var legende = q.querySelector(':scope > p.formHelp');
+    if (!titre || !barre || !legende) return;
+    var mt = titre.textContent.replace(/\s+/g, ' ').trim().match(/^(.*?)\s*\(\s*([0-9.]+)\s*([^)]*?)\s*\)$/);
+    if (!mt) return;
+    var total = parseFloat(mt[2]), unite = mt[3];
+    var lu = function (sp) {
+      var m = sp.textContent.replace(/\s+/g, ' ').trim().match(/^(.*?)\s*:\s*(-?[0-9.]+)/);
+      return m ? { nom: m[1], val: parseFloat(m[2]) } : null;
+    };
+    var parts = { alert: null, warning: null, libre: null };
+    Array.prototype.forEach.call(legende.querySelectorAll('.quota-legend'), function (sp) {
+      var k = sp.classList.contains('alert') ? 'alert' : sp.classList.contains('warning') ? 'warning' : 'libre';
+      parts[k] = lu(sp);
+    });
+    if (!parts.alert || !parts.libre || !(total > 0)) return;
+    var nb = function (x) { return (Math.round(x * 10) / 10).toLocaleString(document.documentElement.lang || undefined) + '\u00a0' + unite; };
+    var occupe = parts.alert.val + (parts.warning ? Math.max(0, parts.warning.val) : 0);
+    var pc = Math.min(100, Math.round(occupe / total * 100));
+    var plein = occupe / total > 0.8;
+    var deux = /^fr/.test(document.documentElement.lang || '') ? '\u00a0: ' : ': ';
+    var tete = document.createElement('div');
+    tete.className = 'nova-capacite-tete';
+    var b = document.createElement('b');
+    b.textContent = mt[1];
+    var sp = document.createElement('span');
+    sp.textContent = (tx.getAttribute('data-sur') || '%u / %t (%p %)').replace('%u', nb(occupe)).replace('%t', nb(total)).replace('%p', pc);
+    tete.appendChild(b);
+    tete.appendChild(sp);
+    var ul = document.createElement('ul');
+    ul.className = 'nova-capacite-legende';
+    [['utilise', parts.alert], ['reserve', parts.warning], ['libre', parts.libre]].forEach(function (x) {
+      if (!x[1] || (x[0] === 'reserve' && !(x[1].val > 0))) return;
+      var li = document.createElement('li');
+      li.className = 'nova-capacite-' + x[0];
+      li.textContent = x[1].nom + deux + nb(Math.max(0, x[1].val));
+      ul.appendChild(li);
+    });
+    q.replaceChild(tete, titre);
+    q.replaceChild(ul, legende);
+    if (plein) {
+      q.classList.add('nova-capacite-pleine');
+      var p = document.createElement('p');
+      p.className = 'nova-capacite-alerte';
+      p.textContent = tx.getAttribute('data-plein') || '';
+      if (p.textContent) q.appendChild(p);
+    }
+    // Hors des onglets de configurationClasse (WIMS l'écrit après les listes) : à la fin de « Sauvegarde et maintenance ».
+    var maint = document.querySelector('.nova-onglet[data-onglet="maintenance"] > .nova-cfg');
+    if (maint) {
+      var avant = q.parentNode;
+      maint.appendChild(q);
+      if (avant && avant.tagName === 'P' && !avant.textContent.trim() && !avant.children.length) avant.parentNode.removeChild(avant);
+    }
+    q.classList.add('nova-capacite');
+  }
+
   /* Zones dépendantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : cases « Apparence du thème
    * Nova » et « Badges Nova » (séparées le 2026-11-07, utilisateur) ajoutées à la liste de WIMS. Cochées, l'envoi envoie
    * d'abord les autres cases à WIMS (s'il y en a), puis ouvre l'accueil avec nova_propager=apparence|badges|tout :

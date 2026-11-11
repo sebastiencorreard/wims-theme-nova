@@ -82,3 +82,6 @@
 !set nova_forcer_echec=The backup failed: nothing was deactivated.
 !set nova_forcer_reessayer=Try again
 !set nova_forcer_sans=Deactivate without backup
+!! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
+!set nova_cap_sur=%u of %t (%p%)
+!set nova_cap_plein=The class is nearing its maximum capacity.

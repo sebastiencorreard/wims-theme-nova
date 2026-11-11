@@ -1,0 +1,52 @@
+!! Lu par header.phtml : enseignant (pas un eleve), accueil ou module adm/..., dans une classe.
+!! Nova : menu enseignant personnalise (js/nova.js, basculeMenu), garde sur le serveur pour suivre l'enseignant
+!! d'un poste a l'autre (demande de l'utilisateur, 2026-10-07) : log/classes/<structure ou classe>/.nova_menu_<login>
+!! (supervisor pour l'enseignant d'une classe). Ecrit seulement sur l'accueil (module home : WIMS refuse wimshome/
+!! aux modules adm/class/..., is_class_module, src/files.c), quand un lien porte nova_menu (ajoute par nova.js au lien suivant apres un changement) ; relu et transmis sur
+!! ces memes pages (#nova-menu-serveur). Valeur : simple ou complet, puis les entrees gardees, separees par des points.
+!! modtool (2026-11-04) : son propre fichier (.nova_menu_modtool_<login>), valeur prefixee par modtool- ; le compte
+!! developpeur (wims_developer) ne change rien : c'est toujours l'enseignant de la classe.
+!set nova_mk=$wims_superclass
+!default nova_mk=!word 1 of $wims_class
+!set nova_mk=!replace internal / by , in $nova_mk
+!set nova_mk=$(nova_mk[1])
+!set nova_mf=wimshome/log/classes/$nova_mk/.nova_menu_
+!set nova_q=!sh printf '%s' "$$QUERY_STRING"
+!if nova_menu isin $nova_q
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_mv=!getopt nova_menu in $nova_q
+  !set nova_mt=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.- in $nova_mv
+  !set nova_m1=!replace internal . by , in $nova_mv
+  !set nova_m1=$(nova_m1[1])
+  !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof simple,complet,defaut
+    !writefile $(nova_mf)$wims_user $nova_mv
+  !endif
+  !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof modtool-simple,modtool-complet,modtool-defaut
+    !writefile $(nova_mf)modtool_$wims_user $nova_mv
+  !endif
+  !! Une page de module (2026-11-11, utilisateur) : valeur << <module, / en _>-simple.entree... >> (htmlheader.phtml),
+  !! fichier .nova_menu_p_<module>_<login>. Par !sh : !writefile echoue depuis adm/class/... (pieges de CLAUDE.md).
+  !! Valeur deja filtree (lettres, chiffres, _ . -) : sans danger entre apostrophes.
+  !if $nova_mv!=$empty and $nova_mt=$nova_mv and - isin $nova_m1 and modtool- notin $nova_m1
+    !sh v='$nova_mv'; m=$${v%%.*}; c=$${m%-*}; e=$${m##*-}; case "$$e" in simple|complet|defaut) ;; *) exit 0;; esac; case "$$c" in ''|*[!A-Za-z0-9_]*) exit 0;; esac; printf '%s' "$$v" > "$wims_home/log/classes/$nova_mk/.nova_menu_p_$${c}_$wims_user"
+  !endif
+!endif
+!reset nova_ms
+!if $module=adm/modtool
+  !set nova_ms=modtool_
+!else
+  !if $module=home and $class_typename isitemof portal,group,level
+    !set nova_ms=p_accueil_$(class_typename)_
+  !endif
+  !if $module!=home
+    !set nova_ms=!replace internal / by _ in $module
+    !set nova_ms=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $nova_ms
+    !set nova_ms=p_$(nova_ms)_
+  !endif
+!endif
+!set nova_mv=!sh if test -r $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; then cat $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; fi
+<script type="text/plain" id="nova-menu-serveur">$nova_mv</script>
+!if $module=home
+  !read themes/$wims_theme/_widgets/replis-classes.phtml
+!endif
+!reset nova_mk nova_mf nova_q nova_mv nova_mt nova_m1 nova_ms

@@ -1,0 +1,54 @@
+!! Lu par header.phtml : superviseur d'une classe.
+!! Desactiver malgre le partage (2026-11-08, utilisateur) : WIMS refuse de desactiver un examen ou une feuille partages
+!! avec d'autres classes (adm/class/exam : error=nodeactivate, deactivate=sharing ; adm/class/sheet : error=sharing_sheet).
+!! Sur cette page de refus, #nova-forcer (nova.js forcerDesactivation : bouton, alerte) si les AUTRES refus de WIMS ne
+!! s'appliquent pas (statut, examen commence, reglage --nova-desactivation-forcee : _procs/desactiver.sh). Pas de test « structure » :
+!! dans un programme de portail, la « structure » est le partage avec ses cours (vu le 2026-11-08). Examen commence : dit sous le refus.
+!! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
+!if ($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
+  !reset nova_fs
+  !if $module=adm/class/exam
+    !set nova_ft=exam
+    !set nova_fn=$exam
+  !else
+    !set nova_ft=sheet
+    !set nova_fn=$sheet
+  !endif
+  !if $nova_fs=$empty
+    !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
+  !endif
+  !if $nova_fs=ok or $nova_fs=ok examen
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler" data-sauver="$nova_forcer_sauver" data-sauver-aide="$nova_forcer_sauver_aide" data-ok-sauver="$nova_forcer_ok_sauver" data-etape1="$nova_forcer_etape1" data-etape2="$nova_forcer_etape2" data-etape3="$nova_forcer_etape3" data-echec="$nova_forcer_echec" data-reessayer="$nova_forcer_reessayer" data-sans="$nova_forcer_sans"></span>
+  !endif
+  !if $nova_fs=commence
+<span id="nova-forcer" hidden data-refus="$nova_forcer_refus_commence"></span>
+  !endif
+  !reset nova_ft nova_fn nova_fs
+!endif
+!if $module=home
+  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_q=!replace internal + by $ $ in $nova_q
+  !set nova_dv=!getopt nova_desactiver in $nova_q
+  !if $nova_dv!=$empty
+    !set nova_dv=!replace internal : by , in $nova_dv
+    !set nova_ft=!item 1 of $nova_dv
+    !set nova_fn=!item 2 of $nova_dv
+    !if $nova_ft isitemof exam,sheet
+      !set nova_fr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn"
+      !if $nova_fr=ok
+        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_ok_$nova_ft)
+        !set nova_fe=succes
+        !set wims_class_log=deactivate $nova_ft $nova_fn (Nova, partage) by $wims_realuser
+      !else
+        !if $nova_fr notitemof statut,commence,reglage
+          !set nova_fr=erreur
+        !endif
+        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_refus_$nova_fr)
+        !set nova_fe=erreur
+      !endif
+<div id="nova-propage" hidden data-etat="$nova_fe">$nova_fm</div>
+    !endif
+  !endif
+  !reset nova_q nova_dv nova_ft nova_fn nova_fr nova_fm nova_fe
+!endif

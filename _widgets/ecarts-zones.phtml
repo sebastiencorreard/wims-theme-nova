@@ -1,0 +1,16 @@
+!! Lu par header.phtml : superviseur, adm/class/config.
+!! Pages Apparence et Badges Nova d'une structure (2026-11-07, utilisateur) : zones dependantes dont les blocs Nova
+!! different de ceux de la structure (copie ancienne ou reglage de la zone). nova.js (ecartsZones) en fait une alerte
+!! avec un bouton qui propage (accueil, nova_propager). Memes droits que la propagation.
+!set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
+!if $nova_ct isitemof 2,3,4
+  !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
+  !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
+  !set nova_ez=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" apparence,badges ecarts
+<ul id="nova-ecarts" hidden data-titre="$nova_ecart_titre" data-titre1="$nova_ecart_titre1" data-texte="$nova_ecart_texte" data-texte1="$nova_ecart_texte1" data-quoi-apparence="$nova_ecart_quoi_apparence" data-quoi-badges="$nova_ecart_quoi_badges" data-quoi-tout="$nova_ecart_quoi_tout" data-voir="$nova_ecart_voir" data-appliquer="$nova_ecart_appliquer" data-plus-tard="$nova_ecart_plus_tard" data-attente="$nova_ecart_attente">$nova_ez</ul>
+  !! Restriction d'acces (2026-11-10, utilisateur) : zones dont access.conf differe ; nova.js (accesClasse) propose, apres
+  !! l'enregistrement, de la leur appliquer par la propagation de WIMS (job=propagate, propagate=access).
+  !set nova_ea=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" acces ecarts
+<ul id="nova-ecarts-acces" hidden data-enregistre="$nova_accp_enregistre" data-question="$nova_accp_question" data-question1="$nova_accp_question1" data-texte="$nova_accp_texte" data-voir="$nova_accp_voir" data-appliquer="$nova_accp_appliquer" data-appliquer1="$nova_accp_appliquer1" data-non="$nova_accp_non" data-attente="$nova_accp_attente" data-fait="$nova_accp_fait" data-fait1="$nova_accp_fait1" data-erreur="$nova_accp_erreur">$nova_ea</ul>
+!endif
+!reset nova_ct nova_tn nova_sup nova_ez nova_ea

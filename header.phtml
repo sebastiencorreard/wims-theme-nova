@@ -7,189 +7,27 @@
 !read themes/$wims_theme/_widgets/accent.phtml
 !read themes/$wims_theme/_widgets/couleurs-notes.phtml
 
-!! Nova : reglages du thème pour tout le site (2026-10-06, demande de l'utilisateur), dans log/nova.conf
-!! (declarations CSS --nova-...). Enregistres depuis la page Apparence de la maintenance, par le gestionnaire
-!! seulement ($wims_ismanager=2, calcule par WIMS).
-!! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
-!! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
 !! Jeu d'icones Lucide de Nova (2026-11-11) : lien gifs/themes/Lucide vers icones/Lucide du theme, pour qu'il
 !! figure dans le choix "Jeu d'icones" de WIMS (pages de configuration seulement : un test par page).
 !if $module=adm/class/config or $module=adm/manage
   !set nova_ji=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/jeu-icones.sh "$wims_home" "$wims_theme"
   !reset nova_ji
 !endif
+!! Reglages de Nova pour tout le site (log/nova.conf), enregistres par le gestionnaire : _widgets/reglages-site.phtml.
 !if $module=adm/manage and $wims_ismanager=2
-  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-  !set nova_q=!replace internal & by $ $ in $nova_q
-  !set nova_reglages=!getopt nova_reglages in $nova_q
-  !set nova_animations=!getopt nova_animations in $nova_q
-  !set nova_entree_directe=!getopt nova_entree_directe in $nova_q
-  !set nova_clavier_maths=!getopt nova_clavier_maths in $nova_q
-  !set nova_badges=!getopt nova_badges in $nova_q
-  !set nova_mq_c=!getopt nova_masque_communication in $nova_q
-  !set nova_mq_l=!getopt nova_masque_liens in $nova_q
-  !set nova_activite=!getopt nova_activite in $nova_q
-  !set nova_fil=!getopt nova_fil in $nova_q
-  !set nova_act_s=!getopt nova_activite_seuil in $nova_q
-  !set nova_act_o=!getopt nova_activite_objectif in $nova_q
-  !set nova_act_h=!getopt nova_activite_heures in $nova_q
-  !set nova_act_n=!getopt nova_activite_notes in $nova_q
-  !! Reglages « Rapprocher du theme standard » (2026-10-07) : une declaration par reglage, ecrite plus bas.
-  !reset nova_sd
-  !for nova_k in menus,navigation,reponse,examens,textes,listes,menu_complet,dominos
-    !set nova_sv=!getopt nova_s_$nova_k in $nova_q
-    !bound nova_sv within oui,non default non
-    !set nova_kh=!replace internal _ by - in $nova_k
-    !set nova_sd=$nova_sd --nova-std-$nova_kh: $nova_sv;
-  !next nova_k
-  !reset nova_k nova_sv nova_kh
-  !reset nova_q
+  !read themes/$wims_theme/_widgets/reglages-site.phtml
 !endif
-!if $module=adm/manage and $wims_ismanager=2 and $nova_reglages=enregistrer
-  !bound nova_animations within oui,non default non
-  !bound nova_entree_directe within oui,non default oui
-  !bound nova_clavier_maths within oui,non default non
-  !bound nova_badges within oui,non default non
-  !! Rubriques masquees aux eleves (2026-10-08) : remplace --nova-communication-eleves.
-  !reset nova_mq
-  !if $nova_mq_c=oui
-    !set nova_mq=communication
-  !endif
-  !if $nova_mq_l=oui
-    !set nova_mq=$nova_mq liens
-  !endif
-  !default nova_mq=aucune
-  !writefile wimshome/log/nova.conf --nova-animations: $nova_animations;
-  !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
-  !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
-  !appendfile wimshome/log/nova.conf --nova-badges: $nova_badges;
-  !appendfile wimshome/log/nova.conf --nova-masques-eleves: $nova_mq;
-  !appendfile wimshome/log/nova.conf --nova-fil-fixe: $nova_fil;
-  !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
-  !bound nova_activite within oui,non default oui
-  !bound nova_fil within oui,non default oui
-  !bound nova_act_s between 1 and 7 default 2
-  !bound nova_act_o between 1 and 7 default 3
-  !bound nova_act_h between 1 and 80 default 6
-  !bound nova_act_n between 1 and 20 default 5
-  !set nova_act_s=$[floor($nova_act_s)]
-  !set nova_act_o=$[floor($nova_act_o)]
-  !set nova_act_h=$[floor($nova_act_h)]
-  !set nova_act_n=$[floor($nova_act_n)]
-  !ifval $nova_act_o<$nova_act_s
-    !set nova_act_o=$nova_act_s
-  !endif
-  !appendfile wimshome/log/nova.conf --nova-activite: $nova_activite; --nova-activite-seuil: $nova_act_s; --nova-activite-objectif: $nova_act_o; --nova-activite-heures: $nova_act_h; --nova-activite-notes: $nova_act_n;
-  !appendfile wimshome/log/nova.conf $nova_sd
-  !set nova_app_fait=yes
-!endif
-!! Zones dependantes (adm/class/config, job=propagate ; demande de l'utilisateur, 2026-10-08) : case « Parametres du theme
-!! Nova » ajoutee par nova.js (propagationNova), traitee ici, sur l'accueil (module de confiance) : superviseur d'une
-!! structure seulement (types 2, 3, 4, comme propagate.proc) ; _procs/propager.sh recopie les blocs Nova de sa feuille
-!! dans celles des zones. Message affiche par nova.js (#nova-propage). 2026-11-07 (utilisateur) : apparence et badges
-!! separes : nova_propager=apparence, badges ou tout (1 = tout, ancien lien).
-!! 2026-11-09 (utilisateur) : aussi sur adm/class/config (page Reglages de Nova, Zones dependantes), ou l'enseignant
-!! reste : propager.sh n'ecrit que par !sh, permis la aussi. L'accueil reste accepte (anciens liens).
+!! Zones dependantes : propagation des reglages Nova (nova_propager) : _widgets/propager.phtml.
 !if ($module=home or $module=adm/class/config) and $wims_user=supervisor and $wims_class!=$empty
-  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-  !set nova_q=!replace internal & by $ $ in $nova_q
-  !set nova_q=!replace internal + by $ $ in $nova_q
-  !set nova_pr=!getopt nova_propager in $nova_q
-  !reset nova_pp
-  !if $nova_pr=1 or $nova_pr=tout
-    !set nova_pp=apparence,badges
-    !set nova_pq=$nova_propage_quoi_tout
-  !endif
-  !if $nova_pr=apparence or $nova_pr=badges
-    !set nova_pp=$nova_pr
-    !set nova_pq=$(nova_propage_quoi_$nova_pr)
-  !endif
-  !if $nova_pp!=$empty
-    !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
-    !if $nova_ct isitemof 2,3,4
-      !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
-      !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
-      !set nova_pn=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" "$nova_pp"
-      !if $nova_pn=1
-        !set nova_pt=$nova_propage_1
-      !else
-        !set nova_pt=!replace internal %1 by $nova_pn in $nova_propage_n
-      !endif
-      !set nova_pt=!replace internal %2 by $nova_pq in $nova_pt
-<div id="nova-propage" hidden>$nova_pt</div>
-    !endif
-  !endif
-  !reset nova_q nova_pr nova_pp nova_pq nova_ct nova_tn nova_sup nova_pn nova_pt
+  !read themes/$wims_theme/_widgets/propager.phtml
 !endif
-!! Desactiver malgre le partage (2026-11-08, utilisateur) : WIMS refuse de desactiver un examen ou une feuille partages
-!! avec d'autres classes (adm/class/exam : error=nodeactivate, deactivate=sharing ; adm/class/sheet : error=sharing_sheet).
-!! Sur cette page de refus, #nova-forcer (nova.js forcerDesactivation : bouton, alerte) si les AUTRES refus de WIMS ne
-!! s'appliquent pas (statut, examen commence, reglage --nova-desactivation-forcee : _procs/desactiver.sh). Pas de test « structure » :
-!! dans un programme de portail, la « structure » est le partage avec ses cours (vu le 2026-11-08). Examen commence : dit sous le refus.
-!! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
-!if $wims_user=supervisor and $wims_class!=$empty and (($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty))
-  !reset nova_fs
-  !if $module=adm/class/exam
-    !set nova_ft=exam
-    !set nova_fn=$exam
-  !else
-    !set nova_ft=sheet
-    !set nova_fn=$sheet
-  !endif
-  !if $nova_fs=$empty
-    !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
-  !endif
-  !if $nova_fs=ok or $nova_fs=ok examen
-<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler" data-sauver="$nova_forcer_sauver" data-sauver-aide="$nova_forcer_sauver_aide" data-ok-sauver="$nova_forcer_ok_sauver" data-etape1="$nova_forcer_etape1" data-etape2="$nova_forcer_etape2" data-etape3="$nova_forcer_etape3" data-echec="$nova_forcer_echec" data-reessayer="$nova_forcer_reessayer" data-sans="$nova_forcer_sans"></span>
-  !endif
-  !if $nova_fs=commence
-<span id="nova-forcer" hidden data-refus="$nova_forcer_refus_commence"></span>
-  !endif
-  !reset nova_ft nova_fn nova_fs
+!! Desactiver malgre le partage (page de refus, puis action sur l'accueil) : _widgets/desactiver.phtml.
+!if $wims_user=supervisor and $wims_class!=$empty
+  !read themes/$wims_theme/_widgets/desactiver.phtml
 !endif
-!if $module=home and $wims_user=supervisor and $wims_class!=$empty
-  !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-  !set nova_q=!replace internal & by $ $ in $nova_q
-  !set nova_q=!replace internal + by $ $ in $nova_q
-  !set nova_dv=!getopt nova_desactiver in $nova_q
-  !if $nova_dv!=$empty
-    !set nova_dv=!replace internal : by , in $nova_dv
-    !set nova_ft=!item 1 of $nova_dv
-    !set nova_fn=!item 2 of $nova_dv
-    !if $nova_ft isitemof exam,sheet
-      !set nova_fr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn"
-      !if $nova_fr=ok
-        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_ok_$nova_ft)
-        !set nova_fe=succes
-        !set wims_class_log=deactivate $nova_ft $nova_fn (Nova, partage) by $wims_realuser
-      !else
-        !if $nova_fr notitemof statut,commence,reglage
-          !set nova_fr=erreur
-        !endif
-        !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_refus_$nova_fr)
-        !set nova_fe=erreur
-      !endif
-<div id="nova-propage" hidden data-etat="$nova_fe">$nova_fm</div>
-    !endif
-  !endif
-  !reset nova_q nova_dv nova_ft nova_fn nova_fr nova_fm nova_fe
-!endif
-!! Pages Apparence et Badges Nova d'une structure (2026-11-07, utilisateur) : zones dependantes dont les blocs Nova
-!! different de ceux de la structure (copie ancienne ou reglage de la zone). nova.js (ecartsZones) en fait une alerte
-!! avec un bouton qui propage (accueil, nova_propager). Memes droits que la propagation.
+!! Zones dependantes aux reglages ou a la restriction d'acces differents : _widgets/ecarts-zones.phtml.
 !if $module=adm/class/config and $wims_user=supervisor and $wims_class!=$empty
-  !set nova_ct=!getdef class_type in wimshome/log/classes/$wims_class/.def
-  !if $nova_ct isitemof 2,3,4
-    !set nova_tn=!getdef class_typename in wimshome/log/classes/$wims_class/.def
-    !set nova_sup=!getdef class_superclass in wimshome/log/classes/$wims_class/.def
-    !set nova_ez=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" apparence,badges ecarts
-<ul id="nova-ecarts" hidden data-titre="$nova_ecart_titre" data-titre1="$nova_ecart_titre1" data-texte="$nova_ecart_texte" data-texte1="$nova_ecart_texte1" data-quoi-apparence="$nova_ecart_quoi_apparence" data-quoi-badges="$nova_ecart_quoi_badges" data-quoi-tout="$nova_ecart_quoi_tout" data-voir="$nova_ecart_voir" data-appliquer="$nova_ecart_appliquer" data-plus-tard="$nova_ecart_plus_tard" data-attente="$nova_ecart_attente">$nova_ez</ul>
-    !! Restriction d'acces (2026-11-10, utilisateur) : zones dont access.conf differe ; nova.js (accesClasse) propose, apres
-    !! l'enregistrement, de la leur appliquer par la propagation de WIMS (job=propagate, propagate=access).
-    !set nova_ea=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/propager.sh "$wims_home" "$wims_class" "$nova_tn" "$nova_sup" acces ecarts
-<ul id="nova-ecarts-acces" hidden data-enregistre="$nova_accp_enregistre" data-question="$nova_accp_question" data-question1="$nova_accp_question1" data-texte="$nova_accp_texte" data-voir="$nova_accp_voir" data-appliquer="$nova_accp_appliquer" data-appliquer1="$nova_accp_appliquer1" data-non="$nova_accp_non" data-attente="$nova_accp_attente" data-fait="$nova_accp_fait" data-fait1="$nova_accp_fait1" data-erreur="$nova_accp_erreur">$nova_ea</ul>
-  !endif
-  !reset nova_ct nova_tn nova_sup nova_ez nova_ea
+  !read themes/$wims_theme/_widgets/ecarts-zones.phtml
 !endif
 !! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
 !! derniere valeur lue (sessionStorage).
@@ -217,109 +55,15 @@
 !if adm/class isin $module and $wims_user!=$empty
   <template id="nova-liens-textes" data-type="$class_type" data-qr-script="themes/$wims_theme/js/qrcode.js" data-script-flyers="themes/$wims_theme/js/flyers.js" data-nom="$wims_classname" data-flyers="$nova_lc_flyers" data-fl-nom="$nova_lc_fl_nom" data-fl-aide="$nova_lc_fl_aide" data-agrandir="$nova_lc_agrandir" data-telecharger="$nova_lc_telecharger" data-fermer="$nova_lc_fermer" data-qr-alt="$nova_lc_qr_alt" data-vous="$nova_lc_vous" data-vous-aide="$nova_lc_vous_aide" data-eleves="$nova_lc_eleves" data-eleves-aide="$nova_lc_eleves_aide" data-eleves-aide-s="$nova_lc_eleves_aide_s" data-qr="$nova_lc_qr" data-ens="$nova_lc_ens" data-ens-aide="$nova_lc_ens_aide" data-insc="$nova_lc_insc" data-insc-aide="$nova_lc_insc_aide" data-copier="$nova_lc_copier" data-copie="$nova_lc_copie" data-copier-num="$nova_lc_copier_num" data-echec="$nova_lc_echec" data-numero="$nova_lc_numero" data-numero-s="$nova_lc_numero_s" data-numero-aide="$nova_lc_numero_aide"></template>
 !endif
-!! Nova : menu enseignant personnalise (js/nova.js, basculeMenu), garde sur le serveur pour suivre l'enseignant
-!! d'un poste a l'autre (demande de l'utilisateur, 2026-10-07) : log/classes/<structure ou classe>/.nova_menu_<login>
-!! (supervisor pour l'enseignant d'une classe). Ecrit seulement sur l'accueil (module home : WIMS refuse wimshome/
-!! aux modules adm/class/..., is_class_module, src/files.c), quand un lien porte nova_menu (ajoute par nova.js au lien suivant apres un changement) ; relu et transmis sur
-!! ces memes pages (#nova-menu-serveur). Valeur : simple ou complet, puis les entrees gardees, separees par des points.
-!! modtool (2026-11-04) : son propre fichier (.nova_menu_modtool_<login>), valeur prefixee par modtool- ; le compte
-!! developpeur (wims_developer) ne change rien : c'est toujours l'enseignant de la classe.
+!! Choix gardes sur le serveur : menu personnalise et classes repliees de l'enseignant (_widgets/menu-serveur.phtml,
+!! replis-classes.phtml), couleur personnelle de l'eleve (_widgets/couleur-choix.phtml).
 !if ($module=home or $nova_m=adm/) and $wims_user!=$empty and $wims_class!=$empty and ($wims_developer=$empty or $module=adm/modtool)
   !read themes/$wims_theme/_procs/eleve.proc
   !if $nova_est_eleve!=yes
-    !set nova_mk=$wims_superclass
-    !default nova_mk=!word 1 of $wims_class
-    !set nova_mk=!replace internal / by , in $nova_mk
-    !set nova_mk=$(nova_mk[1])
-    !set nova_mf=wimshome/log/classes/$nova_mk/.nova_menu_
-    !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-    !if nova_menu isin $nova_q
-      !set nova_q=!replace internal & by $ $ in $nova_q
-      !set nova_mv=!getopt nova_menu in $nova_q
-      !set nova_mt=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.- in $nova_mv
-      !set nova_m1=!replace internal . by , in $nova_mv
-      !set nova_m1=$(nova_m1[1])
-      !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof simple,complet,defaut
-        !writefile $(nova_mf)$wims_user $nova_mv
-      !endif
-      !if $nova_mv!=$empty and $nova_mt=$nova_mv and $nova_m1 isitemof modtool-simple,modtool-complet,modtool-defaut
-        !writefile $(nova_mf)modtool_$wims_user $nova_mv
-      !endif
-      !! Une page de module (2026-11-11, utilisateur) : valeur << <module, / en _>-simple.entree... >> (htmlheader.phtml),
-      !! fichier .nova_menu_p_<module>_<login>. Par !sh : !writefile echoue depuis adm/class/... (pieges de CLAUDE.md).
-      !! Valeur deja filtree (lettres, chiffres, _ . -) : sans danger entre apostrophes.
-      !if $nova_mv!=$empty and $nova_mt=$nova_mv and - isin $nova_m1 and modtool- notin $nova_m1
-        !sh v='$nova_mv'; m=$${v%%.*}; c=$${m%-*}; e=$${m##*-}; case "$$e" in simple|complet|defaut) ;; *) exit 0;; esac; case "$$c" in ''|*[!A-Za-z0-9_]*) exit 0;; esac; printf '%s' "$$v" > "$wims_home/log/classes/$nova_mk/.nova_menu_p_$${c}_$wims_user"
-      !endif
-    !endif
-    !reset nova_ms
-    !if $module=adm/modtool
-      !set nova_ms=modtool_
-    !else
-      !if $module=home and $class_typename isitemof portal,group,level
-        !set nova_ms=p_accueil_$(class_typename)_
-      !endif
-      !if $module!=home
-        !set nova_ms=!replace internal / by _ in $module
-        !set nova_ms=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $nova_ms
-        !set nova_ms=p_$(nova_ms)_
-      !endif
-    !endif
-    !set nova_mv=!sh if test -r $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; then cat $wims_home/log/classes/$nova_mk/.nova_menu_$nova_ms$wims_user; fi
-<script type="text/plain" id="nova-menu-serveur">$nova_mv</script>
-    !! Nova : classes repliees par niveau sur l'accueil d'une structure (2026-11-10, utilisateur, maquette A) : choix garde
-    !! pour l'enseignant dans log/classes/<structure>/.nova_replis_<login>, valeur << n >> puis les numeros des niveaux
-    !! replies, separes par des points (n.1.3), envoyee par nova.js (replisClasses) a l'accueil avec nova_replis=.
-    !! La regle #nova-replis-style masque d'emblee les classes repliees (pas de clignotement) ; nova.js la retire une fois
-    !! les boutons poses. Sans JavaScript (html.nova-js absente), rien n'est masque.
-    !if $module=home
-      !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-      !if nova_replis isin $nova_q
-        !set nova_q=!replace internal & by $ $ in $nova_q
-        !set nova_rv=!getopt nova_replis in $nova_q
-        !set nova_rt=!text select char n0123456789. in $nova_rv
-        !set nova_r1=!char 1 of $nova_rv
-        !if $nova_rv!=$empty and $nova_rt=$nova_rv and $nova_r1=n
-          !writefile wimshome/log/classes/$nova_mk/.nova_replis_$wims_user $nova_rv
-        !endif
-      !endif
-      !set nova_rv=!sh cat $wims_home/log/classes/$nova_mk/.nova_replis_$wims_user 2>/dev/null | tr -cd 'n0-9.'
-      !reset nova_rs
-      !set nova_rl=!replace internal . by , in $nova_rv
-      !for nova_r1 in $nova_rl
-        !if $nova_r1!=n and $nova_r1!=$empty
-          !set nova_rs=!append item html.nova-js .wims_subclasses > li:has(> .wims_classes_direct_level):has(a[href*="class=$nova_mk%2F$nova_r1%2F"]) > ul > li:has(> .wims_classes_direct_class) to $nova_rs
-        !endif
-      !next nova_r1
-<span id="nova-replis" hidden data-valeur="$nova_rv" data-replier="$nova_txt_replis_replier" data-replier1="$nova_txt_replis_replier1" data-afficher="$nova_txt_replis_afficher" data-afficher1="$nova_txt_replis_afficher1"></span>
-      !if $nova_rs!=$empty
-<style id="nova-replis-style">$nova_rs { display: none; }</style>
-      !endif
-      !reset nova_rv nova_rt nova_r1 nova_rl nova_rs
-    !endif
-    !reset nova_mk nova_mf nova_q nova_mv nova_mt nova_m1 nova_ms
+    !read themes/$wims_theme/_widgets/menu-serveur.phtml
   !endif
-  !! Couleur personnelle d'un eleve (2026-11-07, utilisateur) : envoyee par nova.js (fenetre des badges) a l'accueil avec
-  !! nova_couleur=<nom de la palette ou d'un dégradé> (« classe » : retour a la couleur de la classe), ecrite pour toute la structure
-  !! (log/classes/<structure ou classe>/.nova_couleur_<login>). Le droit de choisir (niveau du badge) est verifie par
-  !! user.phtml, qui seul applique la couleur ; ici, seulement un nom de la palette.
   !if $nova_est_eleve=yes and $module=home
-    !set nova_q=!sh printf '%s' "$$QUERY_STRING"
-    !if nova_couleur isin $nova_q
-      !set nova_q=!replace internal & by $ $ in $nova_q
-      !set nova_cv=!getopt nova_couleur in $nova_q
-      !set nova_ck=$wims_superclass
-      !default nova_ck=!word 1 of $wims_class
-      !set nova_ck=!replace internal / by , in $nova_ck
-      !set nova_ck=$(nova_ck[1])
-      !if $nova_cv isitemof corail,orange,ambre,vert,sapin,turquoise,azur,nuit,violet,rose,crepuscule,braise,framboise,soleil,ocean,aurore,foret,etoilee
-        !writefile wimshome/log/classes/$nova_ck/.nova_couleur_$wims_user $nova_cv
-      !endif
-      !if $nova_cv=classe
-        !writefile wimshome/log/classes/$nova_ck/.nova_couleur_$wims_user $empty
-      !endif
-    !endif
-    !reset nova_q nova_cv nova_ck
+    !read themes/$wims_theme/_widgets/couleur-choix.phtml
   !endif
 !endif
 !reset nova_m nova_site

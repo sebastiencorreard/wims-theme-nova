@@ -1,0 +1,21 @@
+!! Lu par header.phtml : eleve, sur l'accueil.
+!! Couleur personnelle d'un eleve (2026-11-07, utilisateur) : envoyee par nova.js (fenetre des badges) a l'accueil avec
+!! nova_couleur=<nom de la palette ou d'un dégradé> (« classe » : retour a la couleur de la classe), ecrite pour toute la structure
+!! (log/classes/<structure ou classe>/.nova_couleur_<login>). Le droit de choisir (niveau du badge) est verifie par
+!! user.phtml, qui seul applique la couleur ; ici, seulement un nom de la palette.
+!set nova_q=!sh printf '%s' "$$QUERY_STRING"
+!if nova_couleur isin $nova_q
+  !set nova_q=!replace internal & by $ $ in $nova_q
+  !set nova_cv=!getopt nova_couleur in $nova_q
+  !set nova_ck=$wims_superclass
+  !default nova_ck=!word 1 of $wims_class
+  !set nova_ck=!replace internal / by , in $nova_ck
+  !set nova_ck=$(nova_ck[1])
+  !if $nova_cv isitemof corail,orange,ambre,vert,sapin,turquoise,azur,nuit,violet,rose,crepuscule,braise,framboise,soleil,ocean,aurore,foret,etoilee
+    !writefile wimshome/log/classes/$nova_ck/.nova_couleur_$wims_user $nova_cv
+  !endif
+  !if $nova_cv=classe
+    !writefile wimshome/log/classes/$nova_ck/.nova_couleur_$wims_user $empty
+  !endif
+!endif
+!reset nova_q nova_cv nova_ck

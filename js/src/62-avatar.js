@@ -25,7 +25,7 @@
   // construit par construire-avatar.py depuis _avatar/<catégorie>/<valeur>.svg, posé PAR-DESSUS le dessin d'Avataaars.
   // Un élément de Noël porté remplace le chapeau d'Avataaars (pas deux couvre-chefs) ; les cheveux restent.
   var AVATAR_EXTRAS = ['noel'];
-  var AVATAR_EXTRAS_V = '33063e267d';
+  var AVATAR_EXTRAS_V = '0aa6062923';
   function porteNoel(c) { return !!c.noel && c.noel !== 'aucun'; }
   function porteChapeau(c) { return AVATAR_CHAPEAUX.indexOf(c.top) >= 0 && !porteNoel(c); }
   function porteLunettes(c) { return !!c.accessories && c.accessories !== 'aucun' && c.accessories !== 'eyepatch'; }

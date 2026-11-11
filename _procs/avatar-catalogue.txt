@@ -62,6 +62,7 @@ noel aucun libre
 noel bonnetNoel libre
 noel bonnetLutin libre
 noel serreTeteRenne libre
+noel cacheOreilles libre
 hairColor 2c1b18 libre
 hairColor 4a312c libre
 hairColor 724133 libre

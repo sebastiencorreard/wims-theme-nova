@@ -4,40 +4,32 @@ Thème WIMS moderne et adapté au téléphone. Les versions les plus récentes s
 Ce qui est réservé aux élèves (badges, avatar, couleur personnelle) reste **désactivé** tant que
 l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la configuration).
 
-## 1.3 — 8 novembre 2026
+## 1.4 — 11 novembre 2026
 
-### Élèves
-- **Exercices à cases** : sur la page de réponse, chaque choix est marqué dans l'énoncé (✓ juste, ✕ coché à tort, ! en pointillé s'il fallait le cocher) ; l'encadré dit « il manque 1 réponse » au lieu de répéter toutes les réponses.
-- **Persévérance** : la règle dit clairement « notes de moins de 5/10 » (la note doit être strictement inférieure au seuil).
-- Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
+En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Lucide, liens de connexion avec QR code et
+flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Enseignants
 - **Menu de gauche personnalisable sur toutes les pages** (feuille, examen, notes, participants, configuration, modtool, accueil d'un portail, d'un groupement ou d'un niveau…) : un crayon en bas du menu pour cacher les entrées inutiles de cette page, choix gardé sur le serveur ; un interrupteur « Menu simplifié » remplace le bouton « Menu complet », et « Choisir les entrées » est plus clair (consigne, « Terminé »).
+- **Liens de connexion** : une carte par lien (« Lien pour vous », « Lien pour vos élèves », et sur un portail ceux des enseignants), le lien en entier et un bouton **Copier** ; un QR code du lien des élèves (dessiné par Nova si le serveur n'en produit pas), avec « Agrandir » pour le projeter et « Télécharger » en image, et des **flyers à imprimer** (PDF, 30 par page A4, « WIMS - <classe> » sous chaque QR code, à découper et coller dans le cahier) avec le nom de la classe modifiable, le numéro de la classe a aussi son bouton Copier.
+- **Restriction d'accès** (Configuration et maintenance) : formulaire pour interdire le travail à certaines heures chaque jour (« La nuit : 20 h 30 à 7 h » en un clic) ou entre deux dates, pour tout le travail ou les exercices seulement, avec un résumé en français. Les règles écrites à la main sont gardées dans « Réglage expert », une règle en double n'est écrite qu'une fois.
+- **Restriction d'accès d'un portail, groupement ou niveau** : après l'enregistrement, Nova propose de l'appliquer aux zones dépendantes qui ont une autre restriction (liste des zones, « Appliquer » ou « Non, seulement ici »).
+- **Configuration et maintenance** d'une classe, d'un groupement ou d'un portail : deux onglets (« Sauvegarde et maintenance », « Configuration », le dernier choisi est gardé pendant la session) ; chaque groupe de liens dans une carte, en lignes compactes, une ligne par entrée avec son icône, sa description en dessous et un chevron ; toute la ligne est cliquable.
+- **Accueil d'un portail** : bouton « Replier les classes » à côté de chaque niveau ; replié, il ne reste que les programmes et leurs cours. Le choix est gardé sur le serveur (il vous suit d'un appareil à l'autre).
+- **Élèves connectés** : un point vert de présence remplace la main jaune levée ; sur l'accueil, la phrase « Il y a actuellement n participant(s) connecté(s) » est dans une pastille verte, point devant ; dans les tableaux (suivi d'un parcours, devoirs libres) et le livret, un point vert après le nom, qui affiche « En ligne » au survol.
+- **Désactiver quand même** : case cochée par défaut « Télécharger d'abord une sauvegarde de la classe (.zip) » ; la sauvegarde complète de WIMS est téléchargée, puis l'examen ou la feuille est désactivé. Si la sauvegarde échoue, rien n'est désactivé.
+- Page **Notes** : titre de la feuille aussi en tête de colonne (au lieu de « Feuille 3 »), une case par type pour revenir au numéro ; choix retenus par le navigateur.
+- Onglet DM WIMS des Réglages de Nova : liste de ce qui utilise ces réglages (« Créer le DM noté », badges Échauffement et Au top).
 - Menu de gauche : icônes plus près du bord, les entrées tiennent sur une ligne (« Sauvegarde et restauration »).
 - Menu « Participants » : « Gestion des variables techniques » devient « Variables techniques ».
-- **Élèves connectés** : un point vert de présence remplace la main jaune levée ; sur l'accueil, la phrase « Il y a actuellement n participant(s) connecté(s) » est dans une pastille verte, point devant ; dans les tableaux (suivi d'un parcours, devoirs libres) et le livret, un point vert après le nom, qui affiche « En ligne » au survol.
-- **Configuration et maintenance** d'une classe, d'un groupement ou d'un portail : deux onglets (« Sauvegarde et maintenance », « Configuration », le dernier choisi est gardé pendant la session) ; chaque groupe de liens dans une carte, en lignes compactes, une ligne par entrée avec son icône, sa description en dessous et un chevron ; toute la ligne est cliquable.
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
-- **Liens de connexion** : une carte par lien (« Lien pour vous », « Lien pour vos élèves », et sur un portail ceux des enseignants), le lien en entier et un bouton **Copier** ; un QR code du lien des élèves (dessiné par Nova si le serveur n'en produit pas), avec « Agrandir » pour le projeter et « Télécharger » en image, et des **flyers à imprimer** (PDF, 30 par page A4, « WIMS - <classe> » sous chaque QR code, à découper et coller dans le cahier) avec le nom de la classe modifiable, le numéro de la classe a aussi son bouton Copier.
-- **Désactiver quand même** : case cochée par défaut « Télécharger d'abord une sauvegarde de la classe (.zip) » ; la sauvegarde complète de WIMS est téléchargée, puis l'examen ou la feuille est désactivé. Si la sauvegarde échoue, rien n'est désactivé.
-- **Restriction d'accès d'un portail, groupement ou niveau** : après l'enregistrement, Nova propose de l'appliquer aux zones dépendantes qui ont une autre restriction (liste des zones, « Appliquer » ou « Non, seulement ici »).
-- **Restriction d'accès** (Configuration et maintenance) : formulaire pour interdire le travail à certaines heures chaque jour (« La nuit : 20 h 30 à 7 h » en un clic) ou entre deux dates, pour tout le travail ou les exercices seulement, avec un résumé en français. Les règles écrites à la main sont gardées dans « Réglage expert », une règle en double n'est écrite qu'une fois.
-- **Accueil d'un portail** : bouton « Replier les classes » à côté de chaque niveau ; replié, il ne reste que les programmes et leurs cours. Le choix est gardé sur le serveur (il vous suit d'un appareil à l'autre).
-- Onglet DM WIMS des Réglages de Nova : liste de ce qui utilise ces réglages (« Créer le DM noté », badges Échauffement et Au top).
-- **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « New ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
-- **DM WIMS** : onglet à part ; un examen n'est un DM que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté » ou « test » (DM noté) ou « entraînement » ; mots-clés en étiquettes, faciles à ajouter ou retirer.
-- **Créer le DM noté** : bouton sur l'accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
-- **Désactiver quand même** un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont partagés (aussi dans un programme de portail), ou une feuille utilisée dans un examen : bouton sous le refus, après une alerte sur les conséquences. À permettre dans Réglages de Nova, onglet Réglages avancés (désactivé par défaut). Refusé si des élèves ont déjà commencé l'examen.
-- **Couleur personnelle** : deux paliers, couleur puis dégradés, chacun avec son niveau et son badge.
-- **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
-- Page **Notes** : titre de la feuille ou de l'examen en tête de colonne (au lieu de « Feuille 3 », « Examen 4 »), une case par type pour revenir au numéro ; case « Masquer la moyenne » ; choix retenus par le navigateur.
 
 ### Installation
-- Les icônes propres à Nova sont elles aussi des icônes Lucide : barre du haut (maison, aide, compte, Terminer, Fermer, Retour), chronomètre, « Configuration et maintenance », « Administration du serveur », niveaux, classes, programmes et cours d'un portail, types de travail (feuille, examen, document…), liens de connexion, menu ☰ et « Plus ».
 - **Jeu d'icônes « Lucide »** : nouveau choix dans « Jeu d'icônes » (Config / Maintenance › Présentation d'une classe, Configuration du site) ; icônes fines au trait, à la couleur du texte, pour toutes les entrées de WIMS (menus, barre, fil d'Ariane, messages, boutons). « Nouvelle feuille » et « Nouvel examen » ont des icônes assorties (presse-papiers + et presse-papiers horloge). Le jeu est livré avec Nova : il s'ajoute à la liste à la première visite d'une page de configuration.
-- **Logo WIMS** : nouveau logo animé en SVG (net à toutes les tailles) dans la barre.
-- **Administration du serveur** (gestionnaire du site) : chaque groupe de liens dans une carte, une ligne par entrée avec son icône et un chevron, comme les réglages d'un téléphone.
+- Les icônes propres à Nova sont elles aussi des icônes Lucide : barre du haut (maison, aide, compte, Terminer, Fermer, Retour), chronomètre, « Configuration et maintenance », « Administration du serveur », niveaux, classes, programmes et cours d'un portail, types de travail (feuille, examen, document…), liens de connexion, menu ☰ et « Plus ».
 - **Langues** : Nova est traduit en espagnol et en italien (en plus du français et de l'anglais) ; une langue non traduite (catalan, allemand, chinois, slovène…) ou un texte manquant s'affiche en anglais, jamais vide. La page **Suivi en direct** est traduite elle aussi.
+- **Administration du serveur** (gestionnaire du site) : chaque groupe de liens dans une carte, une ligne par entrée avec son icône et un chevron, comme les réglages d'un téléphone.
+- **Logo WIMS** : nouveau logo animé en SVG (net à toutes les tailles) dans la barre.
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
@@ -51,6 +43,22 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - « Appliquer » (zones dépendantes), la case Nova de « Zones dépendantes » et « Désactiver quand même » ne renvoient plus à l'accueil du portail : on reste sur la page (ou on revient à l'examen, à la feuille), avec le message.
 - Après « Enregistrer les réglages de Nova », on reste sur la page des réglages (même onglet), avec « Réglages de Nova enregistrés », au lieu d'arriver sur la page Apparence.
 - Exercices à cases dont les choix sont des formules affichées en image : le cadre ne coupe plus la formule et la pastille ne la cache plus.
+
+## 1.3 — 8 novembre 2026
+
+### Élèves
+- **Exercices à cases** : sur la page de réponse, chaque choix est marqué dans l'énoncé (✓ juste, ✕ coché à tort, ! en pointillé s'il fallait le cocher) ; l'encadré dit « il manque 1 réponse » au lieu de répéter toutes les réponses.
+- **Persévérance** : la règle dit clairement « notes de moins de 5/10 » (la note doit être strictement inférieure au seuil).
+- Fenêtre des badges : les récompenses de couleur (couleur, dégradés) apparaissent dans l'onglet du badge qui les débloque.
+
+### Enseignants
+- **Réglages de Nova** : tous les réglages du thème sur une page à part, en onglets (Affichage, Élèves, DM WIMS, Badges et récompenses, Réglages avancés), dans la liste « Configuration et maintenance » et le menu de gauche (étiquette « New ») ; elle remplace « Badges Nova », la page Apparence ne garde que les réglages de WIMS.
+- **DM WIMS** : onglet à part ; un examen n'est un DM que si son titre contient « DMWIMS » ou « DM » (réglable), puis « noté » ou « test » (DM noté) ou « entraînement » ; mots-clés en étiquettes, faciles à ajouter ou retirer.
+- **Créer le DM noté** : bouton sur l'accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; copie avec les mêmes exercices, titre « … (noté) », description du dernier DM noté, 3 sessions, laissée en préparation.
+- **Désactiver quand même** un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont partagés (aussi dans un programme de portail), ou une feuille utilisée dans un examen : bouton sous le refus, après une alerte sur les conséquences. À permettre dans Réglages de Nova, onglet Réglages avancés (désactivé par défaut). Refusé si des élèves ont déjà commencé l'examen.
+- **Couleur personnelle** : deux paliers, couleur puis dégradés, chacun avec son niveau et son badge.
+- **Mon activité** : ses réglages s'affichent directement quand la page est activée, et disparaissent sinon.
+- Page **Notes** : titre de l'examen en tête de colonne (au lieu de « Examen 4 ») ; case « Masquer la moyenne », retenue par le navigateur.
 
 ## 1.2 — 7 novembre 2026
 

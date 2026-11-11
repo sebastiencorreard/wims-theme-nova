@@ -16,6 +16,7 @@
 body { margin: 0; background: var(--fond); color: var(--texte);
   font: 1rem/1.55 'Atkinson Hyperlegible Next', system-ui, sans-serif; }
 header { background: var(--accent); color: #fff; padding: 1rem 16px; }
+code { font-family: ui-monospace, monospace; font-size: .9em; padding: 0 .3em; border-radius: 4px; background: var(--fond); }
 header h1 { margin: 0 auto; max-width: 46rem; font-size: 1.35rem; }
 main { max-width: 46rem; margin: 0 auto; padding: 1rem 16px 3rem; }
 main > p { color: var(--texte-2); }
@@ -35,7 +36,7 @@ a { color: var(--accent); }
 (function () {
   var main = document.getElementById('contenu');
   function echap(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function enLigne(t) { return echap(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'); }
+  function enLigne(t) { return echap(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>'); }
   fetch('CHANGELOG.md', { cache: 'no-cache' }).then(function (r) {
     if (!r.ok) throw new Error(r.status);
     return r.text();

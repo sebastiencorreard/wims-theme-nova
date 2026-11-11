@@ -154,7 +154,10 @@ html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wims
 /* Repères des cases et des dominos (<a id="fill<n>"> <img></a>, <a id="fillobj<n>">) : en bloc en ligne, pour que leur
  * position soit celle de leur image. En ligne simple, l'espace qui précède l'image restait en fin de ligne quand l'image
  * passait à la ligne, et Dynapi plaçait la case là (vécu au téléphone, 2026-10-08). */
-html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }
+/* Même défaut pour les tuiles à déplacer (signalé par l'utilisateur au téléphone, 2026-11-11) : cases restées en fin de
+ * ligne, serrées contre le bord droit, et leur place vide à la ligne suivante (trou entre deux rangées de cases). */
+html.nova-dominos:not(.nova-std-dominos) a[id^="fill"],
+html.nova-tuiles:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }
 /* Fenêtre « mode paysage » (nova.js, dominos) : en haut de l'écran, sous la barre, au-dessus du contenu. */
 :where(html:not(.nova-std-dominos)) .nova-paysage {
   position: fixed; left: 50%; top: calc(64px + 10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 400;   /* sous la barre : en bas, elle cachait les boutons collés */

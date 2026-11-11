@@ -867,6 +867,22 @@
         var lien = /^fill/.test(im.parentElement.id || '') ? im.parentElement : im.nextElementSibling;
         var groupe = !!lien && !/^fillobj/.test(lien.id || '');
         var k = Math.round(w / sx), r = Math.floor(h / sy);
+        // Groupe trop large pour l'écran (signalé par l'utilisateur au téléphone, 2026-11-11) : moins de cases par ligne,
+        // plus de lignes. Dynapi lit f_cut au « load » pour placer les cases (fill.after) : le changer avant suffit.
+        var cut = window.f_cut, noms = window.f_fillnames, debuts = window.f_starts;
+        if (groupe && lien === im.parentElement && cut && noms && debuts && k > 1) {
+          var g = noms.map(String).indexOf(lien.id.slice(4));
+          var bloc = lien.parentElement, cs = getComputedStyle(bloc);
+          var dispo = bloc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+          var kmax = Math.max(1, Math.floor((dispo + ecart) / (nsx + ecart)));
+          if (g >= 0 && cut[g] === k && kmax < k) {
+            var r2 = Math.ceil((debuts[g + 1] - debuts[g]) / kmax);
+            cut[g] = kmax;
+            im.style.width = (kmax * nsx + (kmax - 1) * ecart) + 'px';
+            im.style.height = (h - r * sy + r2 * nsy + (r2 - 1) * ecart) + 'px';
+            return;
+          }
+        }
         if (k >= 1 && Math.abs(w - k * sx) < 1) im.style.width = (k * nsx + (groupe ? (k - 1) * ecart : 0)) + 'px';
         if (r >= 1) im.style.height = (h + r * (nsy - sy) + (groupe ? (r - 1) * ecart : 0)) + 'px';
       });

@@ -6328,6 +6328,8 @@
     var examen = /_exam/.test(session) || !!document.getElementById('wimsexam') || document.body.classList.contains('nova-examen') ||
       document.body.classList.contains('nova-examen-session') || !!document.querySelector('#wimstopbox .menuitem.chrono, #chrono_exam, a.endexam');
     SAISONS.forEach(function (s) { d.classList.toggle('nova-saison-' + s.nom, deco && !examen && s.mois.indexOf(mois) >= 0); });
+    // Scintillement de la guirlande (2026-12-11) : seulement si les animations de Nova sont activées.
+    d.classList.toggle('nova-scintille', !animationsCoupees());
   }
   // Rubriques masquées aux élèves (2026-10-08) : --nova-masques-eleves s'il est posé (liste, « aucune »), sinon l'ancien
   // --nova-communication-eleves: non.

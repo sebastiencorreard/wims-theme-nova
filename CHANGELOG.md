@@ -10,7 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
-- **Décorations de Noël** en décembre : guirlande lumineuse sous la barre du haut et flocons en filigrane dans la barre (jamais pendant un examen).
+- **Décorations de Noël** en décembre : guirlande lumineuse en haut de la barre du haut, derrière les boutons, qui scintille si les animations sont activées, et flocons en filigrane dans la barre (jamais pendant un examen).
 - **Avatar** : nouvelle catégorie **Noël** (bonnet de père Noël, bonnet de lutin, serre-tête de renne, cache-oreilles), dessinée pour Nova, 1 pièce chacun, **en décembre seulement** (un élément acheté se retrouve l'année suivante) ; un élément de Noël remplace le chapeau porté.
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 

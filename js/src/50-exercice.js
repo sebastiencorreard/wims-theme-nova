@@ -169,7 +169,8 @@
     };
     if (toutes) {
       titre.textContent = lignes.length > 1 ? texte('bonnes', 'Correct answers') : texte('bonne', 'Correct answer');
-      etoiles(boite);
+      // Étoiles sur la réponse réaffichée dans l'énoncé (demande de l'utilisateur, 2026-11-11), sinon comme avant.
+      etoiles(boite, [].concat.apply([], lignes.map(function (l) { return l.champs; })));
     } else if (lignes.length === 1) {
       titre.textContent = libelle(lignes[0].etat);
       completer(titre, lignes[0]);
@@ -263,19 +264,38 @@
     else if (n === 0) vibrer();
   }
 
-  // Petites étoiles (CSS : .nova-etoiles, sans animation si l'élève la refuse), centrées sur la place du
-  // bouton « Valider » à l'envoi (demande de l'utilisateur, 2026-10-05) : position fixe, toujours à l'écran ;
-  // à défaut (envoi ancien ou inconnu), sur l'élément donné.
-  function etoiles(el) {
+  // Petites étoiles (CSS : .nova-etoiles, sans animation si l'élève la refuse). Centrées sur la réponse de
+  // l'élève réaffichée dans l'énoncé (cibles, une nuée par champ visible, quatre au plus ; demande de
+  // l'utilisateur, 2026-11-11) ; à défaut, sur la place du bouton « Valider » à l'envoi (2026-10-05, position
+  // fixe, toujours à l'écran) ; à défaut (envoi ancien ou inconnu), sur l'élément donné.
+  function etoiles(el, cibles) {
     if (animationsCoupees()) return;
-    var nuee = document.createElement('span');
-    nuee.className = 'nova-etoiles';
-    nuee.setAttribute('aria-hidden', 'true');
+    // Une réponse en image n'a pas encore sa taille avant « load » : attendre, sinon la nuée part ailleurs.
+    if (cibles && cibles.length && document.readyState !== 'complete') {
+      window.addEventListener('load', function () { etoiles(el, cibles); }, { once: true });
+      return;
+    }
     var place = null;
     try {
       place = JSON.parse(sessionStorage.getItem('nova-valider') || 'null');
       sessionStorage.removeItem('nova-valider');
     } catch (e) { place = null; }
+    var rects = (cibles || []).map(function (c) { return c.getBoundingClientRect(); }).filter(function (r) {
+      return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
+    }).slice(0, 4);
+    if (rects.length) {
+      rects.forEach(function (r) {
+        var n = nueeEtoiles(Math.max(5, Math.round(12 / rects.length)));
+        n.style.left = (r.left + scrollX) + 'px';
+        n.style.top = (r.top + scrollY) + 'px';
+        n.style.width = r.width + 'px';
+        n.style.height = r.height + 'px';
+        n.style.zIndex = '60';
+        poserEtoiles(document.body, n);
+      });
+      return;
+    }
+    var nuee = nueeEtoiles(12);
     if (place && Date.now() - place.quand < 120000 && place.w > 0) {
       nuee.classList.add('nova-etoiles-valider');
       nuee.style.left = Math.max(0, Math.min(place.l, innerWidth - place.w)) + 'px';
@@ -284,12 +304,20 @@
       nuee.style.height = place.h + 'px';
       el = document.body;
     }
+    if (el !== document.body) el.classList.add('nova-etoile-source');
+    poserEtoiles(el, nuee);
+  }
+  function nueeEtoiles(nombre) {
+    var nuee = document.createElement('span');
+    nuee.className = 'nova-etoiles';
+    nuee.setAttribute('aria-hidden', 'true');
     var couleurs = ['var(--nova-note-jaune)', 'var(--nova-accent)', 'var(--nova-note-jaune)', 'var(--nova-note-vert)'];
-    for (var i = 0; i < 12; i++) {
+    var milieu = (nombre - 1) / 2;
+    for (var i = 0; i < nombre; i++) {
       var s = document.createElement('span');
       s.textContent = '\u2605';
-      s.style.setProperty('--x', (20 + i * 60 / 11) + '%');
-      s.style.setProperty('--dx', ((i - 5.5) * 9 + Math.random() * 16 - 8).toFixed(0) + 'px');
+      s.style.setProperty('--x', (nombre > 1 ? 20 + i * 60 / (nombre - 1) : 50) + '%');
+      s.style.setProperty('--dx', ((i - milieu) * 9 * 11 / Math.max(1, nombre - 1) + Math.random() * 16 - 8).toFixed(0) + 'px');
       s.style.setProperty('--h', (-70 - Math.random() * 50).toFixed(0) + 'px');
       s.style.setProperty('--d', (Math.random() * 0.35).toFixed(2) + 's');
       s.style.setProperty('--t', (11 + Math.random() * 9).toFixed(0) + 'px');
@@ -297,8 +325,10 @@
       s.style.setProperty('--c', couleurs[i % couleurs.length]);
       nuee.appendChild(s);
     }
-    if (el !== document.body) el.classList.add('nova-etoile-source');
-    el.appendChild(nuee);
+    return nuee;
+  }
+  function poserEtoiles(parent, nuee) {
+    parent.appendChild(nuee);
     setTimeout(function () { if (nuee.parentNode) nuee.parentNode.removeChild(nuee); }, 2500);
   }
 

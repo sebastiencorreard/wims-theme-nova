@@ -4168,7 +4168,8 @@
    * (data-onglet, data-titre), boutons role=tab (flèches, Début, Fin), liste déroulante au téléphone (comme
    * ongletsCompacts). Onglet ouvert gardé pour la session (sessionStorage). Tous les champs restent dans la page : un
    * seul enregistrement. */
-  function ongletsReglages(carte, nom) {
+  function ongletsReglages(carte, nom, memoire) {
+    memoire = memoire || 'nova-reglages-onglet';
     var panneaux = [].slice.call(carte.querySelectorAll('section.nova-onglet'));
     var cleOf = function (p) { return p.getAttribute('data-onglet'); };
     var barre = document.createElement('div');
@@ -4209,7 +4210,7 @@
         if (oui && focus) b.focus();
       });
       choix.value = cle;
-      try { sessionStorage.setItem('nova-reglages-onglet', cle); } catch (e) { /* sans stockage : premier onglet */ }
+      try { sessionStorage.setItem(memoire, cle); } catch (e) { /* sans stockage : premier onglet */ }
     };
     boutons.forEach(function (b, i) {
       b.addEventListener('click', function () { montrer(b.getAttribute('data-onglet')); });
@@ -4225,7 +4226,7 @@
     carte.insertBefore(choix, carte.firstChild);
     carte.insertBefore(barre, carte.firstChild);
     var garde = null;
-    try { garde = sessionStorage.getItem('nova-reglages-onglet'); } catch (e) { garde = null; }
+    try { garde = sessionStorage.getItem(memoire); } catch (e) { garde = null; }
     montrer(garde);
     return { montrer: montrer };
   }
@@ -4387,6 +4388,22 @@
       }
       ul.parentNode.replaceChild(bloc, ul);
     });
+    // Deux onglets (2026-11-11, utilisateur) : « Sauvegarde et maintenance » et « Configuration », titres = h2 de WIMS.
+    var blocs = [].slice.call(corps.querySelectorAll('.nova-cfg'));
+    var titres = blocs.map(function (b) { var h = b.querySelector(':scope > h2'); return h ? h.textContent.trim() : ''; });
+    if (blocs.length < 2 || titres.some(function (t) { return !t; })) return;
+    var onglets = document.createElement('div');
+    onglets.className = 'nova-cfg-onglets';
+    blocs[0].parentNode.insertBefore(onglets, blocs[0]);
+    blocs.forEach(function (b, i) {
+      var sec = document.createElement('section');
+      sec.className = 'nova-onglet';
+      sec.setAttribute('data-onglet', i ? 'configuration' : 'maintenance');
+      sec.setAttribute('data-titre', titres[i]);
+      sec.appendChild(b);
+      onglets.appendChild(sec);
+    });
+    ongletsReglages(onglets, titres.join(', '), 'nova-cfg-onglet');
   }
 
   /* Rapprocher Nova du thème standard (demande de l'utilisateur, 2026-10-07) : sept réglages --nova-std-…

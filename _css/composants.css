@@ -1357,10 +1357,21 @@ dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
 html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte):is(:has(> li > a[href*="adm%2Fclass%2Fconfig"][href*="job=arch"]), :has(a[href*="adm%2Fclass%2Fconfig"][href*="job=oefdefault"])) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 .nova-cfg { max-width: 46rem; margin: 0 auto var(--nova-e5); text-align: left; }
 .nova-cfg > h2 { margin: var(--nova-e5) 0 var(--nova-e3); }
-.nova-cfg-titre { margin: var(--nova-e4) .25rem var(--nova-e2); font-weight: 700; }
+.nova-cfg-titre { margin: var(--nova-e3) .25rem var(--nova-e1); font-weight: 700; }
+/* Onglets (2026-11-11, utilisateur) : barre de Réglages de Nova ; deux onglets côte à côte même au téléphone. */
+.nova-cfg-onglets { max-width: 46rem; margin: var(--nova-e4) auto var(--nova-e5); }
+.nova-cfg-onglets > .nova-onglets { margin-bottom: var(--nova-e3); }
+.nova-cfg-onglets section.nova-onglet[hidden] { display: none; }
+.nova-cfg-onglets .nova-cfg { margin-bottom: 0; }
+.nova-cfg-onglets .nova-cfg > h2 { display: none; }
+.nova-cfg-onglets .nova-cfg > .nova-cfg-titre:first-of-type { margin-top: 0; }
+@media (max-width: 639.98px) {
+  .nova-cfg-onglets > .nova-onglets { display: flex; }
+  .nova-cfg-onglets > .nova-onglets .nova-onglet-bouton { flex: 1 1 0; white-space: normal; justify-content: center; text-align: center; padding: var(--nova-e1) var(--nova-e2); }
+}
 .nova-cfg-titre .nova-cfg-desc { display: block; font-weight: 400; }
-.wimsbody ul.nova-cfg-carte { list-style: none; margin: 0 0 var(--nova-e3); padding: 0; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; }
-.wimsbody ul.nova-cfg-carte > li { position: relative; margin: 0; padding: .65rem 2.4rem .65rem calc(1.8rem + 34px); min-height: 2.75rem; box-sizing: border-box; list-style: none; display: flex; flex-direction: column; justify-content: center; }
+.wimsbody ul.nova-cfg-carte { list-style: none; margin: 0 0 var(--nova-e2); padding: 0; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; }
+.wimsbody ul.nova-cfg-carte > li { position: relative; margin: 0; padding: .4rem 2.4rem .4rem calc(1.5rem + 30px); min-height: 2.75rem; box-sizing: border-box; list-style: none; display: flex; flex-direction: column; justify-content: center; }
 .wimsbody ul.nova-cfg-carte > li + li { border-top: 1px solid var(--nova-bord); }
 .wimsbody ul.nova-cfg-carte > li:hover { background: var(--nova-accent-doux); }
 .wimsbody ul.nova-cfg-carte > li::after { content: "\203A"; position: absolute; right: .9rem; top: 50%; transform: translateY(-50%); font-size: 1.35rem; line-height: 1; color: var(--nova-texte-2); pointer-events: none; }
@@ -1371,15 +1382,15 @@ html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte)
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien::after { content: ""; position: absolute; inset: 0; }
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien:focus-visible { outline: none; }
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien:focus-visible::after { outline: 3px solid var(--nova-accent); outline-offset: -3px; border-radius: var(--nova-rayon-carte); }
-.nova-cfg-desc { color: var(--nova-texte-2); font-size: .9rem; line-height: 1.4; }
+.nova-cfg-desc { color: var(--nova-texte-2); font-size: .85rem; line-height: 1.3; }
 .nova-cfg-desc a, .nova-cfg-boutons a { position: relative; z-index: 1; }
 .nova-cfg-ligne .nova-tag-nouveau { position: relative; z-index: 1; }
-.nova-cfg-boutons { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .4rem; }
+.nova-cfg-boutons { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .3rem; }
 .wimsbody .nova-cfg-boutons a { margin: 0; }
-.nova-cfg-ico { position: absolute; left: .9rem; top: 50%; width: 34px; height: 34px; margin-top: -17px; border-radius: 9px; background: var(--nova-accent-doux); pointer-events: none; }
-.nova-cfg-index > .nova-cfg-ico { top: .65rem; margin-top: 0; }
+.nova-cfg-ico { position: absolute; left: .75rem; top: 50%; width: 30px; height: 30px; margin-top: -15px; border-radius: 8px; background: var(--nova-accent-doux); pointer-events: none; }
+.nova-cfg-index > .nova-cfg-ico { top: .4rem; margin-top: 0; }
 .wimsbody ul.nova-cfg-carte > li:hover > .nova-cfg-ico { background: var(--nova-surface, #fff); }
-.nova-cfg-ico::before { content: ""; position: absolute; left: 8px; top: 8px; width: 18px; height: 18px; background: var(--nova-accent); -webkit-mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E")) center / contain no-repeat; mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E")) center / contain no-repeat; }
+.nova-cfg-ico::before { content: ""; position: absolute; left: 7px; top: 7px; width: 16px; height: 16px; background: var(--nova-accent); -webkit-mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E")) center / contain no-repeat; mask: var(--nova-cfg-picto, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E")) center / contain no-repeat; }
 .nova-cfg-ico[data-icone="lien"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7'/%3E%3C/svg%3E"); }
 .nova-cfg-ico[data-icone="disque"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'/%3E%3Cpath d='M3 5v14c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12c0 1.7 4 3 9 3s9-1.3 9-3'/%3E%3C/svg%3E"); }
 .nova-cfg-ico[data-icone="bouclier"] { --nova-cfg-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='M9 12l2 2 4-4'/%3E%3C/svg%3E"); }

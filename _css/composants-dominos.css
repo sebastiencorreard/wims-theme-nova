@@ -280,6 +280,24 @@ html:not(.nova-std-dominos):not(.nova-dominos) .oef_indpartial .drag_label{ back
 /* Leur conteneur : fond orange de WIMS retiré, largeur calculée par WIMS pour des marges de 1 px libérée (sinon la
  * dernière tuile passe à la ligne). */
 html:not(.nova-std-dominos):not(.nova-dominos) .fill_container:has(> .drag_label){ background-color: transparent; width: auto !important; max-width: 100%; }
+/* Tuile réaffichée dans l'énoncé (page de réponse) : la tuile porte elle-même le verdict (bordure verte, rouge, ambre),
+ * sans le cadre rouge .nova-faux autour (nova.js retourReponse) ; dans un tableau (addition posée de
+ * E4/number/oefoperation), cellule sans retour à la ligne, renvoi [k] en petit sous la tuile ; au téléphone, cellules
+ * sans marge et tuiles de 44 px pour que le tableau tienne dans l'écran (signalé par l'utilisateur, 2026-11-11). */
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement .nova-faux:has(> .fill_container > .drag_label){ padding: 0; border: 0; background: none; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement .oef_indgood .drag_label{ border: 2px solid var(--nova-succes) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement .oef_indbad .drag_label{ border: 2px solid var(--nova-erreur) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement .oef_indpartial .drag_label{ border: 2px solid var(--nova-attention) !important; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td:has(> div.inline > .fill_container > .drag_label){ white-space: nowrap; }
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td > div.inline:has(> .fill_container > .drag_label) + sup{
+  display: block; position: static; top: auto; vertical-align: baseline; margin-top: 3px; font-size: .75rem; line-height: 1; color: var(--nova-texte-2); text-align: center;
+}
+@media (max-width: 639.98px){
+  html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement table:has(> tbody > tr > td > div.inline > .fill_container > .drag_label) > tbody > tr > :is(td, th){ padding-left: 1px; padding-right: 1px; }
+  html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td > div.inline > .fill_container > .drag_label{ width: 44px !important; height: 44px !important; box-sizing: border-box; margin: 0 !important; font-size: 1.125rem; }
+  /* Espace insécable de WIMS entre la tuile et [k] : sans largeur (taille de police nulle dans la cellule). */
+  html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td:has(> div.inline > .fill_container > .drag_label){ font-size: 0; }
+}
 /* Verdict par tuile tiré de l'analyse (nova.js tuilesCorrigees) : verte bien placée, rouge mal placée, pastille. */
 html:not(.nova-std-dominos):not(.nova-dominos) .drag_label:is(.nova-tuile-juste, .nova-tuile-fausse){ position: relative; overflow: visible; border-width: 2px !important; }
 html:not(.nova-std-dominos):not(.nova-dominos) .drag_label.nova-tuile-juste{ background-color: var(--nova-succes-fond) !important; border-color: var(--nova-succes) !important; }

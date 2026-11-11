@@ -217,5 +217,9 @@ body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover 
 /* Exercices d'association (OEF type=correspond, calques Dynapi) : la flèche (gifs/arrows/corr*.gif,
  * 40 px) est posée en haut d'un calque de la hauteur d'une case ; centrée verticalement (signalé par
  * l'utilisateur, 2026-10-03, H2/geometry/solide6-5). Le calque a une hauteur fixée en ligne. */
-img[src*="gifs/arrows/corr"] { display: block; position: relative; top: 50%; transform: translateY(-50%); }
+img[src*="gifs/arrows/corr"]:not(td > img) { display: block; position: relative; top: 50%; transform: translateY(-50%); }
+/* Dans le tableau de correction (scripts/anstype/correspond), la cellule n'a pas de hauteur fixée : « top: 50% » n'y vaut
+ * rien et le décalage remontait la flèche en haut de la ligne (signalé par l'utilisateur, 2026-11-11). Centrée par la cellule. */
+td:has(> img[src*="gifs/arrows/corr"]) { vertical-align: middle; white-space: normal; }  /* la bonne réponse est dans un .tt en pre-wrap : le retour à la ligne après l'image faisait une ligne vide sous la flèche */
+td > img[src*="gifs/arrows/corr"] { display: block; margin: 0 auto; }
 

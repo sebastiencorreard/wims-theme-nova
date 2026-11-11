@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- **Éléments à associer** : tuiles blanches en relief, consigne au-dessus ; la tuile choisie et ses partenaires possibles sont mis en évidence, un trait pointillé mène à un rond « ? » ; une paire faite est reliée par un trait. Correction : chaque paire verte ou rouge, avec ✓ / ✕, et le verdict de Nova au lieu du tableau de WIMS.
 - **Tuiles à déplacer** (exercices à cases, hors dominos) : tuiles blanches en relief, cases creusées qui s'allument quand on prend une tuile, gomme pour vider une case, consigne au-dessus des tuiles ; les petites tuiles passent à 44 px pour le doigt, les très larges ont une poignée et des cases « Déposer ici ». Cases d'un même groupe espacées de 8 px ; page de correction aux mêmes couleurs (tuiles blanches, fond vert ou rouge selon la réponse) ; quand WIMS ne juge que dans son analyse (« jeu des familles »), chaque tuile est quand même verte ou rouge, avec une pastille ✓ / ✕.
 - Écran étroit : le bouton « Mes notes » garde sa taille ; c'est la pastille des badges qui se réduit, en montrant moins de badges.
 - **Décorations de Noël** en décembre : guirlande lumineuse en haut de la barre du haut, derrière les boutons, qui scintille si les animations sont activées, et flocons en filigrane dans la barre (jamais pendant un examen).

@@ -202,12 +202,13 @@
 !set nova_consigne_dominos=Drag each domino into a box, or tap a domino and then a box.
 !set nova_std_dominos=Standard dominoes and tiles
 !set nova_std_dominos_aide=Domino and drag-tile exercises without Nova's styling.
-!set nova_std_dominos_liste=<li>Dominoes and drop boxes with the standard colours and sizes (205 x 50, blue background, orange boxes) instead of white dominoes with a black frame (205 x 80, 175 x 80 on phones) and dashed boxes.</li><li>No computed common text size: the standard one.</li><li>No "Drag each domino..." instruction above the dominoes.</li><li>No highlighted box while dragging, no lit boxes when a domino is chosen.</li><li>No window suggesting landscape mode on phones.</li><li>Correction page: standard dominoes (statement, analysis, solution), no red or green frame, and "Analysis of your answer" shown.</li><li>Drag tiles of other exercises with the standard colours and sizes (blue background, orange boxes with "?"), instead of white tiles, recessed boxes and an eraser to empty a box; small tiles not enlarged to 44 px, no grip or "Drop here".</li>
+!set nova_std_dominos_liste=<li>Dominoes and drop boxes with the standard colours and sizes (205 x 50, blue background, orange boxes) instead of white dominoes with a black frame (205 x 80, 175 x 80 on phones) and dashed boxes.</li><li>No computed common text size: the standard one.</li><li>No "Drag each domino..." instruction above the dominoes.</li><li>No highlighted box while dragging, no lit boxes when a domino is chosen.</li><li>No window suggesting landscape mode on phones.</li><li>Correction page: standard dominoes (statement, analysis, solution), no red or green frame, and "Analysis of your answer" shown.</li><li>Drag tiles of other exercises with the standard colours and sizes (blue background, orange boxes with "?"), instead of white tiles, recessed boxes and an eraser to empty a box; small tiles not enlarged to 44 px, no grip or "Drop here".</li><li>Matching items: WIMS colours (grey, beige, bright blue) and blue arrows, instead of white tiles joined by a line; correction without green or red tiles or &#10003; / &#10005; badges.</li>
 !set nova_std_tableaux=Standard tables
 !set nova_std_tableaux_aide=Table cells clickable only on their link or button.
 !set nova_std_tableaux_liste=<li>A table cell that contains a single link or button is no longer clickable as a whole: click the link or button itself; the cell no longer darkens on hover.</li>
 !set nova_paysage=Turn your phone sideways (landscape) to see the dominoes better.
 !set nova_consigne_tuiles=Drag each label into a box, or tap a label and then a box.
+!set nova_consigne_associer=Tap an item on the left, then the matching item on the right.
 !set nova_deposer=Drop here
 !set nova_fermer=Close
 !set nova_en_ligne=Online

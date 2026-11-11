@@ -98,3 +98,7 @@ C = {
 }
 # Entrées de Nova (classes posées par nova.js ou local.phtml), en plus des règles de WIMS
 E = {'nova_suivi':'monitor-dot','nova-mes-badges':'medal','nova_reglages':'settings-2'}
+# Types de ressources de WIMS (.wims_<type>_item:before, caractères Unicode dans la feuille de WIMS : onglets et tableaux de
+# l'accueil enseignant, listes…) : mêmes icônes que les cartes de Nova (contenu.css) ; demande de l'utilisateur, 2026-11-12.
+T = {'sheet':'pencil','exam':'timer','doc':'file-text','vote':'square-check','tool':'wrench','glossary':'book',
+     'freework':'book-open','exercise':'puzzle','recreation':'gamepad-2','datamodule':'package'}

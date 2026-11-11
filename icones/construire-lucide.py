@@ -8,7 +8,7 @@ Le dossier icons/ vient du paquet npm lucide-static (version dans LUCIDE_VERSION
 """
 import os, re, sys, urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from correspondance import G, C, E
+from correspondance import G, C, E, T
 
 LUCIDE_VERSION = '1.61.0'
 fa_css, icones = sys.argv[1], sys.argv[2]
@@ -40,6 +40,7 @@ for sels, decl in re.findall(r'([^{}@]+)\{([^{}]*)\}', t):
 for cl in ('createxo', 'modtool', 'quicktool', 'latex2wims'):
     for sel in (f'.menuitem>.{cl}:before', f'.text_icon.{cl}:before'): ajouter(C[cl], sel)
 for cl, ic in E.items(): ajouter(ic, f'.menuitem>.{cl}:before')
+for cl, ic in T.items(): ajouter(ic, f'.wims_{cl}_item:before')
 tous = [s for ic in ordre for s in groupes[ic]]
 
 out = ['/* Jeu d\'icônes WIMS « Lucide » (thème Nova). Icônes Lucide ' + LUCIDE_VERSION + ', licence ISC (LICENSE).',

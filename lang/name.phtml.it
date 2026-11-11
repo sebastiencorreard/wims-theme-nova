@@ -190,10 +190,12 @@
 !set nova_app_communication=Sezione «Comunicazione» degli studenti
 !set nova_app_communication_aide=Forum e «Scrivi al docente» nel menu degli studenti. «No» nasconde la sezione.
 !set nova_consigne_dominos=Trascina ogni domino in una casella, oppure tocca un domino e poi una casella.
-!set nova_std_dominos=Domino standard
-!set nova_std_dominos_aide=Esercizi con domino (etichette da trascinare fatte di una tabella) senza lo stile di Nova.
-!set nova_std_dominos_liste=<li>Domino e caselle con i colori e le dimensioni standard (205 x 50, sfondo blu, caselle arancioni) invece di domino bianchi con cornice nera (205 x 80, 175 x 80 sul telefono) e caselle tratteggiate.</li><li>Nessuna dimensione comune del testo calcolata: quella standard.</li><li>Nessuna istruzione «Trascina ogni domino...» sopra i domino.</li><li>Nessuna casella evidenziata durante il trascinamento, nessuna casella illuminata quando si sceglie un domino.</li><li>Nessuna finestra che suggerisca la modalità orizzontale sul telefono.</li><li>Pagina di correzione: domino standard (testo, analisi, soluzione), nessuna cornice rossa o verde, e «Analisi della risposta» mostrata.</li>
+!set nova_std_dominos=Domino e tessere standard
+!set nova_std_dominos_aide=Esercizi con domino e tessere da trascinare senza lo stile di Nova.
+!set nova_std_dominos_liste=<li>Domino e caselle con i colori e le dimensioni standard (205 x 50, sfondo blu, caselle arancioni) invece di domino bianchi con cornice nera (205 x 80, 175 x 80 sul telefono) e caselle tratteggiate.</li><li>Nessuna dimensione comune del testo calcolata: quella standard.</li><li>Nessuna istruzione «Trascina ogni domino...» sopra i domino.</li><li>Nessuna casella evidenziata durante il trascinamento, nessuna casella illuminata quando si sceglie un domino.</li><li>Nessuna finestra che suggerisca la modalità orizzontale sul telefono.</li><li>Pagina di correzione: domino standard (testo, analisi, soluzione), nessuna cornice rossa o verde, e «Analisi della risposta» mostrata.</li><li>Tessere da trascinare degli altri esercizi con i colori e le dimensioni standard (sfondo blu, caselle arancioni con «?»), invece di tessere bianche, caselle incavate e una gomma per svuotare una casella; tessere piccole non ingrandite a 44 px, senza maniglia né «Rilascia qui».</li>
 !set nova_paysage=Gira il telefono (in orizzontale) per vedere meglio i domino.
+!set nova_consigne_tuiles=Trascina ogni etichetta in una casella, oppure tocca un'etichetta e poi una casella.
+!set nova_deposer=Rilascia qui
 !set nova_fermer=Chiudi
 !set nova_en_ligne=Online
 !set nova_indisponible_examen=Non disponibile durante un esame

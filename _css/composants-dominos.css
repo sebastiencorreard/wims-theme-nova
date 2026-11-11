@@ -170,3 +170,82 @@ html.nova-dominos:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; 
 :where(html:not(.nova-std-dominos)) .nova-paysage button { all: unset; flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; font-size: 1.5rem; cursor: pointer; color: var(--nova-texte-2); }
 :where(html:not(.nova-std-dominos)) .nova-paysage button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 
+
+/* Tuiles à déplacer des autres exercices à cases (maquette C « poignée et creux », choisie par l'utilisateur le
+ * 2026-12-11 ; réglage « dominos ») : html.nova-tuiles, posée par nova.js (tuiles) hors des pages à dominos. Tuile
+ * blanche en relief, case creusée ; l'état est lu dans la couleur que Dynapi pose en ligne (voir plus haut) :
+ * tuile prise #6060ff, case choisie #C0A060, case remplie (clic) #c0c0c0, tuile « vider » #ffd080. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable{
+  box-sizing: border-box;
+  background-color: var(--nova-surface) !important;
+  border: 1px solid var(--nova-bord) !important;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%), 0 4px 10px rgb(0 0 0 / 8%);
+  clip: auto !important;            /* sinon l'ombre est coupée */
+  overflow: visible !important;
+  color: var(--nova-texte);
+  cursor: grab;
+}
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable:hover{ box-shadow: 0 2px 4px rgb(0 0 0 / 12%), 0 8px 18px rgb(0 0 0 / 12%); }
+/* Prise (clic) ou en glissement : contour de l'accent, la tuile penche un peu dans la main. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable[style*="rgb(96, 96, 255)"]{
+  outline: 2px solid var(--nova-accent); outline-offset: -1px;
+  box-shadow: 0 14px 30px rgb(0 0 0 / 22%);
+  transform: rotate(-1.5deg) scale(1.03);
+  cursor: grabbing;
+}
+/* Tuile « ? » qui vide une case : pointillés et gomme (Lucide eraser), le « ? » masqué. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable:is(.nova-tuile-vider, [style*="rgb(255, 208, 128)"]):not([style*="rgb(96, 96, 255)"]){
+  box-shadow: none; border: 1px dashed var(--nova-bord-fort) !important; color: var(--nova-texte-2);
+}
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable.nova-tuile-vider .fill_content{ display: none; }
+html.nova-tuiles:not(.nova-std-dominos) .wims_grabbable.nova-tuile-vider .wims_fill_object::before{
+  content: ""; width: 16px; height: 16px; margin: auto; background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21'/%3E%3Cpath d='M22 21H7'/%3E%3Cpath d='m5 11 9 9'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21'/%3E%3Cpath d='M22 21H7'/%3E%3Cpath d='m5 11 9 9'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* Poignée (Lucide grip-vertical) : seulement pour les tuiles vraiment larges (demande de l'utilisateur). */
+html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:not(.nova-tuile-vider)::before{
+  content: ""; position: absolute; left: 8px; top: 50%; width: 14px; height: 20px; margin-top: -10px; pointer-events: none;
+  background-color: var(--nova-bord-fort);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='5 2 14 20'%3E%3Cg fill='black'%3E%3Ccircle cx='9' cy='5' r='1.6'/%3E%3Ccircle cx='15' cy='5' r='1.6'/%3E%3Ccircle cx='9' cy='12' r='1.6'/%3E%3Ccircle cx='15' cy='12' r='1.6'/%3E%3Ccircle cx='9' cy='19' r='1.6'/%3E%3Ccircle cx='15' cy='19' r='1.6'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='5 2 14 20'%3E%3Cg fill='black'%3E%3Ccircle cx='9' cy='5' r='1.6'/%3E%3Ccircle cx='15' cy='5' r='1.6'/%3E%3Ccircle cx='9' cy='12' r='1.6'/%3E%3Ccircle cx='15' cy='12' r='1.6'/%3E%3Ccircle cx='9' cy='19' r='1.6'/%3E%3Ccircle cx='15' cy='19' r='1.6'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:hover::before,
+html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable[style*="rgb(96, 96, 255)"]::before{ background-color: var(--nova-accent); }
+html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:not(.nova-tuile-vider) .wims_fill_object{ box-sizing: border-box; padding: 0 10px 0 30px; }
+
+/* Cases creusées ; le « ? » de WIMS masqué tant que la case n'est pas remplie. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable{
+  box-sizing: border-box;
+  background-color: var(--nova-surface-2) !important;
+  border: 0 !important;
+  border-radius: 10px;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 14%), inset 0 0 0 1px var(--nova-bord);
+  clip: auto !important; overflow: visible !important;
+  color: var(--nova-texte); font-weight: inherit;
+}
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable:not([style*="rgb(192, 192, 192)"]) .fill_content{ visibility: hidden; }
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable[data-nova-deposer]:not([style*="rgb(192, 192, 192)"])::before{
+  content: attr(data-nova-deposer); position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: .875rem; color: var(--nova-texte-2); pointer-events: none;
+}
+/* Case choisie (mode clic) ou cases libres pendant qu'une tuile est prise : elles s'allument. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable[style*="rgb(192, 160, 96)"],
+html.nova-tuiles:not(.nova-std-dominos):has(.wims_grabbable[style*="rgb(96, 96, 255)"]) .wims_droppable:not([style*="rgb(192, 192, 192)"]){
+  background-color: var(--nova-accent-doux) !important;
+  box-shadow: inset 0 2px 4px rgb(0 0 0 / 10%), inset 0 0 0 2px color-mix(in oklab, var(--nova-accent) 30%, white);
+}
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable.nova-survolee{
+  background-color: color-mix(in oklab, var(--nova-accent) 30%, white) !important;
+  box-shadow: inset 0 0 0 2px var(--nova-accent);
+}
+/* Case remplie par un clic (clickfill : WIMS y recopie l'étiquette) : la tuile posée dans son creux. */
+html.nova-tuiles:not(.nova-std-dominos) .wims_droppable[style*="rgb(192, 192, 192)"]{
+  background-color: var(--nova-surface) !important;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 10%), inset 0 0 0 1px var(--nova-bord);
+}
+/* Petites tuiles agrandies à 44 px (nova.js) : symboles un peu plus grands. */
+html.nova-tuiles-agrandies:not(.nova-std-dominos) :is(.wims_grabbable, .wims_droppable) .fill_content{ font-size: 1.125rem; }
+html.nova-tuiles:not(.nova-std-dominos):not(.nova-sans-animation) .wims_grabbable{ transition: box-shadow .15s, transform .15s; }
+html.nova-tuiles:not(.nova-std-dominos):not(.nova-sans-animation) .wims_droppable{ transition: background-color .15s, box-shadow .15s; }

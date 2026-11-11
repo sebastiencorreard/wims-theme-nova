@@ -190,10 +190,12 @@
 !set nova_app_communication=Sección «Comunicación» de los alumnos
 !set nova_app_communication_aide=Foro y «Escribir al profesor» en el menú de los alumnos. «No» oculta la sección.
 !set nova_consigne_dominos=Arrastra cada dominó a una casilla, o toca un dominó y luego una casilla.
-!set nova_std_dominos=Dominós estándar
-!set nova_std_dominos_aide=Ejercicios de dominós (etiquetas que arrastrar hechas de una tabla) sin el estilo de Nova.
-!set nova_std_dominos_liste=<li>Dominós y casillas con los colores y tamaños estándar (205 x 50, fondo azul, casillas naranjas) en lugar de dominós blancos con marco negro (205 x 80, 175 x 80 en el teléfono) y casillas discontinuas.</li><li>Sin tamaño de texto común calculado: el estándar.</li><li>Sin la instrucción «Arrastra cada dominó...» sobre los dominós.</li><li>Sin casilla resaltada al arrastrar, sin casillas iluminadas al elegir un dominó.</li><li>Sin ventana que sugiera el modo horizontal en el teléfono.</li><li>Página de corrección: dominós estándar (enunciado, análisis, solución), sin marco rojo o verde, y se muestra «Análisis de su respuesta».</li>
+!set nova_std_dominos=Dominós y fichas estándar
+!set nova_std_dominos_aide=Ejercicios de dominós y de fichas que arrastrar sin el estilo de Nova.
+!set nova_std_dominos_liste=<li>Dominós y casillas con los colores y tamaños estándar (205 x 50, fondo azul, casillas naranjas) en lugar de dominós blancos con marco negro (205 x 80, 175 x 80 en el teléfono) y casillas discontinuas.</li><li>Sin tamaño de texto común calculado: el estándar.</li><li>Sin la instrucción «Arrastra cada dominó...» sobre los dominós.</li><li>Sin casilla resaltada al arrastrar, sin casillas iluminadas al elegir un dominó.</li><li>Sin ventana que sugiera el modo horizontal en el teléfono.</li><li>Página de corrección: dominós estándar (enunciado, análisis, solución), sin marco rojo o verde, y se muestra «Análisis de su respuesta».</li><li>Fichas que arrastrar de los demás ejercicios con los colores y tamaños estándar (fondo azul, casillas naranjas con «?»), en lugar de fichas blancas, casillas hundidas y una goma para vaciar una casilla; fichas pequeñas no ampliadas a 44 px, sin asa ni «Suelta aquí».</li>
 !set nova_paysage=Gira el teléfono (modo horizontal) para ver mejor los dominós.
+!set nova_consigne_tuiles=Arrastra cada etiqueta a una casilla, o toca una etiqueta y luego una casilla.
+!set nova_deposer=Suelta aquí
 !set nova_fermer=Cerrar
 !set nova_en_ligne=En línea
 !set nova_indisponible_examen=No disponible durante un examen

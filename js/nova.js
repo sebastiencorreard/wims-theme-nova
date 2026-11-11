@@ -3311,7 +3311,72 @@
     };
     window.addEventListener('load', function () { setTimeout(paysage, 1200); });
     if (portrait && portrait.addEventListener) portrait.addEventListener('change', function () { setTimeout(paysage, 600); });
-    // Case visée.
+    caseVisee();
+  }
+
+  /* Tuiles à déplacer des autres exercices à cases (étiquettes qui ne sont pas des dominos : clickfill, dragfill ;
+   * maquette C « poignée et creux », choisie par l'utilisateur le 2026-12-11, rattachée au réglage « dominos »).
+   * html.nova-tuiles avant « load » (le CSS habille tuiles et cases, _css/composants-dominos.css) ; tuiles et cases
+   * plus petites que 44 px agrandies (même taille pour toutes, fill_sx x fill_sy de fill.after) ; poignée et « Déposer
+   * ici » seulement quand les tuiles sont vraiment larges (160 px et plus, demande de l'utilisateur) ; la tuile « ? »
+   * qui vide une case (clickfill : une de plus que les étiquettes) marquée nova-tuile-vider. */
+  function tuiles() {
+    if (standard('dominos')) return;
+    var script = Array.prototype.filter.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent); })[0];
+    if (!script || /wimsborder/.test(script.textContent) || !document.getElementById('fillobj1')) return;
+    var m = script.textContent.match(/stretchH:(\d+),stretchV:(\d+)/);
+    if (!m) return;
+    var sx = +m[1], sy = +m[2], racine = document.documentElement;
+    racine.classList.add('nova-tuiles');
+    if (sx >= 160) racine.classList.add('nova-tuiles-larges');
+    // Agrandir avant « load » : places réservées dans la page (images transparentes dans fill<nom> et devant
+    // fillobj<n>, et leur cale de 1 px de large), puis la taille et les décalages que Dynapi donne à ses calques.
+    var nsx = Math.max(sx, 44), nsy = Math.max(sy, 44);
+    if ((nsx !== sx || nsy !== sy) && window.DynLayer && DynLayer.prototype.setAnchor) {
+      Array.prototype.forEach.call(document.querySelectorAll('a[id^="fill"] > img, img:has(+ a[id^="fill"])'), function (im) {
+        var w = parseFloat(im.style.width), h = parseFloat(im.style.height);
+        if (w === sx) im.style.width = nsx + 'px';
+        if (h >= sy) im.style.height = (h + nsy - sy) + 'px';
+      });
+      var ancrer = DynLayer.prototype.setAnchor;
+      DynLayer.prototype.setAnchor = function (a) {
+        if (a && a.stretchH === sx && a.stretchV === sy) {
+          var b = {};
+          for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
+          b.stretchH = nsx; b.stretchV = nsy;
+          if (typeof b.left === 'number') b.left = Math.round(b.left * nsx / sx);
+          if (typeof b.top === 'number') b.top = Math.round(b.top * nsy / sy);
+          a = b;
+        }
+        return ancrer.call(this, a);
+      };
+      racine.classList.add('nova-tuiles-agrandies');
+    }
+    var textes = document.getElementById('nova-textes');
+    var consigne = textes && textes.getAttribute('data-texte-consigne-tuiles');
+    var bloc = document.getElementById('fillobj1').parentElement;
+    if (consigne && bloc && !document.querySelector('.nova-consigne-glisser')) {
+      var pc = document.createElement('p');
+      pc.className = 'nova-consigne-glisser';
+      pc.textContent = consigne;
+      bloc.parentNode.insertBefore(pc, bloc);
+    }
+    // Calques créés par Dynapi au chargement : tuile « vider » et texte des grandes cases.
+    var deposer = (textes && textes.getAttribute('data-texte-deposer')) || 'Drop here';
+    var marquer = function () {
+      var lb = window.f_lbis, ob = window.f_objs;
+      if (lb && ob && lb.length === ob.length && lb[lb.length - 1]) {
+        var v = document.getElementById(lb[lb.length - 1].id);
+        if (v) v.classList.add('nova-tuile-vider');
+      }
+      if (sx >= 160) Array.prototype.forEach.call(document.querySelectorAll('.wims_droppable'), function (z) { z.setAttribute('data-nova-deposer', deposer); });
+    };
+    window.addEventListener('load', function () { setTimeout(marquer, 0); setTimeout(marquer, 600); });
+    caseVisee();
+  }
+
+  // Case visée pendant le glissement ou quand une étiquette est choisie (dominos et tuiles).
+  function caseVisee() {
     var glisse = null, rafId = 0, derniere = null;
     var marquer = function (z) {
       if (z === derniere) return;
@@ -6389,7 +6454,7 @@
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

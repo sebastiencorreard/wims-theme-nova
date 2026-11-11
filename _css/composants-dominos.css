@@ -158,6 +158,14 @@ html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wims
  * ligne, serrées contre le bord droit, et leur place vide à la ligne suivante (trou entre deux rangées de cases). */
 html.nova-dominos:not(.nova-std-dominos) a[id^="fill"],
 html.nova-tuiles:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }
+/* Cases dans un tableau (E4/number/oefoperation addition2, addition posée ; signalé par l'utilisateur, 2026-11-11) :
+ * la place réservée n'est jamais réduite (sinon les cases, de taille fixe, se chevauchent) et reste sur la ligne de sa
+ * cale (sinon chaque rangée double de hauteur). Trop large : nova.js (tuiles) le centre sur l'écran. */
+html.nova-tuiles:not(.nova-std-dominos) :is(a[id^="fill"]:not([id^="fillobj"]) > img, img:has(+ a[id^="fill"]:not([id^="fillobj"]))){ max-width: none; }
+html.nova-tuiles:not(.nova-std-dominos) td:has(> a[id^="fill"]:not([id^="fillobj"])){ white-space: nowrap; }
+/* Tableau de cases plus large que l'écran malgré tout (nova.js tuiles, html.nova-tuiles-debord) : c'est la page qui
+ * défile, pas .wimsbody (les cases de Dynapi, posées dans <body>, ne suivraient pas). */
+html.nova-tuiles-debord:not(.nova-std-dominos) .wimsbody{ overflow-x: visible; }
 /* Fenêtre « mode paysage » (nova.js, dominos) : en haut de l'écran, sous la barre, au-dessus du contenu. */
 :where(html:not(.nova-std-dominos)) .nova-paysage {
   position: fixed; left: 50%; top: calc(64px + 10px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); z-index: 400;   /* sous la barre : en bas, elle cachait les boutons collés */

@@ -768,6 +768,10 @@ html:not(.nova-std-examens) body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_d
   }
   body .nova-collant :is(.wims_button, input[type="submit"], button) { box-shadow: 0 2px 6px rgb(0 0 0 / 14%), 0 8px 20px rgb(0 0 0 / 18%); }
   body .nova-collant > p { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--nova-e2); margin: 0; }
+  /* Bloc transparent sur toute la largeur : les clics passent au travers, sauf sur ses boutons (une tuile à déplacer sous
+   * le bloc, à côté de « Valider », ne se laissait pas prendre ; signalé par l'utilisateur, 2026-11-11). */
+  body .nova-collant, body .nova-collant > p { pointer-events: none; }
+  body .nova-collant :is(a, button, input, select, label, .wims_button) { pointer-events: auto; }
   /* La pastille « retour en haut » passe au-dessus du bloc. */
   .nova-boutons-collants .wims_topback { bottom: 96px; }
 }

@@ -867,22 +867,6 @@
         var lien = /^fill/.test(im.parentElement.id || '') ? im.parentElement : im.nextElementSibling;
         var groupe = !!lien && !/^fillobj/.test(lien.id || '');
         var k = Math.round(w / sx), r = Math.floor(h / sy);
-        // Groupe trop large pour l'écran (signalé par l'utilisateur au téléphone, 2026-11-11) : moins de cases par ligne,
-        // plus de lignes. Dynapi lit f_cut au « load » pour placer les cases (fill.after) : le changer avant suffit.
-        var cut = window.f_cut, noms = window.f_fillnames, debuts = window.f_starts;
-        if (groupe && lien === im.parentElement && cut && noms && debuts && k > 1) {
-          var g = noms.map(String).indexOf(lien.id.slice(4));
-          var bloc = lien.parentElement, cs = getComputedStyle(bloc);
-          var dispo = bloc.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-          var kmax = Math.max(1, Math.floor((dispo + ecart) / (nsx + ecart)));
-          if (g >= 0 && cut[g] === k && kmax < k) {
-            var r2 = Math.ceil((debuts[g + 1] - debuts[g]) / kmax);
-            cut[g] = kmax;
-            im.style.width = (kmax * nsx + (kmax - 1) * ecart) + 'px';
-            im.style.height = (h - r * sy + r2 * nsy + (r2 - 1) * ecart) + 'px';
-            return;
-          }
-        }
         if (k >= 1 && Math.abs(w - k * sx) < 1) im.style.width = (k * nsx + (groupe ? (k - 1) * ecart : 0)) + 'px';
         if (r >= 1) im.style.height = (h + r * (nsy - sy) + (groupe ? (r - 1) * ecart : 0)) + 'px';
       });
@@ -891,6 +875,7 @@
         // Une seule fois par ancrage : Dynapi repasse ici l'ancrage d'un calque créé avant d'être ajouté à la page
         // (addChild, event.js) ; sans la marque, cases décalées deux fois quand la taille ne change pas (vécu,
         // tuiles de 44 px et plus : tuiles posées à côté des cases, 2026-11-11).
+        centrer();
         if (a && !a.novaAjuste && a.stretchH === sx && a.stretchV === sy) {
           var b = { novaAjuste: true }, groupe = !/^fillobj/.test(a.leftA || '');
           for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
@@ -908,6 +893,32 @@
         return ancrer.call(this, a);
       };
       if (nsx !== sx || nsy !== sy) racine.classList.add('nova-tuiles-agrandies');
+      // Tableau de cases plus large que l'énoncé (addition posée de E4/number/oefoperation au téléphone ; signalé par
+      // l'utilisateur, 2026-11-11) : centré sur l'écran par une marge négative, posée avant « load » (Dynapi place
+      // alors les cases dessus). Les cases gardent leur taille ; .wimsbody ne défile pas (calques hors de lui).
+      var tableaux = Array.prototype.map.call(document.querySelectorAll('td > a[id^="fill"]:not([id^="fillobj"])'), function (a) { return a.closest('table'); })
+        .filter(function (t, i, l) { return t && l.indexOf(t) === i; });
+      // Cellules sans marge intérieure dès maintenant ; centrage mesuré au premier ancrage de Dynapi (au « load », avant le
+      // calcul des positions) : mesuré ici, le tableau gardait encore ses anciennes marges (vécu, 2026-11-11).
+      tableaux.forEach(function (t) {
+        if (t.getBoundingClientRect().width <= t.parentElement.getBoundingClientRect().width + 1) return;
+        Array.prototype.forEach.call(t.rows, function (tr) { Array.prototype.forEach.call(tr.cells, function (c) { c.style.paddingLeft = c.style.paddingRight = '1px'; }); });
+        t.classList.add('nova-tuiles-tableau');
+      });
+      var centre = false;
+      var centrer = function () {
+        if (centre) return;
+        centre = true;
+        Array.prototype.forEach.call(document.querySelectorAll('table.nova-tuiles-tableau'), function (t) {
+          var parent = t.parentElement, rt = t.getBoundingClientRect(), rp = parent.getBoundingClientRect();
+          if (rt.width <= rp.width + 1) return;
+          var gauche = Math.max(4, (document.documentElement.clientWidth - rt.width) / 2);
+          var cs = getComputedStyle(parent), bord = rp.left + parseFloat(cs.paddingLeft) + parseFloat(cs.borderLeftWidth);
+          t.style.marginLeft = Math.round(gauche - bord) + 'px';
+          t.style.marginRight = '0';
+          racine.classList.add('nova-tuiles-debord');
+        });
+      };
     }
     var textes = document.getElementById('nova-textes');
     var consigne = textes && textes.getAttribute('data-texte-consigne-tuiles');

@@ -15,6 +15,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Écran étroit : le bouton « Mes notes » garde sa taille ; c'est la pastille des badges qui se réduit, en montrant moins de badges.
 - **Décorations de Noël** en décembre : guirlande lumineuse en haut de la barre du haut, derrière les boutons, qui scintille si les animations sont activées, et flocons en filigrane dans la barre (jamais pendant un examen).
 - **Avatar** : nouvelle catégorie **Noël** (bonnet de père Noël, bonnet de lutin, serre-tête de renne, cache-oreilles), dessinée pour Nova, 1 pièce chacun, **en décembre seulement** (un élément acheté se retrouve l'année suivante) ; un élément de Noël remplace le chapeau porté.
+- **Avatar** : avec le fond transparent, l'aperçu de « Mon avatar » montre un damier blanc et gris.
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants

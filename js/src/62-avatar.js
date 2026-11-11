@@ -399,6 +399,8 @@
       }
       grand.src = rendu(vu);
       cadre.classList.toggle('nova-avatar-essai', !!enAttente);
+      // Fond transparent : damier blanc et gris sous l'aperçu (convention, utilisateur, 2026-11-12).
+      portrait.classList.toggle('nova-avatar-transparent', vu.backgroundColor === 'transparent');
       boutonEnr.disabled = !!enAttente || occupe;
       boutonEnr.title = enAttente ? t('enr-bloque') : '';
       onglets.textContent = '';

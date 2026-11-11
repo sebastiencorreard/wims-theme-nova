@@ -21,6 +21,9 @@
 @media (min-width: 761px) { .nova-avatar-apercu { position: sticky; top: 80px; } }
 .nova-avatar-portrait { width: 200px; max-width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: transparent; }   /* fond transparent de l'avatar : rien derrière (utilisateur, 2026-11-07) */
 .nova-avatar-portrait img { display: block; width: 100%; height: 100%; }
+/* Fond transparent choisi ou essayé : damier blanc et gris sous l'aperçu (convention, utilisateur, 2026-11-12). */
+.nova-avatar-portrait.nova-avatar-transparent { background-color: #fff;
+  background-image: conic-gradient(#d4d4d4 25%, transparent 0 50%, #d4d4d4 0 75%, transparent 0); background-size: 20px 20px; }
 .nova-avatar-jetons { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; font-size: 1.15rem; font-weight: 700; }
 .nova-avatar-jetons .nova-piece { width: 30px; height: 30px; }
 .nova-avatar-jauge { width: 100%; height: 10px; border-radius: 99px; background: var(--nova-piste); overflow: hidden; }

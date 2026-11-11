@@ -1468,6 +1468,46 @@
   }
 
 
+  /* Cellule de tableau cliquable en entier (2026-11-11, utilisateur) : dans un tableau de WIMS (wimstable, wimsborder), une
+   * cellule qui contient UN SEUL élément cliquable (lien, bouton, case à cocher, bouton radio) et peu d'autre texte (60
+   * caractères au plus) le déclenche quand on clique ailleurs dans la cellule. Exclus : exercices (énoncé, réponse, Dynapi),
+   * cellules avec un champ à remplir, une liste déroulante, un tableau imbriqué ou une image cliquable, et tout lien d'action
+   * (job=del…, deactivate, expire… : beaucoup d'« Effacer » de WIMS sont des GET ; ou confirm()). Pas de clic si
+   * l'élève sélectionne du texte. Clic transmis par createEvent (Dynapi remplace MouseEvent), touches Ctrl/Maj gardées. */
+  function cellulesCliquables() {
+    var CLIQUABLE = 'a[href], button, input[type="submit"], input[type="button"], input[type="reset"], input[type="checkbox"], input[type="radio"]';
+    var BLOQUANT = 'input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]), select, textarea, table, [contenteditable], img[usemap], .wims_grabbable';
+    var ACTION = /[?&+](?:job|cmd)=(?:del|erase|remove|clean|deactiv|reactiv|activ|expire|close|restore|reset|purge|empty)/i;
+    var cibles = new WeakMap();
+    var cellules = document.querySelectorAll('.wimsbody :is(table.wimstable, table.wimsborder) > :is(tbody, thead, tfoot) > tr > :is(td, th)');
+    if (cellules.length > 6000) return;
+    Array.prototype.forEach.call(cellules, function (c) {
+      if (c.closest('.oefstatement, .oefanswer, form[name="replyform"]') || c.querySelector(BLOQUANT)) return;
+      var liens = c.querySelectorAll(CLIQUABLE);
+      if (liens.length !== 1) return;
+      var lien = liens[0];
+      if (lien.disabled || lien.getAttribute('aria-disabled') === 'true') return;
+      // Jamais une action (effacer, désactiver, expirer…) : un clic à côté ne doit rien changer.
+      if (ACTION.test(lien.getAttribute('href') || '') || /confirm/.test(lien.getAttribute('onclick') || '')) return;
+      var reste = c.textContent.replace(lien.textContent, '').replace(/\s+/g, '');
+      if (reste.length > 60) return;
+      cibles.set(c, lien);
+      c.classList.add('nova-cellule-clic');
+    });
+    document.addEventListener('click', function (ev) {
+      if (ev.button !== 0 || ev.defaultPrevented) return;
+      var c = ev.target.closest && ev.target.closest('.nova-cellule-clic');
+      var lien = c && cibles.get(c);
+      if (!lien || ev.target.closest('a[href], button, input, label, select, textarea, summary')) return;
+      var choix = window.getSelection && String(window.getSelection());
+      if (choix) return;
+      var e = document.createEvent('MouseEvents');
+      e.initMouseEvent('click', true, true, window, 1, ev.screenX, ev.screenY, ev.clientX, ev.clientY, ev.ctrlKey, ev.altKey, ev.shiftKey, ev.metaKey, 0, null);
+      lien.dispatchEvent(e);
+      if (lien.matches('input[type="checkbox"], input[type="radio"]')) lien.focus();
+    });
+  }
+
   /* ===== js/src/30-examen.js : chronomètre, mode examen, parcours, pages et cartes d'examen ===== */
   /* Chronomètre d'examen (Nova/_widgets/headmenu.phtml). WIMS fait décompter #chrono_exam
    * (scripts/js/chronoid.js) sans rien changer près de la fin : Nova lit ce texte « mm:ss » et pose
@@ -6528,7 +6568,7 @@
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();
   // jQuery UI construit ses onglets à un moment qui varie (après « load » sur certaines pages) :

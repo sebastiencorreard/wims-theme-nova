@@ -140,3 +140,7 @@ body:has(#nova-eleve) .wimsbody td.wims_sheet_score { border-left: 0; border-rig
   color: var(--nova-sur-accent);
 }
 
+/* Cellule cliquable en entier (nova.js cellulesCliquables, 2026-11-11, utilisateur) : main et fond un peu assombri au survol,
+ * par-dessus la couleur de la cellule (couleurs des notes gardées). */
+.nova-cellule-clic { cursor: pointer; }
+.nova-cellule-clic:hover { box-shadow: inset 0 0 0 100vmax rgb(0 0 0 / 6%); }

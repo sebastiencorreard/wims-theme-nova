@@ -370,3 +370,9 @@ html:not(.nova-std-dominos) .nova-assoc-lien.nova-assoc-attend-g::after{ right: 
 :where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child[style*="ffe1e9" i] > .nova-choix-pastille{ background: var(--nova-erreur); }
 :where(html:not(.nova-std-dominos)) table:has(> tbody > tr > td > img[src*="arrows/corrlr"]) td:last-child[style*="ffe1e9" i] > .nova-choix-pastille::before{ content: "\2715"; }
 :where(html:not(.nova-std-dominos)) .nova-verdict .nova-verdict-juste:has(table:has(> tbody > tr > td > img[src*="arrows/corrlr"])){ display: block; margin-top: var(--nova-e2); }
+
+/* Tuiles au doigt (nova.js glisserTactile ; panne signalée par l'utilisateur au téléphone, 2026-11-11) : le navigateur
+ * ne doit jamais faire défiler ni zoomer la page depuis une tuile. Sans cela, Chrome Android commence le défilement
+ * avant que nova.js ne l'empêche (évènement touchmove rendu non annulable quand la page est occupée), et l'appui long
+ * d'iOS ouvre la loupe ou la sélection. Comportement seulement, aucun changement d'aspect : hors réglage « dominos ». */
+.wims_grabbable, div:has(> .corr_label){ touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }

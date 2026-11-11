@@ -47,6 +47,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Téléphone : les tuiles à déplacer se glissent au doigt sans que la page défile (le navigateur commençait parfois à faire défiler la page avant que Nova ne l’en empêche) ; l’appui long sur une tuile n’ouvre plus la loupe ni la sélection.
 - Certains exercices (ex. E4/number/oefoperation dans une feuille) affichaient une erreur WIMS « variable_name_buffer_overflow » : corrigé.
 - Éléments à associer : l'ancien aspect de WIMS n'apparaît plus un instant au chargement de la page.
 - Éléments à associer, page de correction : les doubles flèches de WIMS sont centrées sur la ligne (elles étaient collées en haut), aussi avec le thème standard.

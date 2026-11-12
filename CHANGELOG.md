@@ -23,6 +23,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- **Séquences pédagogiques** : état en pastille qui ouvre un menu (Activer ou Désactiver, Effacer avec confirmation), « Modifier » et flèches Monter / Descendre dans la barre de titre ; chaque séquence se replie (Tout replier / Tout déplier), et se déplace en la glissant par sa poignée. Option « Numéro seul, sans mot générique » dans Configurer.
 - Liste des participants : avatar de l'élève à gauche de son nom (silhouette sans avatar) ; un clic ouvre sa fiche d'avatar et de badges.
 - Page « Notes » : options l'une sous l'autre, « Afficher » au lieu de « Faites afficher », titres de colonnes et notes centrés (« -- » et 0 compris).
 - Rubrique « Participants » (Suivi en direct, Trombinoscope) du menu de gauche seulement sur l'accueil, comme dans le thème standard.
@@ -82,6 +83,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Fil d'Ariane : plus de « * » en fin de fil sur une page sans titre (Configuration et maintenance, Séquences...).
 - Pages plus légères pour WIMS : les textes de Nova n'occupent plus la réserve de noms de variables (environ trois fois plus de marge sur la configuration d'une classe) ; moins de risque d'erreur « variable_name_buffer_overflow » sur les exercices lourds et la version imprimable d'une feuille.
 - Désactiver quand même : la case de sauvegarde n'annonce plus « .zip » ; le fichier téléchargé est un .tgz quand le serveur ne sait pas faire de .zip.
 - Version imprimable d'une feuille : plus d'erreur « variable_name_buffer_overflow » sur une feuille de beaucoup d'exercices (Nova charge moins de textes sur cette page).

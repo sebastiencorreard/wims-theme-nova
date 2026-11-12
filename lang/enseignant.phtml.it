@@ -73,7 +73,7 @@
 !set nova_accp_fait=Restrizione applicata alle %1 zone dipendenti.
 !set nova_accp_fait1=Restrizione applicata alla zona dipendente.
 !set nova_accp_erreur=Impossibile applicare la restrizione alle zone. Usa «Zone dipendenti» nella configurazione.
-!set nova_forcer_sauver=Scarica prima un backup della classe (.zip)
+!set nova_forcer_sauver=Scarica prima un backup della classe
 !set nova_forcer_sauver_aide=Studenti, voti, fogli, esami... tutto il necessario per ripristinarla se serve (Configurazione, Backup e ripristino).
 !set nova_forcer_ok_sauver=Fai il backup, poi disattiva
 !set nova_forcer_etape1=Preparazione del backup della classe...

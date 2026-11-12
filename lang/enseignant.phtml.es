@@ -73,7 +73,7 @@
 !set nova_accp_fait=Restricción aplicada a las %1 zonas dependientes.
 !set nova_accp_fait1=Restricción aplicada a la zona dependiente.
 !set nova_accp_erreur=No se ha podido aplicar la restricción a las zonas. Usa «Zonas dependientes» de la configuración.
-!set nova_forcer_sauver=Descargar primero una copia de seguridad de la clase (.zip)
+!set nova_forcer_sauver=Descargar primero una copia de seguridad de la clase
 !set nova_forcer_sauver_aide=Alumnos, notas, hojas, exámenes... todo lo necesario para restaurarla si hace falta (Configuración, Copia de seguridad y restauración).
 !set nova_forcer_ok_sauver=Hacer la copia y desactivar
 !set nova_forcer_etape1=Preparando la copia de seguridad de la clase...

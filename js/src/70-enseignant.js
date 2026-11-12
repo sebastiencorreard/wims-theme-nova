@@ -679,7 +679,8 @@
     };
     // Sauvegarde de la classe avant de désactiver (2026-11-10, utilisateur, maquette ; case cochée par défaut) : la
     // sauvegarde complète de WIMS (adm/class/config, job=arch, job2=download, selection=all), .zip, sinon .tgz (serveur
-    // sans « zip » : pack.sh échoue, vu sur le banc). Deux requêtes (l'entrée dans le module ignore job=…), 1,5 s d'écart,
+    // sans la commande « zip » : WIMS répond « l'archivage n'a pas abouti », vu sur le banc). Libellé sans extension
+    // (2026-11-12, utilisateur : « annonce un .zip, c'est un .tgz qui arrive ») ; l'étape 2 donne le nom du fichier. Deux requêtes (l'entrée dans le module ignore job=…), 1,5 s d'écart,
     // puis le fichier (lien getfile de la page) récupéré et enregistré par le navigateur. Échec : rien n'est désactivé.
     var caseSauver = document.createElement('label');
     caseSauver.className = 'nova-forcer-sauver';
@@ -688,7 +689,7 @@
     cocher.checked = true;
     var libSauver = document.createElement('span');
     var gras = document.createElement('b');
-    gras.textContent = f.getAttribute('data-sauver') || 'Download a backup of the class first (.zip)';
+    gras.textContent = f.getAttribute('data-sauver') || 'Download a backup of the class first';
     libSauver.appendChild(gras);
     if (f.getAttribute('data-sauver-aide')) {
       var aideSauver = document.createElement('span');

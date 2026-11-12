@@ -908,9 +908,20 @@
     examens.forEach(function (e) {
       if (!e.t || restesN[e.t.reste] || !e.action) return;
       var b = document.createElement('a');
-      b.className = 'wims_button nova-dm-note';
+      // À côté de la pastille d'état (etatsRessources, colonne Action fusionnée) : même bouton que « Modifier ».
+      var cellule = e.action.querySelector('.nova-etat-cellule');
+      b.className = cellule ? 'nova-etat-modifier nova-dm-note' : 'wims_button nova-dm-note';
       b.setAttribute('role', 'button');
-      b.textContent = texte('dm-note', 'Create the graded homework');
+      var libelleDM = document.createElement('span');
+      libelleDM.textContent = texte('dm-note', 'Create the graded homework');
+      if (cellule) {
+        var icoDM = document.createElement('span');
+        icoDM.className = 'nova-etat-ico';
+        icoDM.setAttribute('aria-hidden', 'true');
+        icoDM.setAttribute('data-icone', 'copie');
+        b.appendChild(icoDM);
+      }
+      b.appendChild(libelleDM);
       b.title = texte('dm-note-aide', 'Copy of this exam with the same exercises, %1 sessions, kept in preparation').replace('%1', 3);
       b.href = e.lien + '&+cmd=new&+job=duplicate';
       b.addEventListener('click', function (ev) {
@@ -921,7 +932,7 @@
         ev.preventDefault();
         b.classList.add('disabled');
         b.setAttribute('aria-disabled', 'true');
-        b.textContent = texte('dm-note-encours', 'Creating\u2026');
+        libelleDM.textContent = texte('dm-note-encours', 'Creating\u2026');
         var suite = function () { setTimeout(function () { location.href = b.href; }, 1500); };   // 2 requêtes à < 1 s : la 2e est mal servie
         if (!modele) { suite(); return; }
         fetch(modele.lien, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
@@ -930,6 +941,7 @@
           if (d) { p.desc = d.value; ecrireSS('nova-dm-note', p); }
         }).catch(function () { /* description de l'entraînement */ }).then(suite);
       });
+      if (cellule) { cellule.appendChild(b); return; }
       e.action.appendChild(document.createTextNode(' '));
       e.action.appendChild(b);
     });

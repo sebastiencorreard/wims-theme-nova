@@ -19,6 +19,8 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Feuille et examen : boutons du bandeau d'état lisibles au survol (couleur du thème atténuée) ; Désactiver et Effacer en rouge sur fond blanc.
+- Accueil de la classe : « Créer le DM noté » à côté de la pastille d'état, du même style que « Modifier ».
 - **Accueil de la classe** : le statut des feuilles, examens, devoirs libres, outils, documents et votes est une pastille colorée avec une icône ; un clic ouvre les actions possibles (Expirer, Cacher, Réactiver…), chacune avec son effet ; Désactiver et Effacer à part, en rouge. La colonne « Action » disparaît.
 - Feuille et examen : « Page de présentation » ne prend plus deux tiers de la ligne ; ses choix restent sur une ligne, à largeur égale avec la tuile voisine.
 - Feuille et examen : le champ du titre est sur la ligne de « Titre », sur toute la largeur.

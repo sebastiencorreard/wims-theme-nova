@@ -22,6 +22,7 @@
 !set nova_app_masquer=Nascondile
 !set nova_app_note_classe=Queste impostazioni valgono per questo portale, raggruppamento o classe (e le loro zone), e prevalgono su quelle del sito. Sono scritte nel foglio di stile della pagina Aspetto.
 !set nova_app_couleur_theme=Colore del tema
+!set nova_app_couleur_theme_aide=Barra in alto, pulsanti e link; è anche il « Colore del tema » della pagina Aspetto.
 !set nova_badges_semaines=settimane
 !set nova_badges_semaine=settimana
 !set nova_app_badges=Distintivi degli studenti

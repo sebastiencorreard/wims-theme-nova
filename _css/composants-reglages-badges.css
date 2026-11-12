@@ -9,6 +9,13 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
 .nova-app-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--nova-e3); align-items: center; padding: var(--nova-e2) 0; border-top: 1px solid var(--nova-bord); }
 .nova-app-ligne:first-of-type { border-top: 0; }
 .nova-app-nom { font-weight: 600; }
+/* Couleur du thème (onglet Affichage, 2026-11-12) : pastille de couleur à la taille des choix Oui/Non. */
+.nova-app-couleur-choix { width: 64px; height: 38px; margin: 0; padding: 2px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface, white); cursor: pointer; }
+.nova-app-couleur-choix::-webkit-color-swatch-wrapper { padding: 0; }
+.nova-app-couleur-choix::-webkit-color-swatch { border: 0; border-radius: 999px; }
+.nova-app-couleur-choix::-moz-color-swatch { border: 0; border-radius: 999px; }
+.nova-app-couleur-choix:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+@media (max-width: 639.98px) { .nova-app-couleur-choix { justify-self: start; } }
 .nova-app-aide { display: block; font-weight: 400; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-app-choix { display: inline-flex; border: 1px solid var(--nova-bord-fort); border-radius: 999px; overflow: hidden; }
 .nova-app-choix label { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--nova-e4); margin: 0; font-weight: 700; color: var(--nova-texte-2); cursor: pointer; }

@@ -6439,6 +6439,7 @@
         break;
       }
     }
+    couleurTheme(carte, formWims, modele);
     var app = reglagesApparence(carte, zone, modele);
     var bdg = reglagesBadges(carte, zone);
     motsCles(carte, modele);
@@ -6464,6 +6465,28 @@
       envoi.click();
     });
     racine.classList.add('nova-reglages-prete');
+  }
+
+  /* « Couleur du thème » dans l'onglet Affichage (demande de l'utilisateur, 2026-11-12) : relié au champ de WIMS
+   * (pr_refcolor, « Couleur de fond des menus », formulaire masqué de la page), enregistré avec lui : c'est la même
+   * couleur que sur la page Apparence. Gris de WIMS (#676767, personne ne l'a choisi) : la couleur en vigueur est
+   * montrée, rien n'est écrit tant que l'enseignant n'y touche pas. Aperçu en direct sur la page. */
+  function couleurTheme(carte, form, modele) {
+    var choix = carte.querySelector('.nova-app-couleur-choix');
+    if (!choix) return;
+    var champ = form.querySelector('[name="' + modele.getAttribute('data-champ-theme') + '"]');
+    if (!champ) { choix.closest('.nova-app-ligne').hidden = true; return; }
+    var hexa = /^#[0-9a-f]{6}$/i;
+    var v = (champ.value || '').trim();
+    if (!hexa.test(v) || /^#676767$/i.test(v)) {
+      v = getComputedStyle(document.documentElement).getPropertyValue('--nova-accent').trim();
+      if (!hexa.test(v)) v = '#7a3b69';
+    }
+    choix.value = v.toLowerCase();
+    choix.addEventListener('input', function () {
+      champ.value = choix.value;
+      document.documentElement.style.setProperty('--nova-accent', choix.value);
+    });
   }
 
   // Bloc « Nova : reglages de la page Apparence » : champs nova_c_… (affichage, élèves, interrupteur des badges, avancés).

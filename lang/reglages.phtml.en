@@ -21,6 +21,7 @@
 !set nova_app_masquer=Hide them
 !set nova_app_note_classe=These settings apply to this portal, group or class (and their zones), and override those of the site. They are written in the style sheet of the Appearance page.
 !set nova_app_couleur_theme=Theme colour
+!set nova_app_couleur_theme_aide=Top bar, buttons and links; also the "Theme colour" of the Appearance page.
 !! Badges (2026-10-07): first badge, Loyalty.
 !set nova_badges_semaines=weeks
 !set nova_badges_semaine=week

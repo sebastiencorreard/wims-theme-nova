@@ -22,6 +22,7 @@
 !set nova_app_masquer=Ocultarlos
 !set nova_app_note_classe=Estos ajustes se aplican a este portal, agrupación o clase (y a sus zonas), y prevalecen sobre los del sitio. Se escriben en la hoja de estilo de la página Apariencia.
 !set nova_app_couleur_theme=Color del tema
+!set nova_app_couleur_theme_aide=Barra superior, botones y enlaces; es también el « Color del tema » de la página Apariencia.
 !set nova_badges_semaines=semanas
 !set nova_badges_semaine=semana
 !set nova_app_badges=Insignias de los alumnos

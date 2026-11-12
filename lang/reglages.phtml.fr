@@ -21,6 +21,7 @@
 !set nova_app_masquer=Les masquer
 !set nova_app_note_classe=Ces réglages valent pour ce portail, ce groupement ou cette classe (et leurs zones), et l'emportent sur ceux du site. Ils sont écrits dans la feuille de style de la page Apparence.
 !set nova_app_couleur_theme=Couleur du thème
+!set nova_app_couleur_theme_aide=Barre du haut, boutons et liens ; c'est aussi la « Couleur du thème » de la page Apparence.
 !! Badges (demande de l'utilisateur, 2026-10-07) : premier badge, Fidélité (Régularité depuis le 2026-11-04).
 !set nova_badges_semaines=semaines
 !set nova_badges_semaine=semaine

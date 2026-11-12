@@ -1,0 +1,6 @@
+!! Nova : valeur du reglage "Menus du theme standard" (--nova-std-menus, site puis structure puis classe) dans nova_pstd
+!! (oui, sinon non). Lu par supervisor.phtml et footer.phtml (pied de page de l'enseignant, 2026-11-12) ; calcule une fois.
+!if $nova_pstd=$empty
+  !set nova_pstd=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-std-menus[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+  !default nova_pstd=non
+!endif

@@ -330,10 +330,15 @@
 !reset div0 div1
 
 !! Nova : menu de pied de page de l'enseignant (commenté dans Standard 4.32) ; masqué sous 1024 px.
-!distribute items div, span into div0,div1
-!read themes/_procs/supervisormenubox.proc
-!read themes/_widgets/menubox.phtml
-!reset div0,div1
+!! Simplifié (2026-11-12, utilisateur) : CGU, Config / Maintenance, Nous contacter, écrits par footer.phtml ; le menu de
+!! WIMS ne revient qu'avec le réglage « Menus du thème standard ».
+!read themes/$wims_theme/_widgets/std-menus.phtml
+!if $nova_pstd=oui
+  !distribute items div, span into div0,div1
+  !read themes/_procs/supervisormenubox.proc
+  !read themes/_widgets/menubox.phtml
+  !reset div0,div1
+!endif
 
 </div><!--wimsbodybox-->
 

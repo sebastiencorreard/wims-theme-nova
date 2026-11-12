@@ -379,7 +379,7 @@ html.nova-js:not(.nova-std-listes) .wims_quotafree:not(.nova-capacite) > :is(.wi
 .nova-fiche .nova-champ-tete > label, .nova-fiche .nova-champ-tete > .formHelp { margin: 0; }
 .nova-fiche .nova-com-ferme > :not(.nova-champ-tete, .nova-com-apercu, .nova-com-bouton) { display: none !important; }
 .nova-fiche .field > p.nova-com-apercu { width: 100%; box-sizing: border-box; margin: var(--nova-e1) 0 0; padding: var(--nova-e2) var(--nova-e3); border-left: 3px solid var(--nova-bord-fort); background: var(--nova-surface-2); border-radius: 0 8px 8px 0; color: var(--nova-texte-2); font-size: var(--nova-petit); }
-.wimsbody button.nova-com-bouton { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; min-height: 36px; margin: var(--nova-e2) 0 0; padding: 0 var(--nova-e3); border: 1px dashed var(--nova-bord-fort); border-radius: 999px; background: transparent; box-shadow: none; color: var(--nova-lien); font: inherit; font-size: .92rem; font-weight: 700; cursor: pointer; }
+.wimsbody button.nova-com-bouton { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; min-height: 36px; margin: 0 0 0 auto; align-self: center; padding: 0 var(--nova-e3); border: 1px dashed var(--nova-bord-fort); border-radius: 999px; background: transparent; box-shadow: none; color: var(--nova-lien); font: inherit; font-size: .92rem; font-weight: 700; cursor: pointer; }
 .wimsbody button.nova-com-bouton::after { content: ''; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
 .wimsbody button.nova-com-bouton[aria-expanded='true']::after { transform: translateY(2px) rotate(-135deg); }
 

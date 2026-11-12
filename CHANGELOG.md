@@ -19,6 +19,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Feuille et examen : le bouton des commentaires (« Écrire », « Modifier », « Replier l'éditeur ») est sur la ligne de « Commentaires », à droite.
 - **Feuille et examen, texte d'explication et commentaires** : la précision (« limité à 4000 caractères… », « Visible seulement par l'enseignant ») passe à droite du libellé ; l'éditeur prend la hauteur du texte (jusqu'à sa taille d'avant, puis ascenseur) ; les commentaires sont repliés, avec un aperçu et un bouton pour les écrire ou les modifier. « Réglage expert » des heures de coupure : précisé « ce que WIMS voit ».
 - **Examen, heures de coupure** : saisie par date et heure, une ligne par coupure, avec « Ajouter » et « Retirer » (comme la restriction d'accès) ; le champ de WIMS reste dans « Réglage expert ». Heures de coupure et mode d'affichage rejoignent le poids dans « Options avancées ».
 - **Préparation d'une feuille ou d'un examen** : le statut devient un bandeau coloré qui dit ce que voient les élèves, avec des boutons à icône ; les réglages sont rangés en tuiles (icône, « ? » pour l'aide, Oui/Non en bascule). Poids, règle de calcul et individualisation sont repliés sous « Options avancées ».
@@ -58,6 +59,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Éditeur de texte (feuille, examen…) : la page ne défile plus à chaque ligne tapée ; « Activer l'éditeur » fonctionne de nouveau après « Désactiver l'éditeur » (en panne dans WIMS).
 - Feuille et examen : un texte d'explication ou un commentaire vidé s'efface vraiment (WIMS gardait l'ancien texte).
 - **Avatar et couleur personnelle** : rangés avec les notes de l'élève (`score/`), donc compris dans la sauvegarde de la classe et remis à zéro par « nettoyer la classe », comme les badges ; les choix déjà faits sont repris à la première visite de chaque élève.
 - Portails et groupements : l'accueil d'un élève et les pages de ses feuilles ne parcourent plus tous les fichiers de la structure pour compter les pièces de l'avatar (plus léger sur un gros portail) ; une longue feuille de style de structure n'est plus coupée avant d'arriver aux zones.

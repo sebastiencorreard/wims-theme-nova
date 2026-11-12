@@ -1577,6 +1577,22 @@
       var pret = function () {
         lancer();
         ed.on('input change keyup SetContent NodeChange Undo Redo', lancer);
+        // TinyMCE fait défiler la PAGE vers le curseur avant que l'éditeur ait grandi (2026-11-12, utilisateur : page qui
+        // descend à chaque ligne) : agrandir d'abord, puis défiler l'éditeur seul, et la page seulement si le curseur sort de l'écran.
+        ed.on('ScrollIntoView', function (e) {
+          e.preventDefault();
+          lancer();
+          var el = e.elm && e.elm.nodeType === 1 ? e.elm : e.elm && e.elm.parentNode;
+          if (!el || !el.getBoundingClientRect) return;
+          var win = ed.getWin(), r = el.getBoundingClientRect();
+          if (r.bottom > win.innerHeight) win.scrollBy(0, r.bottom - win.innerHeight + 4);
+          else if (r.top < 0) win.scrollBy(0, r.top - 4);
+          r = el.getBoundingClientRect();
+          var cadre = ed.iframeElement.getBoundingClientRect();
+          var bas = cadre.top + Math.min(r.bottom, cadre.height), haut = cadre.top + Math.max(r.top, 0);
+          if (bas > window.innerHeight) window.scrollBy(0, bas - window.innerHeight + 8);
+          else if (haut < 0) window.scrollBy(0, haut - 8);
+        });
         ed.getWin().addEventListener('load', lancer);
         setTimeout(lancer, 400);
       };
@@ -1618,6 +1634,43 @@
       montrer(champ.classList.contains('nova-com-ferme'));
     });
     tete.parentNode.insertBefore(apercu, tete.nextSibling);
-    apercu.parentNode.insertBefore(bouton, apercu.nextSibling);
+    tete.appendChild(bouton);
     montrer(false);
+  }
+
+  /* « Activer l'éditeur » de WIMS (scripts/js/external/tinymce.phtml) : tinymce.execCommand('mceAddEditor', true, id) échoue
+   * avec TinyMCE 6 (« Cannot set properties of undefined (setting 'external_plugins') », aussi sans nova.js, 2026-11-12) : l'éditeur
+   * ne revient pas. Nova garde la configuration passée à tinymce.init (capterTinymce, appelée dès l'exécution de nova.js, AVANT
+   * l'appel de WIMS au chargement de la page) et relance l'éditeur avec elle. */
+  var configTinymce = null;
+  function capterTinymce() {
+    var tm = window.tinymce;
+    if (!tm || typeof tm.init !== 'function' || tm.novaCapte) return;
+    tm.novaCapte = true;
+    var init = tm.init;
+    tm.init = function (config) {
+      if (config && typeof config === 'object' && !configTinymce) configTinymce = config;
+      return init.apply(this, arguments);
+    };
+  }
+  // Écouteur du document en capture : passe avant le onclick de WIMS (liens créés après le démarrage de nova.js) et l'arrête.
+  function editeursReactivables() {
+    if (document.novaReactivables) return;
+    document.novaReactivables = true;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('.wysiwyg_btns a[onclick*="mceAddEditor"]');
+      var m = a && /mceAddEditor',\s*\w+,\s*'([^']+)'/.exec(a.getAttribute('onclick') || '');
+      if (!m || !configTinymce || !window.tinymce) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var id = m[1];
+      if (!window.tinymce.get(id)) {
+        var c = {};
+        for (var k in configTinymce) if (Object.prototype.hasOwnProperty.call(configTinymce, k)) c[k] = configTinymce[k];
+        c.selector = '#' + id;
+        window.tinymce.init(c);
+      }
+      a.classList.add('hidden_btn');
+      if (a.previousElementSibling) a.previousElementSibling.classList.remove('hidden_btn');
+    }, true);
   }

@@ -102,3 +102,9 @@
 !set nova_avs_inactif=El avatar de los alumnos no está activado aquí (Ajustes de Nova, pestaña «Insignias y recompensas»).
 !set nova_avs_vide=No hay alumnos inscritos aquí.
 !set nova_avs_zone=Abra una clase o un curso de la estructura para ver los avatares de sus alumnos.
+!set nova_avs_exporter=Exportar los avatares (.zip)
+!set nova_avs_enregistrer=Guardar el avatar (.svg)
+!set nova_avs_retour_titre=Volver a una versión anterior de Nova
+!set nova_avs_retour_texte=El avatar y el color de cada alumno se guardan con sus notas; las versiones de Nova anteriores al 12 de noviembre de 2026 los buscan en otro lugar. Antes de reinstalar una de esas versiones, este botón los copia a la ubicación antigua, para todos los alumnos de la clase o de la estructura. Hágalo justo antes de cambiar de versión: la copia de un alumno se elimina en cuanto vuelve a conectarse con la versión actual.
+!set nova_avs_retour_bouton=Preparar la vuelta
+!set nova_avs_retour_fait=Avatares copiados a la ubicación antigua:

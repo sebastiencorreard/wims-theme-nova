@@ -1,13 +1,15 @@
 !! Nova : page Â« Avatars des eleves Â» de l'enseignant (nova_avatars=1 ; demande de l'utilisateur, maquette A validee
 !! le 2026-11-12). Lue par supervisor.phtml et user.phtml (enseignant d'un portail ou d'un groupement), comme le suivi :
 !! enseignants seulement, hors outil et hors examen. Entree du menu : local.phtml (groupe Participants).
-!reset nova_avatars_page
+!reset nova_avatars_page nova_avatars_retour
 !if $wims_user=supervisor or yes isin $supervisable $user_supervisable
   !if _tool notin $wims_session and _exam notin $wims_session
     !set nova_sq=!sh printf '%s' "$$QUERY_STRING"
     !set nova_sq=!replace internal & by $ $ in $nova_sq
     !set nova_sq=!replace internal + by $ $ in $nova_sq
     !set nova_avatars_page=!getopt nova_avatars in $nova_sq
+    !! Copie vers l'ancien emplacement (bouton « Preparer le retour ») : seulement la valeur 1, comparee plus bas.
+    !set nova_avatars_retour=!getopt nova_avatars_retour in $nova_sq
     !reset nova_sq
     !if $nova_avatars_page=1
       !read themes/$wims_theme/_widgets/avatars-classe.phtml

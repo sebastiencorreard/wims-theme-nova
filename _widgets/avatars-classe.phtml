@@ -3,13 +3,20 @@
 !! _procs/avatars-classe.sh (avatar.awk pour chaque eleve, en simple lecture), ecrites dans la session puis lues ici.
 !read themes/$wims_theme/lang/enseignant.phtml.$lang
 !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+!! Titre : « Trombinoscope » de WIMS quand la page le remplace (local.phtml), sinon « Avatars des eleves ».
+!set nova_avh=$nova_avs_titre
+!set nova_avr=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-std-menus[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+!if $nova_avr!=oui and $wims_name_photoboard!=$empty
+  !set nova_avh=$wims_name_photoboard
+!endif
+!set nova_avk=!text select 0123456789 in $wims_class
 <section id="nova-avatars" aria-labelledby="nova-avatars-titre" data-script="themes/$wims_theme/js/avatar.js"
   data-t-resume="$nova_avs_resume" data-t-gagnees="$nova_avs_gagnees" data-t-depensees="$nova_avs_depensees"
   data-t-dispo="$nova_avs_dispo" data-t-elements="$nova_avs_elements" data-t-exercices="$nova_avs_exercices" data-t-niveau="$nova_avs_niveau"
   data-t-sans="$nova_avs_sans" data-t-attente="$nova_avs_attente" data-t-precedent="$nova_avs_precedent" data-t-suivant="$nova_avs_suivant"
-  data-t-fermer="$nova_avs_fermer" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
+  data-t-fermer="$nova_avs_fermer" data-t-enregistrer="$nova_avs_enregistrer" data-classe="$nova_avk" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
   data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
-<h1 id="nova-avatars-titre">$nova_avs_titre</h1>
+<h1 id="nova-avatars-titre">$nova_avh</h1>
 !! Racine d'un portail ou d'un groupement, niveau, programme (2026-11-12, utilisateur) : trop d'eleves d'un coup ;
 !! demander de choisir une zone. Grille seulement dans une classe ou un cours.
 !set nova_avt=!defof class_typename in wimshome/log/classes/$wims_class/.def
@@ -33,6 +40,8 @@
   !endif
   !if $nova_avn>0
 <p class="nova-avatars-resume" id="nova-avatars-resume"></p>
+!! Export de tous les avatars en SVG dans un .zip : ecrit par nova.js (avatarsClasse), qui montre le bouton une fois les dessins prets.
+<p class="nova-avatars-actions"><button type="button" id="nova-avatars-exporter" class="wims_button wims_secondary_button" hidden>$nova_avs_exporter</button></p>
 <ul class="nova-avatars-grille">
     !read wimshome/sessions/$nova_sid/nova-avatars.phtml
 </ul>
@@ -42,5 +51,24 @@
   !reset nova_sid nova_ak nova_auj nova_avn
 !endif
 :nova_avs_fin
+!! Retour a une version anterieure de Nova (2026-11-12, utilisateur) : les fichiers de l'eleve sont dans score/ depuis
+!! le 2026-11-12 ; _procs/avatars-retour.sh les recopie a l'ancien emplacement (racine de la classe ou de la structure),
+!! pour TOUS les eleves de la classe ou de la structure. Affiche le nombre d'avatars recopies.
+!set nova_ak=$wims_superclass
+!default nova_ak=!word 1 of $wims_class
+!set nova_ak=!replace internal / by , in $nova_ak
+!set nova_ak=$(nova_ak[1])
+!set nova_ak=!text select 0123456789 in $nova_ak
+<div class="nova-avatars-retour">
+<h2>$nova_avs_retour_titre</h2>
+<p>$nova_avs_retour_texte</p>
+!if $nova_avatars_retour=1 and $nova_ak!=$empty
+  !set nova_avn=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatars-retour.sh $wims_home $nova_ak
+  !set nova_avn=!text select 0123456789 in $nova_avn
+  !default nova_avn=0
+<div class="wims_msg success" role="status">$nova_avs_retour_fait $nova_avn</div>
+!endif
+<p><a class="wims_button wims_secondary_button" href="$wims_ref_name?session=$wims_session&lang=$lang&module=home&nova_avatars=1&nova_avatars_retour=1">$nova_avs_retour_bouton</a></p>
+</div>
 </section>
-!reset nova_avb nova_avt
+!reset nova_avb nova_avt nova_avh nova_avr nova_avk nova_ak nova_avn

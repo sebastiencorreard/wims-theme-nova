@@ -7,9 +7,18 @@
       !set wims_name_nova_suivi=$nova_sv_titre
       !! Avatars des eleves (2026-11-12, utilisateur) : sous le suivi, seulement si l'avatar est active (comme avatar-barre.phtml).
       !set nova_avm=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+      !! Trombinoscope (2026-11-12, utilisateur : plus personne ne met de photos) : la page des avatars PREND LA PLACE du
+      !! trombinoscope de WIMS (adm/class/photoboard, menu de la page des participants) et garde son nom ; son entree est
+      !! retiree. Reglage « menus du theme standard » (--nova-std-menus: oui) : rien n'est remplace, les deux entrees restent.
+      !reset nova_avr
       !if $nova_avm=oui
         !default nova_avs_titre=Students' avatars
         !set wims_name_nova_avatars=$nova_avs_titre
+        !set nova_avr=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-std-menus[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+        !if $nova_avr!=oui and $wims_name_photoboard!=$empty
+          !set wims_name_nova_avatars=$wims_name_photoboard
+          !set nova_avr=remplace
+        !endif
       !endif
       !set nova_sp=0
       !set nova_sg=0
@@ -64,11 +73,13 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
             !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
           !endif
         !else
-          !set nova_sr=!append line $nova_sl to $nova_sr
+          !if $nova_avr!=remplace or $(nova_sl[1])!=photoboard
+            !set nova_sr=!append line $nova_sl to $nova_sr
+          !endif
         !endif
       !next nova_si
       !set wims_rm_0=$nova_sr
-      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn nova_avm
+      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn nova_avm nova_avr
     !endif
   !endif
 !endif

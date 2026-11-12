@@ -63,7 +63,7 @@
    * site) : retirees de la barre d'adresse une fois la page lue, pour qu'Actualiser ou Precedent ne rejoue pas l'action
    * (audit du 2026-11-12). Appelee en dernier par demarrer(). */
   function adresseNette() {
-    var net = location.search.replace(/([?&])nova_(desactiver|propager|reglages|couleur|avatar_ouvrir|avatar_choix)=[^&]*&?/g, '$1').replace(/[?&]$/, '');
+    var net = location.search.replace(/([?&])nova_(desactiver|propager|reglages|couleur|avatar_ouvrir|avatar_choix|avatars_retour)=[^&]*&?/g, '$1').replace(/[?&]$/, '');
     if (net === location.search || !history.replaceState) return;
     try { history.replaceState(history.state, '', location.pathname + net + location.hash); } catch (e) { /* adresse gardee */ }
   }
@@ -4852,6 +4852,69 @@
       img.src = dessins[choix];
       cadre.appendChild(img);
     }
+    // Export (2026-11-12, utilisateur) : dessin d'un eleve en SVG (fenetre de detail), ou tous dans un .zip (bouton de
+    // la page). Fichiers « Nom-Prenom.svg », sans accent ; homonymes : identifiant ajoute. Eleves sans avatar : aucun fichier.
+    var MARQUES = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
+    function net(x) {
+      x = String(x || '');
+      if (x.normalize) x = x.normalize('NFD').replace(MARQUES, '');
+      return x.replace(/[^0-9A-Za-z_-]+/g, '-').replace(/-{2,}/g, '-').replace(/^-+|-+$/g, '');
+    }
+    function nomFichier(b) {
+      return [net(b.getAttribute('data-nom')), net(b.getAttribute('data-prenom'))].filter(Boolean).join('-') ||
+        net(b.getAttribute('data-login')) || 'avatar';
+    }
+    function svgDe(choix) {
+      if (!choix || !dessin) return '';
+      if (!dessins[choix]) dessins[choix] = dessin(choix);
+      var m = /^data:image\/svg\+xml;utf8,(.*)$/.exec(dessins[choix]);
+      try { return m ? decodeURIComponent(m[1]) : ''; } catch (e) { return ''; }
+    }
+    function telecharger(blob, nom) {
+      var url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = nom;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    }
+    // Archive .zip sans compression (les SVG sont petits) : en-tetes locaux, repertoire central, fin de repertoire.
+    function archive(fichiers) {
+      var table = [], n, k, c;
+      for (n = 0; n < 256; n++) { c = n; for (k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; table[n] = c >>> 0; }
+      var crc = function (o) { var x = 0xFFFFFFFF; for (var i = 0; i < o.length; i++) x = table[(x ^ o[i]) & 255] ^ (x >>> 8); return (x ^ 0xFFFFFFFF) >>> 0; };
+      var d = new Date(), heure = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+      var jour = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+      var bloc = function (taille, champs) {
+        var v = new DataView(new ArrayBuffer(taille)), p = 0;
+        champs.forEach(function (ch) { if (ch[0] === 2) v.setUint16(p, ch[1], true); else v.setUint32(p, ch[1], true); p += ch[0]; });
+        return new Uint8Array(v.buffer);
+      };
+      var parts = [], centre = [], pos = 0, tc = 0;
+      fichiers.forEach(function (fi) {
+        var nom = new TextEncoder().encode(fi.nom), t = fi.octets.length;
+        // version, drapeaux (noms en UTF-8), methode 0, heure, date, CRC, tailles, longueur du nom, champ supplementaire.
+        var commun = [[2, 20], [2, 0x0800], [2, 0], [2, heure], [2, jour], [4, crc(fi.octets)], [4, t], [4, t], [2, nom.length], [2, 0]];
+        parts.push(bloc(30, [[4, 0x04034b50]].concat(commun)), nom, fi.octets);
+        centre.push(bloc(46, [[4, 0x02014b50], [2, 20]].concat(commun, [[2, 0], [2, 0], [2, 0], [4, 0], [4, pos]])), nom);
+        pos += 30 + nom.length + t;
+        tc += 46 + nom.length;
+      });
+      var fin = bloc(22, [[4, 0x06054b50], [2, 0], [2, 0], [2, fichiers.length], [2, fichiers.length], [4, tc], [4, pos], [2, 0]]);
+      return new Blob(parts.concat(centre, [fin]), { type: 'application/zip' });
+    }
+    var exporter = document.getElementById('nova-avatars-exporter');
+    if (exporter) exporter.addEventListener('click', function () {
+      var pris = {}, fichiers = [];
+      eleves.forEach(function (b) {
+        var svg = svgDe(b.getAttribute('data-choix'));
+        if (!svg) return;
+        var nom = nomFichier(b), i = 2;
+        if (pris[nom]) nom += '-' + (net(b.getAttribute('data-login')) || i);
+        while (pris[nom]) nom = nom.replace(/-[0-9]+$/, '') + '-' + (i++);
+        pris[nom] = 1;
+        fichiers.push({ nom: nom + '.svg', octets: new TextEncoder().encode(svg) });
+      });
+      if (fichiers.length) telecharger(archive(fichiers), 'avatars' + (net(page.getAttribute('data-classe')) ? '-' + net(page.getAttribute('data-classe')) : '') + '.zip');
+    });
     var dialogue = el('dialog', 'nova-dialogue nova-avatars-dialogue');
     if (typeof dialogue.showModal !== 'function') return;
     dialogue.setAttribute('aria-labelledby', 'nova-avatars-detail-nom');
@@ -4911,6 +4974,16 @@
         });
         if (ul.firstChild) texte.appendChild(ul);
         texte.appendChild(el('p', 'nova-avatars-ligne', t('elements').replace('%n', b.getAttribute('data-elements') || '0') + ' \u00b7 ' + exercices));
+        // Enregistrer le dessin de cet eleve (2026-11-12, utilisateur) : une fois avatar.js charge.
+        if (dessin && t('enregistrer') && window.TextEncoder) {
+          var enr = el('button', 'wims_button wims_secondary_button nova-avatars-enregistrer', t('enregistrer'));
+          enr.type = 'button';
+          enr.addEventListener('click', function () {
+            var svg = svgDe(choix);
+            if (svg) telecharger(new Blob([svg], { type: 'image/svg+xml' }), nomFichier(b) + '.svg');
+          });
+          texte.appendChild(enr);
+        }
       }
       fiche.appendChild(grand);
       fiche.appendChild(texte);
@@ -4935,6 +5008,7 @@
     chargerAvatar(page.getAttribute('data-script')).then(function (f) {
       dessin = f;
       eleves.forEach(function (b) { poser(b.querySelector('.nova-avatars-portrait'), b.getAttribute('data-choix')); });
+      if (exporter && avec && window.TextEncoder && window.Blob) exporter.hidden = false;
       if (dialogue.open) montrer(courant);
     }).catch(function () {});
   }

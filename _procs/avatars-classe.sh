@@ -38,8 +38,8 @@ find "$r" -type f \( -path '*/score/*' -o -path '*/noscore/*' \) 2>/dev/null > "
         NR == 5 { for (i = 2; i <= NF; i++) if ($i ~ /:achete$/ || $i ~ /:badge-.*-1$/) d++ }
         $1 == "niveaux" { $1 = ""; niv = substr($0, 2) }
         END { n = prenom; if (nom != "") n = n (n != "" ? " " : "") nom; if (n == "") n = login
-          printf "<li><button type=\"button\" class=\"nova-avatars-eleve%s\" data-login=\"%s\" data-choix=\"%s\" data-jetons=\"%s\" data-elements=\"%d\" data-niveaux=\"%s\"><span class=\"nova-avatars-portrait\"></span><span class=\"nova-avatars-nom\">%s</span></button></li>\n",
-            (ch == "" ? " nova-avatars-sans" : ""), esc(login), ch, j, d, niv, esc(n) }'
+          printf "<li><button type=\"button\" class=\"nova-avatars-eleve%s\" data-login=\"%s\" data-nom=\"%s\" data-prenom=\"%s\" data-choix=\"%s\" data-jetons=\"%s\" data-elements=\"%d\" data-niveaux=\"%s\"><span class=\"nova-avatars-portrait\"></span><span class=\"nova-avatars-nom\">%s</span></button></li>\n",
+            (ch == "" ? " nova-avatars-sans" : ""), esc(login), esc(nom), esc(prenom), ch, j, d, niv, esc(n) }'
   done
 } > "$tmp"
 rm -f "$liste"

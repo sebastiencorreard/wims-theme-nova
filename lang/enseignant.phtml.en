@@ -102,3 +102,9 @@
 !set nova_avs_inactif=Student avatars are not enabled here (Nova settings, "Badges and rewards" tab).
 !set nova_avs_vide=No students enrolled here.
 !set nova_avs_zone=Open a class or a course of this structure to see its students' avatars.
+!set nova_avs_exporter=Export avatars (.zip)
+!set nova_avs_enregistrer=Save avatar (.svg)
+!set nova_avs_retour_titre=Going back to an earlier version of Nova
+!set nova_avs_retour_texte=Each student's avatar and colour are stored with their scores; Nova versions from before 12 November 2026 look for them elsewhere. Before reinstalling one of those versions, this button copies them back to the old location, for all students of the class or structure. Do it just before changing version: a student's copy is removed as soon as they log in again with the current version.
+!set nova_avs_retour_bouton=Prepare the rollback
+!set nova_avs_retour_fait=Avatars copied back to the old location:

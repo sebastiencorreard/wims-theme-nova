@@ -19,6 +19,9 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- **Trombinoscope** : l'entrée « Trombinoscope » (menu Participants) ouvre désormais la page des avatars des élèves, qui prend son nom et remplace le trombinoscope à photos de WIMS quand l'avatar est activé (réglage « Menus du thème standard » : rien n'est remplacé).
+- **Trombinoscope** : bouton « Exporter les avatars (.zip) » (un fichier `Nom-Prenom.svg` par élève qui a un avatar) et, dans la fiche d'un élève, « Enregistrer l'avatar (.svg) ».
+- **Trombinoscope** : bouton « Préparer le retour », à utiliser juste avant de réinstaller une version de Nova d'avant le 12 novembre 2026 : il recopie l'avatar et la couleur des élèves à l'ancien emplacement.
 - **Avatars des élèves** (menu Participants, sous « Suivi en direct », quand l'avatar est activé) : grille des portraits des élèves d'une classe ou d'un cours (à la racine d'un portail ou d'un groupement, la page demande d'ouvrir une classe ou un cours), silhouette grisée pour qui n'a pas encore d'avatar ; un clic ouvre le détail (pièces gagnées, dépensées et disponibles, niveau des badges, éléments débloqués), avec Précédent / Suivant.
 - Configuration › Sauvegarde et maintenance : la **capacité de la classe** devient une carte avec une jauge fine aux couleurs de la classe, orange avec un message au-delà de 80 % d'espace occupé.
 - Jeu d'icônes **Lucide** : Feuilles, Examens, Documents… (onglets et tableaux de l'accueil, listes) ont une icône Lucide au lieu des anciens symboles de WIMS.

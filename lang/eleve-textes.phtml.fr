@@ -1,0 +1,47 @@
+!! Nova : textes de nova.js en clair (fr), lus par !read themes/$wims_theme/lang/eleve-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:avatar
+!! _widgets/avatar.phtml
+<div id="nova-avatar" data-jetons="$nova_aj" data-message="$nova_am" data-choix="$nova_ac" data-elements="$nova_ax" data-regles="$nova_ar" data-niveaux="$nova_an"
+  data-script="themes/$wims_theme/js/avatar.js" data-utilisateur="$wims_user"
+  data-t-jeton="%n pièce" data-t-jetons="%n pièces" data-t-prochain="Encore %n exercices réussis pour ta prochaine pièce." data-t-prochain1="Encore 1 exercice réussi pour ta prochaine pièce."
+  data-t-jour="Aujourd'hui : %n exercices comptés sur %m au plus." data-t-enregistrer="Enregistrer" data-t-hasard="Au hasard" data-t-enregistre="Avatar enregistré : il apparaît en haut de tes pages." data-t-apercu="Aperçu" data-t-enr-bloque="Débloque d'abord l'élément en aperçu, ou clique sur Annuler."
+  data-t-tire="Tiré parmi tes éléments débloqués. Enregistre-le s'il te plaît." data-t-premier="Choisis ton avatar, puis enregistre-le : il apparaîtra en haut de tes pages." data-t-categories="Coiffure,Chapeau (couleur),Noël,Cheveux (couleur),Peau,Yeux,Sourcils,Bouche,Lunettes,Lunettes (couleur),Barbe,Vêtement,Motif du tee-shirt,Vêtement (couleur),Fond" data-t-ouverts="%n sur %m débloqués."
+  data-t-motif="Choisir un motif met le tee-shirt à motif." data-t-lunettes="Choisis aussi des lunettes (onglet Lunettes) pour voir cette couleur sur ton avatar." data-t-aucun="Aucun" data-t-ouvrir="Débloquer" data-t-annuler="Annuler"
+  data-t-question="Le débloquer pour %n pièce ? Il restera débloqué pour toujours." data-t-question2="Le débloquer pour %n pièces ? Il restera débloqué pour toujours." data-t-manque="Il te faut %n pièces. Réussis encore quelques exercices !" data-t-manque1="Il te faut 1 pièce. Réussis encore quelques exercices !"
+  data-t-badge="Réservé au badge %b, niveau %n. Tu en es au niveau %m." data-t-badge-off="Réservé au badge %b, qui n'est pas proposé dans ta classe." data-t-badge-ok="Débloqué grâce à ton badge %b, niveau %n." data-t-ouvert="Élément débloqué !" data-t-refus="Ce n'est pas possible pour l'instant : recharge la page."
+  data-t-erreur="Les dessins n'ont pas pu se charger : recharge la page." data-t-regles="Comment gagner des pièces" data-t-regle1="Un exercice compte quand tu le réussis (au moins %n sur 10)." data-t-regle2="Le même exercice compte une fois par jour : tu peux le refaire un autre jour."
+  data-t-regle3="Une réponse envoyée en moins de %n secondes ne compte pas." data-t-regle4="Au plus %n exercices comptent par jour : mieux vaut un peu chaque jour." data-t-regle5="Un élément débloqué le reste toujours. Les éléments rares coûtent 2 pièces ; ceux marqués d'une étoile sont des récompenses des badges."
+  data-t-leg1="1 pièce pour le débloquer" data-t-leg2="rare : 2 pièces" data-t-leg3="réservé à un badge"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom"
+  data-t-niveaux="$nova_fid_niveaux"></div>
+!exit
+
+:user
+!! user.phtml
+    <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-top="$nova_lt" data-topdm="$nova_lu" data-encours="$nova_ct" data-reglages="$nova_lr"
+      data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/regularite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
+      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0" data-images-top="themes/$wims_theme/img/badges/etoile/etoile_0"
+      data-titre="$nova_badges_titre" data-niveau="niveau" data-obtenu="Obtenu le"
+      data-serie="série en cours" data-record="record" data-avant="avant le niveau %s" data-max="Tous les niveaux sont atteints : bravo !"
+      data-aucun="Pas encore de niveau" data-sem="sem." data-fermer="Fermer"
+      data-fid-nom="$nova_fid_nom" data-fid-regle="Chaque semaine où tu fais du WIMS au moins %e jours compte. Une semaine sans WIMS ne te fait rien perdre." data-fid-regle1="Chaque semaine où tu fais du WIMS au moins 1 jour compte. Une semaine sans WIMS ne te fait rien perdre." data-fid-aide="Un niveau obtenu ne se perd jamais. Tu peux aussi avancer pendant les vacances, sans obligation." data-fid-total="semaines comptées"
+      data-fid-suite="Encore %n semaines pour le niveau %s." data-fid-suite1="Encore 1 semaine pour le niveau %s."
+      data-fid-etat-fait="Cette semaine compte déjà." data-fid-etat-attente="Cette semaine ne compte pas encore : fais du WIMS au moins %e jours." data-fid-etat-attente1="Cette semaine ne compte pas encore : fais du WIMS au moins 1 jour."
+      data-per-nom="$nova_per_nom" data-per-regle="Réussis (%r/10 ou plus) un exercice sur lequel tu avais d'abord eu au moins %n notes de moins de %e/10." data-per-total="exercices réussis après des difficultés" data-per-encours="En cours : « %t », %n notes de moins de %e/10. Une réussite et il compte !"
+      data-per-suite="Encore %n exercices pour le niveau %s." data-per-suite1="Encore 1 exercice pour le niveau %s." data-per-examens-oui="Un niveau obtenu ne se perd jamais. Les exercices des examens comptent aussi." data-per-examens-non="Un niveau obtenu ne se perd jamais. Les exercices des examens ne comptent pas."
+      data-ech-nom="$nova_ech_nom" data-ech-regle="Avant chaque DM noté, fais au moins %n sessions complètes de son entraînement : une réponse à chaque exercice." data-ech-regle1="Avant chaque DM noté, fais au moins une session complète de son entraînement : une réponse à chaque exercice." data-ech-total="DM préparés"
+      data-ech-dm="« %t » : encore %n sessions complètes d'entraînement avant de commencer le DM noté." data-ech-dm1="« %t » : encore 1 session complète d'entraînement avant de commencer le DM noté." data-ech-pret="« %t » : tu es échauffé, tu peux commencer le DM noté !" data-ech-suite="Encore %n DM préparés pour le niveau %s."
+      data-ech-suite1="Encore 1 DM préparé pour le niveau %s." data-ech-aide="Un niveau obtenu ne se perd jamais. Une session compte quand tu as répondu à tous ses exercices ; l'entraînement fait après avoir commencé le DM noté ne compte pas pour ce DM."
+      data-top-nom="$nova_top_nom" data-top-regle="Un DM WIMS compte quand ta note retenue au DM noté (ta meilleure session) atteint au moins %s/10." data-top-total="DM au top" data-top-afaire="« %t » : à toi de jouer ! Vise %s/10."
+      data-top-reussi="« %t » : %n/10, bravo !" data-top-encore="« %t » : %n/10 pour l'instant. S'il te reste des essais, vise %s/10." data-top-suite="Encore %n DM au top pour le niveau %s." data-top-suite1="Encore 1 DM au top pour le niveau %s."
+      data-top-aide="C'est ta meilleure note au DM noté qui compte, même au dernier essai. Un niveau obtenu ne se perd jamais." data-couleur="$nova_cv"
+      data-coul-titre="Tes récompenses" data-coul-aide="Elle s'applique sur toutes tes pages, examens compris." data-coul-verrou="Atteins le niveau %s du badge %b pour choisir ta couleur."
+      data-coul-classe="Reprendre la couleur de la classe" data-coul-noms="Corail,Orange,Ambre,Vert,Sapin,Turquoise,Azur,Bleu nuit,Violet,Rose" data-coul-choisie="Couleur choisie : %s."
+      data-coul-menu="Ma couleur" data-coul-nouveau="nouveau" data-coul-unie="Couleur unie" data-coul-degrades="Dégradés"
+      data-coul-degrades-aide="Barre du haut, boutons et titres des fenêtres. La première couleur sert aux liens." data-coul-verrou-degrade="Atteins le niveau %s du badge %b pour les dégradés." data-coul-degrades-noms="Crépuscule,Braise,Framboise,Soleil couchant,Océan,Aurore,Forêt,Nuit étoilée"
+      data-coul-recompense="Au niveau %s : la couleur de ton WIMS." data-coul-recompense-deg="Au niveau %s : les dégradés." data-coul-recompense-deg2="Au niveau %s : les dégradés, une fois ta couleur débloquée." data-coul-verrou-degrade2="Atteins le niveau %s du badge %b pour les dégradés (après la couleur)." data-coul-choisir="Choisir ma couleur"></div>
+!exit

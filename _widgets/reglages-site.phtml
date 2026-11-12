@@ -4,7 +4,6 @@
 !! seulement ($wims_ismanager=2, calcule par WIMS).
 !! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
 !! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
-!read themes/$wims_theme/lang/reglages.phtml.$lang
 !set nova_q=!sh printf '%s' "$$QUERY_STRING"
 !set nova_q=!replace internal & by $ $ in $nova_q
 !set nova_reglages=!getopt nova_reglages in $nova_q

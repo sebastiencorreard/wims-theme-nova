@@ -24,7 +24,7 @@
 !! compris), propages separement. Sur la page Apparence elle-meme : un lien vers cette page seulement.
 !! Replies aussi (demande de l'utilisateur, 2026-10-06) : degrade des scores et couleurs des activites (remplaces
 !! par Nova), feuille de style (css). « Couleur de fond des menus » (couleur d'accent de Nova) : « Couleur du theme ».
-<template id="nova-reglages-classe" data-titre="$nova_rg_titre" data-enregistre="$nova_rg_enregistre" data-lien="$nova_rg_lien" data-lien-texte="$nova_rg_lien_texte" data-erreur-vacances="$nova_app_vacances_erreur" data-mots-defaut="$nova_rg_mots_defaut" data-mots-retirer="$nova_rg_mots_retirer" data-mots-ajouter="$nova_rg_mots_ajouter" data-mots-placeholder="$nova_rg_mots_placeholder" data-mots-retablir="$nova_rg_mots_retablir" data-vac-noms="$nova_app_vac_noms" data-vac-ete="$nova_app_vac_ete" data-vac-manque="$nova_app_vac_manque" data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="$nova_app_vac_resume_aucune" data-vac-herite-de="$nova_app_vac_herite_de" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="$nova_app_masques" data-afficher="$nova_app_afficher" data-masquer="$nova_app_masquer">
+!read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_1
   <div class="nova-app nova-reglages">
     <section class="nova-onglet" data-onglet="affichage" data-titre="$nova_rg_affichage">
       <fieldset class="property_fields blockcenter nova-app-carte">
@@ -209,14 +209,14 @@
 !set nova_k=!itemcnt $nova_fid_niveaux
           <p class="nova-app-phrase nova-bdg-coul-ligne"><strong>$nova_bdg_coul_ligne1</strong> $nova_bdg_coul_au_niveau
             <select class="nova-app-choix" data-cle="couleur-niveau" aria-label="$nova_bdg_coul_niveau">
-              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              !read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_2
 !for nova_i=1 to $nova_k
               <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
             </select>
             $nova_bdg_coul_phrase2
             <select class="nova-app-choix" data-cle="couleur-badge" aria-label="$nova_bdg_coul_badge">
-              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              !read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_3
               <option value="fidelite">$nova_fid_nom</option>
               <option value="perseverance">$nova_per_nom</option>
               <option value="echauffement">$nova_ech_nom</option>
@@ -225,14 +225,14 @@
             </select>.</p>
           <p class="nova-app-phrase nova-bdg-coul-ligne"><strong>$nova_bdg_coul_ligne2</strong> $nova_bdg_coul_au_niveau
             <select class="nova-app-choix" data-cle="couleur-degrade" aria-label="$nova_bdg_coul_degrade">
-              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              !read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_4
 !for nova_i=1 to $nova_k
               <option value="$nova_i">$(nova_fid_niveaux[$nova_i])</option>
 !next
             </select>
             $nova_bdg_coul_phrase2
             <select class="nova-app-choix" data-cle="couleur-degrade-badge" aria-label="$nova_bdg_coul_badge_deg">
-              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_meme_badge</option>
+              !read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_5
               <option value="fidelite">$nova_fid_nom</option>
               <option value="perseverance">$nova_per_nom</option>
               <option value="echauffement">$nova_ech_nom</option>
@@ -248,7 +248,7 @@
           <p class="nova-app-aide">$nova_bdg_av_aide</p>
           <p class="nova-app-phrase">$nova_bdg_av_actif :
             <select class="nova-app-choix" data-cle="avatar" aria-label="$nova_bdg_av_actif">
-              <option value="" data-texte="$nova_bdg_coul_herite">$nova_bdg_coul_herite_vide</option>
+              !read themes/$wims_theme/lang/reglages-textes.phtml.$lang apparence_classe_6
               <option value="oui">$nova_bdg_av_oui</option>
               <option value="non">$nova_bdg_av_non</option>
             </select></p>

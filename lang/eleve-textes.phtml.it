@@ -1,0 +1,47 @@
+!! Nova : textes de nova.js en clair (it), lus par !read themes/$wims_theme/lang/eleve-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:avatar
+!! _widgets/avatar.phtml
+<div id="nova-avatar" data-jetons="$nova_aj" data-message="$nova_am" data-choix="$nova_ac" data-elements="$nova_ax" data-regles="$nova_ar" data-niveaux="$nova_an"
+  data-script="themes/$wims_theme/js/avatar.js" data-utilisateur="$wims_user"
+  data-t-jeton="%n moneta" data-t-jetons="%n monete" data-t-prochain="Ancora %n esercizi superati per la tua prossima moneta." data-t-prochain1="Ancora 1 esercizio superato per la tua prossima moneta."
+  data-t-jour="Oggi: %n esercizi contati, %m al massimo." data-t-enregistrer="Salva" data-t-hasard="A caso" data-t-enregistre="Avatar salvato: compare in cima alle tue pagine." data-t-apercu="Anteprima" data-t-enr-bloque="Sblocca prima l'elemento in anteprima, oppure clicca su Annulla."
+  data-t-tire="Scelto tra i tuoi elementi sbloccati. Salvalo se ti piace." data-t-premier="Scegli il tuo avatar, poi salvalo: comparirà in cima alle tue pagine." data-t-categories="Capelli,Colore del cappello,Natale,Colore dei capelli,Pelle,Occhi,Sopracciglia,Bocca,Occhiali,Colore degli occhiali,Barba,Vestiti,Stampa della maglietta,Colore dei vestiti,Sfondo" data-t-ouverts="%n su %m sbloccati."
+  data-t-motif="Scegliere una stampa passa alla maglietta stampata." data-t-lunettes="Scegli anche degli occhiali (scheda Occhiali) per vedere questo colore sul tuo avatar." data-t-aucun="Nessuno" data-t-ouvrir="Sblocca" data-t-annuler="Annulla"
+  data-t-question="Sbloccarlo per %n moneta? Resta sbloccato per sempre." data-t-question2="Sbloccarlo per %n monete? Resta sbloccato per sempre." data-t-manque="Ti servono %n monete. Supera ancora qualche esercizio!" data-t-manque1="Ti serve 1 moneta. Supera ancora qualche esercizio!"
+  data-t-badge="Riservato al distintivo %b, livello %n. Sei al livello %m." data-t-badge-off="Riservato al distintivo %b, che la tua classe non propone." data-t-badge-ok="Sbloccato dal tuo distintivo %b, livello %n." data-t-ouvert="Sbloccato!" data-t-refus="Non è possibile adesso: ricarica la pagina."
+  data-t-erreur="Impossibile caricare i disegni: ricarica la pagina." data-t-regles="Come guadagnare monete" data-t-regle1="Un esercizio conta quando lo superi (almeno %n su 10)." data-t-regle2="Lo stesso esercizio conta una volta al giorno: puoi rifarlo un altro giorno."
+  data-t-regle3="Una risposta inviata in meno di %n secondi non conta." data-t-regle4="Contano al massimo %n esercizi al giorno: meglio un po' ogni giorno." data-t-regle5="Un elemento sbloccato resta sbloccato. Gli elementi rari costano 2 monete; quelli con una stella sono ricompense dei distintivi."
+  data-t-leg1="1 moneta per sbloccare" data-t-leg2="raro: 2 monete" data-t-leg3="ricompensa di un distintivo"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom"
+  data-t-niveaux="$nova_fid_niveaux"></div>
+!exit
+
+:user
+!! user.phtml
+    <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-top="$nova_lt" data-topdm="$nova_lu" data-encours="$nova_ct" data-reglages="$nova_lr"
+      data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/regularite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
+      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0" data-images-top="themes/$wims_theme/img/badges/etoile/etoile_0"
+      data-titre="$nova_badges_titre" data-niveau="livello" data-obtenu="Ottenuto il"
+      data-serie="serie attuale" data-record="serie migliore" data-avant="prima del livello %s" data-max="Tutti i livelli raggiunti: complimenti!"
+      data-aucun="Ancora nessun livello" data-sem="sett." data-fermer="Chiudi"
+      data-fid-nom="$nova_fid_nom" data-fid-regle="Conta ogni settimana in cui usi WIMS almeno %e giorni. Una settimana senza WIMS non ti fa perdere nulla." data-fid-regle1="Conta ogni settimana in cui usi WIMS almeno 1 giorno. Una settimana senza WIMS non ti fa perdere nulla." data-fid-aide="Un livello ottenuto non si perde mai. Puoi anche avanzare durante le vacanze, se vuoi." data-fid-total="settimane contate"
+      data-fid-suite="Ancora %n settimane per il livello %s." data-fid-suite1="Ancora 1 settimana per il livello %s."
+      data-fid-etat-fait="Questa settimana conta già." data-fid-etat-attente="Questa settimana non conta ancora: usa WIMS almeno %e giorni." data-fid-etat-attente1="Questa settimana non conta ancora: usa WIMS almeno 1 giorno."
+      data-per-nom="$nova_per_nom" data-per-regle="Supera (%r/10 o più) un esercizio in cui prima hai preso almeno %n voti strettamente inferiori a %e/10." data-per-total="esercizi superati dopo difficoltà" data-per-encours="In corso: «%t», %n voti strettamente inferiori a %e/10. Un successo e conta!"
+      data-per-suite="Ancora %n esercizi per il livello %s." data-per-suite1="Ancora 1 esercizio per il livello %s." data-per-examens-oui="Un livello ottenuto non si perde mai. Contano anche gli esercizi d'esame." data-per-examens-non="Un livello ottenuto non si perde mai. Gli esercizi d'esame non contano."
+      data-ech-nom="$nova_ech_nom" data-ech-regle="Prima di ogni compito valutato, fai almeno %n sessioni complete del suo esame di allenamento: una risposta a ogni esercizio." data-ech-regle1="Prima di ogni compito valutato, fai almeno una sessione completa del suo esame di allenamento: una risposta a ogni esercizio." data-ech-total="compiti preparati"
+      data-ech-dm="«%t»: ancora %n sessioni complete di allenamento prima di iniziare il compito valutato." data-ech-dm1="«%t»: ancora 1 sessione completa di allenamento prima di iniziare il compito valutato." data-ech-pret="«%t»: sei riscaldato, puoi iniziare il compito valutato!" data-ech-suite="Ancora %n compiti preparati per il livello %s."
+      data-ech-suite1="Ancora 1 compito preparato per il livello %s." data-ech-aide="Un livello ottenuto non si perde mai. Una sessione conta quando hai risposto a tutti i suoi esercizi; l'allenamento fatto dopo aver iniziato il compito valutato non conta per esso."
+      data-top-nom="$nova_top_nom" data-top-regle="Un compito WIMS conta quando il tuo voto tenuto nella prova valutata (la tua sessione migliore) arriva almeno a %s/10." data-top-total="compiti al top" data-top-afaire="«%t»: tocca a te! Punta a %s/10."
+      data-top-reussi="«%t»: %n/10, complimenti!" data-top-encore="«%t»: %n/10 per ora. Se ti restano tentativi, punta a %s/10." data-top-suite="Ancora %n compiti al top per il livello %s." data-top-suite1="Ancora 1 compito al top per il livello %s."
+      data-top-aide="Conta il tuo voto migliore nella prova valutata, anche all'ultimo tentativo. Un livello ottenuto non si perde mai." data-couleur="$nova_cv"
+      data-coul-titre="Le tue ricompense" data-coul-aide="Vale per tutte le tue pagine, prove comprese." data-coul-verrou="Raggiungi il livello %s del distintivo %b per scegliere il tuo colore."
+      data-coul-classe="Torna al colore della classe" data-coul-noms="Corallo,Arancione,Ambra,Verde,Verde abete,Turchese,Azzurro,Blu marino,Viola,Rosa" data-coul-choisie="Colore scelto: %s."
+      data-coul-menu="Il mio colore" data-coul-nouveau="nuovo" data-coul-unie="Colore unito" data-coul-degrades="Sfumature"
+      data-coul-degrades-aide="Barra in alto, pulsanti e titoli delle finestre. Il primo colore è usato per i link." data-coul-verrou-degrade="Raggiungi il livello %s del distintivo %b per le sfumature." data-coul-degrades-noms="Crepuscolo,Brace,Lampone,Tramonto,Oceano,Aurora,Foresta,Notte stellata"
+      data-coul-recompense="Al livello %s: il colore del tuo WIMS." data-coul-recompense-deg="Al livello %s: le sfumature." data-coul-recompense-deg2="Al livello %s: le sfumature, una volta sbloccato il tuo colore." data-coul-verrou-degrade2="Raggiungi il livello %s del distintivo %b per le sfumature (dopo il colore)." data-coul-choisir="Scegli il mio colore"></div>
+!exit

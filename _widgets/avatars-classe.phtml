@@ -16,13 +16,7 @@
   !set nova_avh=$wims_name_photoboard
 !endif
 !set nova_avk=!text select 0123456789 in $wims_class
-<section id="nova-avatars" aria-labelledby="nova-avatars-titre" data-script="themes/$wims_theme/js/avatar.js"
-  data-t-resume="$nova_avs_resume" data-t-gagnees="$nova_avs_gagnees" data-t-depensees="$nova_avs_depensees"
-  data-t-dispo="$nova_avs_dispo" data-t-elements="$nova_avs_elements" data-t-exercices="$nova_avs_exercices" data-t-niveau="$nova_avs_niveau"
-  data-t-sans="$nova_avs_sans" data-t-attente="$nova_avs_attente" data-t-precedent="$nova_avs_precedent" data-t-suivant="$nova_avs_suivant"
-  data-t-fermer="$nova_avs_fermer" data-t-enregistrer="$nova_avs_enregistrer" data-classe="$nova_avk" data-avatar="$nova_avb"
-  data-t-afficher="$nova_avs_afficher" data-t-avatar="$nova_avs_avatar" data-t-aucun="$nova_avs_aucun" data-t-eleves="$nova_avs_eleves" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
-  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+!read themes/$wims_theme/lang/enseignant-textes.phtml.$lang avatars_classe
 <h1 id="nova-avatars-titre">$nova_avh</h1>
 !! Racine d'un portail ou d'un groupement, niveau, programme (2026-11-12, utilisateur) : trop d'eleves d'un coup ;
 !! demander de choisir une zone. Grille seulement dans une classe ou un cours.

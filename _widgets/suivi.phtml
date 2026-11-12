@@ -29,21 +29,21 @@
     <p class="nova-suivi-aide">$nova_sv_panneau_aide</p>
     <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-seance">
       <strong id="nova-suivi-r-seance">$nova_sv_seance</strong>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_fenetre"><input id="nova-suivi-fenetre" type="number" min="1" max="120" step="1" value="60" aria-label="$nova_sv_a_fenetre"></p>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_inactivite"><input id="nova-suivi-inactivite" type="number" min="1" max="120" step="1" value="5" aria-label="$nova_sv_a_inactivite"></p>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_intervalle"><input id="nova-suivi-intervalle" type="number" min="10" max="300" step="1" value="30" aria-label="$nova_sv_a_intervalle"></p>
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_1
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_2
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_3
     </div>
     <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-difficulte">
       <span id="nova-suivi-r-difficulte" class="nova-suivi-tag nova-suivi-tag-difficulte">$nova_svj_difficulte</span>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_difficulte"><input id="nova-suivi-erreurs" type="number" min="1" max="5" step="1" value="3" aria-label="$nova_sv_a_erreurs"> <input id="nova-suivi-resultats" type="number" min="1" max="100" step="1" value="5" aria-label="$nova_sv_a_resultats"> <input id="nova-suivi-note-faible" type="number" min="0" max="10" step="0.1" value="5" aria-label="$nova_sv_a_note_faible"></p>
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_4
     </div>
     <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-attente">
       <span id="nova-suivi-r-attente" class="nova-suivi-tag nova-suivi-tag-attente">$nova_svj_attente</span>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_attente"><input id="nova-suivi-attente" type="number" min="1" max="120" step="1" value="8" aria-label="$nova_sv_a_attente"></p>
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_5
     </div>
     <div class="nova-suivi-regle" role="group" aria-labelledby="nova-suivi-r-repetition">
       <span id="nova-suivi-r-repetition" class="nova-suivi-tag nova-suivi-tag-repetition">$nova_svj_repetition</span>
-      <p class="nova-suivi-phrase" data-phrase="$nova_sv_p_repetition"><input id="nova-suivi-reprises" type="number" min="1" max="1000" step="1" value="4" aria-label="$nova_sv_a_reprises"> <input id="nova-suivi-reussites" type="number" min="1" max="100" step="1" value="3" aria-label="$nova_sv_a_reussites"> <input id="nova-suivi-note-reussite" type="number" min="0" max="10" step="0.1" value="9" aria-label="$nova_sv_a_note_reussite"></p>
+      !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_6
     </div>
     <div class="nova-suivi-panneau-bas">
       <button type="button" id="nova-suivi-defauts" class="wims_button wims_secondary_button">$nova_sv_defauts</button>
@@ -51,7 +51,7 @@
     </div>
   </dialog>
   <noscript><p>$nova_sv_noscript</p></noscript>
-  <template id="nova-suivi-textes" data-indispo="$nova_svj_indispo" data-ily-s="$nova_svj_ily_s" data-ily-min="$nova_svj_ily_min" data-aucun-signal="$nova_svj_aucun_signal" data-why-difficulte="$nova_svj_why_difficulte" data-why-repetition="$nova_svj_why_repetition" data-why-attente="$nova_svj_why_attente" data-difficulte="$nova_svj_difficulte" data-attente="$nova_svj_attente" data-repetition="$nova_svj_repetition" data-travail="$nova_svj_travail" data-silence="$nova_svj_silence" data-ancien="$nova_svj_ancien" data-f-actifs="$nova_svj_f_actifs" data-f-attention="$nova_svj_f_attention" data-f-tous="$nova_svj_f_tous" data-g-repetition="$nova_svj_g_repetition" data-g-silence="$nova_svj_g_silence" data-g-ancien="$nova_svj_g_ancien" data-examen="$nova_svj_examen" data-feuille="$nova_svj_feuille" data-chrono-titre="$nova_svj_chrono_titre" data-relances="$nova_svj_relances" data-pas-de-note="$nova_svj_pas_de_note" data-res-indispo="$nova_svj_res_indispo" data-res-indispo-court="$nova_svj_res_indispo_court" data-note="$nova_svj_note" data-note-a="$nova_svj_note_a" data-aucun-essai="$nova_svj_aucun_essai" data-quarante="$nova_svj_quarante" data-partiel="$nova_svj_partiel" data-masquer="$nova_svj_masquer" data-voir-chrono="$nova_svj_voir_chrono" data-masquer-chrono="$nova_svj_masquer_chrono" data-passee="$nova_svj_passee" data-pas-encore="$nova_svj_pas_encore" data-auto="$nova_svj_auto" data-n-classes="$nova_svj_n_classes" data-minutes="$nova_svj_minutes" data-releve-a="$nova_svj_releve_a" data-actualisation="$nova_svj_actualisation" data-impossible="$nova_svj_impossible" data-expiree="$nova_svj_expiree" data-err-trop="$nova_svj_err_trop" data-err-refuse="$nova_svj_err_refuse" data-err-reserve="$nova_svj_err_reserve" data-err-indispo="$nova_svj_err_indispo" data-exo="$nova_svj_exo" data-accueil="$nova_svj_accueil" data-inconnue="$nova_svj_inconnue"></template>
+  !read themes/$wims_theme/lang/suivi-textes.phtml.$lang suivi_7
 </section>
 !set nova_sid=!text select char abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $wims_session
 !if $nova_sid=$wims_session

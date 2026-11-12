@@ -1,0 +1,65 @@
+!! Nova : textes de nova.js en clair (it), lus par !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:acces_classe
+!! _widgets/acces-classe.phtml
+<template id="nova-acces" data-titre-jour="Orari vietati, ogni giorno" data-aide-jour="I tuoi studenti non potranno fare esercizi né consultare risorse durante questi orari. La pagina iniziale e i voti restano accessibili." data-de="Dalle" data-a="alle" data-lendemain="giorno dopo" data-retirer-plage="Togli questa fascia oraria" data-ajouter-plage="Aggiungi una fascia oraria" data-nuit="Di notte: dalle 20:30 alle 7:00" data-titre-periodes="Periodi vietati" data-aide-periodes="Una sola volta, tra due date: un fine settimana di esami, una settimana di vacanza..." data-du="Dal" data-au="al" data-heure-debut="Ora di inizio" data-heure-fin="Ora di fine" data-retirer-periode="Togli questo periodo" data-ajouter-periode="Aggiungi un periodo" data-incomplet="incompleto: ignorato" data-titre-portee="Cosa è vietato" data-tout="Tutto il lavoro nella classe" data-exo="Solo gli esercizi" data-titre-resume="Riepilogo" data-resume-tout="Il lavoro nella classe è vietato %1." data-resume-exo="Gli esercizi sono vietati %1." data-chaque-jour="ogni giorno dalle %1 alle %2" data-chaque-jour-lendemain="ogni giorno dalle %1 alle %2 del giorno dopo" data-periode="dal %1 alle %2 al %3 alle %4" data-aucune="Nessuna restrizione: i tuoi studenti possono lavorare a qualsiasi ora." data-lignes="Righe scritte per WIMS" data-expert="Impostazione esperta (altre regole, indirizzi IP...)" data-expert-n="Impostazione esperta: %1 altra/e regola/e scritta/e a mano" data-expert-aide="Il campo di WIMS. Le regole scritte a mano sono conservate; le regole di questo modulo stanno tra le righe «# Nova : debut» e «# Nova : fin». Una regola ripetuta è scritta una sola volta."></template>
+!exit
+
+:avatars_classe
+!! _widgets/avatars-classe.phtml
+<section id="nova-avatars" aria-labelledby="nova-avatars-titre" data-script="themes/$wims_theme/js/avatar.js"
+  data-t-resume="Studenti: %n · con avatar: %a · senza avatar: %s" data-t-gagnees="Monete guadagnate" data-t-depensees="Spese"
+  data-t-dispo="Disponibili" data-t-elements="Elementi sbloccati: %n" data-t-exercices="Esercizi riusciti contati: %n" data-t-niveau="liv. %n"
+  data-t-sans="Nessun avatar ancora salvato." data-t-attente="Monete disponibili: %n" data-t-precedent="Precedente" data-t-suivant="Successivo"
+  data-t-fermer="Chiudi" data-t-enregistrer="Salva l'avatar (.svg)" data-classe="$nova_avk" data-avatar="$nova_avb"
+  data-t-afficher="Mostra:" data-t-avatar="Avatar" data-t-aucun="nessun distintivo" data-t-eleves="Studenti: %n" data-t-jeton="%n moneta" data-t-jetons="%n monete"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+!exit
+
+:capacite
+!! _widgets/capacite.phtml
+<template id="nova-capacite-textes" data-sur="%u su %t (%p%)" data-plein="La classe si avvicina alla capacità massima."></template>
+!exit
+
+:config_globale
+!! _widgets/config-globale.phtml
+<template id="nova-cg-textes" data-plus="Altre impostazioni (%1)" data-moins="Meno impostazioni" data-modifie="modificato" data-defaut="Impostazioni predefinite di WIMS"></template>
+!exit
+
+:confirmations
+!! _widgets/confirmations.phtml
+<template id="nova-confirm-textes" data-activer-sheet="Attivare il foglio %1?" data-activer-exam="Attivare l'esame %1?" data-effacer-sheet="Cancellare il foglio %1?" data-effacer-exam="Cancellare l'esame %1?" data-effacer-freework="Cancellare il compito libero %1?" data-effacer-doc="Cancellare il documento %1?" data-effacer-tool="Cancellare lo strumento %1?" data-travail-sheet="Gli studenti hanno già lavorato sul foglio %1" data-desactiver-sheet="Disattivare il foglio %1?" data-desactiver-exam="Disattivare l'esame %1?" data-desactiver-freework="Disattivare il compito libero %1?" data-refus-sheet="Il foglio %1 non può essere disattivato" data-refus-exam="L'esame %1 non può essere disattivato" data-refus-freework="Il compito libero %1 non può essere disattivato" data-wims-refuse="WIMS rifiuta" data-comptes="%1 account hanno già lavorato" data-fw-effacer="È definitivo: il compito e i file consegnati vengono cancellati." data-b-activer="Attiva" data-b-effacer="Cancella" data-b-desactiver="Disattiva" data-b-scores="Cancella i voti e disattiva" data-b-fermer="Chiudi" data-b-annuler="Annulla" data-b-page="Apri la pagina di WIMS" data-erreur="WIMS non ha risposto: non è stato fatto nulla. Riprova."></template>
+!exit
+
+:desactiver_1
+!! _widgets/desactiver.phtml
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="Gli esercizi di questo foglio sono usati in un esame: cambiarli cambia anche quell'esame e i voti dei suoi studenti." data-point-commence="Gli studenti l'hanno già iniziato: i loro voti sono conservati. Non disattivarlo mentre uno studente lo sta svolgendo." data-type="$nova_ft" data-n="$nova_fn" data-bouton="Disattiva comunque..." data-titre="$(nova_forcer_titre_$nova_fk)" data-points="$(nova_forcer_points_$nova_fk)" data-ok="Disattiva comunque" data-annuler="Annulla" data-sauver="Scarica prima un backup della classe" data-sauver-aide="Studenti, voti, fogli, esami... tutto il necessario per ripristinarla se serve (Configurazione, Backup e ripristino)." data-ok-sauver="Fai il backup, poi disattiva" data-etape1="Preparazione del backup della classe..." data-etape2="Download: %1" data-etape3="Disattivazione" data-echec="Il backup non è riuscito: nulla è stato disattivato." data-reessayer="Riprova" data-sans="Disattiva senza backup"></span>
+!exit
+
+:desactiver_2
+!! _widgets/desactiver.phtml
+<span id="nova-forcer" hidden data-reglage="1" data-refus="La disattivazione nonostante la condivisione non è permessa in questa classe. Un docente può permetterla in Impostazioni di Nova, scheda Aspetto (« Disattiva nonostante la condivisione »)."></span>
+!exit
+
+:ecarts_zones_1
+!! _widgets/ecarts-zones.phtml
+<ul id="nova-ecarts" hidden data-titre="%n zone dipendenti non usano queste impostazioni %q" data-titre1="1 zona dipendente non usa queste impostazioni %q" data-texte="Hanno impostazioni proprie: una copia vecchia, o un'impostazione fatta nella zona." data-texte1="Ha impostazioni proprie: una copia vecchia, o un'impostazione fatta nella zona." data-quoi-apparence="di Nova (visualizzazione, studenti, avanzate)" data-quoi-badges="di Nova (compiti WIMS, distintivi)" data-quoi-tout="di Nova" data-voir="Vedi le zone" data-appliquer="Applica queste impostazioni a tutte le zone" data-plus-tard="Più tardi" data-attente="Salva prima le modifiche, poi applicale alle zone.">$nova_ez</ul>
+!exit
+
+:ecarts_zones_2
+!! _widgets/ecarts-zones.phtml
+<ul id="nova-ecarts-acces" hidden data-enregistre="Restrizione d'accesso salvata." data-question="%1 zone dipendenti hanno un'altra restrizione d'accesso. Applicare loro questa?" data-question1="Una zona dipendente ha un'altra restrizione d'accesso. Applicarle questa?" data-texte="La loro restrizione attuale sarà sostituita da questa, regole scritte a mano comprese." data-voir="Vedi le zone" data-appliquer="Applica alle %1 zone" data-appliquer1="Applica a questa zona" data-non="No, solo qui" data-attente="Applicazione..." data-fait="Restrizione applicata alle %1 zone dipendenti." data-fait1="Restrizione applicata alla zona dipendente." data-erreur="Impossibile applicare la restrizione alle zone. Usa «Zone dipendenti» nella configurazione.">$nova_ea</ul>
+!exit
+
+:fiche_ressource
+!! _widgets/fiche-ressource.phtml
+<template id="nova-fiche-textes" data-f0="Invisibile agli studenti. Puoi ancora aggiungere, togliere e modificare gli esercizi." data-f1="Gli studenti lo vedono e i loro voti vengono registrati." data-f2="Gli studenti lo vedono ancora, ma i loro voti non vengono più registrati." data-f3="Gli studenti non lo vedono più; i loro voti non vengono più registrati." data-f4="Gli studenti non lo vedono più." data-e0="Invisibile agli studenti. Puoi ancora aggiungere, togliere e modificare gli esercizi." data-e1="Gli studenti possono svolgerlo e i loro voti vengono registrati." data-e2="Gli studenti lo vedono ancora, ma i loro voti non vengono più registrati." data-e3="Gli studenti non lo vedono più; i loro voti non vengono più registrati." data-e4="Gli studenti non lo vedono più." data-avances="Opzioni avanzate" data-cut-aide="Uno studente che ha iniziato l'esame prima di un orario di interruzione non può aprire una nuova sessione dopo di esso." data-cut-le="Il" data-cut-a="alle" data-cut-ajouter="Aggiungi un orario di interruzione" data-cut-retirer="Togli questo orario di interruzione" data-cut-aucune="Nessun orario di interruzione." data-cut-expert="Impostazione esperta: ciò che vede WIMS" data-cut-format="Gli orari di interruzione come li legge WIMS: aaaammgg.hh:mm, separati da spazi." data-com-ecrire="Scrivi un commento" data-com-modifier="Modifica il commento" data-com-replier="Nascondi l'editor"></template>
+!exit
+
+:statuts_ressources
+!! _widgets/statuts-ressources.phtml
+<template id="nova-statuts-textes" data-activer="Attiva" data-reactiver="Riattiva" data-activer-f="Gli studenti lo vedono e i loro voti vengono registrati." data-activer-e="Gli studenti possono svolgerlo e i loro voti vengono registrati." data-activer-d="Gli studenti possono consegnare il loro lavoro." data-vide="Aggiungi prima un esercizio." data-expirer-f="Sempre visibile; i nuovi voti non vengono più registrati." data-expirer-e="Gli studenti non possono più svolgerlo; i voti restano." data-expirer-d="Niente più consegne; rifiutato se alcune copie non sono corrette." data-cacher="Scompare dalla pagina degli studenti." data-montrer="Ricompare nella pagina degli studenti." data-reactiver-n="I voti vengono di nuovo registrati." data-reactiver-d="Le consegne si riaprono." data-desactiver="Torna in preparazione; avviso se gli studenti hanno lavorato." data-effacer="Definitivo; viene chiesta conferma." data-archiver="Congela il compito; non potrà più essere riattivato."></template>
+!exit

@@ -1,13 +1,3 @@
 !! Nova : repere du menu personnalisable (js/nova.js, basculeMenu ; textes de lang/name.phtml.<langue>).
 !! Lu par supervisor.phtml (accueil de la classe) et tail.phtml (toutes les pages de module d'un enseignant, 2026-11-11).
-!default nova_menu_simplifie=Simplified menu
-!default nova_menu_personnaliser=Choose menu items
-!default nova_menu_termine=Done
-!default nova_menu_defaut=Back to the default menu
-!default nova_menu_cacher=Hide
-!default nova_menu_montrer=Show
-!default nova_menu_consigne=Click the eye of an item to keep or hide it.
-!default nova_menu_rien=No hidden item yet
-<span id="nova-menu-bascule" hidden data-simplifie="$nova_menu_simplifie"
-  data-personnaliser="$nova_menu_personnaliser" data-termine="$nova_menu_termine" data-defaut="$nova_menu_defaut"
-  data-cacher="$nova_menu_cacher" data-montrer="$nova_menu_montrer" data-consigne="$nova_menu_consigne" data-rien="$nova_menu_rien"></span>
+!read themes/$wims_theme/lang/name-textes.phtml.$lang menu_bascule

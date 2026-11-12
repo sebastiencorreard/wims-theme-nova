@@ -81,7 +81,7 @@ for g in GROUPES:
     for l in LANGUES:
         f = 'lang/%s.phtml.%s' % (g, l)
         if not os.path.exists(f): ko('%s absent (lu par les gabarits pour cette langue)' % f); continue
-        if l in ('fr', 'en'): continue
+        if l in ('fr', 'en') or (g.endswith('-textes') and l in ('es', 'it')): continue
         tete = open(f, encoding='latin-1').read(600)
         if not re.search(r'^!read .*/%s\.phtml\.en' % g, tete, re.M): ko('%s ne commence pas par !read …/%s.phtml.en' % (f, g))
     def cles(l): return set(re.findall(r'^!set (nova_\w+)', open('lang/%s.phtml.%s' % (g, l), encoding='latin-1').read(), re.M))
@@ -89,6 +89,16 @@ for g in GROUPES:
     for l in ('en', 'es', 'it'):
         m = sorted(fr - cles(l))
         if m: ko('lang/%s.phtml.%s : %d texte(s) Nova de fr absents : %s' % (g, l, len(m), ' '.join(m[:8])))
+# Textes de nova.js en clair (lang/<groupe>-textes.phtml.<l>, 2026-11-12) : memes etiquettes et memes attributs data-*
+# dans fr, en, es, it ; aucun !set (le but : aucun nom de variable WIMS).
+def morceaux(f):
+    t = open(f, encoding='latin-1').read()
+    if re.search(r'^\s*!(set|let|default) ', t, re.M): ko('%s : !set dans un fichier de textes en clair' % f)
+    return {m.group(1): sorted(re.findall(r'(data-[\w-]+)=', m.group(2))) for m in re.finditer(r'^:(\w+)\n(.*?)^!exit', t, re.M | re.S)}
+for g in [x for x in GROUPES if x.endswith('-textes')]:
+    fr = morceaux('lang/%s.phtml.fr' % g)
+    for l in ('en', 'es', 'it'):
+        if morceaux('lang/%s.phtml.%s' % (g, l)) != fr: ko('lang/%s.phtml.%s : etiquettes ou attributs differents de fr' % (g, l))
 # Tampon des noms de variables de WIMS (32 Ko par page, src/var.c) : name.phtml est lu sur chaque page.
 noms = re.findall(r'^!set (\w+)=', open('lang/name.phtml.fr', encoding='latin-1').read(), re.M)
 if sum(len(n) + 1 for n in noms) > 4000:

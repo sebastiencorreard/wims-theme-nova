@@ -1,0 +1,47 @@
+!! Nova : textes de nova.js en clair (en), lus par !read themes/$wims_theme/lang/eleve-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:avatar
+!! _widgets/avatar.phtml
+<div id="nova-avatar" data-jetons="$nova_aj" data-message="$nova_am" data-choix="$nova_ac" data-elements="$nova_ax" data-regles="$nova_ar" data-niveaux="$nova_an"
+  data-script="themes/$wims_theme/js/avatar.js" data-utilisateur="$wims_user"
+  data-t-jeton="%n coin" data-t-jetons="%n coins" data-t-prochain="%n more exercises passed for your next coin." data-t-prochain1="1 more exercise passed for your next coin."
+  data-t-jour="Today: %n exercises counted, %m at most." data-t-enregistrer="Save" data-t-hasard="Random" data-t-enregistre="Avatar saved: it appears at the top of your pages." data-t-apercu="Preview" data-t-enr-bloque="Unlock the previewed item first, or click Cancel."
+  data-t-tire="Picked from your unlocked items. Save it if you like it." data-t-premier="Choose your avatar, then save it: it will appear at the top of your pages." data-t-categories="Hair,Hat colour,Christmas,Hair colour,Skin,Eyes,Eyebrows,Mouth,Glasses,Glasses colour,Beard,Clothes,T-shirt print,Clothes colour,Background" data-t-ouverts="%n of %m unlocked."
+  data-t-motif="Choosing a print switches to the printed T-shirt." data-t-lunettes="Also choose glasses (Glasses tab) to see this colour on your avatar." data-t-aucun="None" data-t-ouvrir="Unlock" data-t-annuler="Cancel"
+  data-t-question="Unlock it for %n coin? It stays unlocked for ever." data-t-question2="Unlock it for %n coins? It stays unlocked for ever." data-t-manque="You need %n coins. Pass a few more exercises!" data-t-manque1="You need 1 coin. Pass a few more exercises!"
+  data-t-badge="Reserved for the %b badge, level %n. You are at level %m." data-t-badge-off="Reserved for the %b badge, which your class does not offer." data-t-badge-ok="Unlocked by your %b badge, level %n." data-t-ouvert="Unlocked!" data-t-refus="Not possible right now: reload the page."
+  data-t-erreur="The drawings could not load: reload the page." data-t-regles="How to earn coins" data-t-regle1="An exercise counts when you pass it (at least %n out of 10)." data-t-regle2="The same exercise counts once a day: you can do it again another day."
+  data-t-regle3="An answer sent in less than %n seconds does not count." data-t-regle4="At most %n exercises count per day: a little every day is better." data-t-regle5="An unlocked item stays unlocked. Rare items cost 2 coins; items with a star are badge rewards."
+  data-t-leg1="1 coin to unlock" data-t-leg2="rare: 2 coins" data-t-leg3="badge reward"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom"
+  data-t-niveaux="$nova_fid_niveaux"></div>
+!exit
+
+:user
+!! user.phtml
+    <div id="nova-badges" hidden data-fidelite="$nova_lf" data-perseverance="$nova_lp" data-echauffement="$nova_lh" data-dm="$nova_ld" data-top="$nova_lt" data-topdm="$nova_lu" data-encours="$nova_ct" data-reglages="$nova_lr"
+      data-niveaux="$nova_fid_niveaux" data-images-fidelite="themes/$wims_theme/img/badges/regularite/coeur_0" data-images-perseverance="themes/$wims_theme/img/badges/perseverance/flamme_0"
+      data-images-echauffement="themes/$wims_theme/img/badges/entrainement/halteres_0" data-images-top="themes/$wims_theme/img/badges/etoile/etoile_0"
+      data-titre="$nova_badges_titre" data-niveau="level" data-obtenu="Earned on"
+      data-serie="current streak" data-record="best streak" data-avant="before level %s" data-max="All levels reached: well done!"
+      data-aucun="No level yet" data-sem="wk" data-fermer="Close"
+      data-fid-nom="$nova_fid_nom" data-fid-regle="Every week in which you use WIMS at least %e days counts. A week without WIMS makes you lose nothing." data-fid-regle1="Every week in which you use WIMS at least 1 day counts. A week without WIMS makes you lose nothing." data-fid-aide="A level once earned is never lost. You can also move forward during the holidays, if you wish." data-fid-total="weeks counted"
+      data-fid-suite="%n more weeks for level %s." data-fid-suite1="1 more week for level %s."
+      data-fid-etat-fait="This week already counts." data-fid-etat-attente="This week does not count yet: use WIMS at least %e days." data-fid-etat-attente1="This week does not count yet: use WIMS at least 1 day."
+      data-per-nom="$nova_per_nom" data-per-regle="Succeed (%r/10 or more) at an exercise where you first got at least %n scores strictly below %e/10." data-per-total="exercises succeeded after difficulties" data-per-encours="In progress: "%t", %n scores strictly below %e/10. One success and it counts!"
+      data-per-suite="%n more exercises for level %s." data-per-suite1="1 more exercise for level %s." data-per-examens-oui="A level once earned is never lost. Exam exercises count too." data-per-examens-non="A level once earned is never lost. Exam exercises do not count."
+      data-ech-nom="$nova_ech_nom" data-ech-regle="Before each graded homework, do at least %n complete sessions of its practice exam: an answer to every exercise." data-ech-regle1="Before each graded homework, do at least one complete session of its practice exam: an answer to every exercise." data-ech-total="homework assignments prepared"
+      data-ech-dm=""%t": %n more complete practice sessions before starting the graded homework." data-ech-dm1=""%t": 1 more complete practice session before starting the graded homework." data-ech-pret=""%t": you are warmed up, you can start the graded homework!" data-ech-suite="%n more prepared homework assignments for level %s."
+      data-ech-suite1="1 more prepared homework assignment for level %s." data-ech-aide="A level once earned is never lost. A session counts when you have answered all its exercises; practice done after starting the graded homework does not count for it."
+      data-top-nom="$nova_top_nom" data-top-regle="A WIMS homework counts when your kept score on the graded test (your best session) reaches at least %s/10." data-top-total="homework at the top" data-top-afaire=""%t": your turn! Aim for %s/10."
+      data-top-reussi=""%t": %n/10, well done!" data-top-encore=""%t": %n/10 so far. If you have attempts left, aim for %s/10." data-top-suite="%n more top homework for level %s." data-top-suite1="1 more top homework for level %s."
+      data-top-aide="Your best score on the graded test counts, even at the last attempt. A level once earned is never lost." data-couleur="$nova_cv"
+      data-coul-titre="Your rewards" data-coul-aide="It applies to all your pages, tests included." data-coul-verrou="Reach level %s of the %b badge to choose your colour."
+      data-coul-classe="Go back to the class colour" data-coul-noms="Coral,Orange,Amber,Green,Fir green,Turquoise,Azure,Navy,Purple,Pink" data-coul-choisie="Chosen colour: %s."
+      data-coul-menu="My colour" data-coul-nouveau="new" data-coul-unie="Plain colour" data-coul-degrades="Gradients"
+      data-coul-degrades-aide="Top bar, buttons and window titles. The first colour is used for links." data-coul-verrou-degrade="Reach level %s of the %b badge for gradients." data-coul-degrades-noms="Twilight,Embers,Raspberry,Sunset,Ocean,Aurora,Forest,Starry night"
+      data-coul-recompense="At level %s: the colour of your WIMS." data-coul-recompense-deg="At level %s: gradients." data-coul-recompense-deg2="At level %s: gradients, once your colour is unlocked." data-coul-verrou-degrade2="Reach level %s of the %b badge for gradients (after the colour)." data-coul-choisir="Choose my colour"></div>
+!exit

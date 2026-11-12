@@ -1,0 +1,65 @@
+!! Nova : textes de nova.js en clair (fr), lus par !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:acces_classe
+!! _widgets/acces-classe.phtml
+<template id="nova-acces" data-titre-jour="Heures interdites, chaque jour" data-aide-jour="Vos élèves ne pourront ni faire d'exercices ni consulter de ressources pendant ces heures. L'accueil et les notes restent accessibles." data-de="De" data-a="à" data-lendemain="le lendemain" data-retirer-plage="Retirer cette plage" data-ajouter-plage="Ajouter une plage" data-nuit="La nuit : 20 h 30 à 7 h" data-titre-periodes="Périodes interdites" data-aide-periodes="Une fois, entre deux dates : un week-end d'examen, une semaine de vacances..." data-du="Du" data-au="au" data-heure-debut="Heure de début" data-heure-fin="Heure de fin" data-retirer-periode="Retirer cette période" data-ajouter-periode="Ajouter une période" data-incomplet="incomplète : ignorée" data-titre-portee="Ce qui est interdit" data-tout="Tout le travail dans la classe" data-exo="Les exercices seulement" data-titre-resume="En résumé" data-resume-tout="Le travail dans la classe est interdit %1." data-resume-exo="Les exercices sont interdits %1." data-chaque-jour="chaque jour de %1 à %2" data-chaque-jour-lendemain="chaque jour de %1 à %2 le lendemain" data-periode="du %1 à %2 au %3 à %4" data-aucune="Aucune restriction : vos élèves peuvent travailler à toute heure." data-lignes="Lignes écrites pour WIMS" data-expert="Réglage expert (autres règles, adresses IP...)" data-expert-n="Réglage expert : %1 autre(s) règle(s) écrite(s) à la main" data-expert-aide="Le champ de WIMS. Les règles écrites à la main y sont gardées ; celles de ce formulaire sont entre les lignes « # Nova : debut » et « # Nova : fin ». Une règle en double n'est écrite qu'une fois."></template>
+!exit
+
+:avatars_classe
+!! _widgets/avatars-classe.phtml
+<section id="nova-avatars" aria-labelledby="nova-avatars-titre" data-script="themes/$wims_theme/js/avatar.js"
+  data-t-resume="Élèves : %n · avec un avatar : %a · sans avatar : %s" data-t-gagnees="Pièces gagnées" data-t-depensees="Dépensées"
+  data-t-dispo="Disponibles" data-t-elements="Éléments débloqués : %n" data-t-exercices="Exercices réussis comptés : %n" data-t-niveau="niv. %n"
+  data-t-sans="Pas encore d'avatar enregistré." data-t-attente="Pièces disponibles : %n" data-t-precedent="Précédent" data-t-suivant="Suivant"
+  data-t-fermer="Fermer" data-t-enregistrer="Enregistrer l'avatar (.svg)" data-classe="$nova_avk" data-avatar="$nova_avb"
+  data-t-afficher="Afficher :" data-t-avatar="Avatar" data-t-aucun="aucun badge" data-t-eleves="Élèves : %n" data-t-jeton="%n pièce" data-t-jetons="%n pièces"
+  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+!exit
+
+:capacite
+!! _widgets/capacite.phtml
+<template id="nova-capacite-textes" data-sur="%u sur %t (%p %)" data-plein="La classe approche de sa capacité maximale."></template>
+!exit
+
+:config_globale
+!! _widgets/config-globale.phtml
+<template id="nova-cg-textes" data-plus="Plus de réglages (%1)" data-moins="Moins de réglages" data-modifie="modifié" data-defaut="Réglages par défaut de WIMS"></template>
+!exit
+
+:confirmations
+!! _widgets/confirmations.phtml
+<template id="nova-confirm-textes" data-activer-sheet="Activer la feuille %1 ?" data-activer-exam="Activer l'examen %1 ?" data-effacer-sheet="Effacer la feuille %1 ?" data-effacer-exam="Effacer l'examen %1 ?" data-effacer-freework="Effacer le devoir libre %1 ?" data-effacer-doc="Effacer le document %1 ?" data-effacer-tool="Effacer l'outil %1 ?" data-travail-sheet="Des élèves ont déjà travaillé sur la feuille %1" data-desactiver-sheet="Désactiver la feuille %1 ?" data-desactiver-exam="Désactiver l'examen %1 ?" data-desactiver-freework="Désactiver le devoir libre %1 ?" data-refus-sheet="La feuille %1 ne peut pas être désactivée" data-refus-exam="L'examen %1 ne peut pas être désactivé" data-refus-freework="Le devoir libre %1 ne peut pas être désactivé" data-wims-refuse="WIMS refuse" data-comptes="%1 comptes ont déjà travaillé" data-fw-effacer="C'est définitif : le devoir et les fichiers déposés sont supprimés." data-b-activer="Activer" data-b-effacer="Effacer" data-b-desactiver="Désactiver" data-b-scores="Effacer les scores et désactiver" data-b-fermer="Fermer" data-b-annuler="Annuler" data-b-page="Ouvrir la page de WIMS" data-erreur="WIMS n'a pas répondu : rien n'a été fait. Réessayez."></template>
+!exit
+
+:desactiver_1
+!! _widgets/desactiver.phtml
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="Des exercices de cette feuille sont utilisés dans un examen : les modifier change aussi cet examen, et les notes de ses élèves." data-point-commence="Des élèves l'ont déjà commencé : leurs notes sont gardées. Ne le désactivez pas pendant qu'un élève le passe." data-type="$nova_ft" data-n="$nova_fn" data-bouton="Désactiver quand même..." data-titre="$(nova_forcer_titre_$nova_fk)" data-points="$(nova_forcer_points_$nova_fk)" data-ok="Désactiver quand même" data-annuler="Annuler" data-sauver="Télécharger d'abord une sauvegarde de la classe" data-sauver-aide="Élèves, notes, feuilles, examens... de quoi tout restaurer si besoin (Configuration, Sauvegarde et restauration)." data-ok-sauver="Sauvegarder, puis désactiver" data-etape1="Préparation de la sauvegarde de la classe..." data-etape2="Téléchargement : %1" data-etape3="Désactivation" data-echec="La sauvegarde a échoué : rien n'a été désactivé." data-reessayer="Réessayer" data-sans="Désactiver sans sauvegarde"></span>
+!exit
+
+:desactiver_2
+!! _widgets/desactiver.phtml
+<span id="nova-forcer" hidden data-reglage="1" data-refus="La désactivation malgré le partage n'est pas permise dans cette classe. Un enseignant peut l'autoriser dans Réglages de Nova, onglet Apparence (« Désactiver malgré le partage »)."></span>
+!exit
+
+:ecarts_zones_1
+!! _widgets/ecarts-zones.phtml
+<ul id="nova-ecarts" hidden data-titre="%n zones dépendantes n'utilisent pas ces réglages %q" data-titre1="1 zone dépendante n'utilise pas ces réglages %q" data-texte="Elles ont leurs propres réglages : une copie plus ancienne, ou un réglage fait dans la zone." data-texte1="Elle a ses propres réglages : une copie plus ancienne, ou un réglage fait dans la zone." data-quoi-apparence="de Nova (affichage, élèves, réglages avancés)" data-quoi-badges="de Nova (DM WIMS, badges)" data-quoi-tout="de Nova" data-voir="Voir les zones" data-appliquer="Appliquer ces réglages à toutes les zones" data-plus-tard="Plus tard" data-attente="Enregistrez d'abord vos changements, puis appliquez-les aux zones.">$nova_ez</ul>
+!exit
+
+:ecarts_zones_2
+!! _widgets/ecarts-zones.phtml
+<ul id="nova-ecarts-acces" hidden data-enregistre="Restriction d'accès enregistrée." data-question="%1 zones dépendantes ont une autre restriction d'accès. Leur appliquer celle-ci ?" data-question1="Une zone dépendante a une autre restriction d'accès. Lui appliquer celle-ci ?" data-texte="Leur restriction actuelle sera remplacée par celle-ci, règles écrites à la main comprises." data-voir="Voir les zones" data-appliquer="Appliquer aux %1 zones" data-appliquer1="L'appliquer à cette zone" data-non="Non, seulement ici" data-attente="Application en cours..." data-fait="Restriction appliquée aux %1 zones dépendantes." data-fait1="Restriction appliquée à la zone dépendante." data-erreur="La restriction n'a pas pu être appliquée aux zones. Utilisez « Zones dépendantes » de la configuration.">$nova_ea</ul>
+!exit
+
+:fiche_ressource
+!! _widgets/fiche-ressource.phtml
+<template id="nova-fiche-textes" data-f0="Invisible des élèves. Vous pouvez encore ajouter, retirer et modifier les exercices." data-f1="Les élèves la voient et leurs notes sont enregistrées." data-f2="Les élèves la voient encore, mais leurs notes ne sont plus enregistrées." data-f3="Les élèves ne la voient plus ; leurs notes ne sont plus enregistrées." data-f4="Les élèves ne la voient plus." data-e0="Invisible des élèves. Vous pouvez encore ajouter, retirer et modifier les exercices." data-e1="Les élèves peuvent le passer et leurs notes sont enregistrées." data-e2="Les élèves le voient encore, mais leurs notes ne sont plus enregistrées." data-e3="Les élèves ne le voient plus ; leurs notes ne sont plus enregistrées." data-e4="Les élèves ne le voient plus." data-avances="Options avancées" data-cut-aide="Un élève qui a commencé l'examen avant une heure de coupure ne peut plus ouvrir de nouvelle session après elle." data-cut-le="Le" data-cut-a="à" data-cut-ajouter="Ajouter une heure de coupure" data-cut-retirer="Retirer cette heure de coupure" data-cut-aucune="Aucune heure de coupure." data-cut-expert="Réglage expert : ce que WIMS voit" data-cut-format="Les heures de coupure telles que WIMS les lit : aaaammjj.hh:mm, séparées par des espaces." data-com-ecrire="Écrire un commentaire" data-com-modifier="Modifier le commentaire" data-com-replier="Replier l'éditeur"></template>
+!exit
+
+:statuts_ressources
+!! _widgets/statuts-ressources.phtml
+<template id="nova-statuts-textes" data-activer="Activer" data-reactiver="Réactiver" data-activer-f="Les élèves la voient, leurs notes sont enregistrées." data-activer-e="Les élèves peuvent le passer, leurs notes sont enregistrées." data-activer-d="Les élèves peuvent déposer leur travail." data-vide="Ajoutez d'abord un exercice." data-expirer-f="Toujours visible ; les nouvelles notes ne sont plus enregistrées." data-expirer-e="Les élèves ne peuvent plus le passer ; les notes restent." data-expirer-d="Plus de dépôt ; refusé si des copies ne sont pas corrigées." data-cacher="Disparaît de la page des élèves." data-montrer="Réapparaît sur la page des élèves." data-reactiver-n="Les notes sont de nouveau enregistrées." data-reactiver-d="Les dépôts rouvrent." data-desactiver="Repasse en préparation ; avertissement si des élèves ont travaillé." data-effacer="Définitif ; confirmation demandée." data-archiver="Fige le devoir ; il ne pourra plus être réactivé."></template>
+!exit

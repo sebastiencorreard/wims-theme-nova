@@ -22,7 +22,7 @@
     !set nova_rs=!append item html.nova-js .wims_subclasses > li:has(> .wims_classes_direct_level):has(a[href*="class=$nova_mk%2F$nova_r1%2F"]) > ul > li:has(> .wims_classes_direct_class) to $nova_rs
   !endif
 !next nova_r1
-<span id="nova-replis" hidden data-valeur="$nova_rv" data-replier="$nova_txt_replis_replier" data-replier1="$nova_txt_replis_replier1" data-afficher="$nova_txt_replis_afficher" data-afficher1="$nova_txt_replis_afficher1"></span>
+!read themes/$wims_theme/lang/name-textes.phtml.$lang replis_classes
 !if $nova_rs!=$empty
 <style id="nova-replis-style">$nova_rs { display: none; }</style>
 !endif

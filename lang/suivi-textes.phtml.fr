@@ -1,0 +1,39 @@
+!! Nova : textes de nova.js en clair (fr), lus par !read themes/$wims_theme/lang/suivi-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:suivi_1
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Prendre en compte les %1 dernières minutes."><input id="nova-suivi-fenetre" type="number" min="1" max="120" step="1" value="60" aria-label="$nova_sv_a_fenetre"></p>
+!exit
+
+:suivi_2
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Dire « sans action » après %1 min."><input id="nova-suivi-inactivite" type="number" min="1" max="120" step="1" value="5" aria-label="$nova_sv_a_inactivite"></p>
+!exit
+
+:suivi_3
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Actualiser toutes les %1 s."><input id="nova-suivi-intervalle" type="number" min="10" max="300" step="1" value="30" aria-label="$nova_sv_a_intervalle"></p>
+!exit
+
+:suivi_4
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Quand au moins %1 des %2 dernières notes de l'exercice sont sous %3 /10."><input id="nova-suivi-erreurs" type="number" min="1" max="5" step="1" value="3" aria-label="$nova_sv_a_erreurs"> <input id="nova-suivi-resultats" type="number" min="1" max="100" step="1" value="5" aria-label="$nova_sv_a_resultats"> <input id="nova-suivi-note-faible" type="number" min="0" max="10" step="0.1" value="5" aria-label="$nova_sv_a_note_faible"></p>
+!exit
+
+:suivi_5
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Quand aucune note n'arrive depuis %1 min sur l'exercice en cours."><input id="nova-suivi-attente" type="number" min="1" max="120" step="1" value="8" aria-label="$nova_sv_a_attente"></p>
+!exit
+
+:suivi_6
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Quand l'élève relance l'exercice %1 fois après %2 notes d'au moins %3 /10."><input id="nova-suivi-reprises" type="number" min="1" max="1000" step="1" value="4" aria-label="$nova_sv_a_reprises"> <input id="nova-suivi-reussites" type="number" min="1" max="100" step="1" value="3" aria-label="$nova_sv_a_reussites"> <input id="nova-suivi-note-reussite" type="number" min="0" max="10" step="0.1" value="9" aria-label="$nova_sv_a_note_reussite"></p>
+!exit
+
+:suivi_7
+!! _widgets/suivi.phtml
+  <template id="nova-suivi-textes" data-indispo="Le relevé est indisponible. Cliquez sur Actualiser pour réessayer." data-ily-s="Il y a %1 s" data-ily-min="Il y a %1 min" data-aucun-signal="Aucun signal sur cet exercice" data-why-difficulte="%1 résultats < %2/10 parmi les %3 derniers" data-why-repetition="%1 reprises après %2 résultats &ge; %3/10" data-why-attente="Aucun résultat enregistré depuis %1 min : à vérifier" data-difficulte="$nova_svj_difficulte" data-attente="$nova_svj_attente" data-repetition="$nova_svj_repetition" data-travail="Au travail" data-silence="Sans action" data-ancien="Session ancienne" data-f-actifs="Tous" data-f-attention="À aller voir" data-f-tous="Avec les sessions anciennes" data-g-repetition="Répétition après réussite" data-g-silence="Sans action depuis %1 min" data-g-ancien="Sessions ouvertes, hors de la fenêtre" data-examen="Examen %1 &middot; %2" data-feuille="Feuille %1 &middot; %2" data-chrono-titre="Chronologie &middot; %1 dernières minutes" data-relances="%1 nouveaux essais sans réponse : %2" data-pas-de-note="pas de note" data-res-indispo="Résultat indisponible" data-res-indispo-court="résultat indisponible" data-note="note" data-note-a="%1/10 à %2" data-aucun-essai="Aucun essai journalisé dans cette fenêtre." data-quarante="Les 40 derniers événements sont affichés." data-partiel="Historique partiel : les événements les plus anciens sont omis." data-masquer="Masquer la chronologie" data-voir-chrono="Voir la chronologie de %1" data-masquer-chrono="Masquer la chronologie de %1" data-passee="signal de l'activité passée" data-pas-encore="pas encore de note" data-auto="Actualiser toutes les %1 s" data-n-classes="%1 classes ou cours" data-minutes="%1 dernières minutes" data-releve-a="Relevé à %1" data-actualisation="Actualisation&hellip;" data-impossible="Actualisation impossible. Dernier relevé : %1. %2" data-expiree="Session expirée ou accès indisponible : revenez à la classe." data-err-trop="Trop de sessions pour ce relevé. Ouvrez le suivi depuis une classe ou un cours." data-err-refuse="Accès refusé." data-err-reserve="Accès réservé aux enseignants et administrateurs de leurs classes." data-err-indispo="Relevé indisponible. Actualisez pour réessayer." data-exo="Exercice %1" data-accueil="Accueil" data-inconnue="Activité inconnue"></template>
+!exit

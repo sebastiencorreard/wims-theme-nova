@@ -1,0 +1,39 @@
+!! Nova : textes de nova.js en clair (it), lus par !read themes/$wims_theme/lang/reglages-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:apparence_classe_1
+!! _widgets/apparence-classe.phtml
+<template id="nova-reglages-classe" data-titre="Impostazioni di Nova" data-enregistre="Impostazioni di Nova salvate." data-lien="Le impostazioni del tema Nova (visualizzazione, studenti, compiti WIMS, distintivi...) hanno una pagina propria:" data-lien-texte="Impostazioni di Nova" data-erreur-vacances="Riga non compresa (atteso: GG/MM/AAAA - GG/MM/AAAA):" data-mots-defaut="valore predefinito" data-mots-retirer="Togli" data-mots-ajouter="Aggiungi" data-mots-placeholder="Nuova parola" data-mots-retablir="Torna al valore predefinito" data-vac-noms="Ognissanti,Natale,Inverno,Primavera,Estate" data-vac-ete="dal %d" data-vac-manque="Nova non conosce ancora le date di %a: aggiorna Nova o scegli date personalizzate." data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="Nessuna vacanza: l'obiettivo settimanale è mostrato tutto l'anno." data-vac-herite-de="%h: %v" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="le impostazioni senza effetto nel tema Nova, o raramente utili, sono nascoste." data-afficher="Mostrale" data-masquer="Nascondile">
+!exit
+
+:apparence_classe_2
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (ereditato)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_3
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (ereditato)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_4
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (ereditato)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_5
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (ereditato)">$nova_bdg_coul_meme_badge</option>
+!exit
+
+:apparence_classe_6
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (ereditato)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence
+!! _widgets/apparence.phtml
+<template id="nova-apparence" data-sans-effet="$nova_sans" data-champ-theme="$nova_theme" data-couleur-theme="$nova_app_couleur_theme" data-masques="le impostazioni senza effetto nel tema Nova, o raramente utili, sono nascoste." data-afficher="Mostrale" data-masquer="Nascondile">
+!exit

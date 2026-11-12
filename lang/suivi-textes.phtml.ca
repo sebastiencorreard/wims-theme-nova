@@ -1,0 +1,5 @@
+!! Nova : textes de nova.js en clair (ca), lus par !read themes/$wims_theme/lang/suivi-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!! Textes anglais (repli, jamais de texte vide).
+!read themes/$wims_theme/lang/suivi-textes.phtml.en $wims_read_parm

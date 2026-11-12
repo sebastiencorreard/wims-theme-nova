@@ -1,0 +1,39 @@
+!! Nova : textes de nova.js en clair (en), lus par !read themes/$wims_theme/lang/reglages-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:apparence_classe_1
+!! _widgets/apparence-classe.phtml
+<template id="nova-reglages-classe" data-titre="Nova settings" data-enregistre="Nova settings saved." data-lien="The Nova theme settings (display, students, WIMS homework, badges...) have their own page:" data-lien-texte="Nova settings" data-erreur-vacances="Line not understood (expected: DD/MM/YYYY - DD/MM/YYYY):" data-mots-defaut="default value" data-mots-retirer="Remove" data-mots-ajouter="Add" data-mots-placeholder="New word" data-mots-retablir="Back to the default value" data-vac-noms="Toussaint,Christmas,Winter,Spring,Summer" data-vac-ete="from %d" data-vac-manque="Dates for %a not yet known to Nova: update Nova or choose custom dates." data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="No holidays: the weekly goal is shown all year round." data-vac-herite-de="%h: %v" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="settings with no effect in the Nova theme, or rarely useful, are hidden." data-afficher="Show them" data-masquer="Hide them">
+!exit
+
+:apparence_classe_2
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (inherited)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_3
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (inherited)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_4
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (inherited)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_5
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (inherited)">$nova_bdg_coul_meme_badge</option>
+!exit
+
+:apparence_classe_6
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (inherited)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence
+!! _widgets/apparence.phtml
+<template id="nova-apparence" data-sans-effet="$nova_sans" data-champ-theme="$nova_theme" data-couleur-theme="$nova_app_couleur_theme" data-masques="settings with no effect in the Nova theme, or rarely useful, are hidden." data-afficher="Show them" data-masquer="Hide them">
+!exit

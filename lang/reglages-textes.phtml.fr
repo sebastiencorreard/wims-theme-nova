@@ -1,0 +1,39 @@
+!! Nova : textes de nova.js en clair (fr), lus par !read themes/$wims_theme/lang/reglages-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:apparence_classe_1
+!! _widgets/apparence-classe.phtml
+<template id="nova-reglages-classe" data-titre="Réglages de Nova" data-enregistre="Réglages de Nova enregistrés." data-lien="Les réglages du thème Nova (affichage, élèves, DM WIMS, badges...) ont leur propre page :" data-lien-texte="Réglages de Nova" data-erreur-vacances="Ligne non comprise (attendu : JJ/MM/AAAA - JJ/MM/AAAA) :" data-mots-defaut="valeur par défaut" data-mots-retirer="Retirer" data-mots-ajouter="Ajouter" data-mots-placeholder="Nouveau mot" data-mots-retablir="Revenir à la valeur par défaut" data-vac-noms="Toussaint,Noël,Hiver,Printemps,Été" data-vac-ete="à partir du %d" data-vac-manque="Dates de %a pas encore connues de Nova : mettez Nova à jour ou choisissez des dates personnalisées." data-vac-zone="$nova_app_vac_zone" data-vac-resume-aucune="Pas de vacances : l'objectif de la semaine s'affiche toute l'année." data-vac-herite-de="%h : %v" data-sans-effet="pr_bgcolor,pr_bgimg,pr_ref_menucolor,pr_ref_button_bgcolor,pr_ref_button_color,pr_ref_button_help_bgcolor,pr_ref_button_help_color,pr_sccolor1,pr_actcolor1,pr_css,pr_homepage" data-sans-effet-ligne="wims_deposit" data-champ-theme="pr_refcolor" data-couleur-theme="$nova_app_couleur_theme" data-masques="réglages sans effet avec le thème Nova, ou rarement utiles, sont masqués." data-afficher="Les afficher" data-masquer="Les masquer">
+!exit
+
+:apparence_classe_2
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (valeur héritée)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_3
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (valeur héritée)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_4
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (valeur héritée)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence_classe_5
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (valeur héritée)">$nova_bdg_coul_meme_badge</option>
+!exit
+
+:apparence_classe_6
+!! _widgets/apparence-classe.phtml
+              <option value="" data-texte="%s (valeur héritée)">$nova_bdg_coul_herite_vide</option>
+!exit
+
+:apparence
+!! _widgets/apparence.phtml
+<template id="nova-apparence" data-sans-effet="$nova_sans" data-champ-theme="$nova_theme" data-couleur-theme="$nova_app_couleur_theme" data-masques="réglages sans effet avec le thème Nova, ou rarement utiles, sont masqués." data-afficher="Les afficher" data-masquer="Les masquer">
+!exit

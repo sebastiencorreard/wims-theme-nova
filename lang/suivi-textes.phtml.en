@@ -1,0 +1,39 @@
+!! Nova : textes de nova.js en clair (en), lus par !read themes/$wims_theme/lang/suivi-textes.phtml.$lang <etiquette>.
+!! Aucun nom de variable WIMS (tampon des noms de 32 Ko par page, src/var.c ; 2026-11-12). Encodage latin-1.
+!! Un texte = un attribut dans fr, en, es, it (verifier.sh compare les etiquettes et les attributs).
+!goto $wims_read_parm
+
+:suivi_1
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Take the last %1 minutes into account."><input id="nova-suivi-fenetre" type="number" min="1" max="120" step="1" value="60" aria-label="$nova_sv_a_fenetre"></p>
+!exit
+
+:suivi_2
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Show &quot;No action&quot; after %1 min."><input id="nova-suivi-inactivite" type="number" min="1" max="120" step="1" value="5" aria-label="$nova_sv_a_inactivite"></p>
+!exit
+
+:suivi_3
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="Refresh every %1 s."><input id="nova-suivi-intervalle" type="number" min="10" max="300" step="1" value="30" aria-label="$nova_sv_a_intervalle"></p>
+!exit
+
+:suivi_4
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="When at least %1 of the last %2 scores on the exercise are below %3 /10."><input id="nova-suivi-erreurs" type="number" min="1" max="5" step="1" value="3" aria-label="$nova_sv_a_erreurs"> <input id="nova-suivi-resultats" type="number" min="1" max="100" step="1" value="5" aria-label="$nova_sv_a_resultats"> <input id="nova-suivi-note-faible" type="number" min="0" max="10" step="0.1" value="5" aria-label="$nova_sv_a_note_faible"></p>
+!exit
+
+:suivi_5
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="When no score has come in for %1 min on the current exercise."><input id="nova-suivi-attente" type="number" min="1" max="120" step="1" value="8" aria-label="$nova_sv_a_attente"></p>
+!exit
+
+:suivi_6
+!! _widgets/suivi.phtml
+      <p class="nova-suivi-phrase" data-phrase="When the student restarts the exercise %1 times after %2 scores of at least %3 /10."><input id="nova-suivi-reprises" type="number" min="1" max="1000" step="1" value="4" aria-label="$nova_sv_a_reprises"> <input id="nova-suivi-reussites" type="number" min="1" max="100" step="1" value="3" aria-label="$nova_sv_a_reussites"> <input id="nova-suivi-note-reussite" type="number" min="0" max="10" step="0.1" value="9" aria-label="$nova_sv_a_note_reussite"></p>
+!exit
+
+:suivi_7
+!! _widgets/suivi.phtml
+  <template id="nova-suivi-textes" data-indispo="The snapshot is unavailable. Click Refresh to try again." data-ily-s="%1 s ago" data-ily-min="%1 min ago" data-aucun-signal="No signal on this exercise" data-why-difficulte="%1 scores < %2/10 among the last %3" data-why-repetition="%1 restarts after %2 scores &ge; %3/10" data-why-attente="No score recorded for %1 min: worth checking" data-difficulte="$nova_svj_difficulte" data-attente="$nova_svj_attente" data-repetition="$nova_svj_repetition" data-travail="Working" data-silence="No action" data-ancien="Old session" data-f-actifs="All" data-f-attention="To go and see" data-f-tous="Including old sessions" data-g-repetition="Repetition after success" data-g-silence="No action for %1 min" data-g-ancien="Open sessions, outside the window" data-examen="Exam %1 &middot; %2" data-feuille="Sheet %1 &middot; %2" data-chrono-titre="Timeline &middot; last %1 minutes" data-relances="%1 new attempts without an answer: %2" data-pas-de-note="no score" data-res-indispo="Score unavailable" data-res-indispo-court="score unavailable" data-note="score" data-note-a="%1/10 at %2" data-aucun-essai="No attempt logged in this window." data-quarante="The last 40 events are shown." data-partiel="Partial history: the oldest events are left out." data-masquer="Hide the timeline" data-voir-chrono="Show the timeline of %1" data-masquer-chrono="Hide the timeline of %1" data-passee="signal from past activity" data-pas-encore="no score yet" data-auto="Refresh every %1 s" data-n-classes="%1 classes or courses" data-minutes="last %1 minutes" data-releve-a="Snapshot at %1" data-actualisation="Refreshing&hellip;" data-impossible="Refresh failed. Last snapshot: %1. %2" data-expiree="Session expired or access unavailable: go back to the class." data-err-trop="Too many sessions for this snapshot. Open the monitoring from a class or a course." data-err-refuse="Access denied." data-err-reserve="Access restricted to teachers and administrators of their classes." data-err-indispo="Snapshot unavailable. Refresh to try again." data-exo="Exercise %1" data-accueil="Home" data-inconnue="Unknown activity"></template>
+!exit

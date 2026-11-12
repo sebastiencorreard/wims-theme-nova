@@ -60,7 +60,7 @@
 !endif
 !! Liens de connexion (scripts/adm/class/links.phtml) : cartes et boutons Copier (js/nova.js, liensConnexion ; 2026-11-10).
 !if adm/class isin $module and $wims_user!=$empty
-  <template id="nova-liens-textes" data-type="$class_type" data-qr-script="themes/$wims_theme/js/qrcode.js" data-script-flyers="themes/$wims_theme/js/flyers.js" data-nom="$wims_classname" data-flyers="$nova_lc_flyers" data-fl-nom="$nova_lc_fl_nom" data-fl-aide="$nova_lc_fl_aide" data-agrandir="$nova_lc_agrandir" data-telecharger="$nova_lc_telecharger" data-fermer="$nova_lc_fermer" data-qr-alt="$nova_lc_qr_alt" data-vous="$nova_lc_vous" data-vous-aide="$nova_lc_vous_aide" data-eleves="$nova_lc_eleves" data-eleves-aide="$nova_lc_eleves_aide" data-eleves-aide-s="$nova_lc_eleves_aide_s" data-qr="$nova_lc_qr" data-ens="$nova_lc_ens" data-ens-aide="$nova_lc_ens_aide" data-insc="$nova_lc_insc" data-insc-aide="$nova_lc_insc_aide" data-copier="$nova_lc_copier" data-copie="$nova_lc_copie" data-copier-num="$nova_lc_copier_num" data-echec="$nova_lc_echec" data-numero="$nova_lc_numero" data-numero-s="$nova_lc_numero_s" data-numero-aide="$nova_lc_numero_aide"></template>
+  !read themes/$wims_theme/lang/name-textes.phtml.$lang header
 !endif
 !! Choix gardes sur le serveur : menu personnalise et classes repliees de l'enseignant (_widgets/menu-serveur.phtml,
 !! replis-classes.phtml), couleur personnelle de l'eleve (_widgets/couleur-choix.phtml).

@@ -128,4 +128,8 @@
 !set nova_fr_cut_ajouter=Aggiungi un orario di interruzione
 !set nova_fr_cut_retirer=Togli questo orario di interruzione
 !set nova_fr_cut_aucune=Nessun orario di interruzione.
-!set nova_fr_cut_expert=Impostazione esperta
+!set nova_fr_cut_expert=Impostazione esperta: ciò che vede WIMS
+!set nova_fr_cut_format=Gli orari di interruzione come li legge WIMS: aaaammgg.hh:mm, separati da spazi.
+!set nova_fr_com_ecrire=Scrivi un commento
+!set nova_fr_com_modifier=Modifica il commento
+!set nova_fr_com_replier=Nascondi l'editor

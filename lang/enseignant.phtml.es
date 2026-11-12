@@ -128,4 +128,8 @@
 !set nova_fr_cut_ajouter=Añadir una hora de corte
 !set nova_fr_cut_retirer=Quitar esta hora de corte
 !set nova_fr_cut_aucune=Ninguna hora de corte.
-!set nova_fr_cut_expert=Ajuste experto
+!set nova_fr_cut_expert=Ajuste experto: lo que ve WIMS
+!set nova_fr_cut_format=Las horas de corte tal como las lee WIMS: aaaammdd.hh:mm, separadas por espacios.
+!set nova_fr_com_ecrire=Escribir un comentario
+!set nova_fr_com_modifier=Modificar el comentario
+!set nova_fr_com_replier=Ocultar el editor

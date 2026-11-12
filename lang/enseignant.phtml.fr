@@ -128,4 +128,8 @@
 !set nova_fr_cut_ajouter=Ajouter une heure de coupure
 !set nova_fr_cut_retirer=Retirer cette heure de coupure
 !set nova_fr_cut_aucune=Aucune heure de coupure.
-!set nova_fr_cut_expert=Réglage expert
+!set nova_fr_cut_expert=Réglage expert : ce que WIMS voit
+!set nova_fr_cut_format=Les heures de coupure telles que WIMS les lit : aaaammjj.hh:mm, séparées par des espaces.
+!set nova_fr_com_ecrire=Écrire un commentaire
+!set nova_fr_com_modifier=Modifier le commentaire
+!set nova_fr_com_replier=Replier l'éditeur

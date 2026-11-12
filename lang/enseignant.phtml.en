@@ -128,4 +128,8 @@
 !set nova_fr_cut_ajouter=Add a cut-off time
 !set nova_fr_cut_retirer=Remove this cut-off time
 !set nova_fr_cut_aucune=No cut-off time.
-!set nova_fr_cut_expert=Expert setting
+!set nova_fr_cut_expert=Expert setting: what WIMS sees
+!set nova_fr_cut_format=The cut-off times as WIMS reads them: yyyymmdd.hh:mm, separated by spaces.
+!set nova_fr_com_ecrire=Write a comment
+!set nova_fr_com_modifier=Edit the comment
+!set nova_fr_com_replier=Hide the editor

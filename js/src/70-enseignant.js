@@ -1310,6 +1310,7 @@
     cadre.classList.add('nova-fiche');
     if (etat) ficheStatut(etat, tx, type);
     ficheTuiles(cadre, tx);
+    ficheEditeurs(cadre, tx);
   }
   function ficheStatut(etat, tx, type) {
     var champ = etat.closest('.field');
@@ -1505,6 +1506,7 @@
     // Champ de WIMS dans « Réglage expert » ; s'il est modifié à la main, l'interface le relit.
     var expert = el('details', 'nova-acces-expert');
     expert.appendChild(el('summary', '', t('expert')));
+    expert.appendChild(el('p', 'nova-coupures-aide', t('format')));
     zone.addEventListener('change', function () {
       heures = []; autres = [];
       zone.value.split(/[\s,;]+/).forEach(function (w) {
@@ -1519,4 +1521,103 @@
     racine.appendChild(expert);
     tuile.classList.add('nova-tuile-large');
     afficher();
+  }
+
+  /* Texte d'explication et Commentaires (2026-11-12, utilisateur) : précision de WIMS (.formHelp) à droite du libellé ;
+   * éditeur TinyMCE (WIMS, 400 px) à la hauteur du texte, jusqu'à 400 px au plus (ascenseur au-delà, comme avant).
+   * Commentaires : éditeur replié par défaut (classe nova-com-ferme : l'éditeur n'est PAS déplacé, son iframe se
+   * rechargerait), aperçu du texte et bouton pour l'ouvrir. */
+  function ficheEditeurs(cadre, tx) {
+    ['desc', 'comment'].forEach(function (id) {
+      var zone = document.getElementById(id);
+      var champ = zone && zone.closest('.field');
+      if (!champ || champ.parentNode !== cadre) return;
+      var lab = champ.querySelector(':scope > label'), aide = champ.querySelector(':scope > .formHelp');
+      if (lab) {
+        var tete = document.createElement('div');
+        tete.className = 'nova-champ-tete';
+        champ.insertBefore(tete, lab);
+        tete.appendChild(lab);
+        if (aide) tete.appendChild(aide);
+      }
+      editeurAjuste(id);
+      // Zone vidée : WIMS ignore un champ vide et garde l'ancien texte ; une espace l'efface (vu le 2026-11-12, sans nova.js aussi).
+      // Par « formdata », qui vient après tous les « submit » (TinyMCE, initialisé après nova.js, recopie son texte au sien).
+      if (zone.form && !zone.form.novaVides) {
+        zone.form.novaVides = true;
+        zone.form.addEventListener('formdata', function (e) {
+          ['desc', 'comment'].forEach(function (k) {
+            var v = e.formData.get(k);
+            if (typeof v === 'string' && !v.replace(/<p>(\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '').trim()) e.formData.set(k, ' ');
+          });
+        });
+      }
+      if (id === 'comment' && tete) commentairesReplies(champ, tete, zone, tx);
+    });
+  }
+  // Hauteur d'un éditeur TinyMCE de WIMS = hauteur de son contenu (bornée) ; suit la saisie et un éditeur réactivé.
+  function editeurAjuste(id) {
+    var MAX = 400, MIN = 72;
+    var ajuster = function (ed) {
+      var cont = ed.getContainer(), ifr = ed.iframeElement, corps = ed.getBody();
+      if (!cont || !ifr || !corps || !cont.offsetHeight) return;
+      var h = 0;
+      Array.prototype.forEach.call(corps.children, function (c) {
+        var bas = c.offsetTop + c.offsetHeight + (parseFloat(ed.getWin().getComputedStyle(c).marginBottom) || 0);
+        if (bas > h) h = bas;
+      });
+      h += (parseFloat(ed.getWin().getComputedStyle(corps).paddingBottom) || 0) + (parseFloat(ed.getWin().getComputedStyle(corps).marginBottom) || 0);
+      var autour = cont.offsetHeight - ifr.offsetHeight;
+      cont.style.height = Math.max(MIN + autour, Math.min(MAX, Math.ceil(h) + autour + 4)) + 'px';
+    };
+    var brancher = function (ed) {
+      if (!ed || ed.id !== id || ed.novaAjuste) return;
+      ed.novaAjuste = true;
+      var lancer = function () { ajuster(ed); };
+      var pret = function () {
+        lancer();
+        ed.on('input change keyup SetContent NodeChange Undo Redo', lancer);
+        ed.getWin().addEventListener('load', lancer);
+        setTimeout(lancer, 400);
+      };
+      if (ed.initialized) pret(); else ed.on('init', pret);
+      ed.novaAjuster = lancer;
+    };
+    var essai = function () {
+      if (!window.tinymce || !tinymce.on) return false;
+      tinymce.on('AddEditor', function (e) { brancher(e.editor); });
+      brancher(tinymce.get(id));
+      return true;
+    };
+    if (!essai()) window.addEventListener('load', essai);
+  }
+  function commentairesReplies(champ, tete, zone, tx) {
+    var apercu = document.createElement('p');
+    apercu.className = 'nova-com-apercu';
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'nova-com-bouton';
+    var texte = function () {
+      var d = new DOMParser().parseFromString(zone.value || '', 'text/html');
+      return (d.body.textContent || '').replace(/\s+/g, ' ').trim();
+    };
+    var montrer = function (ouvert) {
+      champ.classList.toggle('nova-com-ferme', !ouvert);
+      bouton.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+      var t = texte();
+      apercu.textContent = t.length > 200 ? t.slice(0, 200) + '\u2026' : t;
+      apercu.hidden = ouvert || !t;
+      bouton.textContent = tx.getAttribute('data-com-' + (ouvert ? 'replier' : t ? 'modifier' : 'ecrire')) || '';
+      if (ouvert && window.tinymce) {
+        var ed = tinymce.get(zone.id);
+        if (ed && ed.novaAjuster) setTimeout(ed.novaAjuster, 0);
+      }
+    };
+    bouton.addEventListener('click', function () {
+      if (window.tinymce) { var ed = tinymce.get(zone.id); if (ed) ed.save(); }
+      montrer(champ.classList.contains('nova-com-ferme'));
+    });
+    tete.parentNode.insertBefore(apercu, tete.nextSibling);
+    apercu.parentNode.insertBefore(bouton, apercu.nextSibling);
+    montrer(false);
   }

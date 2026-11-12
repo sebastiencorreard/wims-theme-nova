@@ -82,6 +82,36 @@
 !set nova_forcer_echec=Il backup non è riuscito: nulla è stato disattivato.
 !set nova_forcer_reessayer=Riprova
 !set nova_forcer_sans=Disattiva senza backup
+!! Fenetres de confirmation des ressources (2026-11-12) : examen commence (contourne), classe qui ne permet pas, fenetre de Nova (nova.js confirmationsRessources).
+!set nova_forcer_titre_exam_commence=Disattivare l'esame %1 anche se gli studenti l'hanno iniziato?
+!set nova_forcer_points_exam_commence=Torna « In preparazione »: il suo contenuto è di nuovo modificabile. Cambiare, aggiungere o spostare esercizi disallinea i voti già registrati.|Gli studenti l'hanno già iniziato: i loro voti sono conservati. Non disattivarlo mentre uno studente lo sta svolgendo.|WIMS lo vieta per questi motivi: fallo solo con cognizione di causa.
+!set nova_forcer_point_commence=Gli studenti l'hanno già iniziato: i loro voti sono conservati. Non disattivarlo mentre uno studente lo sta svolgendo.
+!set nova_forcer_refus_reglage=La disattivazione nonostante la condivisione non è permessa in questa classe. Un docente può permetterla in Impostazioni di Nova, scheda Aspetto (« Disattiva nonostante la condivisione »).
+!set nova_cf_activer_sheet=Attivare il foglio %1?
+!set nova_cf_activer_exam=Attivare l'esame %1?
+!set nova_cf_effacer_sheet=Cancellare il foglio %1?
+!set nova_cf_effacer_exam=Cancellare l'esame %1?
+!set nova_cf_effacer_freework=Cancellare il compito libero %1?
+!set nova_cf_effacer_doc=Cancellare il documento %1?
+!set nova_cf_effacer_tool=Cancellare lo strumento %1?
+!set nova_cf_travail_sheet=Gli studenti hanno già lavorato sul foglio %1
+!set nova_cf_desactiver_sheet=Disattivare il foglio %1?
+!set nova_cf_desactiver_exam=Disattivare l'esame %1?
+!set nova_cf_desactiver_freework=Disattivare il compito libero %1?
+!set nova_cf_refus_sheet=Il foglio %1 non può essere disattivato
+!set nova_cf_refus_exam=L'esame %1 non può essere disattivato
+!set nova_cf_refus_freework=Il compito libero %1 non può essere disattivato
+!set nova_cf_wims_refuse=WIMS rifiuta
+!set nova_cf_comptes=%1 account hanno già lavorato
+!set nova_cf_fw_effacer=È definitivo: il compito e i file consegnati vengono cancellati.
+!set nova_cf_b_activer=Attiva
+!set nova_cf_b_effacer=Cancella
+!set nova_cf_b_desactiver=Disattiva
+!set nova_cf_b_scores=Cancella i voti e disattiva
+!set nova_cf_b_fermer=Chiudi
+!set nova_cf_b_annuler=Annulla
+!set nova_cf_b_page=Apri la pagina di WIMS
+!set nova_cf_erreur=WIMS non ha risposto: non è stato fatto nulla. Riprova.
 !! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
 !set nova_cap_sur=%u su %t (%p%)
 !set nova_cap_plein=La classe si avvicina alla capacità massima.
@@ -135,8 +165,8 @@
 !set nova_st_montrer=Ricompare nella pagina degli studenti.
 !set nova_st_reactiver_n=I voti vengono di nuovo registrati.
 !set nova_st_reactiver_d=Le consegne si riaprono.
-!set nova_st_desactiver=Torna in preparazione; rifiutato se gli studenti hanno lavorato.
-!set nova_st_effacer=Definitivo; WIMS chiede conferma.
+!set nova_st_desactiver=Torna in preparazione; avviso se gli studenti hanno lavorato.
+!set nova_st_effacer=Definitivo; viene chiesta conferma.
 !set nova_st_archiver=Congela il compito; non potrà più essere riattivato.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=Uno studente che ha iniziato l'esame prima di un orario di interruzione non può aprire una nuova sessione dopo di esso.

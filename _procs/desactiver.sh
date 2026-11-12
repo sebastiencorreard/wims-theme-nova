@@ -5,12 +5,12 @@
 # Le partage relie les classes par lien symbolique (scripts/adm/class/addshare) : un seul fichier pour toutes.
 # Réservé aux classes qui l'ont permis (2026-11-08, utilisateur) : --nova-desactivation-forcee: oui dans la feuille de
 # style de la classe ou, à défaut, de la structure la plus proche (log/classes/<c>/css ; la plus proche décide).
-# Refus de WIMS gardé (choix de l'utilisateur) : examen déjà commencé par un élève (comme adm/class/exam/var.proc), cherché
-# aussi dans les classes du partage (sharable_exam de neighbors : les cours d'un programme de portail, où les élèves
-# travaillent ; vu le 2026-11-08, portail 1496713).
+# Examen déjà commencé par un élève (comme adm/class/exam/var.proc), cherché aussi dans les classes du partage
+# (sharable_exam de neighbors : les cours d'un programme de portail, où les élèves travaillent ; vu le 2026-11-08, portail
+# 1496713) : refusé jusqu'au 2026-11-12, contourné depuis (utilisateur), signalé (« ok commence ») pour l'avertissement.
 # Contourné aussi (2026-11-08, utilisateur) : feuille dont des exercices sont dans un examen (signalé : « ok examen »).
 # Usage : desactiver.sh <wims_home> <classe> exam|sheet <numéro> [verifier]
-# Sortie : ok | ok examen | reglage (non permis) | statut (pas actif) | commence | erreur. « verifier » : rien n'est écrit.
+# Sortie : ok | ok examen | ok commence | reglage (non permis) | statut (pas actif) | erreur. « verifier » : rien n'est écrit.
 # Appelé par header.phtml, droits déjà vérifiés (enseignant de la classe).
 H=$1; C=$2; T=$3; N=$4; V=$5
 case "$C" in ''|*[!0-9/]*) echo erreur; exit ;; esac
@@ -31,6 +31,7 @@ done
 [ "$permis" = oui ] || { echo reglage; exit; }
 st=$(awk -v n="$N" '/^:/ { k++; if (k == n) { print substr($0, 2); exit } }' "$F")
 [ "$st" = 1 ] || { echo statut; exit; }
+dans=''
 if [ "$T" = exam ]; then
   classes=". $(sed -n 's/^sharable_exam=//p' neighbors 2>/dev/null | tr ',' ' ')"
   for c in $classes; do
@@ -39,7 +40,7 @@ if [ "$T" = exam ]; then
     for f in "$d"/noscore/*; do
       [ -f "$f" ] || continue
       [ "${f##*/}" = supervisor ] && continue
-      if awk -v e="$N" 'length($1) == 18 && $3 == e { t = 1; exit } END { exit !t }' "$f"; then echo commence; exit; fi
+      if awk -v e="$N" 'length($1) == 18 && $3 == e { t = 1; exit } END { exit !t }' "$f"; then dans=' commence'; break 2; fi
     done
   done
 else

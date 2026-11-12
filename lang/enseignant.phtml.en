@@ -82,6 +82,36 @@
 !set nova_forcer_echec=The backup failed: nothing was deactivated.
 !set nova_forcer_reessayer=Try again
 !set nova_forcer_sans=Deactivate without backup
+!! Fenetres de confirmation des ressources (2026-11-12) : examen commence (contourne), classe qui ne permet pas, fenetre de Nova (nova.js confirmationsRessources).
+!set nova_forcer_titre_exam_commence=Deactivate exam %1 although students have started it?
+!set nova_forcer_points_exam_commence=It goes back to "In preparation": its content can be edited again. Changing, adding or moving exercises puts the recorded scores out of step.|Students have already started it: their scores are kept. Do not deactivate it while a student is taking it.|WIMS forbids it for these reasons: only do it if you know what you are doing.
+!set nova_forcer_point_commence=Students have already started it: their scores are kept. Do not deactivate it while a student is taking it.
+!set nova_forcer_refus_reglage=Deactivating despite sharing is not allowed in this class. A teacher can allow it in Nova settings, Appearance tab ("Deactivate despite sharing").
+!set nova_cf_activer_sheet=Activate sheet %1?
+!set nova_cf_activer_exam=Activate exam %1?
+!set nova_cf_effacer_sheet=Delete sheet %1?
+!set nova_cf_effacer_exam=Delete exam %1?
+!set nova_cf_effacer_freework=Delete free work %1?
+!set nova_cf_effacer_doc=Delete document %1?
+!set nova_cf_effacer_tool=Delete tool %1?
+!set nova_cf_travail_sheet=Students have already worked on sheet %1
+!set nova_cf_desactiver_sheet=Deactivate sheet %1?
+!set nova_cf_desactiver_exam=Deactivate exam %1?
+!set nova_cf_desactiver_freework=Deactivate free work %1?
+!set nova_cf_refus_sheet=Sheet %1 cannot be deactivated
+!set nova_cf_refus_exam=Exam %1 cannot be deactivated
+!set nova_cf_refus_freework=Free work %1 cannot be deactivated
+!set nova_cf_wims_refuse=WIMS refuses
+!set nova_cf_comptes=%1 accounts have already worked on it
+!set nova_cf_fw_effacer=This is permanent: the assignment and the uploaded files are deleted.
+!set nova_cf_b_activer=Activate
+!set nova_cf_b_effacer=Delete
+!set nova_cf_b_desactiver=Deactivate
+!set nova_cf_b_scores=Delete the scores and deactivate
+!set nova_cf_b_fermer=Close
+!set nova_cf_b_annuler=Cancel
+!set nova_cf_b_page=Open the WIMS page
+!set nova_cf_erreur=WIMS did not answer: nothing was done. Try again.
 !! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
 !set nova_cap_sur=%u of %t (%p%)
 !set nova_cap_plein=The class is nearing its maximum capacity.
@@ -135,8 +165,8 @@
 !set nova_st_montrer=Reappears on the students' page.
 !set nova_st_reactiver_n=Scores are recorded again.
 !set nova_st_reactiver_d=Submissions reopen.
-!set nova_st_desactiver=Back to preparation; refused if students have worked on it.
-!set nova_st_effacer=Permanent; WIMS asks for confirmation.
+!set nova_st_desactiver=Back to preparation; warning if students have worked on it.
+!set nova_st_effacer=Permanent; confirmation is asked.
 !set nova_st_archiver=Freezes the assignment; it can no longer be reactivated.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=A student who started the exam before a cut-off time cannot open a new session after it.

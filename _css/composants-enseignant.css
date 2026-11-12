@@ -445,3 +445,47 @@ button[aria-expanded='true'] > .nova-etat-chevron { transform: translateY(1px) r
 /* « Créer le DM noté » (nova.js dmNote) à côté de la pastille d'état : même bouton que « Modifier » (2026-11-12, utilisateur). */
 .nova-etat-ico[data-icone='copie'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 12v6M12 15h6'/%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E"); }
 .wimsbody a.nova-etat-modifier.disabled { opacity: .55; pointer-events: none; }
+
+/* Fenêtres de confirmation des ressources (2026-11-12, utilisateur, maquettes) : icône dans un rond, titre, nom de la
+ * ressource, texte de WIMS remis en forme, boutons en pilule (prune : activer ; rouge : effacer, désactiver). nova.js
+ * confirmationsRessources ; contenu du contournement par remplirForcer. Bouton de WIMS dans la fenêtre : « body.main_body »
+ * pour passer devant « .wims_button.wims_warning » (fond brun de WIMS) et le survol de Nova. */
+.nova-dialogue.nova-conf { width: min(36rem, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-sizing: border-box; overflow: auto; }
+dialog.nova-conf [hidden] { display: none !important; }
+html.nova-occupe, html.nova-occupe * { cursor: progress !important; }
+.nova-conf-tete { display: flex; align-items: flex-start; gap: 14px; margin-right: 32px; }
+.nova-conf-ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
+.nova-conf-ico .nova-etat-ico { width: 22px; height: 22px; }
+.nova-conf-a { background: var(--nova-accent-doux); color: var(--nova-lien); }
+.nova-conf-r { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+.nova-dialogue.nova-conf h1 { margin: 2px 0 4px; font-size: 1.2rem; line-height: 1.3; }
+.nova-conf-sous { margin: 0; color: var(--nova-texte-2); font-size: .9rem; }
+.nova-conf-corps { margin-top: var(--nova-e3); line-height: 1.5; }
+.nova-conf-corps:empty { display: none; }
+.nova-conf-corps p, .nova-conf-wims p { margin: var(--nova-e2) 0 0; }
+.nova-conf-wims > :first-child { margin-top: 0; }
+.nova-conf-wims :is(.wims_warning, p.wims_msg.warning, .wims_msg.warning) { display: block; margin: var(--nova-e3) 0 0; padding: 10px 14px; border: 0; border-left: 4px solid var(--nova-attention); border-radius: 0 8px 8px 0; background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-weight: 600; }
+.nova-conf-wims .wims_msg.info { margin: var(--nova-e3) 0 0; padding: 0; border: 0; background: none; color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.nova-conf-wims .wims_msg.info::before { content: none; }
+.nova-conf-comptes { margin-top: var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-conf-comptes summary { cursor: pointer; color: var(--nova-lien); font-weight: 700; }
+.nova-conf-comptes .tt { margin: var(--nova-e1) 0 0; font-family: var(--nova-police-chiffres); word-break: break-word; }
+.nova-conf-cause { margin-top: var(--nova-e3); padding: 10px 14px; border-left: 4px solid var(--nova-attention); border-radius: 0 8px 8px 0; background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-size: .92rem; }
+.nova-conf-cause > b { display: block; margin-bottom: 2px; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
+.nova-conf-cause .nova-conf-wims, .nova-conf-cause .nova-conf-wims * { color: inherit; }
+.nova-conf-cause .nova-conf-wims :is(.wims_warning, .wims_msg) { margin: 0; padding: 0; border: 0; background: none; font-weight: inherit; }
+.nova-conf-attente { color: var(--nova-texte-2); }
+.nova-conf-erreur { color: var(--nova-erreur); font-weight: 700; }
+.nova-conf ul { margin: var(--nova-e3) 0 0; padding-left: 1.2em; display: grid; gap: var(--nova-e2); font-size: .95rem; line-height: 1.45; }
+.nova-conf .nova-forcer-sauver { margin: var(--nova-e3) 0 0; }
+.nova-conf :is(.nova-conf-boutons, .wimscenter) { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: var(--nova-e4); }
+.nova-conf-boutons:empty { display: none; }
+body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; margin: 0; padding: 0 16px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); box-shadow: none; color: var(--nova-texte); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button):hover { border-color: var(--nova-accent); background: var(--nova-accent-doux); color: var(--nova-lien); }
+body.main_body .nova-conf button.nova-conf-b.nova-conf-p { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
+body.main_body .nova-conf button.nova-conf-b.nova-conf-p:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); color: var(--nova-sur-accent); }
+body.main_body .nova-conf :is(button.nova-conf-b.nova-conf-r, .wimscenter .wims_button.wims_warning) { border-color: var(--nova-erreur); background: var(--nova-erreur); color: #FFFFFF; }
+body.main_body .nova-conf :is(button.nova-conf-b.nova-conf-r, .wimscenter .wims_button.wims_warning):hover { border-color: color-mix(in oklab, var(--nova-erreur) 80%, black); background: color-mix(in oklab, var(--nova-erreur) 80%, black); color: #FFFFFF; }
+body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button):is(:disabled, .disabled) { opacity: .5; cursor: default; pointer-events: none; }
+body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button):focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-etat-ico[data-icone='alerte'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E"); }

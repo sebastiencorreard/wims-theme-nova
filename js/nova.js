@@ -5657,41 +5657,18 @@
    * #nova-forcer quand seuls le partage (ou, pour une feuille, son usage dans un examen) bloquent ; bouton sous
    * le message de WIMS, alerte (conséquences) dans un <dialog class="nova-dialogue">, puis l'accueil fait la
    * désactivation (nova_desactiver=exam:N ou sheet:N, _procs/desactiver.sh) et affiche le résultat (#nova-propage). */
-  function forcerDesactivation() {
-    var f = document.getElementById('nova-forcer');
-    var corps = document.querySelector('.wimsbody');
-    if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
-    // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
-    if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
-    var placer = function (el) {
-      var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
-      if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);
-      else corps.insertBefore(el, corps.firstChild);
-    };
-    // Refus de Nova aussi (examen déjà commencé) : dit, plutôt que rien (2026-11-08).
-    if (f.getAttribute('data-refus')) {
-      var r = document.createElement('p');
-      r.className = 'nova-forcer-ligne nova-forcer-refus';
-      r.textContent = f.getAttribute('data-refus');
-      placer(r);
-      return;
-    }
-    var n = f.getAttribute('data-n');
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'wims_button wims_warning nova-forcer-bouton';
-    b.textContent = f.getAttribute('data-bouton') || 'Deactivate anyway...';
-    var d = document.createElement('dialog');
-    d.className = 'nova-dialogue nova-forcer';
-    var h = document.createElement('h1');
-    h.id = 'nova-forcer-titre';
-    h.textContent = (f.getAttribute('data-titre') || 'Deactivate %1 despite sharing?').replace('%1', n);
-    d.setAttribute('aria-labelledby', h.id);
-    d.appendChild(h);
+  /* Contenu de l'avertissement « Désactiver quand même » (risques, sauvegarde de la classe cochée par défaut, étapes,
+   * échec), mis dans le dialogue d. f : élément aux attributs data-… de _widgets/desactiver.phtml (#nova-forcer, de la
+   * page ou d'une page lue en arrière-plan). retour : page ouverte après la désactivation (défaut : celle de la ressource).
+   * Utilisé par forcerDesactivation (page de refus de WIMS) et confirmationsRessources (fenêtre, 2026-11-12). */
+  function remplirForcer(f, d, n, retour) {
     var ul = document.createElement('ul');
     var points = (f.getAttribute('data-points') || '').split('|');
     // Feuille dont des exercices sont dans un examen (contourné aussi, 2026-11-08) : un point de plus, en deuxième.
     if (/examen/.test(f.getAttribute('data-examen') || '') && f.getAttribute('data-point-examen')) points.splice(1, 0, f.getAttribute('data-point-examen'));
+    // Examen déjà commencé par des élèves (contourné depuis le 2026-11-12, utilisateur) : un point de plus s'il manque.
+    var pointCommence = f.getAttribute('data-point-commence') || '';
+    if (/commence/.test(f.getAttribute('data-examen') || '') && pointCommence && points.join('|').indexOf(pointCommence) < 0) points.splice(1, 0, pointCommence);
     points.forEach(function (t) {
       if (!t.trim()) return;
       var li = document.createElement('li');
@@ -5712,7 +5689,7 @@
     // Sans passer par l'accueil (2026-11-09) : retour à la page de l'examen ou de la feuille, avec le message.
     var desactiver = function () {
       var t = f.getAttribute('data-type');
-      actionAccueil('&nova_desactiver=' + t + ':' + n, lienSession('&cmd=new&module=adm%2Fclass%2F' + t + '&' + t + '=' + n));
+      actionAccueil('&nova_desactiver=' + t + ':' + n, retour || lienSession('&cmd=new&module=adm%2Fclass%2F' + t + '&' + t + '=' + n));
     };
     // Sauvegarde de la classe avant de désactiver (2026-11-10, utilisateur, maquette ; case cochée par défaut) : la
     // sauvegarde complète de WIMS (adm/class/config, job=arch, job2=download, selection=all), .zip, sinon .tgz (serveur
@@ -5793,7 +5770,7 @@
     sansSauver.className = 'wims_button wims_secondary_button';
     sansSauver.textContent = f.getAttribute('data-sans') || 'Deactivate without backup';
     sansSauver.hidden = true;
-    sansSauver.addEventListener('click', function () { sansSauver.disabled = true; etape(2); desactiver(); });
+    sansSauver.addEventListener('click', function () { sansSauver.disabled = true; annuler.disabled = true; etape(2); desactiver(); });
     ok.addEventListener('click', function (e) {
       e.preventDefault();
       if (ok.getAttribute('aria-disabled') === 'true') return;
@@ -5801,6 +5778,7 @@
       ok.classList.add('disabled');
       if (!cocher.checked || !window.fetch || !window.Promise) { desactiver(); return; }
       ul.hidden = true; caseSauver.hidden = true; echec.hidden = true; sansSauver.hidden = true;
+      annuler.disabled = true;
       suivi.hidden = false;
       libelleOk();
       etape(0);
@@ -5808,6 +5786,7 @@
         etapes[0].className = 'echec';
         echec.hidden = false; sansSauver.hidden = false;
         ok.textContent = f.getAttribute('data-reessayer') || 'Try again';
+        annuler.disabled = false;
         ok.removeAttribute('aria-disabled');
         ok.classList.remove('disabled');
       });
@@ -5817,6 +5796,42 @@
     actions.appendChild(sansSauver);
     actions.appendChild(ok);
     d.appendChild(actions);
+    return { annuler: annuler, ok: ok };
+  }
+
+  function forcerDesactivation() {
+    var f = document.getElementById('nova-forcer');
+    var corps = document.querySelector('.wimsbody');
+    if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
+    // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
+    if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
+    var placer = function (el) {
+      var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
+      if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);
+      else corps.insertBefore(el, corps.firstChild);
+    };
+    // Refus de Nova aussi (examen déjà commencé) : dit, plutôt que rien (2026-11-08).
+    if (f.getAttribute('data-refus')) {
+      var r = document.createElement('p');
+      r.className = 'nova-forcer-ligne nova-forcer-refus';
+      r.textContent = f.getAttribute('data-refus');
+      placer(r);
+      return;
+    }
+    var n = f.getAttribute('data-n');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'wims_button wims_warning nova-forcer-bouton';
+    b.textContent = f.getAttribute('data-bouton') || 'Deactivate anyway...';
+    var d = document.createElement('dialog');
+    d.className = 'nova-dialogue nova-forcer';
+    var h = document.createElement('h1');
+    h.id = 'nova-forcer-titre';
+    h.textContent = (f.getAttribute('data-titre') || 'Deactivate %1 despite sharing?').replace('%1', n);
+    d.setAttribute('aria-labelledby', h.id);
+    d.appendChild(h);
+    var fait = remplirForcer(f, d, n, null);
+    var annuler = fait.annuler;
     document.body.appendChild(d);
     annuler.addEventListener('click', function () { d.close(); });
     d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
@@ -6785,6 +6800,7 @@
       if (ouvert && !ouvert.menu.contains(ev.target) && !ouvert.bouton.contains(ev.target)) fermer(false);
     }, true);
     document.addEventListener('keydown', function (ev) { if (ouvert && ev.key === 'Escape') { ev.preventDefault(); fermer(true); } });
+    document.addEventListener('nova-fermer-menus', function () { fermer(false); });
     window.addEventListener('scroll', placer, true);
     window.addEventListener('resize', placer);
 
@@ -6913,6 +6929,240 @@
         if (tr.cells.length > colonne && tr.cells[colonne] === tr.lastElementChild) tr.removeChild(tr.cells[colonne]);
       });
       table.classList.add('nova-etats');
+    });
+  }
+
+  /* Fenêtres de confirmation des ressources (2026-11-12, utilisateur, maquettes) : au lieu des pages d'avertissement de
+   * WIMS, une fenêtre de Nova. Liens du menu de la pastille d'état (accueil) et du bandeau (feuille, examen).
+   * - Activer ou effacer une feuille ou un examen, effacer un document ou un outil : la page de WIMS ne fait que demander
+   *   (job=prep_…, deldoc sans step) ; lue en arrière-plan, son texte va dans la fenêtre, « Oui » de WIMS au bouton.
+   * - Désactiver (feuille, examen, devoir libre) : WIMS désactive tout de suite quand rien ne s'y oppose ; envoyé sans
+   *   fenêtre (choix de l'utilisateur : fenêtre seulement si WIMS a quelque chose à dire), puis selon la réponse :
+   *   confirmation (scores effacés), contournement de Nova (#nova-forcer : remplirForcer, sauvegarde cochée), refus.
+   * - Effacer un devoir libre : WIMS efface sans rien demander ; Nova demande.
+   * Deux requêtes à moins d'1 s dans une session : la seconde est mal servie (1,5 s d'écart). Réglage std-listes. */
+  function confirmationsRessources() {
+    var tx = document.getElementById('nova-confirm-textes');
+    if (!tx || standard('listes') || !window.fetch || !window.TextDecoder || !window.DOMParser || typeof document.createElement('dialog').showModal !== 'function') return;
+    var t = function (k, n) { return (tx.getAttribute('data-' + k) || '').replace('%1', n == null ? '' : n); };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var occupe = false, dlg = null;
+
+    function contexte(a) {
+      var href = a.getAttribute('href') || '';
+      var c = { href: a.href, job: (/[?&]\+?job=([a-z_]+)/.exec(href) || [])[1] || '', type: null, n: null, titre: '', accueil: false };
+      ['sheet', 'exam', 'freework', 'doc', 'tool'].some(function (k) {
+        var m = new RegExp('[?&]\\+?' + k + '=(\\d+)').exec(href);
+        if (m) { c.type = k; c.n = m[1]; }
+        return !!m;
+      });
+      var menu = a.closest('.nova-etat-menu');
+      if (menu) { c.accueil = true; c.titre = menu.getAttribute('aria-label') || ''; }
+      if (!c.type) {
+        var mod = document.querySelector('.wimsbody form input[name="module"]');
+        var mm = mod && /adm\/class\/(sheet|exam)$/.exec(mod.value);
+        if (mm) c.type = mm[1];
+        var h = document.querySelector('.wimsbody h1.wims_title');
+        var mn = h && /(\d+)\s*$/.exec(h.textContent.trim());
+        if (mn) c.n = mn[1];
+        var champ = document.querySelector('.wimsbody input#title');
+        if (champ) c.titre = champ.value;
+      }
+      return c;
+    }
+    function flux(c) {
+      if ((c.type === 'sheet' || c.type === 'exam') && (c.job === 'prep_activate' || c.job === 'prep_erase')) return 'lire';
+      if ((c.type === 'doc' || c.type === 'tool') && c.job === 'deldoc') return 'lire';
+      if (c.job === 'deactivate' && (c.type === 'sheet' || c.type === 'exam' || c.type === 'freework')) return 'envoyer';
+      if (c.type === 'freework' && c.job === 'prep_erase') return 'nova';
+      return null;
+    }
+    // Page de la ressource ou accueil, à ouvrir après l'action (cmd=new : valable après une requête en arrière-plan).
+    function suite(c) { return c.accueil ? lienAccueil('') : lienSession('&cmd=new&module=adm%2Fclass%2F' + c.type + '&' + c.type + '=' + c.n); }
+    function aller(href, debut) { setTimeout(function () { location.href = href; }, Math.max(0, 1500 - (Date.now() - (debut || 0)))); }
+    function lire(href) {
+      return fetch(href, { credentials: 'same-origin' }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+        return new DOMParser().parseFromString(new TextDecoder('windows-1252').decode(buf), 'text/html');
+      });
+    }
+
+    // La fenêtre : icône, titre, nom de la ressource ; corps et boutons remplis ensuite.
+    function fenetre(ico, ton, titre, sous) {
+      if (dlg) dlg.remove();
+      var d = el('dialog', 'nova-dialogue nova-conf');
+      var fermer = el('button', 'close-button', '\u00d7');
+      fermer.type = 'button';
+      fermer.setAttribute('aria-label', t('b-fermer'));
+      fermer.addEventListener('click', function () { if (!bloque()) d.close(); });
+      d.appendChild(fermer);
+      var tete = el('div', 'nova-conf-tete');
+      var rond = el('span', 'nova-conf-ico nova-conf-' + ton);
+      rond.appendChild(icone(ico));
+      tete.appendChild(rond);
+      var bloc = el('div');
+      var h = el('h1', '', titre);
+      h.id = 'nova-conf-titre';
+      bloc.appendChild(h);
+      if (sous) bloc.appendChild(el('p', 'nova-conf-sous', sous));
+      tete.appendChild(bloc);
+      d.appendChild(tete);
+      d.setAttribute('aria-labelledby', h.id);
+      var corps = el('div', 'nova-conf-corps');
+      d.appendChild(corps);
+      var boutons = el('div', 'nova-conf-boutons');
+      d.appendChild(boutons);
+      var bloque = function () { var a = d.querySelector('.wimscenter .wims_secondary_button'); return !!(a && a.disabled); };
+      d.addEventListener('cancel', function (e) { if (bloque()) e.preventDefault(); });
+      d.addEventListener('click', function (e) { if (e.target === d && !bloque()) d.close(); });
+      d.addEventListener('close', function () { d.remove(); if (dlg === d) dlg = null; });
+      document.body.appendChild(d);
+      dlg = d;
+      d.showModal();
+      return { d: d, corps: corps, boutons: boutons };
+    }
+    function bouton(f, texte, genre, action) {
+      var b = el('button', 'nova-conf-b' + (genre ? ' nova-conf-' + genre : ''), texte);
+      b.type = 'button';
+      b.addEventListener('click', function () { action(b); });
+      f.boutons.appendChild(b);
+      return b;
+    }
+    function annuler(f) { return bouton(f, t('b-annuler'), '', function () { f.d.close(); }); }
+
+    // Texte de WIMS d'une page lue : ce qui suit le titre du module, sans ses boutons ni ses formulaires.
+    function messageWims(doc) {
+      var corps = doc.querySelector('.wimsbody');
+      if (!corps) return null;
+      var bloc = el('div', 'nova-conf-wims');
+      var depart = corps.querySelector('#wims_class');
+      for (var x = depart ? depart.nextSibling : corps.firstChild; x; x = x.nextSibling) {
+        if (x.nodeType === 8) continue;
+        if (x.nodeType === 1 && x.matches('form, fieldset, table, #wims_supervisor_list, #wimsmenumodubox')) break;
+        if (x.nodeType === 1 && x.matches('script, style, template, #nova-forcer, #nova-propage, .nova-ariane')) continue;
+        bloc.appendChild(document.importNode(x, true));
+      }
+      Array.prototype.forEach.call(bloc.querySelectorAll('script, style, input, select, textarea, button, iframe, form'), function (e) { e.remove(); });
+      Array.prototype.forEach.call(bloc.querySelectorAll('a[href*="cmd=reply"], a[href*="cmd=resume"]'), function (a) {
+        var c = a.closest('.wimscenter, p') || a;
+        if (bloc.contains(c)) c.remove();
+      });
+      // Message de WIMS dans un cadre « alert » : le cadre est la fenêtre.
+      var seul = bloc.children.length === 1 && !bloc.firstElementChild.previousSibling && bloc.firstElementChild.matches('.wims_msg.alert') ? bloc.firstElementChild : null;
+      if (!seul) { var e1 = bloc.firstElementChild; if (e1 && e1.matches('.wims_msg.alert') && !bloc.textContent.replace(e1.textContent, '').trim()) seul = e1; }
+      if (seul) { while (seul.firstChild) bloc.insertBefore(seul.firstChild, seul); seul.remove(); }
+      // Comptes qui ont travaillé (désactivation d'une feuille) : liste repliée.
+      Array.prototype.forEach.call(bloc.querySelectorAll('p.tt'), function (p) {
+        var noms = p.textContent.trim().split(/\s+/).filter(Boolean);
+        var det = el('details', 'nova-conf-comptes');
+        det.appendChild(el('summary', '', t('comptes', noms.length)));
+        det.appendChild(el('p', 'tt', noms.join(' ')));
+        var avant = p.previousSibling;
+        if (avant && avant.nodeType === 3 && avant.nodeValue.trim()) avant.remove();
+        p.parentNode.replaceChild(det, p);
+      });
+      return bloc.textContent.trim() ? bloc : null;
+    }
+    function erreur(f) {
+      f.corps.textContent = '';
+      f.corps.appendChild(el('p', 'nova-conf-erreur', t('erreur')));
+      f.boutons.textContent = '';
+      bouton(f, t('b-fermer'), 'p', function () { f.d.close(); });
+    }
+
+    // Activer, effacer : la page de WIMS ne fait que demander.
+    function demander(c) {
+      var activer = c.job === 'prep_activate';
+      var f = fenetre(activer ? 'lecture' : 'corbeille', activer ? 'a' : 'r', t((activer ? 'activer-' : 'effacer-') + c.type, c.n), c.titre);
+      f.corps.appendChild(el('p', 'nova-conf-attente', '\u2026'));
+      lire(c.href).then(function (doc) {
+        var debut = Date.now();
+        var motif = activer ? /job=activate\b/ : c.job === 'deldoc' ? /step=1/ : /job=erase\b/;
+        var oui = Array.prototype.filter.call(doc.querySelectorAll('.wimsbody a[href*="cmd=reply"]'), function (a) { return motif.test(a.getAttribute('href')); })[0];
+        var msg = messageWims(doc);
+        f.corps.textContent = '';
+        if (msg) f.corps.appendChild(msg);
+        if (!oui) {
+          bouton(f, t('b-page'), '', function () { location.href = c.href; });
+          bouton(f, t('b-fermer'), 'p', function () { f.d.close(); });
+          return;
+        }
+        annuler(f);
+        bouton(f, t(activer ? 'b-activer' : 'b-effacer'), activer ? 'p' : 'r', function (b) { b.disabled = true; aller(oui.href, debut); }).focus();
+      }).catch(function () { erreur(f); });
+    }
+
+    // Désactiver : envoyé tout de suite ; fenêtre seulement si WIMS a quelque chose à dire.
+    function desactiver(c) {
+      document.documentElement.classList.add('nova-occupe');
+      lire(c.href).then(function (doc) {
+        document.documentElement.classList.remove('nova-occupe');
+        var debut = Date.now();
+        var forcer = doc.getElementById('nova-forcer');
+        var oui = doc.querySelector('.wimsbody a[href*="job=deactivate"][href*="confirm=yes"]');
+        var msg = messageWims(doc);
+        var cause = function (f) {
+          if (!msg) return;
+          var boite = el('div', 'nova-conf-cause');
+          boite.appendChild(el('b', '', t('wims-refuse')));
+          boite.appendChild(msg);
+          f.corps.appendChild(boite);
+        };
+        if (forcer && !forcer.hasAttribute('data-refus')) {
+          var titreF = (forcer.getAttribute('data-titre') || '').replace('%1', c.n);
+          var f1 = fenetre('alerte', 'r', titreF || t('refus-' + c.type, c.n), c.titre);
+          cause(f1);
+          f1.boutons.remove();
+          var fait = remplirForcer(forcer, f1.d, c.n, c.accueil ? lienAccueil('') : null);
+          fait.annuler.addEventListener('click', function () { f1.d.close(); });
+          fait.ok.focus();
+          return;
+        }
+        if (oui) {
+          var travail = !!(msg && msg.querySelector('.nova-conf-comptes'));
+          var f2 = fenetre('alerte', 'r', travail && c.type === 'sheet' ? t('travail-sheet', c.n) : t('desactiver-' + c.type, c.n), c.titre);
+          if (msg) f2.corps.appendChild(msg);
+          annuler(f2);
+          bouton(f2, t(travail ? 'b-scores' : 'b-desactiver'), 'r', function (b) { b.disabled = true; aller(oui.href, debut); });
+          return;
+        }
+        var fait0 = doc.querySelector('.wimsbody .field .wims_status_0, .wimsbody .wims_msg.success') ||
+          (function () { var tb = doc.getElementById('TABLE_supervisor_' + c.type); var tr = tb && tb.querySelectorAll('tbody > tr')[c.n - 1]; return tr && tr.querySelector('.wims_status_0'); })();
+        if (fait0 || !msg) { aller(suite(c), debut); return; }
+        // Refus : raison de WIMS, et ce que Nova en dit (classe qui ne permet pas de passer outre…).
+        var f3 = fenetre('alerte', 'r', t('refus-' + c.type, c.n), c.titre);
+        cause(f3);
+        if (forcer && forcer.getAttribute('data-refus')) f3.corps.appendChild(el('p', '', forcer.getAttribute('data-refus')));
+        bouton(f3, t('b-fermer'), 'p', function () { f3.d.close(); }).focus();
+        f3.d.addEventListener('close', function () { aller(suite(c), debut); });
+      }).catch(function () {
+        document.documentElement.classList.remove('nova-occupe');
+        erreur(fenetre('alerte', 'r', t('desactiver-' + c.type, c.n), c.titre));
+      });
+    }
+
+    // Effacer un devoir libre : WIMS ne demande rien.
+    function effacerDevoir(c) {
+      var f = fenetre('corbeille', 'r', t('effacer-freework', c.n), c.titre);
+      f.corps.appendChild(el('p', '', t('fw-effacer')));
+      annuler(f).focus();
+      bouton(f, t('b-effacer'), 'r', function (b) { b.disabled = true; location.href = c.href; });
+    }
+
+    document.addEventListener('click', function (ev) {
+      if (ev.defaultPrevented || ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+      var a = ev.target.closest && ev.target.closest('.nova-etat-menu a[href], .nova-statut-actions a[href]');
+      if (!a) return;
+      var c = contexte(a), genre = c.type && c.n ? flux(c) : null;
+      if (!genre) return;
+      ev.preventDefault();
+      document.dispatchEvent(new CustomEvent('nova-fermer-menus'));
+      if (occupe) return;
+      occupe = true;
+      setTimeout(function () { occupe = false; }, 1500);
+      if (genre === 'lire') demander(c);
+      else if (genre === 'envoyer') desactiver(c);
+      else effacerDevoir(c);
     });
   }
 
@@ -7591,7 +7841,7 @@
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); capaciteClasse(); ficheRessource(); etatsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
+  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); capaciteClasse(); ficheRessource(); etatsRessources(); confirmationsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
   capterTinymce();   // avant le tinymce.init de WIMS (au chargement de la page)
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();

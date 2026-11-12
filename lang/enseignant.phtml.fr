@@ -82,6 +82,36 @@
 !set nova_forcer_echec=La sauvegarde a échoué : rien n'a été désactivé.
 !set nova_forcer_reessayer=Réessayer
 !set nova_forcer_sans=Désactiver sans sauvegarde
+!! Fenetres de confirmation des ressources (2026-11-12) : examen commence (contourne), classe qui ne permet pas, fenetre de Nova (nova.js confirmationsRessources).
+!set nova_forcer_titre_exam_commence=Désactiver l'examen %1 alors que des élèves l'ont commencé ?
+!set nova_forcer_points_exam_commence=Il redevient « En préparation » : son contenu est de nouveau modifiable. Changer, ajouter ou déplacer des exercices désaccorde les notes déjà enregistrées.|Des élèves l'ont déjà commencé : leurs notes sont gardées. Ne le désactivez pas pendant qu'un élève le passe.|WIMS l'interdit pour ces raisons : ne le faites qu'en connaissance de cause.
+!set nova_forcer_point_commence=Des élèves l'ont déjà commencé : leurs notes sont gardées. Ne le désactivez pas pendant qu'un élève le passe.
+!set nova_forcer_refus_reglage=La désactivation malgré le partage n'est pas permise dans cette classe. Un enseignant peut l'autoriser dans Réglages de Nova, onglet Apparence (« Désactiver malgré le partage »).
+!set nova_cf_activer_sheet=Activer la feuille %1 ?
+!set nova_cf_activer_exam=Activer l'examen %1 ?
+!set nova_cf_effacer_sheet=Effacer la feuille %1 ?
+!set nova_cf_effacer_exam=Effacer l'examen %1 ?
+!set nova_cf_effacer_freework=Effacer le devoir libre %1 ?
+!set nova_cf_effacer_doc=Effacer le document %1 ?
+!set nova_cf_effacer_tool=Effacer l'outil %1 ?
+!set nova_cf_travail_sheet=Des élèves ont déjà travaillé sur la feuille %1
+!set nova_cf_desactiver_sheet=Désactiver la feuille %1 ?
+!set nova_cf_desactiver_exam=Désactiver l'examen %1 ?
+!set nova_cf_desactiver_freework=Désactiver le devoir libre %1 ?
+!set nova_cf_refus_sheet=La feuille %1 ne peut pas être désactivée
+!set nova_cf_refus_exam=L'examen %1 ne peut pas être désactivé
+!set nova_cf_refus_freework=Le devoir libre %1 ne peut pas être désactivé
+!set nova_cf_wims_refuse=WIMS refuse
+!set nova_cf_comptes=%1 comptes ont déjà travaillé
+!set nova_cf_fw_effacer=C'est définitif : le devoir et les fichiers déposés sont supprimés.
+!set nova_cf_b_activer=Activer
+!set nova_cf_b_effacer=Effacer
+!set nova_cf_b_desactiver=Désactiver
+!set nova_cf_b_scores=Effacer les scores et désactiver
+!set nova_cf_b_fermer=Fermer
+!set nova_cf_b_annuler=Annuler
+!set nova_cf_b_page=Ouvrir la page de WIMS
+!set nova_cf_erreur=WIMS n'a pas répondu : rien n'a été fait. Réessayez.
 !! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
 !set nova_cap_sur=%u sur %t (%p %)
 !set nova_cap_plein=La classe approche de sa capacité maximale.
@@ -135,8 +165,8 @@
 !set nova_st_montrer=Réapparaît sur la page des élèves.
 !set nova_st_reactiver_n=Les notes sont de nouveau enregistrées.
 !set nova_st_reactiver_d=Les dépôts rouvrent.
-!set nova_st_desactiver=Repasse en préparation ; refusé si des élèves ont travaillé.
-!set nova_st_effacer=Définitif ; WIMS demande confirmation.
+!set nova_st_desactiver=Repasse en préparation ; avertissement si des élèves ont travaillé.
+!set nova_st_effacer=Définitif ; confirmation demandée.
 !set nova_st_archiver=Fige le devoir ; il ne pourra plus être réactivé.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=Un élève qui a commencé l'examen avant une heure de coupure ne peut plus ouvrir de nouvelle session après elle.

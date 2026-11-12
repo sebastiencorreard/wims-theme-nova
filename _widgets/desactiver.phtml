@@ -6,7 +6,8 @@
 !! dans un programme de portail, la « structure » est le partage avec ses cours (vu le 2026-11-08). Examen commence : dit sous le refus.
 !! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
 !read themes/$wims_theme/lang/enseignant.phtml.$lang
-!if ($module=adm/class/exam and $error=nodeactivate and sharing isin $deactivate and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
+!! Examen commence par des eleves (deactivate=score, partage ou non) : contourne aussi depuis le 2026-11-12 (utilisateur).
+!if ($module=adm/class/exam and $error=nodeactivate and (sharing isin $deactivate or score isin $deactivate) and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
   !reset nova_fs
   !if $module=adm/class/exam
     !set nova_ft=exam
@@ -18,13 +19,19 @@
   !if $nova_fs=$empty
     !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
   !endif
-  !if $nova_fs=ok or $nova_fs=ok examen
-<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_ft)" data-points="$(nova_forcer_points_$nova_ft)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler" data-sauver="$nova_forcer_sauver" data-sauver-aide="$nova_forcer_sauver_aide" data-ok-sauver="$nova_forcer_ok_sauver" data-etape1="$nova_forcer_etape1" data-etape2="$nova_forcer_etape2" data-etape3="$nova_forcer_etape3" data-echec="$nova_forcer_echec" data-reessayer="$nova_forcer_reessayer" data-sans="$nova_forcer_sans"></span>
+  !! Titre et risques : partage, ou examen commence seulement (sans partage).
+  !set nova_fk=$nova_ft
+  !if $nova_ft=exam and sharing notin $deactivate
+    !set nova_fk=exam_commence
   !endif
-  !if $nova_fs=commence
-<span id="nova-forcer" hidden data-refus="$nova_forcer_refus_commence"></span>
+  !if $nova_fs=ok or $nova_fs=ok examen or $nova_fs=ok commence
+<span id="nova-forcer" hidden data-examen="$nova_fs" data-point-examen="$nova_forcer_point_examen" data-point-commence="$nova_forcer_point_commence" data-type="$nova_ft" data-n="$nova_fn" data-bouton="$nova_forcer_bouton" data-titre="$(nova_forcer_titre_$nova_fk)" data-points="$(nova_forcer_points_$nova_fk)" data-ok="$nova_forcer_ok" data-annuler="$nova_forcer_annuler" data-sauver="$nova_forcer_sauver" data-sauver-aide="$nova_forcer_sauver_aide" data-ok-sauver="$nova_forcer_ok_sauver" data-etape1="$nova_forcer_etape1" data-etape2="$nova_forcer_etape2" data-etape3="$nova_forcer_etape3" data-echec="$nova_forcer_echec" data-reessayer="$nova_forcer_reessayer" data-sans="$nova_forcer_sans"></span>
   !endif
-  !reset nova_ft nova_fn nova_fs
+  !! Classe qui ne permet pas de passer outre : dit dans la fenetre de Nova (confirmationsRessources).
+  !if $nova_fs=reglage
+<span id="nova-forcer" hidden data-reglage="1" data-refus="$nova_forcer_refus_reglage"></span>
+  !endif
+  !reset nova_ft nova_fn nova_fs nova_fk
 !endif
 !if $module=home
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"

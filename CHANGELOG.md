@@ -19,6 +19,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Feuille et examen : « Page de présentation » ne prend plus deux tiers de la ligne ; ses choix restent sur une ligne, à largeur égale avec la tuile voisine.
 - Feuille et examen : le champ du titre est sur la ligne de « Titre », sur toute la largeur.
 - Titres des cartes (« Informations générales », cartes de réglages…) : centrés, dans la couleur d'accent.
 - Feuille et examen : la date d'expiration rejoint aussi « Options avancées ».

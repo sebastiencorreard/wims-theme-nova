@@ -6375,7 +6375,7 @@
     var grille = document.createElement('div');
     grille.className = 'nova-tuiles';
     cadre.insertBefore(grille, champs[0]);
-    var avancees = [];
+    var avancees = [], multiples = [];
     champs.forEach(function (c) {
       var k = cle(c);
       c.classList.add('nova-tuile');
@@ -6424,7 +6424,7 @@
         });
       }
       Array.prototype.forEach.call(c.querySelectorAll(':scope > br.clearall'), function (b) { b.remove(); });
-      if (radios.length > 2) c.classList.add('nova-tuile-double');
+      if (radios.length > 2) multiples.push(c);
       // Réglage (champs, unité, aide) sur une ligne qui passe à la ligne au besoin.
       var corps = document.createElement('div');
       corps.className = 'nova-tuile-corps';
@@ -6438,6 +6438,25 @@
       if (k && k[0] === 'cutt') coupuresExamen(c, tx);
       if (k && k[2]) { c.classList.add('nova-tuile-avancee'); avancees.push(c); }
     });
+    // Tuile double (deux parts de la ligne) seulement si ses choix ne tiennent pas sur une ligne dans une tuile normale
+    // (2026-11-12, utilisateur : « Page de présentation » prenait deux tiers de la ligne pour rien). Mesure refaite au
+    // redimensionnement, au chargement des polices et à l'ouverture des options avancées.
+    var doubles = function () {
+      multiples.forEach(function (c) { c.classList.remove('nova-tuile-double'); });
+      multiples.filter(function (c) {
+        var choix = c.querySelector('.nova-tuile-choix'), corps = c.querySelector('.nova-tuile-corps');
+        if (!choix || !corps || !corps.clientWidth) return false;
+        var w = choix.offsetWidth - choix.clientWidth;
+        Array.prototype.forEach.call(choix.children, function (l) { w += l.getBoundingClientRect().width; });
+        return w > corps.clientWidth + 0.5;
+      }).forEach(function (c) { c.classList.add('nova-tuile-double'); });
+    };
+    if (multiples.length) {
+      doubles();
+      var attente;
+      window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(doubles, 100); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(doubles);
+    }
     if (!avancees.length) return;
     var memo = 'nova-fiche-avancees';
     var bouton = document.createElement('button');
@@ -6448,6 +6467,7 @@
       grille.classList.toggle('nova-avances-ouvertes', o);
       bouton.setAttribute('aria-expanded', o ? 'true' : 'false');
       try { localStorage.setItem(memo, o ? '1' : '0'); } catch (e) { /* rien */ }
+      if (multiples.length) doubles();
     };
     var ouvert = false;
     try { ouvert = localStorage.getItem(memo) === '1'; } catch (e) { /* fermé */ }

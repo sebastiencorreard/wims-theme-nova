@@ -2558,6 +2558,48 @@
   }
 
   /* ===== js/src/50-exercice.js : page de réponse, claviers, images cliquables, dominos ===== */
+  /* Tableau du verdict mêlé (2026-11-12, utilisateur) : une colonne de réponses (« Votre réponse », « Bonne réponse ») est
+   * centrée sous son titre quand toutes ses réponses sont courtes (au plus 10 rem de large : un nombre, un mot, une tuile),
+   * sinon alignée à gauche (seuil choisi par Claude : au-delà, une phrase ou une expression se lit mieux à gauche). Cadre
+   * d'une réponse vide à la taille d'une tuile dans un exercice à tuiles. Mesures refaites après MathJax (~1 s après
+   * « load ») et au redimensionnement. */
+  function alignerVerdict(table) {
+    var seuil = 10 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+    var largeur = function (c) {
+      var w = 0;
+      Array.prototype.forEach.call(c.childNodes, function (n) {
+        var r = null, lignes = 1;
+        if (n.nodeType === 1) { r = n.getBoundingClientRect(); lignes = n.getClientRects().length; }
+        else if (n.nodeType === 3 && n.nodeValue.trim()) { var g = document.createRange(); g.selectNodeContents(n); r = g.getBoundingClientRect(); lignes = g.getClientRects().length; }
+        // Une réponse coupée sur plusieurs lignes (cellule étroite, au téléphone) compte comme longue.
+        if (r) w = Math.max(w, lignes > 1 ? Infinity : r.width);
+      });
+      return w;
+    };
+    var mesurer = function () {
+      if (!table.isConnected) return;
+      var tuile = table.querySelector('.fill_container > .drag_label');
+      if (tuile) {
+        var t = tuile.getBoundingClientRect();
+        table.style.setProperty('--nova-vide-l', Math.round(t.width) + 'px');
+        table.style.setProperty('--nova-vide-h', Math.round(t.height) + 'px');
+      } else if (document.querySelector('.fill_container > .drag_label')) {
+        table.style.setProperty('--nova-vide-l', '44px');
+        table.style.setProperty('--nova-vide-h', '44px');
+      }
+      var corps = table.tBodies[0];
+      [1, 2].forEach(function (k) {
+        var cellules = Array.prototype.map.call(corps.rows, function (r) { return r.cells[k]; }).filter(Boolean);
+        table.classList.toggle('nova-verdict-centre-' + (k + 1), cellules.length > 0 && cellules.every(function (c) { return largeur(c) <= seuil; }));
+      });
+    };
+    mesurer();
+    window.addEventListener('load', function () { mesurer(); setTimeout(mesurer, 1500); });
+    if (document.readyState === 'complete') setTimeout(mesurer, 1500);
+    var attente;
+    window.addEventListener('resize', function () { clearTimeout(attente); attente = setTimeout(mesurer, 150); });
+  }
+
   /* Exercice OEF (demande de l'utilisateur, 2026-10-05). « Envoyer la réponse » (div.send_answer) devient
    * « Valider ». Page de réponse (scripts/oef/answer.phtml) : le tableau « Analyse de votre réponse » (une
    * ligne par réponse : nom, réponse de l'élève, span.oef_indgood|oef_indbad|oef_indpartial|oef_indprec et la
@@ -2825,6 +2867,7 @@
       });
       cadre.appendChild(table);
       corps.appendChild(cadre);
+      if (!sansReponses) alignerVerdict(table);
     } else {
       titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
       var liste = document.createElement('ul');

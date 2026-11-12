@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- Correction d'un exercice à réponses mêlées : colonnes centrées quand les réponses sont courtes (nombres, tuiles), à gauche sinon ; case laissée vide de la taille d'une tuile.
 - **Activité fermée** (et autres pages d'erreur de WIMS) : présentées en carte Nova, avec un cadenas quand l'accès est refusé ; en examen, le « Retour » qui ne faisait rien n'est plus affiché.
 - **Réponses en partie justes** (plusieurs réponses) : un seul tableau, dans l'ordre des réponses : [k], votre réponse (cadre vert si juste, rouge si fausse) et la bonne réponse (en vert, ✓ si la vôtre était juste) ; carte blanche, renvois [k] gardés dans l'énoncé.
 - **Éléments à associer** : tuiles blanches en relief, consigne au-dessus ; la tuile choisie et ses partenaires possibles sont mis en évidence, un trait pointillé mène à un rond « ? » ; une paire faite est reliée par un trait. Correction : chaque paire verte ou rouge, avec ✓ / ✕, et le verdict de Nova au lieu du tableau de WIMS.

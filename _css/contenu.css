@@ -845,7 +845,7 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
 .nova-verdict-tableau .nova-verdict-col-num { width: 3.2em; }
 .nova-verdict-tableau .nova-verdict-num { width: 3.2em; padding-left: 0; font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte-2); white-space: nowrap; }
 .nova-verdict-tableau .nova-verdict-juste { color: var(--nova-succes); font-weight: 700; }
-.nova-verdict-vide { width: 2.5em; height: 2.5em; box-sizing: border-box; vertical-align: middle; }
+.nova-verdict-vide { width: var(--nova-vide-l, 2.5em); height: var(--nova-vide-h, 2.5em); box-sizing: border-box; vertical-align: middle; }   /* taille d'une tuile : alignerVerdict */
 .nova-verdict-etat { display: block; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-juste {
   display: inline-block;
@@ -863,8 +863,9 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   background: var(--nova-attention-fond);
   color: var(--nova-attention-texte);
 }
-/* Colonne « Bonne réponse » centrée : en-tête, réponses et coche alignés (utilisateur, 2026-11-12). */
-.nova-verdict-tableau :is(th, td):nth-child(3) { text-align: center; }
+/* Colonnes de réponses centrées quand toutes leurs réponses sont courtes (nova.js alignerVerdict ; utilisateur, 2026-11-12). */
+.nova-verdict-tableau.nova-verdict-centre-2 :is(th, td):nth-child(2),
+.nova-verdict-tableau.nova-verdict-centre-3 :is(th, td):nth-child(3) { text-align: center; }
 .nova-verdict-coche { display: inline-block; vertical-align: middle; }
 .nova-verdict-croix { display: inline-block; vertical-align: middle; }
 .nova-verdict-croix::before { content: "\2715"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--nova-erreur); color: #FFFFFF; font-size: .8rem; font-weight: 700; }

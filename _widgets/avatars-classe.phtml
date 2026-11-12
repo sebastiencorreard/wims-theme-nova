@@ -49,13 +49,13 @@
 !! Cases « Afficher » (avatar, chaque badge propose dans la classe) : ecrites par nova.js (avatarsClasse ; maquette B choisie
 !! par l'utilisateur le 2026-11-12, badges poses au bas du portrait, niveau inscrit dans le badge).
 <div class="nova-avatars-entete"><p class="nova-avatars-resume" id="nova-avatars-resume"></p><div class="nova-avatars-afficher" id="nova-avatars-afficher" role="group" hidden></div></div>
-    !if $nova_avb=oui
-!! Export de tous les avatars en SVG dans un .zip : ecrit par nova.js (avatarsClasse), qui montre le bouton une fois les dessins prets.
-<p class="nova-avatars-actions"><button type="button" id="nova-avatars-exporter" class="wims_button wims_secondary_button" hidden>$nova_avs_exporter</button></p>
-    !endif
 <ul class="nova-avatars-grille">
     !read wimshome/sessions/$nova_sid/nova-avatars.phtml
 </ul>
+    !if $nova_avb=oui
+!! Export de tous les avatars en SVG dans un .zip, sous la grille (utilisateur, 2026-11-12) : ecrit par nova.js (avatarsClasse), qui montre le bouton une fois les dessins prets.
+<p class="nova-avatars-actions"><button type="button" id="nova-avatars-exporter" class="wims_button wims_secondary_button" hidden>$nova_avs_exporter</button></p>
+    !endif
   !else
   <div class="wims_msg info">$nova_avs_vide</div>
   !endif

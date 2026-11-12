@@ -213,7 +213,7 @@
   .nova-avatars-chiffres, .nova-avatars-badges { justify-content: center; }
 }
 /* Avatars des eleves : export (.zip, .svg) et retour a une version anterieure (2026-11-12). */
-.nova-avatars-actions { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: 0 0 var(--nova-e4); }
+.nova-avatars-actions { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: var(--nova-e4) 0 0; }
 .nova-avatars-actions:not(:has(> :not([hidden]))) { display: none; }
 .nova-avatars-actions .wims_button, .nova-avatars-retour .wims_button { margin: 0; }
 .nova-avatars-enregistrer { margin: var(--nova-e3) 0 0; }

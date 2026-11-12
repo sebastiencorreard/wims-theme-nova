@@ -121,6 +121,23 @@
 !set nova_fr_e3=Les élèves ne le voient plus ; leurs notes ne sont plus enregistrées.
 !set nova_fr_e4=Les élèves ne le voient plus.
 !set nova_fr_avances=Options avancées
+!! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).
+!set nova_st_activer=Activer
+!set nova_st_reactiver=Réactiver
+!set nova_st_activer_f=Les élèves la voient, leurs notes sont enregistrées.
+!set nova_st_activer_e=Les élèves peuvent le passer, leurs notes sont enregistrées.
+!set nova_st_activer_d=Les élèves peuvent déposer leur travail.
+!set nova_st_vide=Ajoutez d'abord un exercice.
+!set nova_st_expirer_f=Toujours visible ; les nouvelles notes ne sont plus enregistrées.
+!set nova_st_expirer_e=Les élèves ne peuvent plus le passer ; les notes restent.
+!set nova_st_expirer_d=Plus de dépôt ; refusé si des copies ne sont pas corrigées.
+!set nova_st_cacher=Disparaît de la page des élèves.
+!set nova_st_montrer=Réapparaît sur la page des élèves.
+!set nova_st_reactiver_n=Les notes sont de nouveau enregistrées.
+!set nova_st_reactiver_d=Les dépôts rouvrent.
+!set nova_st_desactiver=Repasse en préparation ; refusé si des élèves ont travaillé.
+!set nova_st_effacer=Définitif ; WIMS demande confirmation.
+!set nova_st_archiver=Fige le devoir ; il ne pourra plus être réactivé.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=Un élève qui a commencé l'examen avant une heure de coupure ne peut plus ouvrir de nouvelle session après elle.
 !set nova_fr_cut_le=Le

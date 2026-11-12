@@ -121,6 +121,23 @@
 !set nova_fr_e3=Los alumnos ya no lo ven; sus notas ya no se registran.
 !set nova_fr_e4=Los alumnos ya no lo ven.
 !set nova_fr_avances=Opciones avanzadas
+!! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).
+!set nova_st_activer=Activar
+!set nova_st_reactiver=Reactivar
+!set nova_st_activer_f=Los alumnos la ven y sus notas se registran.
+!set nova_st_activer_e=Los alumnos pueden hacerlo y sus notas se registran.
+!set nova_st_activer_d=Los alumnos pueden entregar su trabajo.
+!set nova_st_vide=Añada primero un ejercicio.
+!set nova_st_expirer_f=Sigue visible; las nuevas notas ya no se registran.
+!set nova_st_expirer_e=Los alumnos ya no pueden hacerlo; las notas se conservan.
+!set nova_st_expirer_d=No más entregas; rechazado si quedan copias sin corregir.
+!set nova_st_cacher=Desaparece de la página de los alumnos.
+!set nova_st_montrer=Vuelve a aparecer en la página de los alumnos.
+!set nova_st_reactiver_n=Las notas vuelven a registrarse.
+!set nova_st_reactiver_d=Las entregas se reabren.
+!set nova_st_desactiver=Vuelve a preparación; rechazado si los alumnos ya han trabajado.
+!set nova_st_effacer=Definitivo; WIMS pide confirmación.
+!set nova_st_archiver=Congela la tarea; ya no podrá reactivarse.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=Un alumno que empezó el examen antes de una hora de corte ya no puede abrir una nueva sesión después de ella.
 !set nova_fr_cut_le=El

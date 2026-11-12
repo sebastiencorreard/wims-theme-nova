@@ -1709,3 +1709,183 @@
       if (a.previousElementSibling) a.previousElementSibling.classList.remove('hidden_btn');
     }, true);
   }
+
+  /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
+   * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
+   * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :
+   * feuille, examen, devoir libre, vote = wims_status_0..3 (préparation, actif, expiré, caché et expiré) ; outil, document
+   * ajouté, glossaire = 0 caché, 1 visible ; document de la classe = droits des élèves (0..2). Documents de la classe et
+   * votes n'ont que « Modifier » : pastille sans menu, « Modifier » à côté. Réglage std-listes. */
+  function etatsRessources() {
+    var tx = document.getElementById('nova-statuts-textes');
+    if (!tx || standard('listes')) return;
+    var t = function (c) { return tx.getAttribute('data-' + c) || ''; };
+    var TYPES = ['sheet', 'exam', 'freework', 'vote', 'tool', 'glossary', 'doc'];
+    var LETTRE = { sheet: 'f', exam: 'e', freework: 'd' };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var majuscule = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+    var numero = 0, ouvert = null;
+
+    function fermer(rendre) {
+      if (!ouvert) return;
+      ouvert.menu.hidden = true;
+      ouvert.bouton.setAttribute('aria-expanded', 'false');
+      if (rendre) ouvert.bouton.focus();
+      ouvert = null;
+    }
+    function items(menu) { return Array.prototype.slice.call(menu.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])')); }
+    // Sous la pastille (au-dessus s'il manque de place) ; suit la pastille au défilement, fermé si elle quitte l'écran.
+    function placer() {
+      if (!ouvert) return;
+      var menu = ouvert.menu, r = ouvert.bouton.getBoundingClientRect(), w = menu.offsetWidth, h = menu.offsetHeight;
+      var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+      if (r.bottom < 0 || r.top > vh || !r.width) { fermer(false); return; }
+      var gauche = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, vw - w - 8));
+      var haut = r.bottom + 6;
+      if (haut + h > vh - 8 && r.top - 6 - h > 8) haut = r.top - 6 - h;
+      menu.style.left = Math.round(gauche) + 'px';
+      menu.style.top = Math.round(haut) + 'px';
+    }
+    function ouvrir(bouton, menu, focus) {
+      fermer(false);
+      menu.hidden = false;
+      bouton.setAttribute('aria-expanded', 'true');
+      ouvert = { bouton: bouton, menu: menu };
+      placer();
+      if (focus && ouvert) { var l = items(menu); if (l.length) l[0].focus(); }
+    }
+    document.addEventListener('mousedown', function (ev) {
+      if (ouvert && !ouvert.menu.contains(ev.target) && !ouvert.bouton.contains(ev.target)) fermer(false);
+    }, true);
+    document.addEventListener('keydown', function (ev) { if (ouvert && ev.key === 'Escape') { ev.preventDefault(); fermer(true); } });
+    window.addEventListener('scroll', placer, true);
+    window.addEventListener('resize', placer);
+
+    // Une action du menu : le lien de WIMS, avec icône, libellé et effet.
+    function action(a, type, etat) {
+      var job = (/[?&]\+?job=([a-z_]+)/.exec(a.getAttribute('href') || '') || [])[1] || '';
+      var k = LETTRE[type], libelle = a.textContent.trim(), ico = 'crayon', effet = '', groupe = 0;
+      if (job === 'prep_activate') { ico = 'lecture'; effet = t('activer-' + k); }
+      else if (job === 'expire' && etat === 3) { ico = 'oeil'; effet = t('montrer'); }
+      else if (job === 'expire') { ico = 'horloge'; effet = t('expirer-' + k); }
+      else if (job === 'hide') { ico = 'oeil-barre'; effet = t('cacher'); }
+      else if (job === 'reactivate') { ico = 'retour'; libelle = t('reactiver') || libelle; effet = t(type === 'freework' ? 'reactiver-d' : 'reactiver-n'); }
+      else if (job === 'chstatus') { ico = etat === 1 ? 'oeil-barre' : 'oeil'; effet = t(etat === 1 ? 'cacher' : 'montrer'); }
+      else if (job === 'archive') { ico = 'archive'; effet = t('archiver'); groupe = 1; }
+      else if (job === 'deactivate') { ico = 'marche'; effet = t('desactiver'); groupe = 2; }
+      else if (job === 'prep_erase' || job === 'deldoc') { ico = 'corbeille'; effet = t('effacer'); groupe = 2; }
+      a.className = 'nova-etat-action' + (groupe === 2 ? ' nova-etat-danger' : '');
+      a.setAttribute('role', 'menuitem');
+      a.setAttribute('tabindex', '-1');
+      a.textContent = '';
+      a.appendChild(icone(ico));
+      var texte = el('span', 'nova-etat-texte', libelle);
+      if (effet) texte.appendChild(el('small', '', effet));
+      a.appendChild(texte);
+      return { noeud: a, groupe: groupe };
+    }
+
+    function ligne(tr) {
+      var cellules = tr.querySelectorAll(':scope > td');
+      if (cellules.length < 3) return null;
+      var actions = cellules[cellules.length - 1], cellule = cellules[cellules.length - 2];
+      var marque = cellule.firstElementChild && /status_/.test(cellule.firstElementChild.className) ? cellule.firstElementChild : cellule;
+      var m = /\bwims_(?:(?:tool|doc)_)?status_(\d)\b/.exec(marque.className);
+      if (!m) return null;
+      var type = null;
+      for (var i = 0; i < TYPES.length && !type; i++) {
+        var c = 'wims_' + TYPES[i] + '_item';
+        if (cellules[0].classList.contains(c) || cellules[0].querySelector('.' + c)) type = TYPES[i];
+      }
+      if (!type) return null;
+      return { tr: tr, actions: actions, cellule: cellule, marque: marque, etat: +m[1], type: type };
+    }
+
+    function transformer(l) {
+      var etat = l.etat, type = l.type;
+      var liens = Array.prototype.slice.call(l.actions.querySelectorAll('a[href]'));
+      var visibilite = type === 'tool' || type === 'glossary' || (type === 'doc' && liens.some(function (a) { return /job=chstatus/.test(a.href); }));
+      var droits = type === 'doc' && !visibilite;
+      var texte = l.marque.textContent.replace(/\s+/g, ' ').trim();
+      if (!visibilite && !droits && etat === 3) texte = texte.split('+')[0].trim();
+      texte = majuscule(texte);
+      var ton, ico;
+      if (visibilite) { ton = etat === 1 ? 'ok' : 'neutre'; ico = etat === 1 ? 'oeil' : 'oeil-barre'; }
+      else if (droits) { ton = etat === 2 ? 'ok' : 'neutre'; ico = 'livre'; }
+      else { ton = etat === 0 ? 'neutre' : (etat === 1 ? 'ok' : 'attention'); ico = ['crayon', 'coche', 'horloge', 'oeil-barre'][etat] || 'crayon'; }
+      var contenu = el('span', 'nova-etat-cellule');
+      var sansMenu = droits || type === 'vote';
+      var pastille = el(sansMenu ? 'span' : 'button', 'nova-etat nova-etat-' + ton);
+      pastille.appendChild(icone(ico));
+      pastille.appendChild(el('span', 'nova-etat-nom', texte));
+      contenu.appendChild(pastille);
+      if (sansMenu) {
+        liens.forEach(function (a) { a.className = 'nova-etat-modifier'; a.insertBefore(icone('crayon'), a.firstChild); contenu.appendChild(a); });
+      } else {
+        pastille.type = 'button';
+        pastille.appendChild(el('span', 'nova-etat-chevron'));
+        var menu = el('div', 'nova-etat-menu');
+        menu.id = 'nova-etat-menu-' + (++numero);
+        menu.setAttribute('role', 'menu');
+        menu.hidden = true;
+        var titre = l.tr.querySelector(':scope > td:nth-child(2)');
+        if (titre) menu.setAttribute('aria-label', titre.textContent.replace(/\s+/g, ' ').trim());
+        var faits = liens.map(function (a) { return action(a, type, etat); });
+        // Feuille ou examen en préparation sans exercice : WIMS ne propose pas « Activer » ; Nova le montre grisé.
+        if ((type === 'sheet' || type === 'exam') && etat === 0 && !liens.some(function (a) { return /job=prep_activate/.test(a.href); })) {
+          var vide = el('span', 'nova-etat-action');
+          vide.setAttribute('role', 'menuitem');
+          vide.setAttribute('aria-disabled', 'true');
+          vide.appendChild(icone('lecture'));
+          var tv = el('span', 'nova-etat-texte', t('activer'));
+          tv.appendChild(el('small', '', t('vide')));
+          vide.appendChild(tv);
+          faits.unshift({ noeud: vide, groupe: 0 });
+        }
+        [0, 1, 2].forEach(function (g) {
+          var du = faits.filter(function (f) { return f.groupe === g; });
+          if (!du.length) return;
+          if (g > 0 && menu.childNodes.length && !menu.querySelector(':scope > hr')) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
+          du.forEach(function (f) { menu.appendChild(f.noeud); });
+        });
+        pastille.setAttribute('aria-haspopup', 'menu');
+        pastille.setAttribute('aria-expanded', 'false');
+        pastille.setAttribute('aria-controls', menu.id);
+        pastille.addEventListener('click', function () {
+          if (ouvert && ouvert.menu === menu) fermer(false);
+          else ouvrir(pastille, menu, false);
+        });
+        pastille.addEventListener('keydown', function (ev) {
+          if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); ouvrir(pastille, menu, true); }
+        });
+        menu.addEventListener('keydown', function (ev) {
+          var l2 = items(menu), i = l2.indexOf(document.activeElement);
+          if (ev.key === 'Escape') { ev.preventDefault(); fermer(true); }
+          else if (ev.key === 'Tab') fermer(false);
+          else if (ev.key === 'ArrowDown') { ev.preventDefault(); if (l2.length) l2[(i + 1) % l2.length].focus(); }
+          else if (ev.key === 'ArrowUp') { ev.preventDefault(); if (l2.length) l2[(i - 1 + l2.length) % l2.length].focus(); }
+          else if (ev.key === 'Home') { ev.preventDefault(); if (l2.length) l2[0].focus(); }
+          else if (ev.key === 'End') { ev.preventDefault(); if (l2.length) l2[l2.length - 1].focus(); }
+        });
+        document.body.appendChild(menu);
+      }
+      l.cellule.textContent = '';
+      l.cellule.appendChild(contenu);
+      l.cellule.setAttribute('data-text', texte);
+      l.actions.parentNode.removeChild(l.actions);
+    }
+
+    var cadres = document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework) table');
+    Array.prototype.forEach.call(cadres, function (table) {
+      var lignes = Array.prototype.map.call(table.querySelectorAll(':scope > tbody > tr'), ligne);
+      // Une ligne non reconnue : tableau laissé à WIMS (colonnes inchangées).
+      if (!lignes.length || lignes.some(function (l) { return !l; })) { table.classList.add('nova-etats-non'); return; }
+      var colonne = lignes[0].actions.cellIndex;
+      lignes.forEach(transformer);
+      Array.prototype.forEach.call(table.querySelectorAll(':scope > thead > tr'), function (tr) {
+        if (tr.cells.length > colonne && tr.cells[colonne] === tr.lastElementChild) tr.removeChild(tr.cells[colonne]);
+      });
+      table.classList.add('nova-etats');
+    });
+  }

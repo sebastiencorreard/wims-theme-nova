@@ -121,6 +121,23 @@
 !set nova_fr_e3=Students no longer see it; their scores are no longer recorded.
 !set nova_fr_e4=Students no longer see it.
 !set nova_fr_avances=Advanced options
+!! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).
+!set nova_st_activer=Activate
+!set nova_st_reactiver=Reactivate
+!set nova_st_activer_f=Students see it and their scores are recorded.
+!set nova_st_activer_e=Students can take it and their scores are recorded.
+!set nova_st_activer_d=Students can hand in their work.
+!set nova_st_vide=Add an exercise first.
+!set nova_st_expirer_f=Still visible; new scores are no longer recorded.
+!set nova_st_expirer_e=Students can no longer take it; scores are kept.
+!set nova_st_expirer_d=No more submissions; refused if some copies are not marked.
+!set nova_st_cacher=Disappears from the students' page.
+!set nova_st_montrer=Reappears on the students' page.
+!set nova_st_reactiver_n=Scores are recorded again.
+!set nova_st_reactiver_d=Submissions reopen.
+!set nova_st_desactiver=Back to preparation; refused if students have worked on it.
+!set nova_st_effacer=Permanent; WIMS asks for confirmation.
+!set nova_st_archiver=Freezes the assignment; it can no longer be reactivated.
 !! Heures de coupure d'un examen (2026-11-12).
 !set nova_fr_cut_aide=A student who started the exam before a cut-off time cannot open a new session after it.
 !set nova_fr_cut_le=On

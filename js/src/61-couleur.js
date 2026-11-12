@@ -5,7 +5,7 @@
   /* Couleur personnelle d'un élève (demande de l'utilisateur, 2026-11-07) : palette lisible (texte blanc, contraste ≥ 3,5:1),
    * débloquée par le niveau d'un badge choisi par l'enseignant (--nova-couleur-badge, --nova-couleur-niveau), puis 8 dégradés
    * pré-établis à un niveau plus élevé du même badge (--nova-couleur-degrade ; maquette v2 validée le 2026-11-07). Choix gardé
-   * pour toute la structure sur le serveur (.nova_couleur_<login>, header.phtml) et, pour l'appliquer avant l'affichage de
+   * pour toute la structure sur le serveur (score/<login>.nova_couleur, header.phtml) et, pour l'appliquer avant l'affichage de
    * chaque page (htmlheader.phtml), dans localStorage sous nova-couleur|<structure ou classe>|<login> : « #accent » ou
    * « #accent #seconde » (dégradé : html.nova-degrade et --nova-degrade, _css/couleur.css). Le choix se fait dans la fenêtre
    * « Ma couleur », ouverte par le menu Profil (sur l'accueil seulement : l'envoi au serveur passe par l'accueil). */

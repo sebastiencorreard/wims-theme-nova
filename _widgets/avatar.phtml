@@ -1,7 +1,7 @@
 !! Nova : page Mon avatar (texte du bouton : nova_av_debloquer ; nova_av_ouvrir est le parametre d'achat de l'adresse) (lue par _widgets/avatar-entree.phtml). Calcul par _procs/avatar.awk : jetons gagnes dans
 !! TOUTE la structure (portail, groupement : toutes ses zones ; sinon la classe), niveaux des badges (le plus haut de
 !! ses zones), etat de chaque element du catalogue. Fichier de l'eleve garde pour la structure, comme la couleur :
-!! log/classes/<structure ou classe>/.nova_avatar_<login> (lignes "choix ..." et "ouverts ..."). L'editeur est construit
+!! log/classes/<structure ou classe>/score/<login>.nova_avatar (lignes "choix ..." et "ouverts ..."). L'editeur est construit
 !! par nova.js (avatarPage) d'apres #nova-avatar ; les dessins viennent de js/avatar.js (DiceBear, Avataaars).
 !read themes/$wims_theme/lang/eleve.phtml.$lang
 !read themes/$wims_theme/_procs/avatar.proc
@@ -15,7 +15,7 @@
 !set nova_ae=!word 2 of $nova_ae
 !if $nova_ae=1
   !set nova_af=!line 7 to 8 of $nova_av
-  !writefile wimshome/log/classes/$nova_ak/.nova_avatar_$wims_user $nova_af
+  !writefile wimshome/log/classes/$nova_ak/score/$wims_user.nova_avatar $nova_af
 !endif
 !set nova_aj=!line 2 of $nova_av
 !set nova_am=!line 3 of $nova_av

@@ -121,7 +121,7 @@
     !endif
     !! Couleur personnelle (2026-11-07, utilisateur) : choisie par l'eleve une fois le niveau requis atteint (badge et
     !! niveau regles par l'enseignant, --nova-couleur-badge/-niveau), gardee pour toute la structure (portail,
-    !! groupement) dans log/classes/<structure ou classe>/.nova_couleur_<login> (ecrite par header.phtml) ; appliquee
+    !! groupement) dans log/classes/<structure ou classe>/score/<login>.nova_couleur (ecrite par header.phtml ; ancien .nova_couleur_<login> repris ici) ; appliquee
     !! par nova.js (couleurPerso) et, sur chaque page, par le script de tete (htmlheader.phtml, localStorage).
     !! Reglage coupe (« personne ») : valeur vide, nova.js retire la couleur gardee. Badges coupes dans cette zone : rien,
     !! la couleur choisie ailleurs dans la structure reste.
@@ -132,7 +132,7 @@
       !default nova_ck=!word 1 of $wims_class
       !set nova_ck=!replace internal / by , in $nova_ck
       !set nova_ck=$(nova_ck[1])
-      !set nova_cv=!sh cat $nova_cl/$nova_ck/.nova_couleur_$wims_user 2>/dev/null | tr -cd 'a-z'
+      !set nova_cv=!sh r=$nova_cl/$nova_ck; u=$wims_user; o="$$r/.nova_couleur_$$u"; n="$$r/score/$$u.nova_couleur"; [ -n "$$u" ] && [ -f "$$o" ] && { [ -e "$$n" ] && rm -f "$$o" || mv "$$o" "$$n"; }; cat "$$n" 2>/dev/null | tr -cd 'a-z'
     !endif
     !! Toujours ecrit (2026-11-07) : data-bdg dit a nova.js si l'entree « Ma couleur » du menu existe ici.
     <div id="nova-couleur" hidden data-couleur="$nova_cv" data-bdg="$nova_bdg"></div>

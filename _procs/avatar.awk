@@ -1,7 +1,7 @@
 # Nova : avatar de l'eleve (Avataaars de DiceBear ; demande de l'utilisateur, maquette validee le 2026-11-07).
 # Appele par _widgets/avatar.phtml (accueil de l'eleve, module de confiance). Entree decoupee en sections :
 #   #conf     feuilles ou sont poses les reglages --nova-... (site, structure, classe : la derniere l'emporte) ;
-#   #fichier  log/classes/<structure ou classe>/.nova_avatar_<login> : « choix cat.val,... » et « ouverts cat.val ... » ;
+#   #fichier  log/classes/<structure ou classe>/score/<login>.nova_avatar : « choix cat.val,... » et « ouverts cat.val ... » ;
 #   #stock    score/<eleve>.nova de toutes les zones de la structure (niveaux des badges, le plus haut compte) ;
 #   #zone <n> puis score/<eleve> et noscore/<eleve> de cette zone (« E... » = examen).
 # Variables : auj (AAAAMMJJ) ; catalogue (_procs/avatar-catalogue.txt) ; ouvrir (cat.val a ouvrir avec des jetons) ;

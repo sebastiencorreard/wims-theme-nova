@@ -51,6 +51,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- **Avatar et couleur personnelle** : rangés avec les notes de l'élève (`score/`), donc compris dans la sauvegarde de la classe et remis à zéro par « nettoyer la classe », comme les badges ; les choix déjà faits sont repris à la première visite de chaque élève.
 - Portails et groupements : l'accueil d'un élève et les pages de ses feuilles ne parcourent plus tous les fichiers de la structure pour compter les pièces de l'avatar (plus léger sur un gros portail) ; une longue feuille de style de structure n'est plus coupée avant d'arriver aux zones.
 - « Actualiser » ou « Précédent » ne rejoue plus une action portée par l'adresse (désactivation, propagation aux zones, achat d'un élément d'avatar, couleur).
 - Suivi en direct : « Exercice N » (exercice sans titre) est traduit en anglais, espagnol et italien.

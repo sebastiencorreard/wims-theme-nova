@@ -141,9 +141,11 @@ for my $r (values %students) {
     if (@ev > 500) { splice @ev,0,@ev-500; $r->{historyTruncated}=JSON::PP::true; }
     $r->{events} = \@ev;
     $r->{name} ||= $r->{login};
-    # Avatar de l'eleve (Nova, 2026-11-07) : choix enregistre pour sa structure (.nova_avatar_<login>), dessine par suivi.js.
+    # Avatar de l'eleve (Nova, 2026-11-07) : choix enregistre pour sa structure (score/<login>.nova_avatar), dessine par suivi.js.
     { my ($racine) = split m{/}, ($r->{owner} // $r->{class});
-      my ($ch) = read_file("$home/log/classes/$racine/.nova_avatar_$r->{login}", 1) =~ /^choix ([A-Za-z0-9.,]+)$/m;
+      my $fa = "$home/log/classes/$racine/score/$r->{login}.nova_avatar";
+      $fa = "$home/log/classes/$racine/.nova_avatar_$r->{login}" unless -e $fa;   # ancien emplacement, eleve pas encore revenu
+      my ($ch) = read_file($fa, 1) =~ /^choix ([A-Za-z0-9.,]+)$/m;
       # Elements de saison (avatar-catalogue.txt, « mois=... ») hors de leur periode : pas dessines (comme avatar.awk).
       if ($ch) { my $mois = (localtime)[4] + 1;
         $ch = join ',', grep { !exists $saisons->{$_} || $saisons->{$_} !~ /(?:=|,)$mois(?:,|$)/ } split /,/, $ch; }

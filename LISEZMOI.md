@@ -138,7 +138,7 @@ quand une récompense vient d'être débloquée). À un niveau plus élevé du m
 défaut), 8 dégradés pré-établis (≥ 3,8:1) : barre du haut, boutons principaux, titres des fenêtres, onglet actif, note
 retenue, barres de progression, retour en haut ; sa première couleur sert d'accent (`_css/couleur.css`). Réglages dans « Badges Nova ». Le choix
 vaut pour toute la classe, le groupement ou le portail, examens compris : `log/classes/<structure ou
-classe>/.nova_couleur_<login>`, recopié dans le navigateur pour être posé avant l'affichage de chaque page.
+classe>/score/<login>.nova_couleur`, recopié dans le navigateur pour être posé avant l'affichage de chaque page.
 
 Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
 
@@ -157,7 +157,7 @@ plus `--nova-avatar-max-jour` (10) par jour ; `--nova-avatar-depart` (1) jeton o
 tous les `--nova-avatar-pas` (10). Éléments (`_procs/avatar-catalogue.txt`) : libres, à 1 ou 2 jetons, ou récompenses
 des badges (niveaux fixés dans le catalogue ; masqués quand leur badge n'est pas activé), dont six fonds en dégradé ;
 fond transparent par défaut. Tout est compté et vérifié sur le serveur (`_procs/avatar.awk`), dans
-toutes les zones de la structure ; choix et achats gardés dans `log/classes/<structure ou classe>/.nova_avatar_<login>`.
+toutes les zones de la structure ; choix et achats gardés dans `log/classes/<structure ou classe>/score/<login>.nova_avatar`.
 Seuls l'élève et ses enseignants (suivi en salle, devant son nom) le voient.
 
 ## Suivi en direct (salle informatique)

@@ -52,6 +52,7 @@
 !if $module=adm/class/config and $wims_user!=$empty and $wims_class!=$empty
   !read themes/$wims_theme/_widgets/acces-classe.phtml
   !read themes/$wims_theme/_widgets/capacite.phtml
+  !read themes/$wims_theme/_widgets/config-globale.phtml
 !endif
 !! Preparation d'une feuille ou d'un examen : bandeau d'etat et reglages en tuiles (js/nova.js, ficheRessource ; 2026-11-12).
 !if ($module=adm/class/sheet or $module=adm/class/exam) and $wims_user!=$empty

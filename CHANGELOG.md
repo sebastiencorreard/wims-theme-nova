@@ -20,6 +20,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- **Configuration globale** : l'essentiel d'abord. Langue, date d'expiration, postes sûrs, enseignant connecté, moyennes et intervalles de connexion derrière « Plus de réglages » ; Feuilles, Examens et Avancé repliés, avec un résumé et une pastille « modifié » quand un réglage s'écarte de celui de WIMS ; Enregistrer et Abandonner toujours à portée.
 - **Activer, désactiver, effacer** une feuille, un examen, un devoir libre, un document ou un outil : une fenêtre de Nova remplace la page d'avertissement de WIMS, seulement quand WIMS a quelque chose à dire (sinon l'action est faite tout de suite) ; comptes qui ont travaillé repliés ; l'effacement d'un devoir libre est maintenant confirmé.
 - **Désactiver quand même** (si la classe le permet) : aussi pour un examen que des élèves ont commencé (leurs notes sont gardées) ; avertissement et sauvegarde de la classe dans la même fenêtre, « Annuler » grisé pendant la sauvegarde. Classe qui ne le permet pas : la fenêtre dit où l'autoriser.
 - Feuille et examen : boutons du bandeau d'état lisibles au survol (couleur du thème atténuée) ; Désactiver et Effacer en rouge sur fond blanc.

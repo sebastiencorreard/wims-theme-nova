@@ -489,3 +489,31 @@ body.main_body .nova-conf :is(button.nova-conf-b.nova-conf-r, .wimscenter .wims_
 body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button):is(:disabled, .disabled) { opacity: .5; cursor: default; pointer-events: none; }
 body.main_body .nova-conf :is(button.nova-conf-b, .wimscenter .wims_button):focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-etat-ico[data-icone='alerte'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E"); }
+
+/* Configuration globale d'une classe, d'un groupement ou d'un portail (adm/class/config, job=list ; 2026-11-12, utilisateur,
+ * maquette A) : nova.js configurationGlobale. Réglages secondaires de la carte de la classe après « Plus de réglages (n) » ;
+ * Feuilles, Examens, Avancé repliés, un bouton (titre, résumé, pastille « modifié », chevron) à la place de la légende. */
+.wimsbody fieldset.nova-cg.nova-cg-replie > .field.nova-cg-cache { display: none !important; }
+.wimsbody fieldset.nova-cg-section.nova-cg-replie > .field { display: none !important; }  /* !important : les règles .field:has(…) de Nova pèsent plus */
+.wimsbody button.nova-cg-plus { flex: 0 0 100%; display: flex; align-items: center; gap: var(--nova-e2); min-height: 44px; margin: var(--nova-e3) 0 0; padding: var(--nova-e3) 0 0; border: 0; border-top: 1px solid var(--nova-bord); border-radius: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-align: left; cursor: pointer; }
+.wimsbody fieldset.nova-cg:not(.nova-cg-replie) > button.nova-cg-plus { margin-bottom: var(--nova-e2); }
+.wimsbody :is(button.nova-cg-plus, button.nova-cg-entete) svg { flex: none; width: 20px; height: 20px; transition: transform .15s; }
+html.nova-sans-animation .wimsbody :is(button.nova-cg-plus, button.nova-cg-entete) svg { transition: none; }
+.wimsbody :is(button.nova-cg-plus, button.nova-cg-entete)[aria-expanded="true"] svg { transform: rotate(180deg); }
+.wimsbody fieldset.nova-cg-section { position: relative; padding: 0 var(--nova-e5) var(--nova-e5); }
+.wimsbody fieldset.nova-cg-section.nova-cg-replie { padding: 0; }
+.wimsbody fieldset.nova-cg-section > legend.nova-cache-visuel { position: absolute; float: none; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wimsbody button.nova-cg-entete { flex: 0 0 auto; box-sizing: border-box; display: flex; align-items: center; gap: var(--nova-e3); width: calc(100% + 2 * var(--nova-e5)); min-height: 64px; margin: 0 calc(-1 * var(--nova-e5)) var(--nova-e2); padding: var(--nova-e3) var(--nova-e5); border: 0; border-radius: var(--nova-rayon-carte); background: none; box-shadow: none; color: var(--nova-texte-2); font: inherit; text-align: left; cursor: pointer; }
+.wimsbody fieldset.nova-cg-section.nova-cg-replie > button.nova-cg-entete { width: 100%; margin: 0; }
+.wimsbody fieldset.nova-cg-section:not(.nova-cg-replie) > button.nova-cg-entete { border-bottom: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte) var(--nova-rayon-carte) 0 0; }
+.wimsbody button.nova-cg-entete:hover { background: var(--nova-surface-2); }
+.wimsbody :is(button.nova-cg-plus, button.nova-cg-entete):focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-cg-entete-texte { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.nova-cg-titre { color: var(--nova-lien); font-size: 1.125rem; font-weight: 700; line-height: 1.3; }
+.nova-cg-resume { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: .8125rem; line-height: 1.4; color: var(--nova-texte-2); }
+.nova-cg-pastille { display: inline-flex; align-items: center; flex: none; margin-left: var(--nova-e2); padding: 1px 8px; border-radius: 999px; background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-size: .75rem; font-weight: 700; line-height: 1.4; white-space: nowrap; vertical-align: 1px; }
+:is(button.nova-cg-plus, button.nova-cg-entete) .nova-cg-pastille { margin-left: 0; }
+/* Enregistrer / Abandonner toujours à portée : collés en bas de l'écran (téléphone : boutonsCollants). */
+@media (min-width: 640px) {
+  .wimsbody .nova-cg-actions { position: sticky; bottom: 0; z-index: 2; margin-inline: auto; max-width: 54rem; padding: var(--nova-e3) 0; background: color-mix(in oklab, var(--nova-fond) 94%, transparent); border-top: 1px solid var(--nova-bord); }
+}

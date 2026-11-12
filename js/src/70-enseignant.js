@@ -1108,6 +1108,137 @@
     ongletsReglages(onglets, titres.join(', '), 'nova-cfg-onglet');
   }
 
+  /* Configuration globale d'une classe, d'un groupement ou d'un portail (adm/class/config, job=list ; 2026-11-12,
+   * utilisateur, maquette A) : la carte de la classe montre l'essentiel, « Plus de réglages (n) » ouvre langue, date
+   * d'expiration, postes sûrs, enseignant connecté, moyennes et intervalles de connexion ; Feuilles, Examens et Avancé
+   * repliés, titre et résumé (réglages changés, sinon « réglages par défaut de WIMS ») dans un bouton. Pastille
+   * « modifié » sur un pli qui contient un réglage différent de la valeur par défaut de WIMS (list.phtml : !default),
+   * tenue à jour pendant la saisie. Page toujours repliée à l'arrivée (rien de gardé). Réglage standard « listes ». */
+  var CG_CACHES = ['up_lang', 'up_expiration', 'up_secure', 'up_supconnectshowed', 'up_hideaverage', 'up_utime'];
+  var CG_DEFAUTS = {
+    up_secure: 'all', up_supconnectshowed: 'no', up_hideaverage: 'no', up_utime: '15',
+    up_exolog: '2', up_mexolog: 'no', up_exotitleform: '0', up_authscoresuspend: 'yes', up_option: '', up_topscores: '0',
+    up_anonymtopscores: 'yes', up_examlog: 'max', up_examshow: 'yes', up_examscore_withoutip: 'no', up_optionex: '', up_ent: '',
+    modtoolchg: false
+  };
+  function configurationGlobale() {
+    var tx = document.getElementById('nova-cg-textes');
+    var job = document.querySelector('.wimsbody input[name="up_job"][value="list"]');
+    if (!tx || !job || standard('listes')) return;
+    var cadres = Array.prototype.filter.call(job.parentNode.children, function (c) { return c.tagName === 'FIELDSET' && c.classList.contains('property_fields'); });
+    if (cadres.length < 2 || cadres[0].classList.contains('nova-cg')) return;
+    var t = function (c, d) { return tx.getAttribute('data-' + c) || d; };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var chevron = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+    var n = 0;
+    var ident = function () { n += 1; return 'nova-cg-' + n; };
+    // Un champ est « modifié » si une de ses commandes connues s'écarte de la valeur par défaut de WIMS.
+    var modifie = function (champ) {
+      return Array.prototype.some.call(champ.querySelectorAll('[name]'), function (c) {
+        if (!Object.prototype.hasOwnProperty.call(CG_DEFAUTS, c.name)) return false;
+        var d = CG_DEFAUTS[c.name];
+        if (c.type === 'checkbox') return c.checked !== d;
+        if (d === 'max') {
+          var max = Math.max.apply(null, Array.prototype.map.call(c.options || [], function (o) { return parseInt(o.value, 10) || 0; }));
+          return parseInt(c.value, 10) !== max;
+        }
+        return c.value.trim() !== d;
+      });
+    };
+    var nom = function (champ) {
+      var l = champ.querySelector(':scope > label, :scope > strong');
+      if (!l) return '';
+      l = l.cloneNode(true);
+      Array.prototype.forEach.call(l.querySelectorAll('.nova-cg-pastille'), function (x) { x.remove(); });
+      return l.textContent.replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim();
+    };
+    var valeur = function (champ) {
+      return Array.prototype.map.call(champ.querySelectorAll('[name]'), function (c) {
+        if (c.type === 'hidden') return '';
+        if (c.type === 'checkbox') return c.checked ? '\u2713' : '';
+        if (c.tagName === 'SELECT') return c.selectedIndex >= 0 ? c.options[c.selectedIndex].textContent.trim() : '';
+        return c.value.trim();
+      }).filter(Boolean).join(' / ');
+    };
+    var pastille = function () { var p = el('span', 'nova-cg-pastille', t('modifie', 'changed')); return p; };
+    var plis = [];
+    // Carte de la classe : réglages secondaires rangés après un bouton « Plus de réglages (n) ».
+    var classe = cadres[0];
+    classe.classList.add('nova-cg', 'nova-cg-replie');
+    var caches = Array.prototype.filter.call(classe.children, function (c) {
+      return c.classList.contains('field') && CG_CACHES.some(function (k) { return c.querySelector('[name="' + k + '"]'); });
+    });
+    if (caches.length) {
+      var plus = el('button', 'nova-cg-plus');
+      plus.type = 'button';
+      plus.id = ident();
+      var libelle = el('span', 'nova-cg-plus-texte');
+      plus.appendChild(libelle);
+      plus.insertAdjacentHTML('beforeend', chevron);
+      classe.appendChild(plus);
+      caches.forEach(function (c) { c.classList.add('nova-cg-cache'); classe.appendChild(c); });
+      var majPlus = function () {
+        var o = !classe.classList.contains('nova-cg-replie');
+        libelle.textContent = o ? t('moins', 'Fewer settings') : t('plus', 'More settings (%1)').replace('%1', caches.length);
+        plus.setAttribute('aria-expanded', o ? 'true' : 'false');
+      };
+      plus.addEventListener('click', function () { classe.classList.toggle('nova-cg-replie'); majPlus(); });
+      majPlus();
+      plis.push({ bouton: plus, champs: caches, resume: null });
+    } else classe.classList.remove('nova-cg-replie');
+    // Feuilles, Examens, Avancé : repliés, la légende de WIMS reste (nom du cadre pour les lecteurs d'écran).
+    cadres.slice(1).forEach(function (f) {
+      var legende = f.querySelector(':scope > legend');
+      var champs = Array.prototype.filter.call(f.children, function (c) { return c.classList.contains('field'); });
+      if (!legende || !champs.length) return;
+      f.classList.add('nova-cg', 'nova-cg-section', 'nova-cg-replie');
+      var b = el('button', 'nova-cg-entete');
+      b.type = 'button';
+      b.setAttribute('aria-expanded', 'false');
+      var texte = el('span', 'nova-cg-entete-texte');
+      texte.appendChild(el('span', 'nova-cg-titre', legende.textContent.trim()));
+      var resume = el('span', 'nova-cg-resume');
+      texte.appendChild(resume);
+      b.appendChild(texte);
+      b.insertAdjacentHTML('beforeend', chevron);
+      legende.classList.add('nova-cache-visuel');
+      f.insertBefore(b, legende.nextSibling);
+      b.addEventListener('click', function () {
+        var o = f.classList.toggle('nova-cg-replie') === false;
+        b.setAttribute('aria-expanded', o ? 'true' : 'false');
+      });
+      plis.push({ bouton: b, champs: champs, resume: resume });
+    });
+    // Pastilles et résumés, refaits à chaque saisie.
+    var maj = function () {
+      plis.forEach(function (p) {
+        var changes = p.champs.filter(function (c) {
+          var m = modifie(c);
+          c.classList.toggle('nova-cg-modifie', m);
+          var lib = c.querySelector(':scope > label, :scope > strong');
+          var pa = c.querySelector('.nova-cg-pastille');
+          if (m && !pa && lib) lib.appendChild(pastille());
+          else if (!m && pa) pa.remove();
+          return m;
+        });
+        var pb = p.bouton.querySelector('.nova-cg-pastille');
+        if (changes.length && !pb) p.bouton.insertBefore(pastille(), p.bouton.lastElementChild);
+        else if (!changes.length && pb) pb.remove();
+        if (p.resume) {
+          p.resume.textContent = changes.length ? changes.map(function (c) {
+            var v = valeur(c);
+            return nom(c) + (v ? ' : ' + v : '');
+          }).join(' \u00b7 ') : t('defaut', 'WIMS default settings');
+        }
+      });
+    };
+    maj();
+    job.form.addEventListener('change', maj);
+    job.form.addEventListener('input', maj);
+    var actions = job.parentNode.querySelector(':scope > .actions');
+    if (actions) actions.classList.add('nova-cg-actions');
+  }
+
   /* Capacité de la classe (adm/class/config, scripts/adm/class/quotafree.proc ; 2026-11-12, utilisateur, maquette A) :
    * titre à gauche, « occupé sur total (p %) » à droite, jauge fine (la barre de WIMS, restylée par le CSS), légende à
    * pastilles ; au-delà de 80 % occupés (utilisé + réservé), orange et message. Nombres lus dans le texte de WIMS

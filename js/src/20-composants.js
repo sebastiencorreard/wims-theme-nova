@@ -313,7 +313,7 @@
       var place = recommencer ? recommencer.parentNode : actions;
       place.insertBefore(lien, recommencer || place.firstChild);
     }
-    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons, #oef_actions:has(.nova-revenir-liste)'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
+    var blocs = Array.prototype.filter.call(document.querySelectorAll('.wimsbody .send_answer, .wimsbody .oef_buttons, #oef_actions:has(.nova-revenir-liste), .wimsbody .nova-cg-actions'), function (b) { return b.querySelector('input[type="submit"], a, button'); });
     if (!blocs.length || !window.IntersectionObserver || !window.matchMedia) return;
     var telephone = window.matchMedia('(max-width: 639.98px)');
     blocs.forEach(function (bloc) {

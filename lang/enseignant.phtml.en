@@ -115,6 +115,11 @@
 !! Jauge « Capacite de la classe » (_widgets/capacite.phtml ; 2026-11-12) : %u occupe (utilise + reserve), %t total, %p pourcentage.
 !set nova_cap_sur=%u of %t (%p%)
 !set nova_cap_plein=The class is nearing its maximum capacity.
+!! Configuration globale (_widgets/config-globale.phtml, nova.js configurationGlobale ; 2026-11-12).
+!set nova_cg_plus=More settings (%1)
+!set nova_cg_moins=Fewer settings
+!set nova_cg_modifie=changed
+!set nova_cg_defaut=WIMS default settings
 
 !! Page Avatars des eleves (2026-11-12, _widgets/avatars-classe.phtml) ; titre du menu : name.phtml (nova_avs_titre).
 !set nova_avs_resume=Students: %n · with an avatar: %a · without: %s

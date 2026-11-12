@@ -24,6 +24,9 @@ input[type="submit"]:hover, input[type="button"]:hover, .main_body .wims_button:
   border-radius: var(--nova-rayon);
 }
 .main_body .wims_button.disabled, input[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+/* Dans un bloc jQuery UI (onglets de la préparation d'une feuille ou d'un examen…), WIMS arrondit les boutons d envoi à 4 px et jQuery UI leur impose sa police
+ * (« .ui-widget input[type=submit] », plus précis que la règle ci-dessus) : même arrondi que les autres (2026-11-12, utilisateur). */
+.ui-widget :is(input[type="submit"], input[type="button"]) { border-radius: var(--nova-rayon); font-family: var(--nova-police); }
 /* Un bouton qui est un lien (<a class="wims_button"> : « Entrer », « Modifier », « Présentation en
  * séquences »…) ou un bloc (<div class="wims_button"> autour d'un lien, feuilles programmées : « Niveau 1 »,
  * signalé le 2026-10-03) : la hauteur minimale ne centre pas son texte, qui restait en haut. */

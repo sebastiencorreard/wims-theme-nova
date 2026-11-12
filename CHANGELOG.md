@@ -19,6 +19,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- **Préparation d'une feuille ou d'un examen** : le statut devient un bandeau coloré qui dit ce que voient les élèves, avec des boutons à icône ; les réglages sont rangés en tuiles (icône, « ? » pour l'aide, Oui/Non en bascule). Poids, règle de calcul et individualisation sont repliés sous « Options avancées ».
 - **Réglages de Nova › Affichage** : choix de la **couleur du thème**, avec aperçu immédiat ; c'est la même couleur que « Couleur du thème » de la page Apparence.
 - **Trombinoscope** : l'entrée « Trombinoscope » (menu Participants) ouvre désormais la page des avatars des élèves, qui prend son nom et remplace le trombinoscope à photos de WIMS quand l'avatar est activé (réglage « Menus du thème standard » : rien n'est remplacé).
 - **Trombinoscope** : bouton « Exporter les avatars (.zip) » (un fichier `Nom-Prenom.svg` par élève qui a un avatar) et, dans la fiche d'un élève, « Enregistrer l'avatar (.svg) ».

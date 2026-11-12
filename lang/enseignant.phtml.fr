@@ -108,3 +108,16 @@
 !set nova_avs_retour_texte=L'avatar et la couleur de chaque élève sont rangés avec ses notes ; les versions de Nova d'avant le 12 novembre 2026 les cherchent ailleurs. Avant de réinstaller une de ces versions, ce bouton les recopie à l'ancien emplacement, pour tous les élèves de la classe ou de la structure. À faire juste avant de changer de version : la copie d'un élève est retirée dès qu'il se reconnecte avec la version actuelle.
 !set nova_avs_retour_bouton=Préparer le retour
 !set nova_avs_retour_fait=Avatars recopiés à l'ancien emplacement :
+
+!! Feuille et examen, page de préparation (2026-11-12) : phrase du bandeau d'état (f = feuille, e = examen ; 0 en préparation, 1 actif, 2 expiré, 3 caché et expiré, 4 caché), options avancées.
+!set nova_fr_f0=Invisible des élèves. Vous pouvez encore ajouter, retirer et modifier les exercices.
+!set nova_fr_f1=Les élèves la voient et leurs notes sont enregistrées.
+!set nova_fr_f2=Les élèves la voient encore, mais leurs notes ne sont plus enregistrées.
+!set nova_fr_f3=Les élèves ne la voient plus ; leurs notes ne sont plus enregistrées.
+!set nova_fr_f4=Les élèves ne la voient plus.
+!set nova_fr_e0=Invisible des élèves. Vous pouvez encore ajouter, retirer et modifier les exercices.
+!set nova_fr_e1=Les élèves peuvent le passer et leurs notes sont enregistrées.
+!set nova_fr_e2=Les élèves le voient encore, mais leurs notes ne sont plus enregistrées.
+!set nova_fr_e3=Les élèves ne le voient plus ; leurs notes ne sont plus enregistrées.
+!set nova_fr_e4=Les élèves ne le voient plus.
+!set nova_fr_avances=Options avancées

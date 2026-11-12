@@ -108,3 +108,16 @@
 !set nova_avs_retour_texte=Each student's avatar and colour are stored with their scores; Nova versions from before 12 November 2026 look for them elsewhere. Before reinstalling one of those versions, this button copies them back to the old location, for all students of the class or structure. Do it just before changing version: a student's copy is removed as soon as they log in again with the current version.
 !set nova_avs_retour_bouton=Prepare the rollback
 !set nova_avs_retour_fait=Avatars copied back to the old location:
+
+!! Sheet and exam, preparation page (2026-11-12): status banner sentence (f = sheet, e = exam; 0 in preparation, 1 active, 2 expired, 3 hidden and expired, 4 hidden), advanced options.
+!set nova_fr_f0=Not visible to students. You can still add, remove and edit exercises.
+!set nova_fr_f1=Students can see it and their scores are recorded.
+!set nova_fr_f2=Students can still see it, but their scores are no longer recorded.
+!set nova_fr_f3=Students no longer see it; their scores are no longer recorded.
+!set nova_fr_f4=Students no longer see it.
+!set nova_fr_e0=Not visible to students. You can still add, remove and edit exercises.
+!set nova_fr_e1=Students can take it and their scores are recorded.
+!set nova_fr_e2=Students can still see it, but their scores are no longer recorded.
+!set nova_fr_e3=Students no longer see it; their scores are no longer recorded.
+!set nova_fr_e4=Students no longer see it.
+!set nova_fr_avances=Advanced options

@@ -108,3 +108,16 @@
 !set nova_avs_retour_texte=El avatar y el color de cada alumno se guardan con sus notas; las versiones de Nova anteriores al 12 de noviembre de 2026 los buscan en otro lugar. Antes de reinstalar una de esas versiones, este botón los copia a la ubicación antigua, para todos los alumnos de la clase o de la estructura. Hágalo justo antes de cambiar de versión: la copia de un alumno se elimina en cuanto vuelve a conectarse con la versión actual.
 !set nova_avs_retour_bouton=Preparar la vuelta
 !set nova_avs_retour_fait=Avatares copiados a la ubicación antigua:
+
+!! Hoja y examen, página de preparación (2026-11-12).
+!set nova_fr_f0=Invisible para los alumnos. Todavía puede añadir, quitar y modificar los ejercicios.
+!set nova_fr_f1=Los alumnos la ven y sus notas se registran.
+!set nova_fr_f2=Los alumnos todavía la ven, pero sus notas ya no se registran.
+!set nova_fr_f3=Los alumnos ya no la ven; sus notas ya no se registran.
+!set nova_fr_f4=Los alumnos ya no la ven.
+!set nova_fr_e0=Invisible para los alumnos. Todavía puede añadir, quitar y modificar los ejercicios.
+!set nova_fr_e1=Los alumnos pueden hacerlo y sus notas se registran.
+!set nova_fr_e2=Los alumnos todavía lo ven, pero sus notas ya no se registran.
+!set nova_fr_e3=Los alumnos ya no lo ven; sus notas ya no se registran.
+!set nova_fr_e4=Los alumnos ya no lo ven.
+!set nova_fr_avances=Opciones avanzadas

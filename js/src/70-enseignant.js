@@ -1286,3 +1286,156 @@
       bloc.addEventListener('change', modifie);
     })();
   }
+
+  /* Page de préparation d'une feuille ou d'un examen (adm/class/sheet, adm/class/exam ; demande de l'utilisateur, 2026-11-12).
+   * Statut (maquette 2) : bandeau coloré, icône, nom de l'état (texte de WIMS), phrase qui dit ce que voient les élèves
+   * (#nova-fiche-textes, f/e + numéro de l'état = classe wims_status_N), boutons de WIMS déplacés tels quels (liens GET).
+   * Réglages (maquette 4) : chaque .field.box qui suit les zones de texte devient une tuile (icône, libellé, « ? » rond,
+   * réglage) ; Oui/Non en bascule. Poids, règle de calcul et individualisation derrière « Options avancées » (utilisateur,
+   * même jour), état gardé dans le navigateur. Réglage standard « listes ». */
+  var FICHE_ICONES = [
+    ['expdate', 'calendrier'], ['weight', 'balance', 1], ['formulaA', 'calcul', 1], ['indivtechvar', 'engrenage', 1],
+    ['exodescshow', 'oeil'], ['prpage', 'fichier'], ['allowtype', 'cadenas'], ['duration', 'chrono'], ['tries', 'repete'],
+    ['cutt', 'ciseaux'], ['exammode', 'ecran']
+  ];
+  function ficheRessource() {
+    var tx = document.getElementById('nova-fiche-textes');
+    if (!tx || standard('listes')) return;
+    var etat = document.querySelector('.wimsbody fieldset.property_fields .field .wims_status');
+    var cadre = etat ? etat.closest('fieldset') : document.querySelector('.wimsbody form input[name="job"][value="text"]');
+    if (cadre && cadre.tagName !== 'FIELDSET') cadre = cadre.form && cadre.form.querySelector('fieldset.property_fields');
+    if (!cadre || cadre.classList.contains('nova-fiche')) return;
+    var mod = cadre.form && cadre.form.querySelector('input[name="module"]');
+    var type = mod && /exam/.test(mod.value) ? 'e' : 'f';
+    cadre.classList.add('nova-fiche');
+    if (etat) ficheStatut(etat, tx, type);
+    ficheTuiles(cadre, tx);
+  }
+  function ficheStatut(etat, tx, type) {
+    var champ = etat.closest('.field');
+    var m = /wims_status_(\d)/.exec(etat.className);
+    var n = m ? m[1] : '0';
+    var mot = Array.prototype.filter.call(champ.childNodes, function (c) { return c !== etat && !(c.nodeType === 1 && c.tagName === 'A'); })
+      .map(function (c) { return c.textContent; }).join(' ').replace(/\s+/g, ' ').trim();
+    var boutons = Array.prototype.slice.call(champ.querySelectorAll('a.wims_button'));
+    var bandeau = document.createElement('div');
+    bandeau.className = 'nova-statut nova-statut-' + n;
+    var ico = document.createElement('span');
+    ico.className = 'nova-statut-ico';
+    ico.setAttribute('aria-hidden', 'true');
+    var texte = document.createElement('span');
+    texte.className = 'nova-statut-texte';
+    if (mot) { var sr = document.createElement('span'); sr.className = 'nova-cache-visuel'; sr.textContent = mot + ' : '; texte.appendChild(sr); }
+    var nom = document.createElement('strong');
+    nom.textContent = etat.textContent.replace(/\s+/g, ' ').trim().replace(/\s*\+\s*/g, ' + ');
+    texte.appendChild(nom);
+    var phrase = tx.getAttribute('data-' + type + n);
+    if (phrase) { var p = document.createElement('span'); p.className = 'nova-statut-expl'; p.textContent = phrase; texte.appendChild(p); }
+    var actions = document.createElement('span');
+    actions.className = 'nova-statut-actions';
+    boutons.forEach(function (b) {
+      var job = /job=([a-z_]+)/.exec(b.href);
+      if (job) b.setAttribute('data-nova-action', job[1] === 'expire' && n !== '1' ? 'montrer' : job[1]);
+      actions.appendChild(b);
+    });
+    etat.hidden = true;
+    champ.textContent = '';
+    champ.classList.add('nova-statut-champ');
+    bandeau.appendChild(ico); bandeau.appendChild(texte); bandeau.appendChild(actions);
+    champ.appendChild(bandeau);
+    champ.appendChild(etat);
+  }
+  function ficheTuiles(cadre, tx) {
+    var champs = Array.prototype.filter.call(cadre.children, function (c) {
+      return c.classList.contains('field') && !c.classList.contains('nova-statut-champ') && !c.querySelector('textarea, #title, .wims_status');
+    });
+    if (!champs.length) return;
+    var cle = function (c) {
+      for (var i = 0; i < FICHE_ICONES.length; i++) {
+        var k = FICHE_ICONES[i][0];
+        if (c.querySelector('[name="' + k + '"], a[href*="special_parm=' + k + '&"], a[href$="special_parm=' + k + '"]')) return FICHE_ICONES[i];
+      }
+      return null;
+    };
+    var grille = document.createElement('div');
+    grille.className = 'nova-tuiles';
+    cadre.insertBefore(grille, champs[0]);
+    var avancees = [];
+    champs.forEach(function (c) {
+      var k = cle(c);
+      c.classList.add('nova-tuile');
+      if (k && k[0] === 'allowtype') c.classList.add('nova-tuile-large');
+      var tete = document.createElement('div');
+      tete.className = 'nova-tuile-tete';
+      var ico = document.createElement('span');
+      ico.className = 'nova-tuile-ico';
+      ico.setAttribute('aria-hidden', 'true');
+      if (k) ico.setAttribute('data-icone', k[1]);
+      tete.appendChild(ico);
+      var libelle = c.querySelector(':scope > label, :scope > strong');
+      var aide = c.querySelector(':scope > a.wims_button_help');
+      if (libelle) { libelle.classList.add('nova-tuile-nom'); tete.appendChild(libelle); }
+      if (aide) {
+        var t = aide.textContent.trim();
+        aide.classList.add('nova-tuile-aide');
+        aide.classList.remove('float_right');
+        aide.setAttribute('title', t);
+        aide.textContent = '';
+        var s = document.createElement('span'); s.className = 'nova-cache-visuel'; s.textContent = t; aide.appendChild(s);
+        tete.appendChild(aide);
+      }
+      // Valeur en texte seul (individualisation, mode d'affichage) : dans un span.
+      Array.prototype.slice.call(c.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && n.nodeValue.trim()) {
+          var v = document.createElement('span'); v.className = 'nova-tuile-valeur'; v.textContent = n.nodeValue.trim();
+          c.replaceChild(v, n);
+        }
+      });
+      // Boutons radio de WIMS (input + label, séparés par des virgules) : bascule.
+      var radios = c.querySelectorAll(':scope > input[type="radio"]');
+      if (radios.length) {
+        var bascule = document.createElement('span');
+        bascule.className = 'nova-app-choix nova-tuile-choix';
+        bascule.setAttribute('role', 'radiogroup');
+        c.insertBefore(bascule, radios[0]);
+        Array.prototype.forEach.call(radios, function (r) {
+          var l = r.id && c.querySelector('label[for="' + r.id + '"]');
+          if (!l) return;
+          l.insertBefore(r, l.firstChild);
+          bascule.appendChild(l);
+        });
+        Array.prototype.slice.call(c.childNodes).forEach(function (n) {
+          if (n.nodeType === 1 && n.classList.contains('nova-tuile-valeur') && /^[,\s]*$/.test(n.textContent.replace(/,/g, ''))) c.removeChild(n);
+        });
+      }
+      Array.prototype.forEach.call(c.querySelectorAll(':scope > br.clearall'), function (b) { b.remove(); });
+      if (radios.length > 2) c.classList.add('nova-tuile-double');
+      // Réglage (champs, unité, aide) sur une ligne qui passe à la ligne au besoin.
+      var corps = document.createElement('div');
+      corps.className = 'nova-tuile-corps';
+      Array.prototype.slice.call(c.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && !n.nodeValue.trim()) { c.removeChild(n); return; }
+        corps.appendChild(n);
+      });
+      c.appendChild(corps);
+      c.insertBefore(tete, c.firstChild);
+      grille.appendChild(c);
+      if (k && k[2]) { c.classList.add('nova-tuile-avancee'); avancees.push(c); }
+    });
+    if (!avancees.length) return;
+    var memo = 'nova-fiche-avancees';
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'nova-fiche-avances';
+    bouton.textContent = tx.getAttribute('data-avances') || 'Advanced options';
+    var ouvrir = function (o) {
+      grille.classList.toggle('nova-avances-ouvertes', o);
+      bouton.setAttribute('aria-expanded', o ? 'true' : 'false');
+      try { localStorage.setItem(memo, o ? '1' : '0'); } catch (e) { /* rien */ }
+    };
+    var ouvert = false;
+    try { ouvert = localStorage.getItem(memo) === '1'; } catch (e) { /* fermé */ }
+    bouton.addEventListener('click', function () { ouvrir(!grille.classList.contains('nova-avances-ouvertes')); });
+    grille.parentNode.insertBefore(bouton, grille.nextSibling);
+    ouvrir(ouvert);
+  }

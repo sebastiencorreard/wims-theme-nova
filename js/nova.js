@@ -6308,7 +6308,7 @@
    * réglage) ; Oui/Non en bascule. Poids, règle de calcul et individualisation derrière « Options avancées » (utilisateur,
    * même jour), état gardé dans le navigateur. Réglage standard « listes ». */
   var FICHE_ICONES = [
-    ['expdate', 'calendrier'], ['weight', 'balance', 1], ['formulaA', 'calcul', 1], ['indivtechvar', 'engrenage', 1],
+    ['expdate', 'calendrier', 1], ['weight', 'balance', 1], ['formulaA', 'calcul', 1], ['indivtechvar', 'engrenage', 1],
     ['exodescshow', 'oeil'], ['prpage', 'fichier'], ['allowtype', 'cadenas'], ['duration', 'chrono'], ['tries', 'repete'],
     ['cutt', 'ciseaux', 1], ['exammode', 'ecran', 1]
   ];

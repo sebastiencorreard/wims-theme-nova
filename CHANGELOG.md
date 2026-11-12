@@ -19,6 +19,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Feuille et examen : la date d'expiration rejoint aussi « Options avancées ».
 - Feuille et examen : le bouton des commentaires (« Écrire », « Modifier », « Replier l'éditeur ») est sur la ligne de « Commentaires », à droite.
 - **Feuille et examen, texte d'explication et commentaires** : la précision (« limité à 4000 caractères… », « Visible seulement par l'enseignant ») passe à droite du libellé ; l'éditeur prend la hauteur du texte (jusqu'à sa taille d'avant, puis ascenseur) ; les commentaires sont repliés, avec un aperçu et un bouton pour les écrire ou les modifier. « Réglage expert » des heures de coupure : précisé « ce que WIMS voit ».
 - **Examen, heures de coupure** : saisie par date et heure, une ligne par coupure, avec « Ajouter » et « Retirer » (comme la restriction d'accès) ; le champ de WIMS reste dans « Réglage expert ». Heures de coupure et mode d'affichage rejoignent le poids dans « Options avancées ».

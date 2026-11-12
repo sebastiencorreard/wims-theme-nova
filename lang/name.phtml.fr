@@ -1,13 +1,5 @@
 !! Nova : textes propres au thème (fr). Lu par html/headmenu*.phtml (themes/$wims_theme/lang/).
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
-!set nova_chrono_libelle=Temps restant
-!set nova_chrono_5min=Moins de 5 minutes
-!set nova_chrono_1min=Dernière minute
-!set nova_chrono_fin=Temps écoulé
-!set nova_chrono_fin_detail=Les réponses envoyées maintenant ne seront pas prises en compte.
-!set nova_chrono_fin_detail_exo=Vous pouvez encore finir l'exercice, mais la note baisse avec le retard.
-!set nova_chrono_fin_detail_exo0=Une réponse envoyée maintenant aura la note 0.
-!set nova_chrono_fin_a=Fin à
 !set nova_menu_activites=Activités
 !set nova_menu_participants=Participants
 !set nova_menu_communication=Communication
@@ -26,17 +18,36 @@
 !set nova_menu_cacher=Cacher
 !set nova_menu_montrer=Montrer
 !set nova_plus=Plus
-!set nova_examen_a_terminer=Examen à terminer
-!set nova_examen_a_terminer_court=Terminer
-!set nova_fin_session=Vous avez terminé.
-!set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).
-!set nova_terminer_impossible=Répondez à au moins un exercice avant de terminer la session : tant qu'aucune réponse n'est envoyée, WIMS ne peut pas la clore.
 !set nova_retour=Retour
 !set nova_explorer=Explorer
 !set nova_taxonomie=Taxonomie
 !set nova_glossaires=Glossaires
 !set nova_parcourir=Parcourir le site
 !set nova_accueil=Accueil
+!set nova_rg_rubrique=Réglages de Nova
+!set nova_rg_rubrique_aide=(thème Nova : affichage, élèves, DM WIMS, badges, réglages avancés)
+!set nova_fermer=Fermer
+!set nova_sv_titre=Suivi en direct
+!set nova_avs_titre=Avatars des élèves
+!! Version imprimable d'une feuille (adm/sheet, job=print : tous les exercices calcules dans une seule page) : le tampon
+!! des noms de variables (32 Ko) y est presque plein avant la barre (debordement vu le 2026-11-12, serveur de l'utilisateur,
+!! dans ce fichier). Seuls les textes de la barre et du menu ci-dessus y sont lus ; nova.js prend ses textes de secours.
+!if $module=adm/sheet and $job=print
+  !exit
+!endif
+!set nova_chrono_libelle=Temps restant
+!set nova_chrono_5min=Moins de 5 minutes
+!set nova_chrono_1min=Dernière minute
+!set nova_chrono_fin=Temps écoulé
+!set nova_chrono_fin_detail=Les réponses envoyées maintenant ne seront pas prises en compte.
+!set nova_chrono_fin_detail_exo=Vous pouvez encore finir l'exercice, mais la note baisse avec le retard.
+!set nova_chrono_fin_detail_exo0=Une réponse envoyée maintenant aura la note 0.
+!set nova_chrono_fin_a=Fin à
+!set nova_examen_a_terminer=Examen à terminer
+!set nova_examen_a_terminer_court=Terminer
+!set nova_fin_session=Vous avez terminé.
+!set nova_fin_session_detail=Cliquez sur « Terminer » pour clore la session : vous pourrez ensuite commencer un autre examen ou une autre course. Vous serez déconnecté(e).
+!set nova_terminer_impossible=Répondez à au moins un exercice avant de terminer la session : tant qu'aucune réponse n'est envoyée, WIMS ne peut pas la clore.
 !set nova_parcours=Exercice %n sur %t
 !set nova_parcours_reussi=réussi
 !set nova_parcours_a_faire=à faire
@@ -90,7 +101,6 @@
 !set nova_consigne_tuiles=Glissez chaque étiquette dans une case, ou touchez une étiquette puis une case.
 !set nova_consigne_associer=Touchez un élément à gauche, puis celui qui lui correspond à droite.
 !set nova_deposer=Déposer ici
-!set nova_fermer=Fermer
 !set nova_en_ligne=En ligne
 !set nova_indisponible_examen=Non disponible pendant un examen
 !set nova_propage_case_apparence=Réglages de Nova : affichage, élèves, réglages avancés
@@ -122,15 +132,11 @@
 !set nova_dm_note_encours=Création...
 !set nova_dm_note_mot=noté
 !set nova_dm_note_fait=DM noté créé : « %1 ». Il reste en préparation : vérifiez-le, puis activez-le.
-!set nova_rg_rubrique=Réglages de Nova
-!set nova_rg_rubrique_aide=(thème Nova : affichage, élèves, DM WIMS, badges, réglages avancés)
 !set nova_tag_nouveau=New
 !set nova_txt_replis_replier=Replier les %1 classes
 !set nova_txt_replis_replier1=Replier la classe
 !set nova_txt_replis_afficher=Afficher les %1 classes
 !set nova_txt_replis_afficher1=Afficher la classe
-!set nova_sv_titre=Suivi en direct
-!set nova_avs_titre=Avatars des élèves
 !set nova_lc_vous=Lien pour vous
 !set nova_lc_vous_aide=Ouvre la connexion enseignant : feuilles, examens, élèves et leurs notes. Gardez-le dans vos favoris.
 !set nova_lc_eleves=Lien pour vos élèves

@@ -68,6 +68,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Version imprimable d'une feuille : plus d'erreur « variable_name_buffer_overflow » sur une feuille de beaucoup d'exercices (Nova charge moins de textes sur cette page).
 - Éditeur de texte d'une feuille ou d'un examen : sa hauteur suit aussi le texte quand celui-ci change de taille sans être modifié (chargement lent, image, largeur de la fenêtre, éditeur d'abord masqué).
 - Bouton « Enregistrer » dans des onglets (préparation d'une feuille ou d'un examen…) : même arrondi et même police que les autres boutons.
 - Feuille et examen : statut, éditeurs, commentaires et tuiles alignés sur la même largeur ; les tuiles remplissent toute la ligne.

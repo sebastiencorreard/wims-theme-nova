@@ -1,13 +1,5 @@
 !! Nova : textes propres au thème (en). Lu par html/headmenu*.phtml (themes/$wims_theme/lang/).
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
-!set nova_chrono_libelle=Time left
-!set nova_chrono_5min=Less than 5 minutes left
-!set nova_chrono_1min=Last minute
-!set nova_chrono_fin=Time is up
-!set nova_chrono_fin_detail=Answers sent now will not be taken into account.
-!set nova_chrono_fin_detail_exo=You can still finish the exercise, but the score goes down as time passes.
-!set nova_chrono_fin_detail_exo0=An answer sent now will score 0.
-!set nova_chrono_fin_a=Ends at
 !set nova_menu_activites=Activities
 !set nova_menu_participants=Participants
 !set nova_menu_communication=Communication
@@ -26,17 +18,36 @@
 !set nova_menu_cacher=Hide
 !set nova_menu_montrer=Show
 !set nova_plus=More
-!set nova_examen_a_terminer=Exam to finish
-!set nova_examen_a_terminer_court=Finish
-!set nova_fin_session=You have finished.
-!set nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.
-!set nova_terminer_impossible=Answer at least one exercise before ending the session: as long as no answer has been sent, WIMS cannot close it.
 !set nova_retour=Back
 !set nova_explorer=Explore
 !set nova_taxonomie=Taxonomy
 !set nova_glossaires=Glossaries
 !set nova_parcourir=Browse the site
 !set nova_accueil=Home
+!set nova_rg_rubrique=Nova settings
+!set nova_rg_rubrique_aide=(Nova theme: display, students, WIMS homework, badges, advanced settings)
+!set nova_fermer=Close
+!set nova_sv_titre=Live monitoring
+!set nova_avs_titre=Students' avatars
+!! Version imprimable d'une feuille (adm/sheet, job=print : tous les exercices calcules dans une seule page) : le tampon
+!! des noms de variables (32 Ko) y est presque plein avant la barre (debordement vu le 2026-11-12, serveur de l'utilisateur,
+!! dans ce fichier). Seuls les textes de la barre et du menu ci-dessus y sont lus ; nova.js prend ses textes de secours.
+!if $module=adm/sheet and $job=print
+  !exit
+!endif
+!set nova_chrono_libelle=Time left
+!set nova_chrono_5min=Less than 5 minutes left
+!set nova_chrono_1min=Last minute
+!set nova_chrono_fin=Time is up
+!set nova_chrono_fin_detail=Answers sent now will not be taken into account.
+!set nova_chrono_fin_detail_exo=You can still finish the exercise, but the score goes down as time passes.
+!set nova_chrono_fin_detail_exo0=An answer sent now will score 0.
+!set nova_chrono_fin_a=Ends at
+!set nova_examen_a_terminer=Exam to finish
+!set nova_examen_a_terminer_court=Finish
+!set nova_fin_session=You have finished.
+!set nova_fin_session_detail=Click on Finish to close this session: you will then be able to start another exam. You will be logged out.
+!set nova_terminer_impossible=Answer at least one exercise before ending the session: as long as no answer has been sent, WIMS cannot close it.
 !set nova_parcours=Exercise %n of %t
 !set nova_parcours_reussi=passed
 !set nova_parcours_a_faire=to do
@@ -90,7 +101,6 @@
 !set nova_consigne_tuiles=Drag each label into a box, or tap a label and then a box.
 !set nova_consigne_associer=Tap an item on the left, then the matching item on the right.
 !set nova_deposer=Drop here
-!set nova_fermer=Close
 !set nova_en_ligne=Online
 !set nova_indisponible_examen=Not available during an exam
 !set nova_propage_case_apparence=Nova settings: display, students, advanced settings
@@ -122,15 +132,11 @@
 !set nova_dm_note_encours=Creating...
 !set nova_dm_note_mot=graded
 !set nova_dm_note_fait=Graded homework created: "%1". It stays in preparation: check it, then activate it.
-!set nova_rg_rubrique=Nova settings
-!set nova_rg_rubrique_aide=(Nova theme: display, students, WIMS homework, badges, advanced settings)
 !set nova_tag_nouveau=New
 !set nova_txt_replis_replier=Fold the %1 classes
 !set nova_txt_replis_replier1=Fold the class
 !set nova_txt_replis_afficher=Show the %1 classes
 !set nova_txt_replis_afficher1=Show the class
-!set nova_sv_titre=Live monitoring
-!set nova_avs_titre=Students' avatars
 !set nova_lc_vous=Link for you
 !set nova_lc_vous_aide=Opens the teacher login: worksheets, exams, students and their scores. Keep it in your bookmarks.
 !set nova_lc_eleves=Link for your students

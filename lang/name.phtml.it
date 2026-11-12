@@ -2,14 +2,6 @@
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
 !! Textes anglais d'abord (repli : un texte absent de cette langue s'affiche en anglais, jamais vide ; 2026-11-10).
 !read themes/$wims_theme/lang/name.phtml.en
-!set nova_chrono_libelle=Tempo rimanente
-!set nova_chrono_5min=Meno di 5 minuti rimasti
-!set nova_chrono_1min=Ultimo minuto
-!set nova_chrono_fin=Tempo scaduto
-!set nova_chrono_fin_detail=Le risposte inviate adesso non saranno prese in considerazione.
-!set nova_chrono_fin_detail_exo=Puoi ancora finire l'esercizio, ma il voto diminuisce con il passare del tempo.
-!set nova_chrono_fin_detail_exo0=Una risposta inviata adesso avrà 0.
-!set nova_chrono_fin_a=Finisce alle
 !set nova_menu_activites=Attività
 !set nova_menu_participants=Partecipanti
 !set nova_menu_communication=Comunicazione
@@ -28,17 +20,36 @@
 !set nova_menu_cacher=Nascondi
 !set nova_menu_montrer=Mostra
 !set nova_plus=Altro
-!set nova_examen_a_terminer=Esame da terminare
-!set nova_examen_a_terminer_court=Termina
-!set nova_fin_session=Hai finito.
-!set nova_fin_session_detail=Clicca su Termina per chiudere questa sessione: potrai poi iniziare un altro esame. Verrai disconnesso.
-!set nova_terminer_impossible=Rispondi ad almeno un esercizio prima di terminare la sessione: finché non è stata inviata nessuna risposta, WIMS non può chiuderla.
 !set nova_retour=Indietro
 !set nova_explorer=Esplora
 !set nova_taxonomie=Tassonomia
 !set nova_glossaires=Glossari
 !set nova_parcourir=Sfoglia il sito
 !set nova_accueil=Home
+!set nova_rg_rubrique=Impostazioni di Nova
+!set nova_rg_rubrique_aide=(tema Nova: visualizzazione, studenti, compiti WIMS, distintivi, impostazioni avanzate)
+!set nova_fermer=Chiudi
+!set nova_sv_titre=Monitoraggio in diretta
+!set nova_avs_titre=Avatar degli studenti
+!! Version imprimable d'une feuille (adm/sheet, job=print : tous les exercices calcules dans une seule page) : le tampon
+!! des noms de variables (32 Ko) y est presque plein avant la barre (debordement vu le 2026-11-12, serveur de l'utilisateur,
+!! dans ce fichier). Seuls les textes de la barre et du menu ci-dessus y sont lus ; nova.js prend ses textes de secours.
+!if $module=adm/sheet and $job=print
+  !exit
+!endif
+!set nova_chrono_libelle=Tempo rimanente
+!set nova_chrono_5min=Meno di 5 minuti rimasti
+!set nova_chrono_1min=Ultimo minuto
+!set nova_chrono_fin=Tempo scaduto
+!set nova_chrono_fin_detail=Le risposte inviate adesso non saranno prese in considerazione.
+!set nova_chrono_fin_detail_exo=Puoi ancora finire l'esercizio, ma il voto diminuisce con il passare del tempo.
+!set nova_chrono_fin_detail_exo0=Una risposta inviata adesso avrà 0.
+!set nova_chrono_fin_a=Finisce alle
+!set nova_examen_a_terminer=Esame da terminare
+!set nova_examen_a_terminer_court=Termina
+!set nova_fin_session=Hai finito.
+!set nova_fin_session_detail=Clicca su Termina per chiudere questa sessione: potrai poi iniziare un altro esame. Verrai disconnesso.
+!set nova_terminer_impossible=Rispondi ad almeno un esercizio prima di terminare la sessione: finché non è stata inviata nessuna risposta, WIMS non può chiuderla.
 !set nova_parcours=Esercizio %n di %t
 !set nova_parcours_reussi=superato
 !set nova_parcours_a_faire=da fare
@@ -91,7 +102,6 @@
 !set nova_consigne_tuiles=Trascina ogni etichetta in una casella, oppure tocca un'etichetta e poi una casella.
 !set nova_consigne_associer=Tocca un elemento a sinistra, poi quello che gli corrisponde a destra.
 !set nova_deposer=Rilascia qui
-!set nova_fermer=Chiudi
 !set nova_en_ligne=Online
 !set nova_indisponible_examen=Non disponibile durante un esame
 !set nova_propage_case_apparence=Impostazioni di Nova: visualizzazione, studenti, impostazioni avanzate
@@ -123,16 +133,12 @@
 !set nova_dm_note_encours=Creazione...
 !set nova_dm_note_mot=valutato
 !set nova_dm_note_fait=Compito valutato creato: «%1». Resta in preparazione: controllalo, poi attivalo.
-!set nova_rg_rubrique=Impostazioni di Nova
-!set nova_rg_rubrique_aide=(tema Nova: visualizzazione, studenti, compiti WIMS, distintivi, impostazioni avanzate)
 !set nova_tag_nouveau=Nuovo
 !set nova_txt_replis_replier=Comprimi le %1 classi
 !set nova_txt_replis_replier1=Comprimi la classe
 !set nova_txt_replis_afficher=Mostra le %1 classi
 !set nova_txt_replis_afficher1=Mostra la classe
 !! Suivi en direct (_widgets/suivi.phtml ; nova_svj_ : js/suivi.js), 2026-11-10.
-!set nova_sv_titre=Monitoraggio in diretta
-!set nova_avs_titre=Avatar degli studenti
 !set nova_lc_vous=Link per lei
 !set nova_lc_vous_aide=Apre l'accesso docente: fogli, esami, studenti e i loro voti. Lo salvi nei preferiti.
 !set nova_lc_eleves=Link per i suoi studenti

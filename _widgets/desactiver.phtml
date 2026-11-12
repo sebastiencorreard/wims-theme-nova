@@ -5,9 +5,11 @@
 !! s'appliquent pas (statut, examen commence, reglage --nova-desactivation-forcee : _procs/desactiver.sh). Pas de test « structure » :
 !! dans un programme de portail, la « structure » est le partage avec ses cours (vu le 2026-11-08). Examen commence : dit sous le refus.
 !! L'action se fait sur l'accueil (module de confiance), nova_desactiver=exam:N ou sheet:N : seul le statut change.
-!read themes/$wims_theme/lang/enseignant.phtml.$lang
+!! Textes lus seulement quand ils servent (2026-11-12) : ce widget est lu sur TOUTES les pages de l'enseignant, et
+!! lang/enseignant (170 noms) a fait deborder le tampon des noms de la version imprimable d'une feuille (adm/sheet).
 !! Examen commence par des eleves (deactivate=score, partage ou non) : contourne aussi depuis le 2026-11-12 (utilisateur).
 !if ($module=adm/class/exam and $error=nodeactivate and (sharing isin $deactivate or score isin $deactivate) and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
+  !read themes/$wims_theme/lang/enseignant.phtml.$lang
   !reset nova_fs
   !if $module=adm/class/exam
     !set nova_ft=exam
@@ -39,6 +41,7 @@
   !set nova_q=!replace internal + by $ $ in $nova_q
   !set nova_dv=!getopt nova_desactiver in $nova_q
   !if $nova_dv!=$empty
+    !read themes/$wims_theme/lang/enseignant.phtml.$lang
     !set nova_dv=!replace internal : by , in $nova_dv
     !set nova_ft=!item 1 of $nova_dv
     !set nova_fn=!item 2 of $nova_dv

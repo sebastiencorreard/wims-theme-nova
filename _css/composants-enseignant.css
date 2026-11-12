@@ -331,7 +331,7 @@ html.nova-js:not(.nova-std-listes) .wims_quotafree:not(.nova-capacite) > :is(.wi
 .nova-statut-actions a[data-nova-action='deactivate'] { --nova-fiche-action: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2v10'/%3E%3Cpath d='M18.4 6.6a9 9 0 1 1-12.77.04'/%3E%3C/svg%3E"); }
 .nova-statut-actions a[data-nova-action='prep_erase'] { --nova-fiche-action: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'/%3E%3C/svg%3E"); }
 @media (max-width: 639.98px) { .nova-statut { grid-template-columns: auto minmax(0, 1fr); } .nova-statut-actions { grid-column: 1 / -1; justify-content: flex-start; } }
-.nova-fiche > .nova-tuiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); gap: var(--nova-e3); width: 100%; flex: 1 1 100%; margin: var(--nova-e2) 0 0; }
+.nova-fiche > .nova-tuiles { display: grid; grid-auto-flow: row dense; grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr)); gap: var(--nova-e3); width: 100%; flex: 1 1 100%; margin: var(--nova-e2) 0 0; }
 .nova-tuiles > .field.nova-tuile { display: flex; flex-direction: column; align-items: flex-start; gap: var(--nova-e2); width: auto; min-width: 0; max-width: none; margin: 0; padding: var(--nova-e3) var(--nova-e4); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); }
 .nova-tuiles > .nova-tuile-large { grid-column: 1 / -1; }
 .nova-tuiles > .nova-tuile-avancee { display: none !important; }
@@ -368,3 +368,9 @@ html.nova-js:not(.nova-std-listes) .wims_quotafree:not(.nova-capacite) > :is(.wi
 .wimsbody button.nova-fiche-avances { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; min-height: 36px; margin: var(--nova-e3) 0 0; padding: 0 var(--nova-e3); border: 1px dashed var(--nova-bord-fort); border-radius: 999px; background: transparent; box-shadow: none; color: var(--nova-lien); font: inherit; font-size: .92rem; font-weight: 700; cursor: pointer; }
 .wimsbody button.nova-fiche-avances::after { content: ''; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
 .wimsbody button.nova-fiche-avances[aria-expanded='true']::after { transform: translateY(2px) rotate(-135deg); }
+/* Heures de coupure d'un examen (2026-11-12) : composants de Restriction d'accès (nova-acces-ligne…), nova.js coupuresExamen. */
+.nova-coupures { display: flex; flex-direction: column; gap: var(--nova-e2); width: 100%; }
+.nova-coupures-aide, .nova-coupures-vide { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-coupures .nova-acces-actions { margin-top: 0; }
+.nova-coupures .nova-acces-expert { font-size: var(--nova-petit); }
+.nova-coupures .nova-acces-expert input { display: block; width: 100%; max-width: 24rem; margin-top: var(--nova-e2); font-family: var(--nova-police-chiffres); }

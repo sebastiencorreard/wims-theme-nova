@@ -6310,7 +6310,7 @@
   var FICHE_ICONES = [
     ['expdate', 'calendrier'], ['weight', 'balance', 1], ['formulaA', 'calcul', 1], ['indivtechvar', 'engrenage', 1],
     ['exodescshow', 'oeil'], ['prpage', 'fichier'], ['allowtype', 'cadenas'], ['duration', 'chrono'], ['tries', 'repete'],
-    ['cutt', 'ciseaux'], ['exammode', 'ecran']
+    ['cutt', 'ciseaux', 1], ['exammode', 'ecran', 1]
   ];
   function ficheRessource() {
     var tx = document.getElementById('nova-fiche-textes');
@@ -6434,6 +6434,7 @@
       c.appendChild(corps);
       c.insertBefore(tete, c.firstChild);
       grille.appendChild(c);
+      if (k && k[0] === 'cutt') coupuresExamen(c, tx);
       if (k && k[2]) { c.classList.add('nova-tuile-avancee'); avancees.push(c); }
     });
     if (!avancees.length) return;
@@ -6452,6 +6453,86 @@
     bouton.addEventListener('click', function () { ouvrir(!grille.classList.contains('nova-avances-ouvertes')); });
     grille.parentNode.insertBefore(bouton, grille.nextSibling);
     ouvrir(ouvert);
+  }
+
+  /* Heures de coupure d'un examen (2026-11-12, utilisateur : « interface graphique comme Restriction d'accès ») : une ligne
+   * par heure (date + heure, retirer), « Ajouter », champ de WIMS (cutt, « aaaammjj.hh:mm » séparées par des espaces,
+   * exam/var.proc) tenu à jour et rangé dans « Réglage expert » replié. Mots non compris gardés tels quels en fin de champ. */
+  function coupuresExamen(tuile, tx) {
+    var zone = tuile.querySelector('input[name="cutt"]');
+    if (!zone) return;
+    var t = function (c) { return tx.getAttribute('data-cut-' + c) || ''; };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var deux = function (n) { return ('0' + n).slice(-2); };
+    var heures = [], autres = [];
+    zone.value.split(/[\s,;]+/).forEach(function (w) {
+      var m = /^(\d{4})(\d\d)(\d\d)\.(\d\d?):(\d\d)$/.exec(w);
+      if (m) heures.push({ d: m[1] + '-' + m[2] + '-' + m[3], h: deux(m[4]) + ':' + m[5] });
+      else if (w) autres.push(w);
+    });
+    var ferme = zone.disabled || zone.readOnly;
+    var racine = el('div', 'nova-coupures');
+    racine.appendChild(el('p', 'nova-coupures-aide', t('aide')));
+    var liste = el('div', 'nova-acces-liste');
+    var vide = el('p', 'nova-coupures-vide', t('aucune'));
+    racine.appendChild(liste); racine.appendChild(vide);
+    var ecrire = function () {
+      zone.value = heures.filter(function (x) { return x.d && x.h; }).map(function (x) { return x.d.replace(/-/g, '') + '.' + x.h; })
+        .sort().concat(autres).join(' ') || ' ';   // champ vide ignoré par WIMS (rien effacé) ; une espace efface (vu le 2026-11-12)
+    };
+    var croix = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
+    var plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>';
+    var afficher = function () {
+      liste.textContent = '';
+      vide.hidden = heures.length > 0;
+      heures.forEach(function (x, i) {
+        var li = el('div', 'nova-acces-ligne');
+        var d = el('input', 'nova-acces-champ'); d.type = 'date'; d.value = x.d; d.id = 'nova-coupure-' + i; d.disabled = ferme;
+        var h = el('input', 'nova-acces-champ'); h.type = 'time'; h.value = x.h; h.setAttribute('aria-label', t('a')); h.disabled = ferme;
+        var l = el('label', '', t('le')); l.htmlFor = d.id;
+        li.appendChild(l); li.appendChild(d); li.appendChild(el('span', '', t('a'))); li.appendChild(h);
+        d.addEventListener('change', function () { x.d = d.value; ecrire(); });
+        h.addEventListener('change', function () { x.h = h.value; ecrire(); });
+        if (!ferme) {
+          var b = el('button', 'nova-acces-retirer'); b.type = 'button'; b.innerHTML = croix;
+          b.setAttribute('aria-label', t('retirer')); b.title = t('retirer');
+          b.addEventListener('click', function () { heures.splice(i, 1); ecrire(); afficher(); });
+          li.appendChild(b);
+        }
+        liste.appendChild(li);
+      });
+    };
+    if (!ferme) {
+      var actions = el('div', 'nova-acces-actions');
+      var ajout = el('button', 'wims_button wims_secondary_button'); ajout.type = 'button'; ajout.innerHTML = plus;
+      ajout.appendChild(document.createTextNode(t('ajouter')));
+      ajout.addEventListener('click', function () {
+        var j = new Date(Date.now() + 36e5);
+        heures.push({ d: j.getFullYear() + '-' + deux(j.getMonth() + 1) + '-' + deux(j.getDate()), h: deux(j.getHours()) + ':00' });
+        ecrire(); afficher();
+        var champs = liste.querySelectorAll('input[type="date"]');
+        if (champs.length) champs[champs.length - 1].focus();
+      });
+      actions.appendChild(ajout);
+      racine.appendChild(actions);
+    }
+    // Champ de WIMS dans « Réglage expert » ; s'il est modifié à la main, l'interface le relit.
+    var expert = el('details', 'nova-acces-expert');
+    expert.appendChild(el('summary', '', t('expert')));
+    zone.addEventListener('change', function () {
+      heures = []; autres = [];
+      zone.value.split(/[\s,;]+/).forEach(function (w) {
+        var m = /^(\d{4})(\d\d)(\d\d)\.(\d\d?):(\d\d)$/.exec(w);
+        if (m) heures.push({ d: m[1] + '-' + m[2] + '-' + m[3], h: deux(m[4]) + ':' + m[5] });
+        else if (w) autres.push(w);
+      });
+      afficher();
+    });
+    zone.parentNode.insertBefore(racine, zone);
+    expert.appendChild(zone);
+    racine.appendChild(expert);
+    tuile.classList.add('nova-tuile-large');
+    afficher();
   }
 
   /* ===== js/src/80-reglages.js : pages Apparence et « Réglages de Nova », réglages lus dans les feuilles ===== */

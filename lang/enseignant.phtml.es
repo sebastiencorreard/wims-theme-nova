@@ -121,3 +121,11 @@
 !set nova_fr_e3=Los alumnos ya no lo ven; sus notas ya no se registran.
 !set nova_fr_e4=Los alumnos ya no lo ven.
 !set nova_fr_avances=Opciones avanzadas
+!! Heures de coupure d'un examen (2026-11-12).
+!set nova_fr_cut_aide=Un alumno que empezó el examen antes de una hora de corte ya no puede abrir una nueva sesión después de ella.
+!set nova_fr_cut_le=El
+!set nova_fr_cut_a=a las
+!set nova_fr_cut_ajouter=Añadir una hora de corte
+!set nova_fr_cut_retirer=Quitar esta hora de corte
+!set nova_fr_cut_aucune=Ninguna hora de corte.
+!set nova_fr_cut_expert=Ajuste experto

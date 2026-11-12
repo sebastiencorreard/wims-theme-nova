@@ -121,3 +121,11 @@
 !set nova_fr_e3=Students no longer see it; their scores are no longer recorded.
 !set nova_fr_e4=Students no longer see it.
 !set nova_fr_avances=Advanced options
+!! Heures de coupure d'un examen (2026-11-12).
+!set nova_fr_cut_aide=A student who started the exam before a cut-off time cannot open a new session after it.
+!set nova_fr_cut_le=On
+!set nova_fr_cut_a=at
+!set nova_fr_cut_ajouter=Add a cut-off time
+!set nova_fr_cut_retirer=Remove this cut-off time
+!set nova_fr_cut_aucune=No cut-off time.
+!set nova_fr_cut_expert=Expert setting

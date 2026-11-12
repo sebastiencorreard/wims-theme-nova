@@ -866,6 +866,11 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
 /* Colonne « Bonne réponse » centrée : en-tête, réponses et coche alignés (utilisateur, 2026-11-12). */
 .nova-verdict-tableau :is(th, td):nth-child(3) { text-align: center; }
 .nova-verdict-coche { display: inline-block; vertical-align: middle; }
+.nova-verdict-croix { display: inline-block; vertical-align: middle; }
+.nova-verdict-croix::before { content: "\2715"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--nova-erreur); color: #FFFFFF; font-size: .8rem; font-weight: 700; }
+/* Conditions seules (sans en-tête) : le nom de la condition prend la largeur qu'il lui faut. */
+.nova-verdict-tableau:not(:has(thead)) .nova-verdict-num { width: auto; padding-right: var(--nova-e4); }
+.nova-verdict-tableau:not(:has(thead)) { width: auto; min-width: 12rem; }
 .nova-verdict-coche::before { content: "\2713"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--nova-succes); color: #FFFFFF; font-size: .85rem; font-weight: 700; }
 /* Commentaire d'auteur encadré (`<div class="feedback">`, ex. fin de course H4/math/quizzautomat « Belle
  * performance ! ») : WIMS lui laisse 15em de marge à droite, presque tout l'écran d'un téléphone. */

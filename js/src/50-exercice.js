@@ -39,7 +39,7 @@
       var reponseEleve = m[1] === 'ind' && tr.children.length >= 3;
       if (m[1] === 'cond') conditions++;
       lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
-        eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
+        condition: m[1] === 'cond', eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
     });
     // Lignes sans état (« voir l'analyse », renvois) : sans conséquence s'il y a des conditions, qui donnent
     // alors le verdict ; sinon, WIMS tel quel, et l'animation suit la note (noteSeule).
@@ -190,8 +190,11 @@
       cadre.className = 'nova-verdict-cadre';
       var table = document.createElement('table');
       table.className = 'nova-verdict-tableau';
-      var entete = table.createTHead().insertRow();
-      [['', 'num'], [texte('votre-reponse', 'Your answer:').replace(/\s*:\s*$/, ''), 'eleve'], [texte('bonne', 'Correct answer'), 'bonne']].forEach(function (c) {
+      // Conditions de l'auteur seulement (« 25 : OUI », H1/number/OEFevalwimsope decomp ; signalé par l'utilisateur,
+      // 2026-11-12) : ni réponse de l'élève ni bonne réponse à montrer ; deux colonnes, nom et pastille, sans en-tête.
+      var sansReponses = lignes.every(function (l) { return l.condition; });
+      var entete = sansReponses ? null : table.createTHead().insertRow();
+      if (entete) [['', 'num'], [texte('votre-reponse', 'Your answer:').replace(/\s*:\s*$/, ''), 'eleve'], [texte('bonne', 'Correct answer'), 'bonne']].forEach(function (c) {
         var th = document.createElement('th');
         th.scope = 'col';
         th.className = 'nova-verdict-col-' + c[1];
@@ -204,16 +207,25 @@
       var ordre = lignes.slice();
       // Nom de ligne « 2 » ou « [2] » (réponse placée dans l'énoncé).
       var numero = function (l) { var m = /^\[?(\d+)\]?$/.exec(l.nom); return m ? +m[1] : NaN; };
-      if (ordre.every(function (l) { return !isNaN(numero(l)); })) ordre.sort(function (x, y) { return numero(x) - numero(y); });
+      if (ordre.every(function (l) { return !l.condition && !isNaN(numero(l)); })) ordre.sort(function (x, y) { return numero(x) - numero(y); });
       ordre.forEach(function (ligne) {
         var tr = tbody.insertRow();
         tr.className = 'nova-verdict-ligne-' + ligne.etat;
         var num = document.createElement('th');
         num.scope = 'row';
         num.className = 'nova-verdict-num';
-        num.textContent = !ligne.nom ? '' : /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom;
+        num.textContent = !ligne.nom ? '' : !ligne.condition && /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom;
         tr.appendChild(num);
         var celEleve = tr.insertCell();
+        if (ligne.condition) {
+          // Condition (OUI / NON) : pastille ✓ ou ✕ dans la colonne « Bonne réponse » (seule colonne sans réponse).
+          var marque = document.createElement('span');
+          marque.className = ligne.etat === 'bonne' ? 'nova-verdict-coche' : 'nova-verdict-croix';
+          marque.setAttribute('role', 'img');
+          marque.setAttribute('aria-label', libelle(ligne.etat));
+          (sansReponses ? celEleve : tr.insertCell()).appendChild(marque);
+          return;
+        }
         var celBonne = tr.insertCell();
         var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
         if (donnee) {

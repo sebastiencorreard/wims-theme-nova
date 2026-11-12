@@ -1,7 +1,7 @@
 # Nova : badges de l'élève (demande de l'utilisateur, 2026-10-07 ; Persévérance le 2026-10-09). Appelé par user.phtml
 # (accueil de l'élève, module de confiance) ; l'entrée est découpée en sections :
 #   #conf   feuilles où sont posés les réglages --nova-… (site, structure, classe : la dernière l'emporte) ;
-#   #stock  score/<élève>.nova, une ligne par badge (« fidelite niveau=5 obtenu=20270122 vu=5 record=12 ») ;
+#   #stock  score/<élève>.nova_badges, une ligne par badge (« fidelite niveau=5 obtenu=20270122 vu=5 record=12 ») ;
 #   #score  score/<élève> et noscore/<élève> (5e champ « score » = une réponse envoyée, 6e = la note ; « E… » = examen).
 # Variables : auj (AAAAMMJJ, 8 premiers caractères de $wims_now) ; classe (dossier de la classe, pour Échauffement :
 #   exams/.exams et exams/.exam<n>, lus ici par getline).
@@ -17,7 +17,7 @@
 #   dm - | dm <sessions faites> <sessions demandées> <titre du DM noté> : DM noté ouvert, pas encore commencé (le plus récent).
 #   reglages <jours par semaine> <note de réussite> <note d'échec> <échecs> <examens 1/0> 0 <sessions d'Échauffement>
 #     <seuil d'Au top> <badge de la couleur personnelle | aucun> <niveau qui la débloque> <niveau des dégradés> <badge des dégradés> (6e champ : anciennes vacances, gardé pour la place)
-#   ecrire 1|0 (score/<élève>.nova à réécrire), puis son nouveau contenu.
+#   ecrire 1|0 (score/<élève>.nova_badges à réécrire), puis son nouveau contenu.
 #
 # Régularité (« fidelite » dans les clés et le stock ; renommé le 2026-11-04) : une semaine (lundi-dimanche) compte si
 # l'élève y a envoyé au moins une réponse sur --nova-fidelite-jours jours différents (1 par défaut, 1 à 7 ; avant le

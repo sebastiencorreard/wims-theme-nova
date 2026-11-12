@@ -38,7 +38,7 @@ ni point, ni tiret, ni soulignement :
 Une archive au bon nom : `DOSSIER=Nova12 ./livrer.sh` (depuis le dépôt), ou renommer le dossier après `tar -x`.
 
 Les deux versions partagent les mêmes réglages et données : `log/nova.conf`, blocs Nova des feuilles
-de classe, menus choisis (`.nova_menu_<login>`), badges (`score/<élève>.nova`), et la mémoire du
+de classe, menus choisis (`.nova_menu_<login>`), badges (`score/<élève>.nova_badges`), et la mémoire du
 navigateur. Une version plus ancienne ignore les réglages qu'elle ne connaît pas.
 
 La version installée s'affiche en bas de la carte « Réglages de Nova » (page Apparence du site, d'une

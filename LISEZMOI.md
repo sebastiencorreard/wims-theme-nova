@@ -140,7 +140,7 @@ retenue, barres de progression, retour en haut ; sa première couleur sert d'acc
 vaut pour toute la classe, le groupement ou le portail, examens compris : `log/classes/<structure ou
 classe>/score/<login>.nova_couleur`, recopié dans le navigateur pour être posé avant l'affichage de chaque page.
 
-Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova`.
+Calcul côté serveur (`_procs/badges.awk`, sur l'accueil de l'élève) ; niveaux gardés dans `score/<élève>.nova_badges`.
 
 Portail ou groupement : les réglages d'une zone l'emportent sur ceux de la structure. Pour les recopier dans les zones :
 « Zones dépendantes » de la configuration, cases « Apparence du thème Nova » et « Badges Nova » (séparées). Les pages

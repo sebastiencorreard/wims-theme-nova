@@ -72,7 +72,7 @@
 !! _procs/badges.awk (Fidelite : semaines avec assez d'exercices, vacances sautees ; Perseverance : exercices reussis
 !! apres des notes faibles) ; reglages --nova-badges, --nova-badges-actifs, --nova-fidelite-*, --nova-perseverance-*,
 !! --nova-echauffement-* (2026-11-06 : DM WIMS prepares), --nova-vacances lus dans les feuilles du site, de la structure et de la classe (la derniere l'emporte) ; niveaux
-!! gardes dans score/<eleve>.nova (jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
+!! gardes dans score/<eleve>.nova_badges (avant le 2026-11-12 : .nova, renomme a la visite suivante ; jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
 !! 2026-10-09), fenetre a onglets (nova.js fenetreBadges). Pas dans l'accueil d'un portail ou d'un groupement (le
 !! travail est dans ses zones), ni en examen.
 !reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr nova_lt nova_lu nova_xn
@@ -94,7 +94,7 @@
         !endif
       !next
     !endif
-    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; cat $nova_cl/$wims_class/score/$wims_user.nova 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -v "notes=$nova_xn" -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
+    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; o=$nova_cl/$wims_class/score/$wims_user.nova; [ -f "$$o" ] && { [ -e "$$o"_badges ] || mv -f "$$o" "$$o"_badges; rm -f "$$o"; }; cat "$$o"_badges 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -v "notes=$nova_xn" -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
     !set nova_lf=!line 1 of $nova_bd
     !set nova_lp=!line 2 of $nova_bd
     !set nova_lh=!line 3 of $nova_bd
@@ -107,7 +107,7 @@
     !set nova_le=!word 2 of $nova_le
     !if $nova_le=1
       !set nova_st=!line 10 to -1 of $nova_bd
-      !writefile wimshome/log/classes/$wims_class/score/$wims_user.nova $nova_st
+      !writefile wimshome/log/classes/$wims_class/score/$wims_user.nova_badges $nova_st
     !endif
     !set nova_fo=!word 2 of $nova_lf
     !set nova_po=!word 2 of $nova_lp

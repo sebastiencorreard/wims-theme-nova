@@ -2,7 +2,7 @@
 # Appele par _widgets/avatar.phtml (accueil de l'eleve, module de confiance). Entree decoupee en sections :
 #   #conf     feuilles ou sont poses les reglages --nova-... (site, structure, classe : la derniere l'emporte) ;
 #   #fichier  log/classes/<structure ou classe>/score/<login>.nova_avatar : « choix cat.val,... » et « ouverts cat.val ... » ;
-#   #stock    score/<eleve>.nova de toutes les zones de la structure (niveaux des badges, le plus haut compte) ;
+#   #stock    score/<eleve>.nova_badges de toutes les zones de la structure (niveaux des badges, le plus haut compte) ;
 #   #zone <n> puis score/<eleve> et noscore/<eleve> de cette zone (« E... » = examen).
 # Variables : auj (AAAAMMJJ) ; catalogue (_procs/avatar-catalogue.txt) ; ouvrir (cat.val a ouvrir avec des jetons) ;
 #   choix (cat.val,cat.val,... a enregistrer). Les deux dernieres viennent de l'adresse : verifiees ici, element par element.

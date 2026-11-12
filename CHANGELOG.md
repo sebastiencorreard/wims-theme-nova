@@ -66,6 +66,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 
 ### Installation
+- Fichier des badges d'un élève renommé `score/<login>.nova_badges` (avant : `.nova`) ; l'ancien est renommé à la visite suivante de l'élève et lu en attendant.
 - **Jeu d'icônes « Lucide »** : nouveau choix dans « Jeu d'icônes » (Config / Maintenance › Présentation d'une classe, Configuration du site) ; icônes fines au trait, à la couleur du texte, pour toutes les entrées de WIMS (menus, barre, fil d'Ariane, messages, boutons). « Nouvelle feuille » et « Nouvel examen » ont des icônes assorties (presse-papiers + et presse-papiers horloge). Le jeu est livré avec Nova : il s'ajoute à la liste à la première visite d'une page de configuration.
 - Les icônes propres à Nova sont elles aussi des icônes Lucide : barre du haut (maison, aide, compte, Terminer, Fermer, Retour), chronomètre, « Configuration et maintenance », « Administration du serveur », niveaux, classes, programmes et cours d'un portail, types de travail (feuille, examen, document…), liens de connexion, menu ☰ et « Plus ».
 - **Langues** : Nova est traduit en espagnol et en italien (en plus du français et de l'anglais) ; une langue non traduite (catalan, allemand, chinois, slovène…) ou un texte manquant s'affiche en anglais, jamais vide. La page **Suivi en direct** est traduite elle aussi.

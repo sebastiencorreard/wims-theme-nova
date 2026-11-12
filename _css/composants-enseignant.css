@@ -387,3 +387,8 @@ fieldset.property_fields.nova-fiche > .field.box { padding-right: 0; }
 .wimsbody button.nova-com-bouton::after { content: ''; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
 .wimsbody button.nova-com-bouton[aria-expanded='true']::after { transform: translateY(2px) rotate(-135deg); }
 
+/* Titre de la feuille ou de l'examen : champ sur la ligne du libellé, précision dessous (2026-11-12, utilisateur). */
+fieldset.property_fields.nova-fiche > .field.box:has(> #title) { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: var(--nova-e3); row-gap: var(--nova-e1); }
+fieldset.property_fields.nova-fiche > .field.box:has(> #title) > label { grid-column: 1; margin: 0; }
+fieldset.property_fields.nova-fiche > .field.box:has(> #title) > #title { grid-column: 2; width: 100%; max-width: none; box-sizing: border-box; margin: 0; }
+fieldset.property_fields.nova-fiche > .field.box:has(> #title) > .formHelp { grid-column: 2; margin: 0; }

@@ -19,6 +19,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Feuille et examen : le champ du titre est sur la ligne de « Titre », sur toute la largeur.
 - Titres des cartes (« Informations générales », cartes de réglages…) : centrés, dans la couleur d'accent.
 - Feuille et examen : la date d'expiration rejoint aussi « Options avancées ».
 - Feuille et examen : le bouton des commentaires (« Écrire », « Modifier », « Replier l'éditeur ») est sur la ligne de « Commentaires », à droite.
@@ -61,6 +62,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Éditeur de texte d'une feuille ou d'un examen : sa hauteur suit aussi le texte quand celui-ci change de taille sans être modifié (chargement lent, image, largeur de la fenêtre, éditeur d'abord masqué).
 - Bouton « Enregistrer » dans des onglets (préparation d'une feuille ou d'un examen…) : même arrondi et même police que les autres boutons.
 - Feuille et examen : statut, éditeurs, commentaires et tuiles alignés sur la même largeur ; les tuiles remplissent toute la ligne.
 - Éditeur de texte (feuille, examen…) : la page ne défile plus à chaque ligne tapée ; « Activer l'éditeur » fonctionne de nouveau après « Désactiver l'éditeur » (en panne dans WIMS).

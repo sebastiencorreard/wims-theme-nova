@@ -1595,6 +1595,21 @@
         });
         ed.getWin().addEventListener('load', lancer);
         setTimeout(lancer, 400);
+        // Texte qui change de taille sans saisie (feuille de style ou police de l'éditeur chargée tard, image, largeur de la
+        // fenêtre) ou éditeur invisible à sa création (onglet, commentaires repliés) : remesurer (2026-11-12, utilisateur :
+        // hauteur ajustée seulement après un clic dans le texte).
+        var prevu = false;
+        var bientot = function () { if (prevu) return; prevu = true; requestAnimationFrame(function () { prevu = false; lancer(); }); };
+        var RO = ed.getWin().ResizeObserver || window.ResizeObserver;
+        if (RO) {
+          var veille = new RO(bientot);
+          veille.observe(ed.getBody());
+          Array.prototype.forEach.call(ed.getBody().children, function (c) { veille.observe(c); });
+          ed.on('SetContent NodeChange', function () { Array.prototype.forEach.call(ed.getBody().children, function (c) { veille.observe(c); }); });
+          if (window.ResizeObserver) new window.ResizeObserver(bientot).observe(ed.getContainer());
+        }
+        var polices = ed.getDoc().fonts;
+        if (polices && polices.ready) polices.ready.then(bientot);
       };
       if (ed.initialized) pret(); else ed.on('init', pret);
       ed.novaAjuster = lancer;

@@ -517,3 +517,25 @@ html.nova-sans-animation .wimsbody :is(button.nova-cg-plus, button.nova-cg-entet
 @media (min-width: 640px) {
   .wimsbody .nova-cg-actions { position: sticky; bottom: 0; z-index: 2; margin-inline: auto; max-width: 54rem; padding: var(--nova-e3) 0; background: color-mix(in oklab, var(--nova-fond) 94%, transparent); border-top: 1px solid var(--nova-bord); }
 }
+
+/* Page « Sauvegarde et restauration » (adm/class/config, job=arch ; 2026-11-12, utilisateur) : formats zip, tgz, tar.gz en
+ * boutons de téléchargement (contour, icône Lucide « download »), au lieu d étiquettes en police à chasse fixe ; aussi les
+ * liens « Essayer un autre format » après un échec. nova.js formatsSauvegarde retire les séparateurs. Réglage « listes ». */
+:where(html:not(.nova-std-listes)) .wimsbody :is(a.wims_label, a.text_icon)[href*="job2=download"][href*="format="] {
+  display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; margin: .25rem .2rem; padding: 0 1rem 0 .85rem;
+  font: 700 1rem/1.2 var(--nova-police); letter-spacing: .02em; color: var(--nova-texte); text-decoration: none; vertical-align: middle;
+  background: var(--nova-surface); border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); box-shadow: none;
+}
+:where(html:not(.nova-std-listes)) .wimsbody :is(a.wims_label, a.text_icon)[href*="job2=download"][href*="format="]::before {
+  content: ""; flex: none; width: 18px; height: 18px; margin: 0; background: var(--nova-accent); font-size: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3'/%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+:where(html:not(.nova-std-listes)) .wimsbody :is(a.wims_label, a.text_icon)[href*="job2=download"][href*="format="]:hover {
+  background: var(--nova-accent-doux); border-color: var(--nova-accent); color: var(--nova-texte);
+}
+:where(html:not(.nova-std-listes)) .wimsbody :is(a.wims_label, a.text_icon)[href*="job2=download"][href*="format="]:focus-visible {
+  outline: 3px solid var(--nova-accent); outline-offset: 2px;
+}
+:where(html:not(.nova-std-listes)) .wimsbody .nova-formats { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin-top: var(--nova-e3); }
+:where(html:not(.nova-std-listes)) .wimsbody .nova-formats > a.wims_label[href*="format="] { margin: 0; }
+:where(html:not(.nova-std-listes)) .wimsbody ul.inline:has(> li > a.text_icon[href*="format="]) { display: flex; flex-wrap: wrap; gap: var(--nova-e2); padding: 0; list-style: none; }

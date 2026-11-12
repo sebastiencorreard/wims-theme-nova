@@ -1122,6 +1122,27 @@
     up_anonymtopscores: 'yes', up_examlog: 'max', up_examshow: 'yes', up_examscore_withoutip: 'no', up_optionex: '', up_ent: '',
     modtoolchg: false
   };
+  // Page « Sauvegarde et restauration » (adm/class/config, job=arch ; 2026-11-12, utilisateur) : les liens zip, tgz,
+  // tar.gz deviennent des boutons de telechargement (CSS, des le premier affichage) ; ici, seulement les separateurs
+  // (« , », « ou », « . ») retires et les boutons groupes. Reglage « Feuilles et examens en liste ».
+  function formatsSauvegarde() {
+    if (standard('listes')) return;
+    var sel = '[href*="job2=download"][href*="format="]';
+    var liens = document.querySelectorAll('.wimsbody a.wims_label' + sel);
+    if (liens.length < 2) return;
+    var groupe = document.createElement('span');
+    groupe.className = 'nova-formats';
+    liens[0].parentNode.insertBefore(groupe, liens[0]);
+    var restants = liens.length, n = groupe.nextSibling;
+    while (n) {
+      var suiv = n.nextSibling;
+      if (n.nodeType === 1 && n.matches('a.wims_label' + sel)) { groupe.appendChild(n); restants--; }
+      else if (n.nodeType === 3 && n.nodeValue.trim().length <= 4) { if (restants > 0 || /^[\s.]*$/.test(n.nodeValue)) n.remove(); }
+      else break;
+      if (!restants && !(suiv && suiv.nodeType === 3 && /^[\s.]*$/.test(suiv.nodeValue))) break;
+      n = suiv;
+    }
+  }
   function configurationGlobale() {
     var tx = document.getElementById('nova-cg-textes');
     var job = document.querySelector('.wimsbody input[name="up_job"][value="list"]');

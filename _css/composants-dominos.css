@@ -304,6 +304,13 @@ html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td:has(> div.inline
 html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td > div.inline:has(> .fill_container > .drag_label) + sup{
   display: block; position: static; top: auto; vertical-align: baseline; margin-top: 3px; font-size: .75rem; line-height: 1; color: var(--nova-texte-2); text-align: center;
 }
+/* Petites tuiles (WIMS : 24 px pour un chiffre, E6/number/OEFaddsous soustraction1B) : au moins 44 px dans l'énoncé et
+ * dans le verdict, comme pendant l'exercice, à toutes les largeurs (signalé par l'utilisateur, 2026-11-12 : sur grand
+ * écran, tuile de 24 px débordée par la police de l'énoncé). Les tuiles plus grandes gardent leur taille. */
+html:not(.nova-std-dominos):not(.nova-dominos) :is(.oefstatement div.inline, .nova-verdict) .fill_container > .drag_label{
+  min-width: 44px !important; min-height: 44px !important; box-sizing: border-box; align-items: center;
+}
+html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement div.inline > .fill_container > .drag_label{ font-size: 1.125rem; }
 @media (max-width: 639.98px){
   html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement table:has(> tbody > tr > td > div.inline > .fill_container > .drag_label) > tbody > tr > :is(td, th){ padding-left: 1px; padding-right: 1px; }
   html:not(.nova-std-dominos):not(.nova-dominos) .oefstatement td > div.inline > .fill_container > .drag_label{ width: 44px !important; height: 44px !important; box-sizing: border-box; margin: 0 !important; font-size: 1.125rem; }

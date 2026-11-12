@@ -199,7 +199,13 @@
         entete.appendChild(th);
       });
       var tbody = table.createTBody();
-      lignes.forEach(function (ligne) {
+      // Ordre de l'énoncé : WIMS range son analyse dans l'ordre de ses réponses (l'unité d'abord dans une soustraction
+      // posée, E6/number/OEFaddsous) ; renvois numérotés triés par numéro.
+      var ordre = lignes.slice();
+      // Nom de ligne « 2 » ou « [2] » (réponse placée dans l'énoncé).
+      var numero = function (l) { var m = /^\[?(\d+)\]?$/.exec(l.nom); return m ? +m[1] : NaN; };
+      if (ordre.every(function (l) { return !isNaN(numero(l)); })) ordre.sort(function (x, y) { return numero(x) - numero(y); });
+      ordre.forEach(function (ligne) {
         var tr = tbody.insertRow();
         tr.className = 'nova-verdict-ligne-' + ligne.etat;
         var num = document.createElement('th');

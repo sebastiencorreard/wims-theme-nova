@@ -1,4 +1,4 @@
-!! Hook natif des menus WIMS : suivi dans Participants, pour les profs/admins seulement.
+!! Hook natif des menus WIMS : suivi dans Participants, pour les profs/admins seulement, sur l'accueil seulement (2026-11-12).
 !! Pas sur une page d'aide (cmd=help, session _mhelp) : WIMS n'y met pas de menu, le suivi s'y affichait seul (2026-10-08).
 !if $wims_class!=$empty and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session and _mhelp notin $wims_session and $cmd!=help
   !if $wims_user=supervisor or yes isin $supervisable $user_supervisable or $wims_supervise!=$empty
@@ -57,12 +57,22 @@
         !endif
       !next nova_si
       !reset nova_sr
-      !if $nova_sp=0
+      !! Rubrique ajoutee seulement sur l'accueil (module home : accueil, suivi, avatars ; 2026-11-12, utilisateur : avant,
+      !! sur toutes les pages de la classe). Ailleurs, seul le trombinoscope remplace est retire.
+      !set nova_ici=0
+      !if $module=home
+        !set nova_ici=1
+      !endif
+      !if $nova_sp=0 and $nova_ici=1
         !set nova_sr=itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1
         !if $nova_avm isitemof oui,badges
           !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
         !endif
+      !endif
+      !! Intertitre du module quand le menu n'en a pas en tete (configuration...) : pose avec la rubrique jusqu'au 2026-11-12,
+      !! garde sur toutes les pages.
+      !if $nova_sp=0
         !if $nova_sc>0
           !set nova_sl=!line 1 of $wims_rm_0
           !if $(nova_sl[1])!=itemsep
@@ -77,7 +87,7 @@ nova_suivi,1,module=home&nova_suivi=1
       !endif
       !for nova_si=1 to $nova_sc
         !set nova_sl=!line $nova_si of $wims_rm_0
-        !if $nova_si=$nova_sp
+        !if $nova_si=$nova_sp and $nova_ici=1
           !set nova_sr=!append line itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
           !if $nova_avm isitemof oui,badges
@@ -90,7 +100,7 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
         !endif
       !next nova_si
       !set wims_rm_0=$nova_sr
-      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn nova_avm nova_avr
+      !reset nova_sp nova_sg nova_sc nova_si nova_sl nova_sr nova_sn nova_avm nova_avr nova_ici
     !endif
   !endif
 !endif

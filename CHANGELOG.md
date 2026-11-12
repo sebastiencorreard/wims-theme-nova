@@ -59,6 +59,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Feuille et examen : statut, éditeurs, commentaires et tuiles alignés sur la même largeur ; les tuiles remplissent toute la ligne.
 - Éditeur de texte (feuille, examen…) : la page ne défile plus à chaque ligne tapée ; « Activer l'éditeur » fonctionne de nouveau après « Désactiver l'éditeur » (en panne dans WIMS).
 - Feuille et examen : un texte d'explication ou un commentaire vidé s'efface vraiment (WIMS gardait l'ancien texte).
 - **Avatar et couleur personnelle** : rangés avec les notes de l'élève (`score/`), donc compris dans la sauvegarde de la classe et remis à zéro par « nettoyer la classe », comme les badges ; les choix déjà faits sont repris à la première visite de chaque élève.

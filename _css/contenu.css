@@ -963,3 +963,8 @@ html:not(.nova-std-tableaux) .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(
 .oefstatement .nova-choix-oublie .nova-choix-pastille::before { content: "!"; }
 .oefstatement .nova-choix-pris .nova-choix-pastille { background: var(--nova-accent); }
 .oefstatement .nova-choix-pris .nova-choix-pastille::before { content: "\2022"; }
+
+/* Séquences : option « numéro seul » de la classe (nova.js sequencesNumero, 2026-11-12) : le numéro en pastille. Masqué
+ * jusqu'au passage de nova.js (pas de « Chapitre 3 » qui clignote). */
+html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.wimsbody .wims_seq_id.nova-seq-num { display: inline-flex; align-items: center; justify-content: center; align-self: center; min-width: 1.9em; height: 1.9em; padding: 0 .45em; box-sizing: border-box; border: 0; border-radius: 9px; background: var(--nova-accent); color: var(--nova-sur-accent); font-size: 1rem; font-weight: 700; letter-spacing: 0; text-transform: none; }

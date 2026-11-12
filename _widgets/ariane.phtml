@@ -47,6 +47,11 @@
         !set wims_name_$nova_cle=
       !endif
     !endif
+    !! Nova (2026-11-13, utilisateur) : WIMS finit le fil par "*" quand la page n'a pas de titre (themes/_procs/ariane.proc,
+    !! page d'un module rouverte sans cmd=new) ; marque pour la masquer (cadre.css, hors reglage std-navigation).
+    !if $i_=$wims_ariane_cnt and $1_=*,8
+      !set css_class=class="nova-ariane-etoile"
+    !endif
     <li $css_class>
       !read $(w_path)oneitem.phtml $1_
       !if $i_=$wims_ariane_cnt

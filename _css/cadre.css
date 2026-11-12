@@ -127,6 +127,10 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   cursor: default;
 }
 .breadcrumbs li:not(:last-child)::after { content: "\203A"; margin: 0 .5em; color: var(--nova-bord-fort); top: 0; }
+/* Entrée finale « * » de WIMS (page sans titre, _widgets/ariane.phtml) : masquée, sans séparateur devant (2026-11-13,
+ * utilisateur). Réglage std-navigation : laissée. */
+:where(html:not(.nova-std-navigation)) .breadcrumbs > li.nova-ariane-etoile { display: none; }
+:where(html:not(.nova-std-navigation)) .breadcrumbs > li:has(+ li.nova-ariane-etoile:last-child)::after { content: none; }
 .breadcrumbs > li > a, .breadcrumbs a { color: var(--nova-lien); text-decoration: none; }
 .breadcrumbs a:hover { text-decoration: underline; }
 .breadcrumbs .menuitem { padding: 0; }

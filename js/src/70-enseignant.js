@@ -1930,22 +1930,12 @@
     }, true);
   }
 
-  /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
-   * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
-   * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :
-   * feuille, examen, devoir libre, vote = wims_status_0..3 (préparation, actif, expiré, caché et expiré) ; outil, document
-   * ajouté, glossaire = 0 caché, 1 visible ; document de la classe = droits des élèves (0..2). Documents de la classe et
-   * votes n'ont que « Modifier » : pastille sans menu, « Modifier » à côté. Réglage std-listes. */
-  function etatsRessources() {
-    var tx = document.getElementById('nova-statuts-textes');
-    if (!tx || standard('listes')) return;
-    var t = function (c) { return tx.getAttribute('data-' + c) || ''; };
-    var TYPES = ['sheet', 'exam', 'freework', 'vote', 'tool', 'glossary', 'doc'];
-    var LETTRE = { sheet: 'f', exam: 'e', freework: 'd' };
-    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
-    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
-    var majuscule = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
-    var numero = 0, ouvert = null;
+  /* Menus des pastilles d'état (accueil de l'enseignant, séquences) : un seul ouvert à la fois, placé sous la pastille,
+   * clavier (flèches, Échap, Tab). Créé une fois par page. */
+  var menusEtatPartages = null;
+  function menusEtat() {
+    if (menusEtatPartages) return menusEtatPartages;
+    var ouvert = null;
 
     function fermer(rendre) {
       if (!ouvert) return;
@@ -1982,6 +1972,48 @@
     document.addEventListener('nova-fermer-menus', function () { fermer(false); });
     window.addEventListener('scroll', placer, true);
     window.addEventListener('resize', placer);
+    function brancher(pastille, menu) {
+      pastille.setAttribute('aria-haspopup', 'menu');
+      pastille.setAttribute('aria-expanded', 'false');
+      pastille.setAttribute('aria-controls', menu.id);
+      pastille.addEventListener('click', function () {
+        if (ouvert && ouvert.menu === menu) fermer(false);
+        else ouvrir(pastille, menu, false);
+      });
+      pastille.addEventListener('keydown', function (ev) {
+        if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); ouvrir(pastille, menu, true); }
+      });
+      menu.addEventListener('keydown', function (ev) {
+        var l2 = items(menu), i = l2.indexOf(document.activeElement);
+        if (ev.key === 'Escape') { ev.preventDefault(); fermer(true); }
+        else if (ev.key === 'Tab') fermer(false);
+        else if (ev.key === 'ArrowDown') { ev.preventDefault(); if (l2.length) l2[(i + 1) % l2.length].focus(); }
+        else if (ev.key === 'ArrowUp') { ev.preventDefault(); if (l2.length) l2[(i - 1 + l2.length) % l2.length].focus(); }
+        else if (ev.key === 'Home') { ev.preventDefault(); if (l2.length) l2[0].focus(); }
+        else if (ev.key === 'End') { ev.preventDefault(); if (l2.length) l2[l2.length - 1].focus(); }
+      });
+      document.body.appendChild(menu);
+    }
+    menusEtatPartages = { brancher: brancher, fermer: fermer };
+    return menusEtatPartages;
+  }
+
+  /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
+   * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
+   * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :
+   * feuille, examen, devoir libre, vote = wims_status_0..3 (préparation, actif, expiré, caché et expiré) ; outil, document
+   * ajouté, glossaire = 0 caché, 1 visible ; document de la classe = droits des élèves (0..2). Documents de la classe et
+   * votes n'ont que « Modifier » : pastille sans menu, « Modifier » à côté. Réglage std-listes. */
+  function etatsRessources() {
+    var tx = document.getElementById('nova-statuts-textes');
+    if (!tx || standard('listes')) return;
+    var t = function (c) { return tx.getAttribute('data-' + c) || ''; };
+    var TYPES = ['sheet', 'exam', 'freework', 'vote', 'tool', 'glossary', 'doc'];
+    var LETTRE = { sheet: 'f', exam: 'e', freework: 'd' };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var majuscule = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+    var numero = 0, menus = menusEtat();
 
     // Une action du menu : le lien de WIMS, avec icône, libellé et effet.
     function action(a, type, etat) {
@@ -2070,26 +2102,7 @@
           if (g > 0 && menu.childNodes.length && !menu.querySelector(':scope > hr')) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
           du.forEach(function (f) { menu.appendChild(f.noeud); });
         });
-        pastille.setAttribute('aria-haspopup', 'menu');
-        pastille.setAttribute('aria-expanded', 'false');
-        pastille.setAttribute('aria-controls', menu.id);
-        pastille.addEventListener('click', function () {
-          if (ouvert && ouvert.menu === menu) fermer(false);
-          else ouvrir(pastille, menu, false);
-        });
-        pastille.addEventListener('keydown', function (ev) {
-          if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') { ev.preventDefault(); ouvrir(pastille, menu, true); }
-        });
-        menu.addEventListener('keydown', function (ev) {
-          var l2 = items(menu), i = l2.indexOf(document.activeElement);
-          if (ev.key === 'Escape') { ev.preventDefault(); fermer(true); }
-          else if (ev.key === 'Tab') fermer(false);
-          else if (ev.key === 'ArrowDown') { ev.preventDefault(); if (l2.length) l2[(i + 1) % l2.length].focus(); }
-          else if (ev.key === 'ArrowUp') { ev.preventDefault(); if (l2.length) l2[(i - 1 + l2.length) % l2.length].focus(); }
-          else if (ev.key === 'Home') { ev.preventDefault(); if (l2.length) l2[0].focus(); }
-          else if (ev.key === 'End') { ev.preventDefault(); if (l2.length) l2[l2.length - 1].focus(); }
-        });
-        document.body.appendChild(menu);
+        menus.brancher(pastille, menu);
       }
       l.cellule.textContent = '';
       l.cellule.appendChild(contenu);
@@ -2108,6 +2121,327 @@
         if (tr.cells.length > colonne && tr.cells[colonne] === tr.lastElementChild) tr.removeChild(tr.cells[colonne]);
       });
       table.classList.add('nova-etats');
+    });
+  }
+
+  /* Séquences pédagogiques, vue de l'enseignant (2026-11-12, utilisateur, maquette B ; adm/class/sequence, job=show).
+   * Barre de titre : poignée, chevron (replier), titre, pastille d'état qui ouvre le menu (Activer ou Désactiver, Effacer :
+   * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (WIMS ne sait
+   * que remonter : Descendre N = moveup=N+1). Replis gardés par navigateur et par classe (localStorage). Glisser-déposer
+   * par la poignée : carte rehaussée, destination marquée d'un trait épais ; requête en arrière-plan (nova_seq_de,
+   * nova_seq_vers : _widgets/sequences.phtml, _procs/sequences.sh), puis la page est relue (numéros et liens de WIMS),
+   * même position à l'écran. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes. */
+  function sequencesEnseignant() {
+    var tx = document.getElementById('nova-seq-textes');
+    if (!tx || standard('listes')) return;
+    var t = function (k, n) { return (tx.getAttribute('data-' + k) || '').replace('%1', n == null ? '' : n); };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var majuscule = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+    var propre = function (s) { return majuscule(s.replace(/\s+/g, ' ').replace(/^\s*\(\s*|\s*\)\s*$/g, '').trim()); };
+    var lire = function (cle, k) { try { return JSON.parse(k.getItem(cle) || 'null'); } catch (e) { return null; } };
+    var ecrire = function (cle, v, k) { try { if (v === null) k.removeItem(cle); else k.setItem(cle, JSON.stringify(v)); } catch (e) { /* sans stockage */ } };
+    var mc = document.querySelector('meta[name="nova-classe"]');
+    var clePlis = 'nova_seq_plis_' + (mc ? mc.content : '');
+
+    var cartes = Array.prototype.filter.call(document.querySelectorAll('.wimsbody div.wims_seq[id^="wims_seq_"]'), function (d) {
+      return d.querySelector(':scope > .wims_content_seq > .wims_seq_actions') && d.querySelector(':scope > h2.wims_title_seq');
+    });
+    if (!cartes.length) return;
+    var numero = function (d) { return +d.id.replace('wims_seq_', ''); };
+    var lienMonter = document.querySelector('.wimsbody .wims_seq_actions a[href*="job=moveup"]');
+    var modeleMonter = lienMonter ? lienMonter.getAttribute('href') : '';
+    var plis = lire(clePlis, localStorage) || [];
+    var menus = menusEtat(), occupe = false;
+
+    function plier(d, oui) {
+      var b = d.querySelector('.nova-seq-plier'), c = d.querySelector(':scope > .wims_content_seq');
+      d.classList.toggle('nova-seq-pliee', oui);
+      if (c) c.hidden = oui;
+      b.setAttribute('aria-expanded', oui ? 'false' : 'true');
+      b.setAttribute('aria-label', t(oui ? 'deplier' : 'plier'));
+      b.title = t(oui ? 'deplier' : 'plier');
+    }
+    function garderPlis() {
+      plis = cartes.filter(function (d) { return d.classList.contains('nova-seq-pliee'); }).map(numero);
+      ecrire(clePlis, plis.length ? plis : null, localStorage);
+    }
+    // Position à l'écran de la carte qui va bouger, retrouvée après le rechargement.
+    function garderVue(d, n) { ecrire('nova_seq_vue', { n: n, y: Math.round(d.getBoundingClientRect().top) }, sessionStorage); }
+
+    cartes.forEach(function (d, i) {
+      var n = numero(d), h2 = d.querySelector(':scope > h2.wims_title_seq'), contenu = d.querySelector(':scope > .wims_content_seq');
+      var actions = contenu.querySelector(':scope > .wims_seq_actions');
+      var lien = function (job) { return actions.querySelector('a[href*="job=' + job + '"]'); };
+      var modifier = lien('addseq'), monter = lien('moveup'), effacer = lien('delete'), bascule = lien('changeopt');
+      var statut = h2.querySelector('.wims_status');
+      var tete = el('div', 'nova-seq-tete');
+      h2.parentNode.insertBefore(tete, h2);
+
+      var poignee = el('span', 'nova-seq-poignee');
+      poignee.title = t('glisser');
+      poignee.appendChild(icone('poignee'));
+      if (cartes.length > 1) tete.appendChild(poignee);
+      var chevron = el('button', 'nova-seq-plier');
+      chevron.type = 'button';
+      chevron.appendChild(icone('replier'));
+      contenu.id = contenu.id || 'nova-seq-contenu-' + n;
+      chevron.setAttribute('aria-controls', contenu.id);
+      chevron.addEventListener('click', function () { plier(d, !d.classList.contains('nova-seq-pliee')); garderPlis(); });
+      tete.appendChild(chevron);
+      tete.appendChild(h2);
+      var titre = (h2.querySelector('.wims_title_item') || h2).textContent.replace(/\s+/g, ' ').trim();
+
+      if (statut) {
+        var etat = +((/wims_status_(\d)/.exec(statut.className) || [])[1] || 0);
+        var pastille = el(bascule || effacer ? 'button' : 'span', 'nova-etat nova-etat-' + (etat === 1 ? 'ok' : 'neutre'));
+        pastille.appendChild(icone(etat === 1 ? 'coche' : 'crayon'));
+        pastille.appendChild(el('span', 'nova-etat-nom', propre(statut.textContent)));
+        statut.parentNode.removeChild(statut);
+        tete.appendChild(pastille);
+        if (bascule || effacer) {
+          pastille.type = 'button';
+          pastille.appendChild(el('span', 'nova-etat-chevron'));
+          var menu = el('div', 'nova-etat-menu');
+          menu.id = 'nova-seq-menu-' + n;
+          menu.setAttribute('role', 'menu');
+          menu.setAttribute('aria-label', titre);
+          menu.hidden = true;
+          var action = function (a, ico, effet, danger) {
+            var libelle = a.textContent.trim();
+            a.className = 'nova-etat-action' + (danger ? ' nova-etat-danger' : '');
+            a.setAttribute('role', 'menuitem');
+            a.setAttribute('tabindex', '-1');
+            a.textContent = '';
+            a.appendChild(icone(ico));
+            var tt = el('span', 'nova-etat-texte', libelle);
+            tt.appendChild(el('small', '', effet));
+            a.appendChild(tt);
+            menu.appendChild(a);
+          };
+          if (bascule) {
+            var activer = /[?&]option=1/.test(bascule.getAttribute('href'));
+            action(bascule, activer ? 'lecture' : 'oeil-barre', t(activer ? 'activer' : 'desactiver'));
+          }
+          if (bascule && effacer) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
+          if (effacer) action(effacer, 'corbeille', t('effacer'), true);
+          menus.brancher(pastille, menu);
+        }
+      }
+      if (modifier) {
+        modifier.className = 'nova-etat-modifier nova-seq-modifier';
+        modifier.insertBefore(icone('crayon'), modifier.firstChild);
+        tete.appendChild(modifier);
+      }
+      // Monter : le lien de WIMS ; Descendre : remonter la suivante. Grisés en tête et en fin de liste.
+      if (cartes.length > 1 && modeleMonter) {
+        var groupe = el('div', 'nova-seq-deplacer');
+        var fleche = function (a, sens, cible) {
+          var f = a || el('span');
+          f.className = 'nova-seq-fleche';
+          f.textContent = '';
+          f.appendChild(icone(sens === 'monter' ? 'fleche-haut' : 'fleche-bas'));
+          f.setAttribute('aria-label', t(sens));
+          f.title = t(sens);
+          if (!a) f.setAttribute('aria-disabled', 'true');
+          else f.addEventListener('click', function () { garderVue(d, cible); });
+          groupe.appendChild(f);
+        };
+        fleche(monter, 'monter', n - 1);
+        var suivante = cartes[i + 1];
+        var bas = null;
+        if (suivante) {
+          bas = el('a');
+          bas.href = modeleMonter.replace(/([?&]moveup=)\d+/, '$1' + numero(suivante));
+        }
+        fleche(bas, 'descendre', n + 1);
+        tete.appendChild(groupe);
+      }
+      actions.parentNode.removeChild(actions);
+      d.classList.add('nova-seq');
+      plier(d, plis.indexOf(n) >= 0);
+
+      // Ressources : petites pastilles d'état, sans parenthèses.
+      Array.prototype.forEach.call(contenu.querySelectorAll('li > .wims_status'), function (s) {
+        var e = +((/wims_status_(\d)/.exec(s.className) || [])[1] || 0);
+        s.classList.add('nova-etat', 'nova-etat-petit', 'nova-etat-' + (e === 1 ? 'ok' : e === 0 ? 'neutre' : 'attention'));
+        s.textContent = propre(s.textContent);
+      });
+    });
+
+    // Barre au-dessus de la liste : nombre de séquences, Tout replier, Tout déplier.
+    var outils = el('div', 'nova-seq-outils');
+    outils.appendChild(el('p', 'nova-seq-compte', cartes.length === 1 ? t('compte-1') : t('compte', cartes.length)));
+    var etatEnvoi = el('p', 'nova-seq-envoi');
+    etatEnvoi.setAttribute('role', 'status');
+    outils.appendChild(etatEnvoi);
+    var boutons = el('div', 'nova-seq-tout');
+    [['tout-plier', 'tout-replier', true], ['tout-deplier', 'tout-deplier', false]].forEach(function (b) {
+      var x = el('button', 'nova-seq-tout-b');
+      x.type = 'button';
+      x.appendChild(icone(b[1]));
+      x.appendChild(document.createTextNode(t(b[0])));
+      x.addEventListener('click', function () { cartes.forEach(function (d) { plier(d, b[2]); }); garderPlis(); });
+      boutons.appendChild(x);
+    });
+    if (cartes.length > 1) outils.appendChild(boutons);
+    cartes[0].parentNode.insertBefore(outils, cartes[0]);
+
+    // Retour après un déplacement : même position à l'écran, carte marquée un instant.
+    var vue = lire('nova_seq_vue', sessionStorage);
+    ecrire('nova_seq_vue', null, sessionStorage);
+    if (vue && document.getElementById('wims_seq_' + vue.n)) {
+      var arrivee = document.getElementById('wims_seq_' + vue.n);
+      window.scrollBy(0, arrivee.getBoundingClientRect().top - vue.y);
+      arrivee.classList.add('nova-seq-arrivee');
+      setTimeout(function () { arrivee.classList.remove('nova-seq-arrivee'); }, 1600);
+    }
+
+    // Glisser-déposer par la poignée (souris, doigt, stylet).
+    function enregistrer(d, de, vers) {
+      occupe = true;
+      document.documentElement.classList.add('nova-occupe');
+      etatEnvoi.textContent = t('enregistrement');
+      var nouveau = function (k) {
+        if (k === de) return vers;
+        if (de < vers && k > de && k <= vers) return k - 1;
+        if (de > vers && k >= vers && k < de) return k + 1;
+        return k;
+      };
+      var debut = Date.now();
+      var relire = function (attente) {
+        setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, attente);
+      };
+      fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show&nova_seq_de=' + de + '&nova_seq_vers=' + vers), { credentials: 'same-origin' })
+        .then(function (r) { return r.text(); })
+        .then(function (texte) {
+          var ok = /id="nova-seq-fait"[^>]*data-resultat="ok"/.test(texte);
+          if (!ok) throw new Error('refus');
+          plis = plis.map(nouveau);
+          ecrire(clePlis, plis.length ? plis : null, localStorage);
+          garderVue(d, vers);
+          debut = Date.now();
+          relire(1500);
+        })
+        .catch(function () {
+          etatEnvoi.textContent = t('erreur');
+          relire(Math.max(2500, 1500 - (Date.now() - debut)));
+        });
+    }
+    function glisser(d, ev) {
+      var y0 = ev.clientY, defil0 = window.scrollY, dernier = ev.clientY, rang0 = cartes.indexOf(d), rang = rang0, boucle = 0;
+      var autres = cartes.filter(function (c) { return c !== d; });
+      var trait = el('div', 'nova-seq-cible');
+      trait.hidden = true;
+      document.body.appendChild(trait);
+      d.classList.add('nova-seq-souleve');
+      document.documentElement.classList.add('nova-seq-glisse');
+      menus.fermer(false);
+      function suivre() {
+        d.style.transform = 'translateY(' + Math.round(dernier - y0 + window.scrollY - defil0) + 'px)';
+        var k = 0;
+        autres.forEach(function (c) { var r = c.getBoundingClientRect(); if (r.top + r.height / 2 < dernier) k++; });
+        rang = k;
+        if (rang === rang0) { trait.hidden = true; return; }
+        var dessous = autres[k], dessus = autres[k - 1];
+        var ref = (dessous || dessus).getBoundingClientRect();
+        var y = dessous ? (dessus ? (dessus.getBoundingClientRect().bottom + ref.top) / 2 : ref.top - 8) : ref.bottom + 8;
+        trait.hidden = false;
+        trait.style.left = Math.round(ref.left + 8) + 'px';
+        trait.style.width = Math.round(ref.width - 16) + 'px';
+        trait.style.top = Math.round(y - 3) + 'px';
+      }
+      function defiler() {
+        var marge = 72, v = 0;
+        if (dernier < marge) v = -Math.ceil((marge - dernier) / 4);
+        else if (dernier > window.innerHeight - marge) v = Math.ceil((dernier - window.innerHeight + marge) / 4);
+        if (v) { window.scrollBy(0, v); suivre(); }
+        boucle = requestAnimationFrame(defiler);
+      }
+      function bouger(e) { dernier = e.clientY; suivre(); }
+      function finir(garder) {
+        cancelAnimationFrame(boucle);
+        document.removeEventListener('pointermove', bouger);
+        document.removeEventListener('pointerup', lacher);
+        document.removeEventListener('pointercancel', annuler);
+        document.removeEventListener('keydown', echap, true);
+        trait.remove();
+        d.classList.remove('nova-seq-souleve');
+        document.documentElement.classList.remove('nova-seq-glisse');
+        d.style.transform = '';
+        if (!garder || rang === rang0) return;
+        var de = numero(d), vers = rang + 1;
+        var apres = autres[rang];
+        if (apres) apres.parentNode.insertBefore(d, apres);
+        else { var der = autres[autres.length - 1]; der.parentNode.insertBefore(d, der.nextSibling); }
+        enregistrer(d, de, vers);
+      }
+      function lacher() { finir(true); }
+      function annuler() { finir(false); }
+      function echap(e) { if (e.key === 'Escape') { e.preventDefault(); finir(false); } }
+      document.addEventListener('pointermove', bouger);
+      document.addEventListener('pointerup', lacher);
+      document.addEventListener('pointercancel', annuler);
+      document.addEventListener('keydown', echap, true);
+      boucle = requestAnimationFrame(defiler);
+      suivre();
+    }
+    cartes.forEach(function (d) {
+      var p = d.querySelector('.nova-seq-poignee');
+      if (!p) return;
+      p.addEventListener('pointerdown', function (ev) {
+        if (occupe || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+        ev.preventDefault();
+        glisser(d, ev);
+      });
+    });
+  }
+
+  /* Option « numéro seul, sans mot générique » des séquences (2026-11-12, utilisateur) : choisie par l'enseignant
+   * (page Configurer, case de Nova ; enregistrée dans seq/.def par _widgets/sequences.phtml), montrée à tous : en-tête
+   * « 3 » en pastille au lieu de « Chapitre 3 ». Option de la classe, pas une transformation par défaut : hors réglages std. */
+  function sequencesNumero() {
+    var seul = !!document.getElementById('nova-seq-numero');
+    if (seul) {
+      Array.prototype.forEach.call(document.querySelectorAll('.wimsbody .wims_seq_id'), function (s) {
+        var m = /(\d+)\s*$/.exec(s.textContent);
+        if (m) s.textContent = m[1];
+        s.classList.add('nova-seq-num');
+      });
+    }
+    var tx = document.getElementById('nova-seq-textes'), champ = document.querySelector('.wimsbody input#seq_Title');
+    var form = champ && champ.form;
+    if (!tx || !form) return;
+    var cle = 'nova-seq-numero-case';
+    var lab = document.createElement('label');
+    lab.className = 'nova-seq-numero-choix';
+    var c = document.createElement('input');
+    c.type = 'checkbox';
+    c.id = cle;
+    c.checked = seul;
+    lab.appendChild(c);
+    lab.appendChild(document.createTextNode(' ' + tx.getAttribute('data-numero')));
+    var aide = document.createElement('p');
+    aide.className = 'nova-seq-numero-aide';
+    aide.textContent = tx.getAttribute('data-numero-aide');
+    champ.parentNode.appendChild(lab);
+    champ.parentNode.appendChild(aide);
+    var suivre = function () { champ.readOnly = c.checked; champ.classList.toggle('nova-seq-mot-inutile', c.checked); };
+    c.addEventListener('change', suivre);
+    suivre();
+    // Paramètre inconnu du module : passé dans l'adresse du formulaire (lu par le widget dans QUERY_STRING).
+    form.addEventListener('submit', function (ev) {
+      var b = ev.submitter;
+      if (b && b.name !== 'seq_set') return;
+      var v = 'nova_seq_numero=' + (c.checked ? 'oui' : 'non');
+      if ((form.getAttribute('method') || 'get').toLowerCase() === 'get') {
+        var h = form.querySelector('input[name="nova_seq_numero"]') || document.createElement('input');
+        h.type = 'hidden'; h.name = 'nova_seq_numero'; h.value = c.checked ? 'oui' : 'non';
+        form.appendChild(h);
+      } else {
+        var act = (form.getAttribute('action') || 'wims.cgi').replace(/[?&]nova_seq_numero=[a-z]*/, '');
+        form.setAttribute('action', act + (act.indexOf('?') >= 0 ? '&' : '?') + v);
+      }
     });
   }
 
@@ -2131,7 +2465,7 @@
     function contexte(a) {
       var href = a.getAttribute('href') || '';
       var c = { href: a.href, job: (/[?&]\+?job=([a-z_]+)/.exec(href) || [])[1] || '', type: null, n: null, titre: '', accueil: false };
-      ['sheet', 'exam', 'freework', 'doc', 'tool'].some(function (k) {
+      ['sheet', 'exam', 'freework', 'doc', 'tool', 'seq'].some(function (k) {
         var m = new RegExp('[?&]\\+?' + k + '=(\\d+)').exec(href);
         if (m) { c.type = k; c.n = m[1]; }
         return !!m;
@@ -2155,6 +2489,7 @@
       if ((c.type === 'doc' || c.type === 'tool') && c.job === 'deldoc') return 'lire';
       if (c.job === 'deactivate' && (c.type === 'sheet' || c.type === 'exam' || c.type === 'freework')) return 'envoyer';
       if (c.type === 'freework' && c.job === 'prep_erase') return 'nova';
+      if (c.type === 'seq' && c.job === 'delete') return 'seq';
       return null;
     }
     // Page de la ressource ou accueil, à ouvrir après l'action (cmd=new : valable après une requête en arrière-plan).
@@ -2328,6 +2663,14 @@
       bouton(f, t('b-effacer'), 'r', function (b) { b.disabled = true; location.href = c.href; });
     }
 
+    // Effacer une séquence (menu de sa pastille, sequencesEnseignant) : WIMS efface sans rien demander ; Nova demande.
+    function effacerSequence(c) {
+      var f = fenetre('corbeille', 'r', t('effacer-seq', c.n), c.titre);
+      f.corps.appendChild(el('p', '', t('seq-effacer')));
+      annuler(f).focus();
+      bouton(f, t('b-effacer'), 'r', function (b) { b.disabled = true; location.href = c.href; });
+    }
+
     document.addEventListener('click', function (ev) {
       if (ev.defaultPrevented || ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
       var a = ev.target.closest && ev.target.closest('.nova-etat-menu a[href], .nova-statut-actions a[href]');
@@ -2341,6 +2684,7 @@
       setTimeout(function () { occupe = false; }, 1500);
       if (genre === 'lire') demander(c);
       else if (genre === 'envoyer') desactiver(c);
+      else if (genre === 'seq') effacerSequence(c);
       else effacerDevoir(c);
     });
   }

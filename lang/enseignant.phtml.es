@@ -27,9 +27,9 @@
 !set nova_avs_zone=Abra una clase o un curso de la estructura para ver los avatares de sus alumnos.
 !set nova_avs_exporter=Exportar los avatares (.zip)
 !set nova_avs_retour_titre=Volver a una versión anterior de Nova
-!set nova_avs_retour_texte=El avatar y el color de cada alumno se guardan con sus notas; las versiones de Nova anteriores al 12 de noviembre de 2026 los buscan en otro lugar. Antes de reinstalar una de esas versiones, este botón los copia a la ubicación antigua, para todos los alumnos de la clase o de la estructura. Hágalo justo antes de cambiar de versión: la copia de un alumno se elimina en cuanto vuelve a conectarse con la versión actual.
+!set nova_avs_retour_texte=El avatar, el color y las insignias de cada alumno se guardan con sus notas, con nombres distintos de los de antes del 12 de noviembre de 2026; las versiones de Nova anteriores a esa fecha no los encontrarían. Antes de reinstalar una de esas versiones, este botón los copia con sus nombres antiguos, para todos los alumnos de la clase o de la estructura. Hágalo justo antes de cambiar de versión: la copia de un alumno se elimina en cuanto vuelve a conectarse con la versión actual.
 !set nova_avs_retour_bouton=Preparar la vuelta
-!set nova_avs_retour_fait=Avatares copiados a la ubicación antigua:
+!set nova_avs_retour_fait=Alumnos preparados (avatar, color, insignias):
 
 !! Hoja y examen, página de preparación (2026-11-12).
 !! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).

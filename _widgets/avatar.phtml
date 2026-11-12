@@ -16,6 +16,7 @@
 !if $nova_ae=1
   !set nova_af=!line 7 to 8 of $nova_av
   !writefile wimshome/log/classes/$nova_ak/score/$wims_user.nova_avatar $nova_af
+  !sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatar-zones.sh $wims_home $nova_ak $wims_user
 !endif
 !set nova_aj=!line 2 of $nova_av
 !set nova_am=!line 3 of $nova_av

@@ -62,7 +62,8 @@
 !endif
 !! Retour a une version anterieure de Nova (2026-11-12, utilisateur) : les fichiers de l'eleve sont dans score/ depuis
 !! le 2026-11-12 ; _procs/avatars-retour.sh les recopie a l'ancien emplacement (racine de la classe ou de la structure),
-!! pour TOUS les eleves de la classe ou de la structure. Affiche le nombre d'avatars recopies.
+!! pour TOUS les eleves de la classe ou de la structure, et le stock des badges (score/<login>.nova_badges -> .nova, toutes
+!! les zones). Affiche le nombre d'eleves prepares.
 !set nova_ak=$wims_superclass
 !default nova_ak=!word 1 of $wims_class
 !set nova_ak=!replace internal / by , in $nova_ak

@@ -20,5 +20,7 @@
   !if $nova_cv=classe
     !writefile wimshome/log/classes/$nova_ck/score/$wims_user.nova_couleur $empty
   !endif
+  !! Copie dans chaque zone de l'eleve (portail, groupement ; 2026-11-12).
+  !sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatar-zones.sh $wims_home $nova_ck $wims_user
 !endif
 !reset nova_q nova_cv nova_ck

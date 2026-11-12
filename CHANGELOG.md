@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- Portail, groupement : l'avatar et la couleur de l'élève sont recopiés dans chacun de ses cours ; la sauvegarde d'un seul cours les emporte.
 - Correction d'un exercice à réponses mêlées : colonnes centrées quand les réponses sont courtes (nombres, tuiles), à gauche sinon ; case laissée vide de la taille d'une tuile.
 - **Activité fermée** (et autres pages d'erreur de WIMS) : présentées en carte Nova, avec un cadenas quand l'accès est refusé ; en examen, le « Retour » qui ne faisait rien n'est plus affiché.
 - **Réponses en partie justes** (plusieurs réponses) : un seul tableau, dans l'ordre des réponses : [k], votre réponse (cadre vert si juste, rouge si fausse) et la bonne réponse (en vert, ✓ si la vôtre était juste) ; carte blanche, renvois [k] gardés dans l'énoncé.
@@ -66,6 +67,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 
 ### Installation
+- « Préparer le retour » (Avatars des élèves) prépare aussi les badges pour une version antérieure de Nova.
 - Fichier des badges d'un élève renommé `score/<login>.nova_badges` (avant : `.nova`) ; l'ancien est renommé à la visite suivante de l'élève et lu en attendant.
 - **Jeu d'icônes « Lucide »** : nouveau choix dans « Jeu d'icônes » (Config / Maintenance › Présentation d'une classe, Configuration du site) ; icônes fines au trait, à la couleur du texte, pour toutes les entrées de WIMS (menus, barre, fil d'Ariane, messages, boutons). « Nouvelle feuille » et « Nouvel examen » ont des icônes assorties (presse-papiers + et presse-papiers horloge). Le jeu est livré avec Nova : il s'ajoute à la liste à la première visite d'une page de configuration.
 - Les icônes propres à Nova sont elles aussi des icônes Lucide : barre du haut (maison, aide, compte, Terminer, Fermer, Retour), chronomètre, « Configuration et maintenance », « Administration du serveur », niveaux, classes, programmes et cours d'un portail, types de travail (feuille, examen, document…), liens de connexion, menu ☰ et « Plus ».

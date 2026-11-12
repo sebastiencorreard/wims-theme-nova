@@ -24,10 +24,11 @@ find "$r" -type f \( -path '*/score/*' -o -path '*/noscore/*' \) 2>/dev/null > "
     case "$login" in ''|*[!A-Za-z0-9_.@-]*) continue;; esac
     {
       echo '#conf'; printf '%s\n' "$conf"; echo
-      echo '#fichier'; cat "$r/score/$login.nova_avatar" 2>/dev/null || cat "$r/.nova_avatar_$login" 2>/dev/null
+      echo '#fichier'; cat "$r/score/$login.nova_avatar" 2>/dev/null || cat "$r/.nova_avatar_$login" 2>/dev/null || cat "$z/score/$login.nova_avatar" 2>/dev/null
       echo '#stock'
       # Stock des badges : score/<login>.nova_badges (avant le 2026-11-12 : .nova, encore lu pour un eleve pas revenu).
-      awk -v u="$login" '{ n = split($0, p, "/"); if ((p[n] == u ".nova_badges" || p[n] == u ".nova") && p[n-1] == "score") print }' "$liste" | sort -r | awk -F/ '{ d = $0; sub(/\/[^\/]*$/, "", d); if (d != vu) print; vu = d }' | while read -r f; do cat "$f"; done
+      awk -v u="$login" '{ n = split($0, p, "/"); if ((p[n] == u ".nova_badges" || p[n] == u ".nova") && p[n-1] == "score") { sub(/\/[^\/]*$/, ""); print } }' "$liste" | sort -u | while read -r d; do
+        f="$d/$login.nova_badges"; [ "$d/$login.nova" -nt "$f" ] && f="$d/$login.nova"; cat "$f" 2>/dev/null; done
       awk -v u="$login" '{ n = split($0, p, "/"); if (p[n] == u && (p[n-1] == "score" || p[n-1] == "noscore")) print }' "$liste" | while read -r f; do
         echo "#zone $(dirname "$(dirname "$f")")"; cat "$f"; done
     } | awk -v auj="$auj" -v catalogue="$proc/avatar-catalogue.txt" -v ouvrir= -v choix= -v niveaux=1 -f "$proc/avatar.awk" \

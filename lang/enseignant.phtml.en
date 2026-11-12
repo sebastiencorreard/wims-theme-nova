@@ -27,9 +27,9 @@
 !set nova_avs_zone=Open a class or a course of this structure to see its students' avatars.
 !set nova_avs_exporter=Export avatars (.zip)
 !set nova_avs_retour_titre=Going back to an earlier version of Nova
-!set nova_avs_retour_texte=Each student's avatar and colour are stored with their scores; Nova versions from before 12 November 2026 look for them elsewhere. Before reinstalling one of those versions, this button copies them back to the old location, for all students of the class or structure. Do it just before changing version: a student's copy is removed as soon as they log in again with the current version.
+!set nova_avs_retour_texte=Each student's avatar, colour and badges are stored with their scores, under names different from before 12 November 2026; Nova versions from before that date would not find them. Before reinstalling one of those versions, this button copies them under their old names, for all students of the class or structure. Do it just before changing version: a student's copy is removed as soon as they log in again with the current version.
 !set nova_avs_retour_bouton=Prepare the rollback
-!set nova_avs_retour_fait=Avatars copied back to the old location:
+!set nova_avs_retour_fait=Students prepared (avatar, colour, badges):
 
 !! Sheet and exam, preparation page (2026-11-12): status banner sentence (f = sheet, e = exam; 0 in preparation, 1 active, 2 expired, 3 hidden and expired, 4 hidden), advanced options.
 !! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).

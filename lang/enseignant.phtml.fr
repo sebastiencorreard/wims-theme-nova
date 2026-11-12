@@ -28,9 +28,9 @@
 !set nova_avs_zone=Ouvrez une classe ou un cours de la structure pour voir les avatars de ses élèves.
 !set nova_avs_exporter=Exporter les avatars (.zip)
 !set nova_avs_retour_titre=Revenir à une version antérieure de Nova
-!set nova_avs_retour_texte=L'avatar et la couleur de chaque élève sont rangés avec ses notes ; les versions de Nova d'avant le 12 novembre 2026 les cherchent ailleurs. Avant de réinstaller une de ces versions, ce bouton les recopie à l'ancien emplacement, pour tous les élèves de la classe ou de la structure. À faire juste avant de changer de version : la copie d'un élève est retirée dès qu'il se reconnecte avec la version actuelle.
+!set nova_avs_retour_texte=L'avatar, la couleur et les badges de chaque élève sont rangés avec ses notes, sous d'autres noms qu'avant le 12 novembre 2026 ; les versions de Nova d'avant cette date ne les trouveraient pas. Avant de réinstaller une de ces versions, ce bouton les recopie sous leurs anciens noms, pour tous les élèves de la classe ou de la structure. À faire juste avant de changer de version : la copie d'un élève est retirée dès qu'il se reconnecte avec la version actuelle.
 !set nova_avs_retour_bouton=Préparer le retour
-!set nova_avs_retour_fait=Avatars recopiés à l'ancien emplacement :
+!set nova_avs_retour_fait=Élèves préparés (avatar, couleur, badges) :
 
 !! Feuille et examen, page de préparation (2026-11-12) : phrase du bandeau d'état (f = feuille, e = examen ; 0 en préparation, 1 actif, 2 expiré, 3 caché et expiré, 4 caché), options avancées.
 !! Etats des ressources, accueil de l'enseignant (2026-11-12) : menu de la pastille d'etat (f feuille, e examen, d devoir libre).

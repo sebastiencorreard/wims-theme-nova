@@ -145,6 +145,7 @@ for my $r (values %students) {
     { my ($racine) = split m{/}, ($r->{owner} // $r->{class});
       my $fa = "$home/log/classes/$racine/score/$r->{login}.nova_avatar";
       $fa = "$home/log/classes/$racine/.nova_avatar_$r->{login}" unless -e $fa;   # ancien emplacement, eleve pas encore revenu
+      $fa = "$home/log/classes/$r->{class}/score/$r->{login}.nova_avatar" unless -e $fa;   # copie de la zone (zone restauree seule)
       my ($ch) = read_file($fa, 1) =~ /^choix ([A-Za-z0-9.,]+)$/m;
       # Elements de saison (avatar-catalogue.txt, « mois=... ») hors de leur periode : pas dessines (comme avatar.awk).
       if ($ch) { my $mois = (localtime)[4] + 1;

@@ -72,7 +72,8 @@
 !! _procs/badges.awk (Fidelite : semaines avec assez d'exercices, vacances sautees ; Perseverance : exercices reussis
 !! apres des notes faibles) ; reglages --nova-badges, --nova-badges-actifs, --nova-fidelite-*, --nova-perseverance-*,
 !! --nova-echauffement-* (2026-11-06 : DM WIMS prepares), --nova-vacances lus dans les feuilles du site, de la structure et de la classe (la derniere l'emporte) ; niveaux
-!! gardes dans score/<eleve>.nova_badges (avant le 2026-11-12 : .nova, renomme a la visite suivante ; jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
+!! gardes dans score/<eleve>.nova_badges (avant le 2026-11-12 : .nova, renomme a la visite suivante ; un .nova plus recent, ecrit par une version anterieure
+    !! remise entre-temps, l'emporte ; jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
 !! 2026-10-09), fenetre a onglets (nova.js fenetreBadges). Pas dans l'accueil d'un portail ou d'un groupement (le
 !! travail est dans ses zones), ni en examen.
 !reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr nova_lt nova_lu nova_xn
@@ -80,6 +81,13 @@
   !ifval 0$class_type<2
     !set nova_cl=$wims_home/log/classes
     !set nova_auj=!char 1 to 8 of $wims_now
+    !! Portail, groupement : avatar et couleur recopies dans chaque zone de l'eleve, la copie la plus recente l'emporte
+    !! (2026-11-12, utilisateur ; _procs/avatar-zones.sh).
+    !if $wims_superclass!=$empty
+      !set nova_zk=!replace internal / by , in $wims_superclass
+      !sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatar-zones.sh $wims_home $(nova_zk[1]) $wims_user
+      !reset nova_zk
+    !endif
     !! Au top (2026-11-07) : note retenue (sur 10, calculee par WIMS) de chaque examen commence, « n:note ».
     !set nova_xc=!sh f="$nova_cl/$wims_class/score/$wims_user.exam"; [ -f "$$f" ] && awk '$$2=="00" {print $$1}' "$$f" | sort -un | tr '\n' ' '
     !set nova_xn=
@@ -94,7 +102,7 @@
         !endif
       !next
     !endif
-    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; o=$nova_cl/$wims_class/score/$wims_user.nova; [ -f "$$o" ] && { [ -e "$$o"_badges ] || mv -f "$$o" "$$o"_badges; rm -f "$$o"; }; cat "$$o"_badges 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -v "notes=$nova_xn" -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
+    !set nova_bd=!sh { echo '#conf'; cat $wims_home/log/nova.conf $nova_cl/$wims_superclass/css $nova_cl/$wims_class/css 2>/dev/null; echo; echo '#stock'; o=$nova_cl/$wims_class/score/$wims_user.nova; [ -f "$$o" ] && { if [ -e "$$o"_badges ] && ! [ "$$o" -nt "$$o"_badges ]; then rm -f "$$o"; else mv -f "$$o" "$$o"_badges; fi; }; cat "$$o"_badges 2>/dev/null; echo '#score'; cat $nova_cl/$wims_class/score/$wims_user $nova_cl/$wims_class/noscore/$wims_user 2>/dev/null; } | awk -v auj=$nova_auj -v classe=$nova_cl/$wims_class -v "notes=$nova_xn" -f $wims_home/public_html/themes/$wims_theme/_procs/badges.awk
     !set nova_lf=!line 1 of $nova_bd
     !set nova_lp=!line 2 of $nova_bd
     !set nova_lh=!line 3 of $nova_bd

@@ -101,3 +101,4 @@
 !set nova_avs_fermer=Cerrar
 !set nova_avs_inactif=El avatar de los alumnos no está activado aquí (Ajustes de Nova, pestaña «Insignias y recompensas»).
 !set nova_avs_vide=No hay alumnos inscritos aquí.
+!set nova_avs_zone=Abra una clase o un curso de la estructura para ver los avatares de sus alumnos.

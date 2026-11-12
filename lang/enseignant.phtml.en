@@ -101,3 +101,4 @@
 !set nova_avs_fermer=Close
 !set nova_avs_inactif=Student avatars are not enabled here (Nova settings, "Badges and rewards" tab).
 !set nova_avs_vide=No students enrolled here.
+!set nova_avs_zone=Open a class or a course of this structure to see its students' avatars.

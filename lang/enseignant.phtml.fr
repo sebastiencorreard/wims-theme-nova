@@ -101,3 +101,4 @@
 !set nova_avs_fermer=Fermer
 !set nova_avs_inactif=L'avatar des élèves n'est pas activé ici (Réglages de Nova, onglet « Badges et récompenses »).
 !set nova_avs_vide=Aucun élève inscrit ici.
+!set nova_avs_zone=Ouvrez une classe ou un cours de la structure pour voir les avatars de ses élèves.

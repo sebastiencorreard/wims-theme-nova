@@ -101,3 +101,4 @@
 !set nova_avs_fermer=Chiudi
 !set nova_avs_inactif=L'avatar degli studenti non è attivato qui (Impostazioni di Nova, scheda «Distintivi e ricompense»).
 !set nova_avs_vide=Nessuno studente iscritto qui.
+!set nova_avs_zone=Apri una classe o un corso della struttura per vedere gli avatar dei suoi studenti.

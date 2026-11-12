@@ -978,6 +978,101 @@
     [/adm(%2F|\/)class(%2F|\/)livret/, 'livret'], [/job=access/, 'cadenas'], [/job=grestrict/, 'jauge'],
     [/job=neighbor/, 'users'], [/job=connect(?![a-z])/, 'serveur'], [/adm(%2F|\/)light/, 'oeil']
   ];
+  // Ligne d'une page de liens de configuration (icône en pastille, libellé, description ; maquette B) : configurationClasse,
+  // securiteClasse.
+  // Description : nœuds qui suivent le libellé (texte, autres liens), parenthèses de WIMS retirées.
+  var configDescription = function (noeuds) {
+    var span = document.createElement('span');
+    span.className = 'nova-cfg-desc';
+    noeuds.forEach(function (n) { span.appendChild(n); });
+    span.normalize();
+    while (span.firstChild && span.firstChild.nodeType === 3 && !span.firstChild.nodeValue.trim()) span.removeChild(span.firstChild);
+    var premier = span.firstChild, dernier = span.lastChild;
+    if (premier && premier.nodeType === 3) premier.nodeValue = premier.nodeValue.replace(/^\s*\(\s*/, '');
+    if (dernier && dernier.nodeType === 3) dernier.nodeValue = dernier.nodeValue.replace(/\s*\)?[\s.,]*$/, '');
+    return span.textContent.trim() ? span : null;
+  };
+  var configIcone = function (h) {
+    for (var i = 0; i < CONFIG_ICONES.length; i++) if (CONFIG_ICONES[i][0].test(h)) return CONFIG_ICONES[i][1];
+    return '';
+  };
+  var configLigne = function (li) {
+    var ico = document.createElement('span');
+    ico.className = 'nova-cfg-ico';
+    ico.setAttribute('aria-hidden', 'true');
+    var noeuds = Array.prototype.slice.call(li.childNodes);
+    var boutons = noeuds.filter(function (n) { return n.nodeType === 1 && n.matches('a.wims_button, a.wims_button_help'); });
+    li.classList.add('nova-cfg-ligne');
+    if (boutons.length) {
+      // « Actualiser les index » : libellé (texte avant le premier bouton), puis les boutons.
+      li.classList.add('nova-cfg-index');
+      ico.setAttribute('data-icone', 'maj');
+      var tete = document.createElement('span');
+      tete.className = 'nova-cfg-tete nova-cfg-libelle';
+      tete.textContent = noeuds.filter(function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ').replace(/\s+/g, ' ').trim();
+      var div = document.createElement('div');
+      div.className = 'nova-cfg-boutons';
+      boutons.forEach(function (b) { div.appendChild(b); });
+      li.textContent = '';
+      li.appendChild(ico); li.appendChild(tete); li.appendChild(div);
+      return li;
+    }
+    var a = noeuds.filter(function (n) { return n.nodeType === 1 && n.tagName === 'A'; })[0];
+    if (!a) return li;
+    ico.setAttribute('data-icone', configIcone(a.getAttribute('href') || ''));
+    a.classList.add('nova-cfg-lien');
+    var tete2 = document.createElement('span');
+    tete2.className = 'nova-cfg-tete';
+    var apres = noeuds.slice(noeuds.indexOf(a) + 1);
+    var tags = apres.filter(function (n) { return n.nodeType === 1 && n.classList.contains('nova-tag-nouveau'); });
+    apres = apres.filter(function (n) { return tags.indexOf(n) < 0; });
+    noeuds.slice(0, noeuds.indexOf(a)).forEach(function (n) { if (n.nodeType === 3) li.removeChild(n); });
+    tete2.appendChild(a);
+    tags.forEach(function (t) { tete2.appendChild(t); });
+    var d = configDescription(apres);
+    li.textContent = '';
+    li.appendChild(ico); li.appendChild(tete2);
+    if (d) li.appendChild(d);
+    return li;
+  };
+  // Page « Activités de gestion de sécurité » (adm/class/config, job=security ; 2026-11-12, utilisateur : « jolifie ») : même
+  // carte que la page d'entrée (maquette B). « Changer le mot de passe » : libellé et deux boutons (classe, enseignant) ;
+  // « Autres définitions… dans la configuration de la classe » : toute la phrase dans le lien. Réglage « listes ».
+  function securiteClasse() {
+    if (standard('listes')) return;
+    var corps = document.querySelector('.wimsbody');
+    var mdp = corps && corps.querySelector(':scope > ul > li > a[href*="passwd"][href*="job=class"]');
+    if (!mdp || corps.querySelector('.nova-cfg')) return;
+    var ul = mdp.parentNode.parentNode;
+    var bloc = document.createElement('div');
+    bloc.className = 'nova-cfg nova-securite';
+    var carte = document.createElement('ul');
+    carte.className = 'wims_nopuce nova-cfg-carte';
+    bloc.appendChild(carte);
+    Array.prototype.slice.call(ul.children).forEach(function (li) {
+      if (li.tagName !== 'LI') return;
+      var liens = li.querySelectorAll(':scope > a');
+      if (li.querySelector(':scope > a[href*="passwd"]')) {
+        Array.prototype.forEach.call(liens, function (a) { a.classList.add('wims_button', 'wims_secondary_button'); });
+        carte.appendChild(configLigne(li));
+        li.querySelector('.nova-cfg-ico').setAttribute('data-icone', 'cle');
+        var t = li.querySelector('.nova-cfg-tete');
+        if (t) t.textContent = t.textContent.replace(/[\s:,\u00a0]+$/, '');
+        return;
+      }
+      var a = liens[0];
+      if (a && /job=list(?![a-z])/.test(a.href)) {
+        // Texte avant le lien rentré dedans : « Autres définitions de sécurité dans la configuration de la classe ».
+        var avant = '';
+        while (li.firstChild && li.firstChild !== a) { avant += li.firstChild.textContent; li.removeChild(li.firstChild); }
+        a.textContent = (avant.replace(/\s+/g, ' ').trim() + ' ' + a.textContent.replace(/\s+/g, ' ').trim()).trim();
+      }
+      if (a && a.lastChild && a.lastChild.nodeType === 3) a.lastChild.nodeValue = a.lastChild.nodeValue.replace(/[\s.]+$/, '');
+      carte.appendChild(configLigne(li));
+      if (a && /job=log/.test(a.href)) li.querySelector('.nova-cfg-ico').setAttribute('data-icone', 'historique');
+    });
+    ul.parentNode.replaceChild(bloc, ul);
+  }
   function configurationClasse() {
     if (standard('listes')) return;
     var corps = document.querySelector('.wimsbody');
@@ -987,61 +1082,6 @@
     if (!arch || !config.test(arch.href) || corps.querySelector('.nova-cfg')) return;
     var enfants = function (el, tag) { return Array.prototype.filter.call(el.children, function (c) { return c.tagName === tag; }); };
     var nettoyer = function (s) { return s.replace(/\s+/g, ' ').trim().replace(/^\(\s*/, '').replace(/\s*\)?[\s.,]*$/, '').replace(/\s*\)$/, ''); };
-    // Description : nœuds qui suivent le libellé (texte, autres liens), parenthèses de WIMS retirées.
-    var description = function (noeuds) {
-      var span = document.createElement('span');
-      span.className = 'nova-cfg-desc';
-      noeuds.forEach(function (n) { span.appendChild(n); });
-      span.normalize();
-      while (span.firstChild && span.firstChild.nodeType === 3 && !span.firstChild.nodeValue.trim()) span.removeChild(span.firstChild);
-      var premier = span.firstChild, dernier = span.lastChild;
-      if (premier && premier.nodeType === 3) premier.nodeValue = premier.nodeValue.replace(/^\s*\(\s*/, '');
-      if (dernier && dernier.nodeType === 3) dernier.nodeValue = dernier.nodeValue.replace(/\s*\)?[\s.,]*$/, '');
-      return span.textContent.trim() ? span : null;
-    };
-    var icone = function (h) {
-      for (var i = 0; i < CONFIG_ICONES.length; i++) if (CONFIG_ICONES[i][0].test(h)) return CONFIG_ICONES[i][1];
-      return '';
-    };
-    var ligne = function (li) {
-      var ico = document.createElement('span');
-      ico.className = 'nova-cfg-ico';
-      ico.setAttribute('aria-hidden', 'true');
-      var noeuds = Array.prototype.slice.call(li.childNodes);
-      var boutons = noeuds.filter(function (n) { return n.nodeType === 1 && n.matches('a.wims_button, a.wims_button_help'); });
-      li.classList.add('nova-cfg-ligne');
-      if (boutons.length) {
-        // « Actualiser les index » : libellé (texte avant le premier bouton), puis les boutons.
-        li.classList.add('nova-cfg-index');
-        ico.setAttribute('data-icone', 'maj');
-        var tete = document.createElement('span');
-        tete.className = 'nova-cfg-tete nova-cfg-libelle';
-        tete.textContent = noeuds.filter(function (n) { return n.nodeType === 3; }).map(function (n) { return n.nodeValue; }).join(' ').replace(/\s+/g, ' ').trim();
-        var div = document.createElement('div');
-        div.className = 'nova-cfg-boutons';
-        boutons.forEach(function (b) { div.appendChild(b); });
-        li.textContent = '';
-        li.appendChild(ico); li.appendChild(tete); li.appendChild(div);
-        return li;
-      }
-      var a = noeuds.filter(function (n) { return n.nodeType === 1 && n.tagName === 'A'; })[0];
-      if (!a) return li;
-      ico.setAttribute('data-icone', icone(a.getAttribute('href') || ''));
-      a.classList.add('nova-cfg-lien');
-      var tete2 = document.createElement('span');
-      tete2.className = 'nova-cfg-tete';
-      var apres = noeuds.slice(noeuds.indexOf(a) + 1);
-      var tags = apres.filter(function (n) { return n.nodeType === 1 && n.classList.contains('nova-tag-nouveau'); });
-      apres = apres.filter(function (n) { return tags.indexOf(n) < 0; });
-      noeuds.slice(0, noeuds.indexOf(a)).forEach(function (n) { if (n.nodeType === 3) li.removeChild(n); });
-      tete2.appendChild(a);
-      tags.forEach(function (t) { tete2.appendChild(t); });
-      var d = description(apres);
-      li.textContent = '';
-      li.appendChild(ico); li.appendChild(tete2);
-      if (d) li.appendChild(d);
-      return li;
-    };
     var listes = Array.prototype.filter.call(corps.querySelectorAll('ul.wims_nopuce'), function (ul) {
       return !ul.closest('ul.wims_nopuce ul') && Array.prototype.some.call(ul.querySelectorAll('a[href]'), function (x) { return config.test(x.href); });
     });
@@ -1054,7 +1094,7 @@
         carte.className = 'wims_nopuce nova-cfg-carte';
         bloc.appendChild(carte);
       };
-      var ajouter = function (li) { if (!carte) nouvelleCarte(); carte.appendChild(ligne(li)); };
+      var ajouter = function (li) { if (!carte) nouvelleCarte(); carte.appendChild(configLigne(li)); };
       var prec = ul.previousElementSibling;
       if (prec && prec.tagName === 'H2') bloc.appendChild(prec);
       enfants(ul, 'LI').forEach(function (li) {
@@ -1087,7 +1127,7 @@
         while (p.firstChild) lp.appendChild(p.firstChild);
         p.parentNode.removeChild(p);
         nouvelleCarte();
-        carte.appendChild(ligne(lp));
+        carte.appendChild(configLigne(lp));
       }
       ul.parentNode.replaceChild(bloc, ul);
     });

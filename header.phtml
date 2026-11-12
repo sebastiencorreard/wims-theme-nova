@@ -118,10 +118,12 @@
     !default nova_cas=!defof cas_auth in wimshome/log/wims.conf
     !if $nova_cas!=$empty
       !! Adresse de retour encodee par nova.js : adm/codeurl de WIMS depend de liburi-perl (absent ici, adresse vide).
-      <span id="nova-cas" hidden data-cas="$nova_cas" data-service="$wims_ref_name?module=adm/class/classes&amp;type=authparticipant&amp;class=$class"></span>
+      !! Numero filtre : $class vient de l'adresse (2026-11-12).
+      !set nova_cc=!text select 0123456789/ in $class
+      <span id="nova-cas" hidden data-cas="$nova_cas" data-service="$wims_ref_name?module=adm/class/classes&amp;type=authparticipant&amp;class=$nova_cc"></span>
     !endif
   !endif
-  !reset nova_ss nova_idp nova_cas
+  !reset nova_ss nova_idp nova_cas nova_cc
 !endif
 
 !if $[$wims_home_items_cnt + $wims_hm_cnt + $wims_link_close_cnt]!=0 or ($module_path notitemof home,adm,classes and _exam notin $session and $module_init_parm == $empty)

@@ -10,10 +10,10 @@
   !reset nova_fs
   !if $module=adm/class/exam
     !set nova_ft=exam
-    !set nova_fn=$exam
+    !set nova_fn=!text select 0123456789 in $exam
   !else
     !set nova_ft=sheet
-    !set nova_fn=$sheet
+    !set nova_fn=!text select 0123456789 in $sheet
   !endif
   !if $nova_fs=$empty
     !set nova_fs=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn" verifier
@@ -35,6 +35,8 @@
     !set nova_dv=!replace internal : by , in $nova_dv
     !set nova_ft=!item 1 of $nova_dv
     !set nova_fn=!item 2 of $nova_dv
+    !! Chiffres seulement : la valeur vient de l'adresse et part dans une ligne !sh (2026-11-12).
+    !set nova_fn=!text select 0123456789 in $nova_fn
     !if $nova_ft isitemof exam,sheet
       !set nova_fr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactiver.sh "$wims_home" "$wims_class" "$nova_ft" "$nova_fn"
       !if $nova_fr=ok

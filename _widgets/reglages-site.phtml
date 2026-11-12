@@ -45,6 +45,8 @@
     !set nova_mq=$nova_mq liens
   !endif
   !default nova_mq=aucune
+  !bound nova_fil within oui,non default oui
+  !bound nova_deco within oui,non default oui
   !writefile wimshome/log/nova.conf --nova-animations: $nova_animations;
   !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
@@ -54,8 +56,6 @@
   !appendfile wimshome/log/nova.conf --nova-decorations: $nova_deco;
   !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
   !bound nova_activite within oui,non default oui
-  !bound nova_fil within oui,non default oui
-  !bound nova_deco within oui,non default oui
   !bound nova_act_s between 1 and 7 default 2
   !bound nova_act_o between 1 and 7 default 3
   !bound nova_act_h between 1 and 80 default 6

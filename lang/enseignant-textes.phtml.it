@@ -16,7 +16,7 @@
   data-t-sans="Nessun avatar ancora salvato." data-t-attente="Monete disponibili: %n" data-t-precedent="Precedente" data-t-suivant="Successivo"
   data-t-fermer="Chiudi" data-t-enregistrer="Salva l'avatar (.svg)" data-classe="$nova_avk" data-avatar="$nova_avb"
   data-t-afficher="Mostra:" data-t-avatar="Avatar" data-t-aucun="nessun distintivo" data-t-eleves="Studenti: %n" data-t-jeton="%n moneta" data-t-jetons="%n monete"
-  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+  data-t-detail="Avatar e badge di %n" data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
 !exit
 
 :capacite

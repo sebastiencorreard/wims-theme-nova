@@ -1,0 +1,31 @@
+!! Nova : avatars dans la liste des participants (adm/class/usermanage, job=userlist ; 2026-11-12, utilisateur). Lu par
+!! tail.phtml. Memes donnees et meme fenetre que la page des avatars (avatars-classe.phtml, _procs/avatars-classe.sh) :
+!! grille cachee ; nova.js avatarsParticipants pose a gauche du nom un portrait (silhouette sans avatar) qui ouvre la fenetre.
+!! Seulement si l'avatar est active, dans une classe ou un cours, pour un enseignant.
+!set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+!set nova_avt=!defof class_typename in wimshome/log/classes/$wims_class/.def
+!default nova_avt=class
+!if $nova_avb=oui and $nova_avt isitemof class,course
+  !set nova_sid=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_ in $wims_session
+  !set nova_ak=$wims_superclass
+  !default nova_ak=!word 1 of $wims_class
+  !set nova_ak=!replace internal / by , in $nova_ak
+  !set nova_ak=$(nova_ak[1])
+  !set nova_auj=!char 1 to 8 of $wims_now
+  !set nova_avk=!text select 0123456789 in $wims_class
+  !reset nova_avn
+  !if $nova_sid=$wims_session
+    !sh sh $wims_home/public_html/themes/$wims_theme/_procs/avatars-classe.sh $wims_home $wims_theme $nova_ak $wims_class $nova_auj $nova_sid
+    !set nova_avn=!sh grep -c . $wims_home/sessions/$nova_sid/nova-avatars.phtml 2>/dev/null
+  !endif
+  !if $nova_avn>0
+<div class="nova-avatars-participants">
+    !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang avatars_classe
+<ul class="nova-avatars-grille" hidden>
+    !read wimshome/sessions/$nova_sid/nova-avatars.phtml
+</ul>
+</section>
+</div>
+  !endif
+!endif
+!reset nova_avb nova_avt nova_sid nova_ak nova_auj nova_avk nova_avn

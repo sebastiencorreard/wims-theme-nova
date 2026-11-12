@@ -8,6 +8,12 @@
  <br class="clearall spacer">
 </div><!--end of wimspagebox-->
 !read themes/_widgets/topback.phtml
+!! Avatars dans la liste des participants (2026-11-12, utilisateur) : enseignant, hors outil et examen.
+!if $module=adm/class/usermanage and $job=userlist and $wims_class!=$empty and _tool notin $wims_session and _exam notin $wims_session
+  !if $wims_user=supervisor or yes isin $supervisable $user_supervisable
+    !read themes/$wims_theme/_widgets/avatars-participants.phtml
+  !endif
+!endif
 !! Nova : types des pages de vérification des examens (« Détails des examens », adm/class/userscore,
 !! job=examcheck). Chaque page est un enregistrement du journal de l'élève (examlog) : new, renew,
 !! next = une question (q), reply = une réponse (r). Lus ICI, où le module a accès aux journaux (la

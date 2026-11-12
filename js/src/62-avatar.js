@@ -641,6 +641,54 @@
     }
     appliquer();
   }
+  // Liste des participants (adm/class/usermanage, job=userlist ; 2026-11-12, utilisateur) : portrait de l'eleve a gauche de
+  // son nom (silhouette sans avatar), qui ouvre la fenetre de la page des avatars (avatarsClasse, sur la grille cachee
+  // ecrite par _widgets/avatars-participants.phtml). A appeler APRES avatarsClasse.
+  function avatarsParticipants() {
+    var page = document.getElementById('nova-avatars');
+    var table = document.getElementById('TABLE_userlist');
+    if (!page || !table || !page.closest('.nova-avatars-participants')) return;
+    var boutons = {};
+    [].forEach.call(page.querySelectorAll('.nova-avatars-eleve'), function (b) { boutons[b.getAttribute('data-login')] = b; });
+    var dialogue = page.querySelector('dialog'), dernier = null, poses = [];
+    var modele = page.getAttribute('data-t-detail') || '%n';
+    [].forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
+      var cellule = tr.cells[0], a = cellule && cellule.querySelector('a[href*="getuser="]');
+      var m = a && /[?&+]getuser=([^&#]+)/.exec(a.getAttribute('href') || '');
+      var b = m && boutons[decodeURIComponent(m[1])];
+      if (!b || cellule.querySelector('.nova-participant-avatar')) return;
+      var v = document.createElement('button');
+      v.type = 'button';
+      v.className = 'nova-participant-avatar' + (b.getAttribute('data-choix') ? '' : ' nova-avatars-sans');
+      v.setAttribute('aria-label', modele.replace('%n', a.textContent.trim()));
+      v.title = v.getAttribute('aria-label');
+      var portrait = document.createElement('span');
+      portrait.className = 'nova-avatars-portrait';
+      v.appendChild(portrait);
+      cellule.insertBefore(v, cellule.firstChild);
+      cellule.classList.add('nova-participant-cellule');
+      poses.push([portrait, b]);
+      v.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!dialogue) return;
+        dernier = v;
+        b.click();
+      });
+    });
+    if (dialogue) dialogue.addEventListener('close', function () { if (dernier) setTimeout(function () { dernier.focus(); }, 0); });
+    page.addEventListener('nova-avatars-prets', function () {
+      poses.forEach(function (x) {
+        var img = x[1].querySelector('.nova-avatars-portrait img');
+        if (!img) return;
+        var i = document.createElement('img');
+        i.alt = '';
+        i.src = img.src;
+        x[0].textContent = '';
+        x[0].appendChild(i);
+      });
+    });
+  }
   function avatarsClasse() {
     var page = document.getElementById('nova-avatars');
     if (!page) return;
@@ -838,6 +886,8 @@
     if (avecAvatar) chargerAvatar(page.getAttribute('data-script')).then(function (f) {
       dessin = f;
       eleves.forEach(function (b) { poser(b.querySelector('.nova-avatars-portrait'), b.getAttribute('data-choix')); });
+      // Dessins prets : la liste des participants les recopie (avatarsParticipants).
+      page.dispatchEvent(new CustomEvent('nova-avatars-prets'));
       if (exporter && avec && window.TextEncoder && window.Blob) exporter.hidden = false;
       if (dialogue.open) montrer(courant);
     }).catch(function () {});

@@ -16,7 +16,7 @@
   data-t-sans="Pas encore d'avatar enregistré." data-t-attente="Pièces disponibles : %n" data-t-precedent="Précédent" data-t-suivant="Suivant"
   data-t-fermer="Fermer" data-t-enregistrer="Enregistrer l'avatar (.svg)" data-classe="$nova_avk" data-avatar="$nova_avb"
   data-t-afficher="Afficher :" data-t-avatar="Avatar" data-t-aucun="aucun badge" data-t-eleves="Élèves : %n" data-t-jeton="%n pièce" data-t-jetons="%n pièces"
-  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+  data-t-detail="Avatar et badges de %n" data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
 !exit
 
 :capacite

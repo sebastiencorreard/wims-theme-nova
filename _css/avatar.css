@@ -220,3 +220,14 @@
 .nova-avatars-retour { margin-top: var(--nova-e6, 3rem); padding-top: var(--nova-e4); border-top: 1px solid var(--nova-bord); }
 .nova-avatars-retour h2 { margin: 0 0 var(--nova-e2); font-size: 1.1rem; }
 .nova-avatars-retour p { margin: 0 0 var(--nova-e3); max-width: 46rem; color: var(--nova-texte-2); }
+/* Liste des participants (2026-11-12, utilisateur ; nova.js avatarsParticipants) : portrait rond a gauche du nom, qui ouvre la
+   fenetre de la page des avatars ; grille de donnees cachee. */
+.nova-avatars-participants > #nova-avatars > :not(dialog) { display: none; }
+.wimsbody td.nova-participant-cellule { white-space: nowrap; min-width: 17rem; }
+@media (max-width: 640px) { .wimsbody td.nova-participant-cellule { min-width: 13rem; } }
+.wimsbody td.nova-participant-cellule > a { display: inline-block; max-width: calc(100% - 66px); vertical-align: middle; white-space: normal; }
+.nova-participant-avatar { display: inline-flex; flex: none; width: 36px; height: 36px; min-height: 0; margin: 0 10px 0 0; padding: 0;
+  vertical-align: middle; background: none; border: 0; border-radius: 50%; box-shadow: none; cursor: pointer; }
+.nova-participant-avatar:hover { background: none; box-shadow: 0 0 0 2px var(--nova-accent); }
+.nova-participant-avatar:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
+.nova-participant-avatar .nova-avatars-portrait { width: 100%; height: 100%; max-width: none; }

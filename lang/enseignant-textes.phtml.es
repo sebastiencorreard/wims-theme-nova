@@ -16,7 +16,7 @@
   data-t-sans="Todavía no hay avatar guardado." data-t-attente="Monedas disponibles: %n" data-t-precedent="Anterior" data-t-suivant="Siguiente"
   data-t-fermer="Cerrar" data-t-enregistrer="Guardar el avatar (.svg)" data-classe="$nova_avk" data-avatar="$nova_avb"
   data-t-afficher="Mostrar:" data-t-avatar="Avatar" data-t-aucun="ninguna insignia" data-t-eleves="Alumnos: %n" data-t-jeton="%n moneda" data-t-jetons="%n monedas"
-  data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
+  data-t-detail="Avatar e insignias de %n" data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
 !exit
 
 :capacite

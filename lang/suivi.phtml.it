@@ -92,5 +92,6 @@
 !set nova_svj_err_refuse=Accesso negato.
 !set nova_svj_err_reserve=Accesso riservato ai docenti e agli amministratori delle loro classi.
 !set nova_svj_err_indispo=Rilevamento non disponibile. Aggiorna per riprovare.
+!set nova_svj_exo=Esercizio %1
 !set nova_svj_accueil=Home
 !set nova_svj_inconnue=Attività sconosciuta

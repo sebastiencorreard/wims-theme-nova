@@ -33,7 +33,8 @@
 !! derniere valeur lue (sessionStorage).
 !set nova_m=!char 1 to 4 of $module
 !if $module=home or $nova_m=adm/
-  !set nova_site=!sh if test -r $wims_home/log/nova.conf; then cat $wims_home/log/nova.conf; fi
+  !! Seules les declarations --nova-..., sans < (audit du 2026-11-12, comme user.phtml).
+  !set nova_site=!sh LC_ALL=C grep -ao -- '--nova-[a-z0-9-]*[[:space:]]*:[^;}]*' $wims_home/log/nova.conf 2>/dev/null | tr -d '<' | sed 's/$$/;/'
   !! Toujours transmis, meme vide (reglages retires : nova.js oublie l'ancienne valeur gardee).
 <script type="text/plain" id="nova-css-site">$nova_site</script>
 !endif

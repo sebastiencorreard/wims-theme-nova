@@ -90,5 +90,6 @@
 !set nova_svj_err_refuse=Access denied.
 !set nova_svj_err_reserve=Access restricted to teachers and administrators of their classes.
 !set nova_svj_err_indispo=Snapshot unavailable. Refresh to try again.
+!set nova_svj_exo=Exercise %1
 !set nova_svj_accueil=Home
 !set nova_svj_inconnue=Unknown activity

@@ -42,7 +42,9 @@
 !! transmise a nova.js (reglagesStructure), qui en applique les reglages --nova-... dans toutes ses zones.
 !if $wims_superclass!=$empty
   !! Lu par !sh comme scripts/adm/css.phtml : !record couperait au premier « :root » (separateur WIMS).
-  !set nova_css_structure=!sh if test -r $wims_home/log/classes/$wims_superclass/css; then cat $wims_home/log/classes/$wims_superclass/css; fi
+  !! Seules les declarations --nova-... (ce que lit nova.js), sans < : rien ne peut refermer le script, et la sortie
+  !! de !sh (45 Ko au plus) ne coupe plus une longue feuille (audit du 2026-11-12).
+  !set nova_css_structure=!sh LC_ALL=C grep -ao -- '--nova-[a-z0-9-]*[[:space:]]*:[^;}]*' $wims_home/log/classes/$wims_superclass/css 2>/dev/null | tr -d '<' | sed 's/$$/;/'
   !! Toujours transmise, meme vide : sinon nova.js reprendrait l'ancienne valeur gardee (sessionStorage).
 <script type="text/plain" id="nova-css-structure">$nova_css_structure</script>
   !reset nova_css_structure

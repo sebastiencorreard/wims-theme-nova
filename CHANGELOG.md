@@ -51,6 +51,10 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Portails et groupements : l'accueil d'un élève et les pages de ses feuilles ne parcourent plus tous les fichiers de la structure pour compter les pièces de l'avatar (plus léger sur un gros portail) ; une longue feuille de style de structure n'est plus coupée avant d'arriver aux zones.
+- « Actualiser » ou « Précédent » ne rejoue plus une action portée par l'adresse (désactivation, propagation aux zones, achat d'un élément d'avatar, couleur).
+- Suivi en direct : « Exercice N » (exercice sans titre) est traduit en anglais, espagnol et italien.
+- « Désactiver quand même » : le fichier des examens ou des feuilles est remplacé d'un seul coup.
 - **Sécurité** (mise à jour recommandée) : deux valeurs venues de l'adresse de la page sont désormais filtrées (désactivation d'un examen ou d'une feuille partagés ; page de connexion d'une classe CAS), et les réglages du site sont bornés avant d'être enregistrés.
 - Téléphone : les tuiles à déplacer se glissent au doigt sans que la page défile (le navigateur commençait parfois à faire défiler la page avant que Nova ne l'en empêche) ; l'appui long sur une tuile n'ouvre plus la loupe ni la sélection.
 - Téléphone, tuiles à déplacer : sur un écran étroit, les cases ne restent plus collées au bout de la ligne précédente (marge perdue à gauche, trou vide entre deux rangées) ; cases dans un tableau (addition posée) : plus de trou entre les rangées ni de cases qui se chevauchent, tableau centré sur l'écran s'il déborde.

@@ -90,5 +90,6 @@
 !set nova_svj_err_refuse=Accès refusé.
 !set nova_svj_err_reserve=Accès réservé aux enseignants et administrateurs de leurs classes.
 !set nova_svj_err_indispo=Relevé indisponible. Actualisez pour réessayer.
+!set nova_svj_exo=Exercice %1
 !set nova_svj_accueil=Accueil
 !set nova_svj_inconnue=Activité inconnue

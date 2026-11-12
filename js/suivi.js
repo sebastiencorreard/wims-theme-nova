@@ -123,8 +123,10 @@
     var e = el('span', score === null ? '?' : String(score), 'nova-suivi-carre nova-suivi-carre-' + c);
     e.title = titre; return e;
   }
+  // Titre absent : suivi.pl ecrit << Exercice N >>, traduit ici (comme Accueil).
+  function titreExo(t) { var m = /^Exercice (\d+)(?![\s\S])/.exec(t || ''); return m && T('exo', m[1]) || t; }
   function exercice(r) {
-    var a = r.activity === 'Accueil' ? T('accueil') : r.activity === 'Activite inconnue' ? T('inconnue') : r.activity;
+    var a = r.activity === 'Accueil' ? T('accueil') : r.activity === 'Activite inconnue' ? T('inconnue') : titreExo(r.activity);
     if (r.sheet && !/^(home|adm\/)/.test(r.module)) return T(r.exam ? 'examen' : 'feuille', r.sheet, a);
     return a;
   }
@@ -155,7 +157,7 @@
       var cle = e.exam + ':' + e.sheet + ':' + e.exo;
       if (cle !== avant) {
         fermer();
-        var segment = el('li', undefined, 'nova-suivi-segment'), titre = T(e.exam ? 'examen' : 'feuille', e.sheet, e.title);
+        var segment = el('li', undefined, 'nova-suivi-segment'), titre = T(e.exam ? 'examen' : 'feuille', e.sheet, titreExo(e.title));
         var t = el('strong', titre); segment.appendChild(t);
         // Titre en bulle (CSS) : survol, clavier ou clic, qui le garde affiche.
         segment.tabIndex = 0;

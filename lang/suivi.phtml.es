@@ -92,5 +92,6 @@
 !set nova_svj_err_refuse=Acceso denegado.
 !set nova_svj_err_reserve=Acceso reservado a los profesores y administradores de sus clases.
 !set nova_svj_err_indispo=Informe no disponible. Actualiza para reintentarlo.
+!set nova_svj_exo=Ejercicio %1
 !set nova_svj_accueil=Inicio
 !set nova_svj_inconnue=Actividad desconocida

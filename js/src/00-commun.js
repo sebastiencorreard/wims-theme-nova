@@ -59,6 +59,14 @@
   // Lien de la session vers un autre module (cmd=new : valable depuis n'importe quelle page ; 2026-11-09).
   function lienSession(suite) { return lienAccueil('').replace('&module=home', '') + suite; }
 
+  /* Actions portees par l'adresse (nova_desactiver, nova_propager, nova_couleur, achat ou choix de l'avatar, reglages du
+   * site) : retirees de la barre d'adresse une fois la page lue, pour qu'Actualiser ou Precedent ne rejoue pas l'action
+   * (audit du 2026-11-12). Appelee en dernier par demarrer(). */
+  function adresseNette() {
+    var net = location.search.replace(/([?&])nova_(desactiver|propager|reglages|couleur|avatar_ouvrir|avatar_choix)=[^&]*&?/g, '$1').replace(/[?&]$/, '');
+    if (net === location.search || !history.replaceState) return;
+    try { history.replaceState(history.state, '', location.pathname + net + location.hash); } catch (e) { /* adresse gardee */ }
+  }
   /* Action faite sur l'accueil (module de confiance) SANS y aller (2026-11-09, utilisateur : « je me retrouve sur la page
    * de mon portail ») : requête en arrière-plan, message de #nova-propage gardé pour la page suivante (messageReporte),
    * puis page de retour, ouverte par cmd=new (après une requête à l'accueil, les liens cmd=reply de la page ne valent

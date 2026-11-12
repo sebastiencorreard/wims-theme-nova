@@ -51,7 +51,10 @@ else
   done
 fi
 [ "$V" = verifier ] && { echo "ok${dans:-}"; exit; }
-tmp="$F.nova$$"
-awk -v n="$N" '/^:/ { k++; if (k == n) sub(/^:1/, ":0") } { print }' "$F" > "$tmp" || { rm -f "$tmp"; echo erreur; exit; }
-# cat > : garde le fichier (et le lien du partage), ses droits et son propriétaire.
-cat "$tmp" > "$F" && rm -f "$tmp" && echo ok || { rm -f "$tmp"; echo erreur; }
+# Remplacement d'un coup (mv) du VRAI fichier : le lien du partage est suivi et reste en place ; cp -p garde droits et
+# proprietaire (audit du 2026-11-12 ; avant : cat > fichier, que WIMS pouvait lire a moitie ecrit).
+R=$(readlink -f "$F") || { echo erreur; exit; }
+tmp="$R.nova$$"
+cp -p "$R" "$tmp" 2>/dev/null || { rm -f "$tmp"; echo erreur; exit; }
+awk -v n="$N" '/^:/ { k++; if (k == n) sub(/^:1/, ":0") } { print }' "$R" > "$tmp" || { rm -f "$tmp"; echo erreur; exit; }
+mv "$tmp" "$R" && echo ok || { rm -f "$tmp"; echo erreur; }

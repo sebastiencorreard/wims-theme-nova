@@ -73,8 +73,6 @@
 !set nova_bonne_etait=the correct answer was
 !set nova_juste_sur=%1 correct answer out of %2
 !set nova_justes_sur=%1 correct answers out of %2
-!set nova_justes=Correct
-!set nova_a_revoir=To review
 !set nova_partielle=Partly correct answer
 !set nova_precision=Not precise enough
 !set nova_votre_reponse=Your answer:

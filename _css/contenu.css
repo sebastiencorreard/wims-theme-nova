@@ -831,26 +831,39 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   color: var(--nova-erreur);
 }
 .nova-verdict-eleve { margin: 0; color: var(--nova-texte-2); }
-/* Réponses justes et à revoir mêlées (maquette A, 2026-10-08) : carte neutre, titre « n réponses justes sur N »,
- * deux colonnes Justes | À revoir, l'une sous l'autre au téléphone. */
+/* Réponses justes et à revoir mêlées (variante A, utilisateur, 2026-11-12 ; avant : deux colonnes, 2026-10-08) : carte
+ * neutre (fond blanc, choix de l'utilisateur), titre « n réponses justes sur N », tableau dans l'ordre des réponses :
+ * [k] | votre réponse (cadre vert si juste, rouge si fausse) | bonne réponse (coche si juste). Défile dans son cadre
+ * s'il est trop large (réponses longues, formules). */
 .nova-verdict-mixte { grid-template-columns: 1fr; background: var(--nova-surface); border-color: var(--nova-bord); color: var(--nova-texte); }
 .nova-verdict-mixte::before { content: none; }
 .nova-verdict-mixte .nova-verdict-corps { gap: var(--nova-e3); }
-.nova-verdict-colonnes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nova-e3); align-items: start; }
-@media (max-width: 639.98px) { .nova-verdict-colonnes { grid-template-columns: minmax(0, 1fr); } }
-.nova-verdict-colonne { display: grid; gap: var(--nova-e2); padding: var(--nova-e3) var(--nova-e4); border: 1px solid; border-radius: 12px; min-width: 0; }
-.nova-verdict-colonne-justes { background: var(--nova-succes-fond); border-color: color-mix(in oklab, var(--nova-succes) 35%, white); }
-.nova-verdict-colonne-revoir { background: var(--nova-erreur-fond); border-color: color-mix(in oklab, var(--nova-erreur) 35%, white); }
-.nova-verdict-colonne-titre { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; font-weight: 700; }
-.nova-verdict-colonne-titre::before { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 50%; font-size: .85rem; color: #FFFFFF; }
-.nova-verdict-colonne-justes .nova-verdict-colonne-titre { color: var(--nova-succes); }
-.nova-verdict-colonne-justes .nova-verdict-colonne-titre::before { content: "\2713"; background: var(--nova-succes); }
-.nova-verdict-colonne-revoir .nova-verdict-colonne-titre { color: var(--nova-erreur); }
-.nova-verdict-colonne-revoir .nova-verdict-colonne-titre::before { content: "\2715"; background: var(--nova-erreur); }
-.nova-verdict .nova-verdict-colonne ul { display: grid; gap: var(--nova-e2); padding: 0; list-style: none; }
-.nova-verdict-colonne li { display: flex; gap: var(--nova-e2); align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
-.nova-verdict-num { flex: none; font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte-2); }
-.nova-verdict-colonne .nova-faux { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.nova-verdict-cadre { min-width: 0; overflow-x: auto; }
+.nova-verdict-tableau { width: 100%; max-width: 36rem; border-collapse: collapse; color: var(--nova-texte); }
+.nova-verdict-tableau :is(th, td) { padding: var(--nova-e2) var(--nova-e2); border-top: 1px solid var(--nova-bord); text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
+.nova-verdict-tableau thead th { border-top: 0; padding-top: 0; font-size: var(--nova-petit); font-weight: 600; color: var(--nova-texte-2); }
+.nova-verdict-tableau .nova-verdict-col-num { width: 3.2em; }
+.nova-verdict-tableau .nova-verdict-num { width: 3.2em; padding-left: 0; font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte-2); white-space: nowrap; }
+.nova-verdict-tableau .nova-verdict-juste { color: var(--nova-succes); font-weight: 700; }
+.nova-verdict-vide { width: 2.5em; height: 2.5em; box-sizing: border-box; vertical-align: middle; }
+.nova-verdict-etat { display: block; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-juste {
+  display: inline-block;
+  padding: 0 .4em;
+  border: 2px solid var(--nova-succes);
+  border-radius: 8px;
+  background: var(--nova-succes-fond);
+  color: var(--nova-succes);
+}
+.nova-partiel {
+  display: inline-block;
+  padding: 0 .4em;
+  border: 2px solid var(--nova-attention);
+  border-radius: 8px;
+  background: var(--nova-attention-fond);
+  color: var(--nova-attention-texte);
+}
+.nova-verdict-coche::before { content: "\2713"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--nova-succes); color: #FFFFFF; font-size: .85rem; font-weight: 700; }
 /* Commentaire d'auteur encadré (`<div class="feedback">`, ex. fin de course H4/math/quizzautomat « Belle
  * performance ! ») : WIMS lui laisse 15em de marge à droite, presque tout l'écran d'un téléphone. */
 @media (max-width: 639.98px) { .wimsbody .feedback { margin-right: 0; } }

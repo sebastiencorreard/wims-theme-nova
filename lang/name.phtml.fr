@@ -73,8 +73,6 @@
 !set nova_bonne_etait=la bonne réponse était
 !set nova_juste_sur=%1 réponse juste sur %2
 !set nova_justes_sur=%1 réponses justes sur %2
-!set nova_justes=Justes
-!set nova_a_revoir=À revoir
 !set nova_partielle=Réponse partiellement juste
 !set nova_precision=Précision insuffisante
 !set nova_votre_reponse=Votre réponse :

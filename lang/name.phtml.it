@@ -74,8 +74,6 @@
 !set nova_bonne_etait=la risposta giusta era
 !set nova_juste_sur=%1 risposta giusta su %2
 !set nova_justes_sur=%1 risposte giuste su %2
-!set nova_justes=Giuste
-!set nova_a_revoir=Da rivedere
 !set nova_partielle=Risposta in parte giusta
 !set nova_precision=Precisione insufficiente
 !set nova_votre_reponse=La tua risposta:

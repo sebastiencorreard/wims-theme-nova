@@ -2736,56 +2736,77 @@
       completer(titre, lignes[0]);
       eleve(lignes[0]);
     } else if (lignes.some(function (l) { return l.etat === 'bonne'; })) {
-      // Réponses justes et à revoir mêlées : deux colonnes, « Justes » | « À revoir » (maquette A, choisie par
-      // l'utilisateur le 2026-10-08). Chaque ligne : [k], la réponse de l'élève, et pour une réponse à revoir
-      // la bonne réponse de WIMS (déplacée, MathJax compris).
+      // Réponses justes et à revoir mêlées (variante A, choisie par l'utilisateur le 2026-11-12 ; avant : deux colonnes
+      // Justes | À revoir, 2026-10-08) : carte neutre, titre « n réponses justes sur N », puis un tableau dans l'ordre des
+      // réponses : [k] | votre réponse (verte si juste, rouge si fausse) | la bonne réponse de WIMS (déplacée, MathJax
+      // compris ; une coche pour une réponse juste). Les renvois [k] de l'énoncé restent tous.
       var justes = lignes.filter(function (l) { return l.etat === 'bonne'; }).length;
       titre.textContent = texte(justes > 1 ? 'justes-sur' : 'juste-sur', justes > 1 ? '%1 correct answers out of %2' : '%1 correct answer out of %2')
         .replace('%1', justes).replace('%2', lignes.length);
       boite.className = 'nova-verdict nova-verdict-mixte';
-      var colonnes = document.createElement('div');
-      colonnes.className = 'nova-verdict-colonnes';
-      var colonne = function (cle, nom) {
-        var c = document.createElement('div');
-        c.className = 'nova-verdict-colonne nova-verdict-colonne-' + cle;
-        var t = document.createElement('p');
-        t.className = 'nova-verdict-colonne-titre';
-        t.textContent = nom;
-        c.appendChild(t);
-        var ul = document.createElement('ul');
-        c.appendChild(ul);
-        colonnes.appendChild(c);
-        return ul;
-      };
-      var listeJustes = colonne('justes', texte('justes', 'Correct'));
-      var listeRevoir = colonne('revoir', texte('a-revoir', 'To review'));
+      var cadre = document.createElement('div');
+      cadre.className = 'nova-verdict-cadre';
+      var table = document.createElement('table');
+      table.className = 'nova-verdict-tableau';
+      var entete = table.createTHead().insertRow();
+      [['', 'num'], [texte('votre-reponse', 'Your answer:').replace(/\s*:\s*$/, ''), 'eleve'], [texte('bonne', 'Correct answer'), 'bonne']].forEach(function (c) {
+        var th = document.createElement('th');
+        th.scope = 'col';
+        th.className = 'nova-verdict-col-' + c[1];
+        th.textContent = c[0];
+        entete.appendChild(th);
+      });
+      var tbody = table.createTBody();
       lignes.forEach(function (ligne) {
-        var li = document.createElement('li');
-        if (ligne.nom) {
-          var num = document.createElement('span');
-          num.className = 'nova-verdict-num';
-          num.textContent = /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom + ' :';
-          li.appendChild(num);
-        }
-        var contenu = document.createElement('span');
-        li.appendChild(contenu);
+        var tr = tbody.insertRow();
+        tr.className = 'nova-verdict-ligne-' + ligne.etat;
+        var num = document.createElement('th');
+        num.scope = 'row';
+        num.className = 'nova-verdict-num';
+        num.textContent = !ligne.nom ? '' : /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom;
+        tr.appendChild(num);
+        var celEleve = tr.insertCell();
+        var celBonne = tr.insertCell();
         var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
         if (donnee) {
           while (ligne.eleve.firstChild) donnee.appendChild(ligne.eleve.firstChild);
-          if (ligne.etat === 'mauvaise') donnee.className = 'nova-faux';
-          contenu.appendChild(donnee);
+          donnee.className = ligne.etat === 'bonne' ? 'nova-juste' : ligne.etat === 'mauvaise' ? 'nova-faux' : 'nova-partiel';
+          celEleve.appendChild(donnee);
         }
-        if (ligne.etat === 'bonne') { listeJustes.appendChild(li); return; }
-        if (ligne.etat !== 'mauvaise') contenu.appendChild(document.createTextNode((donnee ? ' \u2014 ' : '') + libelle(ligne.etat)));
+        if (ligne.etat === 'bonne') {
+          if (!donnee) {
+            // Case laissée vide à raison : cadre vert vide.
+            var videJuste = document.createElement('span');
+            videJuste.className = 'nova-juste nova-verdict-vide';
+            celEleve.appendChild(videJuste);
+          }
+          var coche = document.createElement('span');
+          coche.className = 'nova-verdict-coche';
+          coche.setAttribute('role', 'img');
+          coche.setAttribute('aria-label', texte('bonne', 'Correct answer'));
+          celBonne.appendChild(coche);
+          return;
+        }
+        if (!donnee && ligne.etat === 'mauvaise') {
+          // Case laissée vide : cadre rouge vide, nommé pour les lecteurs d'écran.
+          var vide = document.createElement('span');
+          vide.className = 'nova-faux nova-verdict-vide';
+          vide.setAttribute('role', 'img');
+          vide.setAttribute('aria-label', libelle('mauvaise'));
+          celEleve.appendChild(vide);
+        } else if (ligne.etat !== 'mauvaise') {
+          var etat = document.createElement('span');
+          etat.className = 'nova-verdict-etat';
+          etat.textContent = libelle(ligne.etat);
+          celEleve.appendChild(etat);
+        }
         if (ligne.juste) {
-          contenu.appendChild(document.createTextNode((donnee || ligne.etat !== 'mauvaise' ? ' \u2192 ' : '') + texte('bonne-etait', 'the correct answer was') + ' '));
-          ligne.juste.classList.add('nova-verdict-juste');
-          contenu.appendChild(ligne.juste);
-        } else if (ligne.resume) contenu.appendChild(document.createTextNode(' \u2192 ' + ligne.resume));
-        else if (!donnee && ligne.etat === 'mauvaise') contenu.appendChild(document.createTextNode(libelle('mauvaise')));
-        listeRevoir.appendChild(li);
+          ligne.juste.classList.add('nova-verdict-juste', 'nova-juste');
+          celBonne.appendChild(ligne.juste);
+        } else if (ligne.resume) celBonne.appendChild(document.createTextNode(ligne.resume));
       });
-      corps.appendChild(colonnes);
+      cadre.appendChild(table);
+      corps.appendChild(cadre);
     } else {
       titre.textContent = libelle(fausse ? 'mauvaise' : 'partielle');
       var liste = document.createElement('ul');

@@ -930,8 +930,13 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 /* Page « Notes » de l'enseignant (adm/class/userscore ; nova.js notesColonnes, 2026-11-08) : colonne de la moyenne
  * masquée sur demande ; titre de l'examen en en-tête, deux lignes au plus, « … » au-delà (titre entier en info-bulle). */
 .wimsbody #TABLE_userlist .nova-col-masquee { display: none; }
-.wimsbody #TABLE_userlist th .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; white-space: normal; overflow-wrap: anywhere; }
-.wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); }
+.wimsbody #TABLE_userlist th .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; margin-inline: auto; text-align: center; white-space: normal; overflow-wrap: anywhere; }
+/* Options de Nova (titres, moyenne) l'une sous l'autre (2026-11-12, utilisateur ; avant : côte à côte dans le flex du fieldset). */
+.wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); flex: 1 1 100%; }
+.wimsbody .nova-notes-option + .nova-notes-option { margin-top: calc(-1 * var(--nova-e3)); }
+/* Notes des feuilles et des examens centrées, « -- » et 0 compris (WIMS ne met une classe qu'aux cellules colorées) ;
+ * 2026-11-12, utilisateur. Réglage « Tableaux du thème standard ». */
+html:not(.nova-std-tableaux) .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(:first-child) { text-align: center; }
 /* Réponses à choix marquées dans l'énoncé (nova.js retourReponse, variante A, 2026-11-08) : cadre et pastille
  * ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié), accent (choisi, sans bonne réponse montrée) ;
  * choix non retenus pâlis. Le [k] de WIMS est inutile à côté. */

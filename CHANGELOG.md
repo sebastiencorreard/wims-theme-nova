@@ -23,6 +23,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Page « Notes » : options l'une sous l'autre, « Afficher » au lieu de « Faites afficher », titres de colonnes et notes centrés (« -- » et 0 compris).
 - Rubrique « Participants » (Suivi en direct, Trombinoscope) du menu de gauche seulement sur l'accueil, comme dans le thème standard.
 - Gestion de sécurité de la classe : carte avec icônes, comme la page Configuration et maintenance ; mots de passe en boutons.
 - Sauvegarde de la classe : formats zip, tgz et tar.gz en boutons de téléchargement.

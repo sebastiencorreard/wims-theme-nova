@@ -1,0 +1,8 @@
+!! Reglage « Textes du theme standard » : rien n'est surcharge (_procs/textes-standard.proc).
+!read themes/$wims_theme/_procs/textes-standard.proc
+!if $nova_std_textes=oui
+  !exit
+!endif
+!! Nova : textes de adm/class/userscore (lang/names.phtml.fr) surcharges par le theme, lus par scripts/adm/class/classlang
+!! apres ceux du module. Page « Notes » : « Afficher » au lieu de « Faites afficher » (2026-11-12, utilisateur).
+!set name_Post=Afficher

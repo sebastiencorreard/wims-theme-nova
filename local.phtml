@@ -7,13 +7,24 @@
       !set wims_name_nova_suivi=$nova_sv_titre
       !! Avatars des eleves (2026-11-12, utilisateur) : sous le suivi, seulement si l'avatar est active (comme avatar-barre.phtml).
       !set nova_avm=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+      !! Badges seuls (2026-11-12, utilisateur) : la page s'ouvre aussi quand l'avatar est coupe et les badges actifs ;
+      !! nova_avm vaut alors « badges ». Titre : nova_avs_titre = « avatars, badges » (name.phtml).
+      !if $nova_avm!=oui
+        !set nova_avm=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-badges[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+        !if $nova_avm=oui
+          !set nova_avm=badges
+        !endif
+      !endif
       !! Trombinoscope (2026-11-12, utilisateur : plus personne ne met de photos) : la page des avatars PREND LA PLACE du
       !! trombinoscope de WIMS (adm/class/photoboard, menu de la page des participants) et garde son nom ; son entree est
       !! retiree. Reglage « menus du theme standard » (--nova-std-menus: oui) : rien n'est remplace, les deux entrees restent.
       !reset nova_avr
-      !if $nova_avm=oui
-        !default nova_avs_titre=Students' avatars
-        !set wims_name_nova_avatars=$nova_avs_titre
+      !if $nova_avm isitemof oui,badges
+        !default nova_avs_titre=Students' avatars,Students' badges
+        !set wims_name_nova_avatars=!item 1 of $nova_avs_titre
+        !if $nova_avm=badges
+          !set wims_name_nova_avatars=!item 2 of $nova_avs_titre
+        !endif
         !set nova_avr=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-std-menus[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
         !if $nova_avr!=oui and $wims_name_photoboard!=$empty
           !set wims_name_nova_avatars=$wims_name_photoboard
@@ -49,7 +60,7 @@
       !if $nova_sp=0
         !set nova_sr=itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1
-        !if $nova_avm=oui
+        !if $nova_avm isitemof oui,badges
           !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
         !endif
         !if $nova_sc>0
@@ -69,7 +80,7 @@ nova_suivi,1,module=home&nova_suivi=1
         !if $nova_si=$nova_sp
           !set nova_sr=!append line itemsep,0,$nova_menu_participants\
 nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
-          !if $nova_avm=oui
+          !if $nova_avm isitemof oui,badges
             !set nova_sr=!append line nova_avatars,1,module=home&nova_avatars=1 to $nova_sr
           !endif
         !else

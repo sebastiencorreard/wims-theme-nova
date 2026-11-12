@@ -153,6 +153,37 @@
   background: rgb(235 232 237) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='40' r='17' fill='rgb(201,196,204)'/%3E%3Cpath d='M18 100c2-20 15-31 32-31s30 11 32 31z' fill='rgb(201,196,204)'/%3E%3C/svg%3E") center / cover no-repeat; }
 .nova-avatars-sans .nova-avatars-nom { font-weight: 400; color: var(--nova-texte-2); }
 
+/* Trombinoscope : cases « Afficher » et badges poses au bas du portrait, niveau dans le badge (maquette B, utilisateur,
+   2026-11-12 ; nova.js trombinoscope). Sans portrait (case decochee, ou avatar coupe) : badges a la place du portrait. */
+.nova-avatars-entete { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px var(--nova-e4);
+  margin: 0 0 var(--nova-e4); padding-bottom: var(--nova-e2); border-bottom: 1px solid var(--nova-bord); }
+.nova-avatars-entete .nova-avatars-resume { margin: 0; }
+.nova-avatars-afficher { display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; }
+.nova-avatars-afficher[hidden] { display: none; }
+.nova-avatars-afficher-titre { font-size: .9rem; font-weight: 600; color: var(--nova-texte-2); }
+.nova-avatars-case { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; font-weight: 400; cursor: pointer; }
+.nova-avatars-case input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--nova-accent); }
+.nova-avatars-cadre { position: relative; display: block; width: 100%; max-width: 104px; }
+.nova-avatars-cadre .nova-avatars-portrait { max-width: none; }
+.nova-avatars-cadre.nova-avatars-medaille-ok { margin-bottom: 20px; }
+/* Badges cote a cote, sans chevauchement : taille selon leur nombre (--nova-n, pose par nova.js), 34 px au plus. */
+.nova-avatars-medailles { position: absolute; left: -6px; right: -6px; bottom: -18px; display: flex; justify-content: center; gap: 2px; }
+/* Quatre badges : petit niveau, pour qu'il ne cache pas l'image au telephone. */
+.nova-avatars-quatre .nova-avatars-niv { right: -2px; bottom: -2px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; font-size: 10px; line-height: 15px; }
+.nova-avatars-medaille { position: relative; display: block; flex: none; width: min(34px, calc((100% - 6px) / var(--nova-n, 3))); height: auto; aspect-ratio: 1; margin: 0; border-radius: 50%;
+  background: var(--nova-surface); box-shadow: 0 0 0 2px var(--nova-surface), 0 1px 4px rgb(28 33 41 / .18); }
+.nova-avatars-medaille img { display: block; width: 100%; height: 100%; max-width: none; margin: 0; }
+.nova-avatars-niv { position: absolute; right: -4px; bottom: -3px; box-sizing: border-box; min-width: 18px; height: 18px; padding: 0 4px;
+  border-radius: 9px; background: var(--nova-accent); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+  font-variant-numeric: tabular-nums; box-shadow: 0 0 0 2px var(--nova-surface); z-index: 1; }
+#nova-avatars:not([data-avatar="oui"]) .nova-avatars-portrait, .nova-avatars-sans-portrait .nova-avatars-portrait { display: none; }
+.nova-avatars-sans-portrait .nova-avatars-cadre, #nova-avatars:not([data-avatar="oui"]) .nova-avatars-cadre { aspect-ratio: 1; margin-bottom: 0; }
+.nova-avatars-sans-portrait .nova-avatars-medailles { inset: 0; flex-wrap: wrap; align-content: center; gap: 6px; border-radius: 50%; background: var(--nova-fond); }
+.nova-avatars-sans-portrait .nova-avatars-medaille { width: min(46px, 44%); box-shadow: none; }
+.nova-avatars-aucun { padding: 0 6px; font-size: .8rem; line-height: 1.2; color: var(--nova-texte-2); }
+.nova-avatars-sans-portrait .nova-avatars-sans .nova-avatars-nom { font-weight: 600; color: var(--nova-texte); }
+.nova-avatars-fiche-badges { grid-template-columns: minmax(0, 1fr); }
+
 /* Fenetre du detail ; au telephone, elle monte du bas de l'ecran. */
 .nova-avatars-dialogue { width: min(36rem, calc(100vw - 32px)); }
 .nova-avatars-fiche { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--nova-e4); align-items: start; }

@@ -129,7 +129,11 @@
 !set nova_avs_precedent=Precedente
 !set nova_avs_suivant=Successivo
 !set nova_avs_fermer=Chiudi
-!set nova_avs_inactif=L'avatar degli studenti non è attivato qui (Impostazioni di Nova, scheda «Distintivi e ricompense»).
+!set nova_avs_inactif=Né l'avatar né i distintivi sono attivati qui (Impostazioni di Nova, scheda «Distintivi e ricompense»).
+!set nova_avs_afficher=Mostra:
+!set nova_avs_avatar=Avatar
+!set nova_avs_aucun=nessun distintivo
+!set nova_avs_eleves=Studenti: %n
 !set nova_avs_vide=Nessuno studente iscritto qui.
 !set nova_avs_zone=Apri una classe o un corso della struttura per vedere gli avatar dei suoi studenti.
 !set nova_avs_exporter=Esporta gli avatar (.zip)

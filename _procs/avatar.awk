@@ -25,7 +25,8 @@
 #   elements cat:val:etat ...  (hors saison : absents)        (etat : libre, achete, 1, 2, badge-<cle>-<niveau>-<0 ou 1 = atteint>)
 #   ecrire 0|1, puis le nouveau contenu du fichier de l'eleve (2 lignes : choix, ouverts) ;
 #   enfin <note de reussite> <secondes> <max par jour> (pour les regles affichees a l'eleve) ;
-#   niveaux <cle>:<niveau atteint>:<badge propose 1|0> ... (fidelite, perseverance, echauffement, top).
+#   niveaux <cle>:<niveau atteint>:<badge propose 1|0> ... (fidelite, perseverance, echauffement, top) ;
+#   avec -v niveaux=1 et l'avatar coupe : « avatar off » puis cette ligne seule (trombinoscope de l'enseignant).
 
 function jours(s,    y, m, d, era, yoe, doy, doe) {
   y = substr(s, 1, 4) + 0; m = substr(s, 5, 2) + 0; d = substr(s, 7, 2) + 0
@@ -48,6 +49,10 @@ function secondes(t,    h) {
 function actif(nom) {
   if (conf["badges"] != "oui") return 0
   return conf["badges-actifs"] == "" || conf["badges-actifs"] ~ ("(^|[ ,])(" nom "|tous)([ ,]|$)")
+}
+function ligneNiveaux() {
+  return "niveaux fidelite:" (niv["fidelite"] + 0) ":" actif("fidelite") " perseverance:" (niv["perseverance"] + 0) ":" actif("perseverance") \
+    " echauffement:" (niv["echauffement"] + 0) ":" actif("echauffement") " top:" (niv["top"] + 0) ":" actif("top")
 }
 # Etat d'un element pour cet eleve : libre, achete, 1, 2 (a acheter), badge-<cle>-<niveau>-<0|1>.
 function etat(e,    p, b) {
@@ -121,7 +126,8 @@ section == "score" {
 }
 
 END {
-  if (conf["avatar"] != "oui") { print "avatar off"; exit }
+  # Trombinoscope de l'enseignant (avatars-classe.sh, -v niveaux=1) : niveaux des badges meme sans avatar.
+  if (conf["avatar"] != "oui") { print "avatar off"; if (niveaux == 1) print ligneNiveaux(); exit }
   print "avatar on"
   seuil = nombre(conf["avatar-seuil"], 0, 10, 7)
   delai = int(nombre(conf["avatar-secondes"], 0, 600, 15))
@@ -199,6 +205,5 @@ END {
   print "choix " nouveau
   print "ouverts" liste
   print seuil " " delai " " maxj
-  print "niveaux fidelite:" (niv["fidelite"] + 0) ":" actif("fidelite") " perseverance:" (niv["perseverance"] + 0) ":" actif("perseverance") \
-    " echauffement:" (niv["echauffement"] + 0) ":" actif("echauffement") " top:" (niv["top"] + 0) ":" actif("top")
+  print ligneNiveaux()
 }

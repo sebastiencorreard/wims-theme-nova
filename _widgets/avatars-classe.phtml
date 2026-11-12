@@ -3,8 +3,14 @@
 !! _procs/avatars-classe.sh (avatar.awk pour chaque eleve, en simple lecture), ecrites dans la session puis lues ici.
 !read themes/$wims_theme/lang/enseignant.phtml.$lang
 !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
+!! Badges seuls (2026-11-12, utilisateur) : la page s'ouvre aussi quand l'avatar est coupe et les badges actifs.
+!set nova_avg=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-badges[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
 !! Titre : « Trombinoscope » de WIMS quand la page le remplace (local.phtml), sinon « Avatars des eleves ».
-!set nova_avh=$nova_avs_titre
+!! nova_avs_titre (name.phtml) = « avatars, badges » : un seul nom de variable pour les deux titres (tampon des noms).
+!set nova_avh=!item 1 of $nova_avs_titre
+!if $nova_avb!=oui
+  !set nova_avh=!item 2 of $nova_avs_titre
+!endif
 !set nova_avr=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-std-menus[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
 !if $nova_avr!=oui and $wims_name_photoboard!=$empty
   !set nova_avh=$wims_name_photoboard
@@ -14,14 +20,15 @@
   data-t-resume="$nova_avs_resume" data-t-gagnees="$nova_avs_gagnees" data-t-depensees="$nova_avs_depensees"
   data-t-dispo="$nova_avs_dispo" data-t-elements="$nova_avs_elements" data-t-exercices="$nova_avs_exercices" data-t-niveau="$nova_avs_niveau"
   data-t-sans="$nova_avs_sans" data-t-attente="$nova_avs_attente" data-t-precedent="$nova_avs_precedent" data-t-suivant="$nova_avs_suivant"
-  data-t-fermer="$nova_avs_fermer" data-t-enregistrer="$nova_avs_enregistrer" data-classe="$nova_avk" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
+  data-t-fermer="$nova_avs_fermer" data-t-enregistrer="$nova_avs_enregistrer" data-classe="$nova_avk" data-avatar="$nova_avb"
+  data-t-afficher="$nova_avs_afficher" data-t-avatar="$nova_avs_avatar" data-t-aucun="$nova_avs_aucun" data-t-eleves="$nova_avs_eleves" data-t-jeton="$nova_av_jeton" data-t-jetons="$nova_av_jetons"
   data-t-fidelite="$nova_fid_nom" data-t-perseverance="$nova_per_nom" data-t-echauffement="$nova_ech_nom" data-t-top="$nova_top_nom">
 <h1 id="nova-avatars-titre">$nova_avh</h1>
 !! Racine d'un portail ou d'un groupement, niveau, programme (2026-11-12, utilisateur) : trop d'eleves d'un coup ;
 !! demander de choisir une zone. Grille seulement dans une classe ou un cours.
 !set nova_avt=!defof class_typename in wimshome/log/classes/$wims_class/.def
 !default nova_avt=class
-!if $nova_avb!=oui
+!if $nova_avb!=oui and $nova_avg!=oui
   <div class="wims_msg info">$nova_avs_inactif</div>
 !else
   !if $nova_avt notitemof class,course
@@ -39,9 +46,13 @@
     !set nova_avn=!sh grep -c . $wims_home/sessions/$nova_sid/nova-avatars.phtml 2>/dev/null
   !endif
   !if $nova_avn>0
-<p class="nova-avatars-resume" id="nova-avatars-resume"></p>
+!! Cases « Afficher » (avatar, chaque badge propose dans la classe) : ecrites par nova.js (avatarsClasse ; maquette B choisie
+!! par l'utilisateur le 2026-11-12, badges poses au bas du portrait, niveau inscrit dans le badge).
+<div class="nova-avatars-entete"><p class="nova-avatars-resume" id="nova-avatars-resume"></p><div class="nova-avatars-afficher" id="nova-avatars-afficher" role="group" hidden></div></div>
+    !if $nova_avb=oui
 !! Export de tous les avatars en SVG dans un .zip : ecrit par nova.js (avatarsClasse), qui montre le bouton une fois les dessins prets.
 <p class="nova-avatars-actions"><button type="button" id="nova-avatars-exporter" class="wims_button wims_secondary_button" hidden>$nova_avs_exporter</button></p>
+    !endif
 <ul class="nova-avatars-grille">
     !read wimshome/sessions/$nova_sid/nova-avatars.phtml
 </ul>
@@ -51,6 +62,10 @@
   !reset nova_sid nova_ak nova_auj nova_avn
 !endif
 :nova_avs_fin
+!! Retour a une version anterieure : concerne l'avatar seulement.
+!if $nova_avb!=oui
+  !goto nova_avs_sans_retour
+!endif
 !! Retour a une version anterieure de Nova (2026-11-12, utilisateur) : les fichiers de l'eleve sont dans score/ depuis
 !! le 2026-11-12 ; _procs/avatars-retour.sh les recopie a l'ancien emplacement (racine de la classe ou de la structure),
 !! pour TOUS les eleves de la classe ou de la structure. Affiche le nombre d'avatars recopies.
@@ -70,5 +85,6 @@
 !endif
 <p><a class="wims_button wims_secondary_button" href="$wims_ref_name?session=$wims_session&lang=$lang&module=home&nova_avatars=1&nova_avatars_retour=1">$nova_avs_retour_bouton</a></p>
 </div>
+:nova_avs_sans_retour
 </section>
-!reset nova_avb nova_avt nova_avh nova_avr nova_avk nova_ak nova_avn
+!reset nova_avb nova_avg nova_avt nova_avh nova_avr nova_avk nova_ak nova_avn

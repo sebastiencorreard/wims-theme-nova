@@ -129,7 +129,12 @@
 !set nova_avs_precedent=Précédent
 !set nova_avs_suivant=Suivant
 !set nova_avs_fermer=Fermer
-!set nova_avs_inactif=L'avatar des élèves n'est pas activé ici (Réglages de Nova, onglet « Badges et récompenses »).
+!set nova_avs_inactif=Ni l'avatar ni les badges ne sont activés ici (Réglages de Nova, onglet « Badges et récompenses »).
+!! Trombinoscope, cases « Afficher » (2026-11-12).
+!set nova_avs_afficher=Afficher :
+!set nova_avs_avatar=Avatar
+!set nova_avs_aucun=aucun badge
+!set nova_avs_eleves=Élèves : %n
 !set nova_avs_vide=Aucun élève inscrit ici.
 !set nova_avs_zone=Ouvrez une classe ou un cours de la structure pour voir les avatars de ses élèves.
 !set nova_avs_exporter=Exporter les avatars (.zip)

@@ -6,6 +6,8 @@
    * seulement l'affichage. Le choix enregistré et son dessin sont gardés dans localStorage
    * (nova-avatar|<structure ou classe>|<login>) pour la barre et le menu Profil de toutes les pages ; l'accueil
    * (#nova-avatar-barre, user.phtml) dit ce qui vaut. Seuls l'élève et ses enseignants voient l'avatar. */
+  // Dossiers d'images des badges (img/badges/<dossier>_0<niveau>.webp, niveaux 1 à 8) : Mon avatar et trombinoscope.
+  var IMAGES_BADGES = { fidelite: 'regularite/coeur', perseverance: 'perseverance/flamme', echauffement: 'entrainement/halteres', top: 'etoile/etoile' };
   var AVATAR_CATEGORIES = ['top', 'hatColor', 'noel', 'hairColor', 'skinColor', 'eyes', 'eyebrows', 'mouth', 'accessories', 'accessoriesColor', 'facialHair',
     'clothing', 'clothingGraphic', 'clothesColor', 'backgroundColor'];
   function cleAvatar() {
@@ -265,7 +267,6 @@
     var nomNiv = function (n) { return n > 0 ? (niveaux[n - 1] || String(n)) : '0'; };
     // Élément de badge débloqué : image du badge au niveau qui l'a ouvert (dossiers d'images des badges, voir CLAUDE.md)
     // et phrase « Débloqué grâce à ton badge … » (demande de l'utilisateur, 2026-11-07).
-    var IMAGES_BADGES = { fidelite: 'regularite/coeur', perseverance: 'perseverance/flamme', echauffement: 'entrainement/halteres', top: 'etoile/etoile' };
     var baseTheme = (d.getAttribute('data-script') || '').replace(/js\/avatar\.js$/, '');
     var badgeObtenu = function (s) { return /^badge-[a-z]+-[0-9]+-1$/.test(s); };
     var texteBadge = function (s) { var p = s.split('-'); return t('badge-ok').replace('%b', t(p[1])).replace('%n', nomNiv(+p[2])); };
@@ -555,6 +556,91 @@
   // Page « Avatars des élèves » de l'enseignant (demande de l'utilisateur, maquette A validée le 2026-11-12) : grille
   // écrite par le serveur (_widgets/avatars-classe.phtml, _procs/avatars-classe.sh), portraits dessinés ici ; détail
   // dans une fenêtre avec Précédent / Suivant (flèches du clavier aussi). Sans avatar enregistré : silhouette grisée (CSS).
+  // Trombinoscope : cases « Afficher » (avatar, chaque badge proposé dans la classe) et badges posés au bas du portrait,
+  // niveau inscrit dans le badge (maquette B choisie par l'utilisateur le 2026-11-12, avec le niveau de la maquette A).
+  // Seuls les badges gagnés sont montrés. Cases gardées dans le navigateur de l'enseignant (localStorage, choix de Claude).
+  function trombinoscope(page, eleves, avecAvatar, t, el) {
+    var cles = ['fidelite', 'perseverance', 'echauffement', 'top'];
+    var niveaux = function (b) {
+      var r = {};
+      (b.getAttribute('data-niveaux') || '').split(' ').forEach(function (x) {
+        var p = x.split(':');
+        if (p.length === 3 && p[2] === '1') r[p[0]] = +p[1] || 0;
+      });
+      return r;
+    };
+    var proposes = cles.filter(function (k) { return t(k) && (k in niveaux(eleves[0])); });
+    var vue = { avatar: avecAvatar };
+    proposes.forEach(function (k) { vue[k] = true; });
+    var MEMOIRE = 'nova-trombinoscope';
+    try {
+      var lu = JSON.parse(localStorage.getItem(MEMOIRE) || '{}');
+      Object.keys(vue).forEach(function (k) { if (typeof lu[k] === 'boolean') vue[k] = lu[k]; });
+    } catch (e) {}
+    var base = (page.getAttribute('data-script') || '').replace(/js\/avatar\.js$/, '');
+    var image = function (k, n) { return base + 'img/badges/' + IMAGES_BADGES[k] + '_0' + Math.max(1, Math.min(8, n)) + '.webp'; };
+    eleves.forEach(function (b) {
+      var portrait = b.querySelector('.nova-avatars-portrait');
+      if (!portrait) return;
+      var cadre = el('span', 'nova-avatars-cadre');
+      portrait.parentNode.insertBefore(cadre, portrait);
+      cadre.appendChild(portrait);
+      cadre.appendChild(el('span', 'nova-avatars-medailles'));
+    });
+    function appliquer() {
+      page.classList.toggle('nova-avatars-sans-portrait', !vue.avatar);
+      var montres = proposes.filter(function (k) { return vue[k]; });
+      eleves.forEach(function (b) {
+        var cadre = b.querySelector('.nova-avatars-cadre');
+        if (!cadre) return;
+        var med = cadre.querySelector('.nova-avatars-medailles'), niv = niveaux(b);
+        med.textContent = '';
+        montres.forEach(function (k) {
+          if (!niv[k]) return;
+          var nom = t(k) + ', ' + t('niveau').replace('%n', niv[k]);
+          var m = el('span', 'nova-avatars-medaille');
+          m.setAttribute('role', 'img');
+          m.setAttribute('aria-label', nom);
+          m.title = nom;
+          var img = el('img');
+          img.alt = '';
+          img.src = image(k, niv[k]);
+          m.appendChild(img);
+          m.appendChild(el('span', 'nova-avatars-niv', String(niv[k])));
+          med.appendChild(m);
+        });
+        if (!med.firstChild && !vue.avatar && montres.length && t('aucun')) med.appendChild(el('span', 'nova-avatars-aucun', t('aucun')));
+        var nb = med.querySelectorAll('.nova-avatars-medaille').length;
+        med.style.setProperty('--nova-n', Math.max(3, nb));
+        med.classList.toggle('nova-avatars-quatre', nb > 3 && vue.avatar);
+        cadre.classList.toggle('nova-avatars-medaille-ok', !!med.querySelector('.nova-avatars-medaille'));
+      });
+    }
+    var groupe = document.getElementById('nova-avatars-afficher');
+    var options = (avecAvatar ? ['avatar'] : []).concat(proposes);
+    if (groupe && options.length > 1) {
+      if (t('afficher')) {
+        groupe.setAttribute('aria-label', t('afficher').replace(/\s*:\s*$/, ''));
+        groupe.appendChild(el('span', 'nova-avatars-afficher-titre', t('afficher')));
+      }
+      options.forEach(function (k) {
+        var label = el('label', 'nova-avatars-case');
+        var c = el('input');
+        c.type = 'checkbox';
+        c.checked = !!vue[k];
+        c.addEventListener('change', function () {
+          vue[k] = c.checked;
+          try { localStorage.setItem(MEMOIRE, JSON.stringify(vue)); } catch (e) {}
+          appliquer();
+        });
+        label.appendChild(c);
+        label.appendChild(el('span', null, k === 'avatar' ? t('avatar') : t(k)));
+        groupe.appendChild(label);
+      });
+      groupe.hidden = false;
+    }
+    appliquer();
+  }
   function avatarsClasse() {
     var page = document.getElementById('nova-avatars');
     if (!page) return;
@@ -568,8 +654,12 @@
     var eleves = [].slice.call(page.querySelectorAll('.nova-avatars-eleve'));
     if (!eleves.length) return;
     var avec = eleves.filter(function (b) { return b.getAttribute('data-choix'); }).length;
+    // Avatar coupé, badges actifs (2026-11-12, utilisateur) : la page montre les badges seuls.
+    var avecAvatar = page.getAttribute('data-avatar') === 'oui';
     var resume = document.getElementById('nova-avatars-resume');
-    if (resume && t('resume')) resume.textContent = t('resume').replace('%n', eleves.length).replace('%a', avec).replace('%s', eleves.length - avec);
+    if (resume && avecAvatar && t('resume')) resume.textContent = t('resume').replace('%n', eleves.length).replace('%a', avec).replace('%s', eleves.length - avec);
+    else if (resume && t('eleves')) resume.textContent = t('eleves').replace('%n', eleves.length);
+    trombinoscope(page, eleves, avecAvatar, t, el);
     var dessin = null, dessins = {};
     function poser(cadre, choix) {
       if (!cadre || !choix || !dessin) return;
@@ -667,6 +757,25 @@
       var j = (b.getAttribute('data-jetons') || '').split(' ').map(function (x) { return +x || 0; });
       var exercices = t('exercices').replace('%n', j[3] || 0);
       fiche.textContent = '';
+      // Badges proposés dans la classe seulement (troisième champ de « niveaux » d'avatar.awk).
+      var ul = el('ul', 'nova-avatars-badges');
+      (b.getAttribute('data-niveaux') || '').split(' ').forEach(function (x) {
+        var p = x.split(':');
+        if (p.length !== 3 || p[2] !== '1' || !t(p[0])) return;
+        var n = +p[1] || 0;
+        ul.appendChild(el('li', n ? null : 'nova-avatars-zero', t(p[0]) + ' \u00b7 ' + (n ? t('niveau').replace('%n', n) : '\u2013')));
+      });
+      if (!avecAvatar) {
+        var seul = el('div', 'nova-avatars-texte');
+        var titre = el('h2', null, (b.querySelector('.nova-avatars-nom') || {}).textContent || '');
+        titre.id = 'nova-avatars-detail-nom';
+        seul.appendChild(titre);
+        seul.appendChild(el('p', 'nova-avatars-login', b.getAttribute('data-login') || ''));
+        if (ul.firstChild) seul.appendChild(ul);
+        fiche.appendChild(seul);
+        fiche.className = 'nova-avatars-fiche nova-avatars-fiche-badges';
+        return;
+      }
       var grand = el('div', 'nova-avatars-grand' + (choix ? '' : ' nova-avatars-sans'));
       // Fond transparent (choisi, ou aucun fond) : damier, comme le grand aperçu de « Mon avatar ».
       if (choix && !/(^|,)backgroundColor\.(?!transparent(,|$))/.test(choix)) grand.classList.add('nova-avatar-transparent');
@@ -679,6 +788,7 @@
       texte.appendChild(el('p', 'nova-avatars-login', b.getAttribute('data-login') || ''));
       if (!choix) {
         texte.appendChild(el('p', 'nova-avatars-vide', t('sans')));
+        if (ul.firstChild) texte.appendChild(ul);
         texte.appendChild(el('p', 'nova-avatars-ligne', t('attente').replace('%n', j[2] || 0) + ' \u00b7 ' + exercices));
       } else {
         var dl = el('dl', 'nova-avatars-chiffres');
@@ -692,14 +802,6 @@
           dl.appendChild(d);
         });
         texte.appendChild(dl);
-        // Badges proposés dans la classe seulement (troisième champ de « niveaux » d'avatar.awk).
-        var ul = el('ul', 'nova-avatars-badges');
-        (b.getAttribute('data-niveaux') || '').split(' ').forEach(function (x) {
-          var p = x.split(':');
-          if (p.length !== 3 || p[2] !== '1' || !t(p[0])) return;
-          var n = +p[1] || 0;
-          ul.appendChild(el('li', n ? null : 'nova-avatars-zero', t(p[0]) + ' \u00b7 ' + (n ? t('niveau').replace('%n', n) : '\u2013')));
-        });
         if (ul.firstChild) texte.appendChild(ul);
         texte.appendChild(el('p', 'nova-avatars-ligne', t('elements').replace('%n', b.getAttribute('data-elements') || '0') + ' \u00b7 ' + exercices));
         // Enregistrer le dessin de cet eleve (2026-11-12, utilisateur) : une fois avatar.js charge.
@@ -733,7 +835,7 @@
       if (e.key === 'ArrowLeft') { e.preventDefault(); montrer(courant - 1); }
       else if (e.key === 'ArrowRight') { e.preventDefault(); montrer(courant + 1); }
     });
-    chargerAvatar(page.getAttribute('data-script')).then(function (f) {
+    if (avecAvatar) chargerAvatar(page.getAttribute('data-script')).then(function (f) {
       dessin = f;
       eleves.forEach(function (b) { poser(b.querySelector('.nova-avatars-portrait'), b.getAttribute('data-choix')); });
       if (exporter && avec && window.TextEncoder && window.Blob) exporter.hidden = false;

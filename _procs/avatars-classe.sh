@@ -29,13 +29,13 @@ find "$r" -type f \( -path '*/score/*' -o -path '*/noscore/*' \) 2>/dev/null > "
       awk -v u="$login" '{ n = split($0, p, "/"); if (p[n] == u ".nova" && p[n-1] == "score") print }' "$liste" | while read -r f; do cat "$f"; done
       awk -v u="$login" '{ n = split($0, p, "/"); if (p[n] == u && (p[n-1] == "score" || p[n-1] == "noscore")) print }' "$liste" | while read -r f; do
         echo "#zone $(dirname "$(dirname "$f")")"; cat "$f"; done
-    } | awk -v auj="$auj" -v catalogue="$proc/avatar-catalogue.txt" -v ouvrir= -v choix= -f "$proc/avatar.awk" \
+    } | awk -v auj="$auj" -v catalogue="$proc/avatar-catalogue.txt" -v ouvrir= -v choix= -v niveaux=1 -f "$proc/avatar.awk" \
       | awk -v login="$login" -v nom="$nom" -v prenom="$prenom" '
         function esc(x) { gsub(/&/, "\\&amp;", x); gsub(/</, "\\&lt;", x); gsub(/>/, "\\&gt;", x); gsub(/"/, "\\&quot;", x)
           gsub(/\$/, "\\&#36;", x); gsub(/!/, "\\&#33;", x); return x }
-        NR == 2 { j = $2 " " $3 " " $4 " " $5 }
-        NR == 4 { ch = ($2 == "-" ? "" : $2) }
-        NR == 5 { for (i = 2; i <= NF; i++) if ($i ~ /:achete$/ || $i ~ /:badge-.*-1$/) d++ }
+        $1 == "jetons" { j = $2 " " $3 " " $4 " " $5 }
+        $1 == "choix" && !vu++ { ch = ($2 == "-" ? "" : $2) }
+        $1 == "elements" { for (i = 2; i <= NF; i++) if ($i ~ /:achete$/ || $i ~ /:badge-.*-1$/) d++ }
         $1 == "niveaux" { $1 = ""; niv = substr($0, 2) }
         END { n = prenom; if (nom != "") n = n (n != "" ? " " : "") nom; if (n == "") n = login
           printf "<li><button type=\"button\" class=\"nova-avatars-eleve%s\" data-login=\"%s\" data-nom=\"%s\" data-prenom=\"%s\" data-choix=\"%s\" data-jetons=\"%s\" data-elements=\"%d\" data-niveaux=\"%s\"><span class=\"nova-avatars-portrait\"></span><span class=\"nova-avatars-nom\">%s</span></button></li>\n",

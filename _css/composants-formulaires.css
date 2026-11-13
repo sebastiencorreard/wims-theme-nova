@@ -160,3 +160,32 @@ html body .ui-widget, html body .ui-widget :is(input, select, textarea, button) 
 html .tox.tox, html .tox.tox *:not(svg, svg *) { font-family: var(--nova-police); }
 html .wysiwyg_btns { font-size: .8125rem; }
 html .wimsbody .small.hidden, html .wimsbody sup.taxo_nb_elem { font-size: .75rem; }
+
+/* Champs de formulaire au style de Nova (audit C3, 2026-11-13, utilisateur). Spécificité nulle (:where) : toute règle
+ * de Nova plus précise (cases en interrupteur, tuiles, dominos...) l'emporte.
+ * - Liste déroulante : 40 px (36 dans un exercice), chevron de Nova, coins et bord des champs texte.
+ * - Liste à choix multiples : lignes espacées, choix en couleur d'accent douce.
+ * - Cases et boutons radio : 18 px, couleur d'accent (accent-color : coche native, accessible).
+ * - Champ de fichier : bouton de Nova. Curseur jQuery UI (moteur de recherche) : rail et poignée de Nova. */
+:where(select:not([multiple], [size]:not([size="1"], [size="0"]))) {
+  -webkit-appearance: none; appearance: none;
+  min-height: 40px; padding: 6px 36px 6px 12px; line-height: 1.3; cursor: pointer;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%235A6270" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>');
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 18px 18px;
+}
+:where(.oefstatement, .oefform) :where(select:not([multiple])) { min-height: 36px; }
+:where(select):focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+:where(select[multiple], select[size]:not([size="1"], [size="0"])) { padding: 4px; }
+:where(select[multiple], select[size]:not([size="1"], [size="0"])) > :where(option) { padding: 4px 8px; border-radius: 6px; }
+:where(select[multiple], select[size]:not([size="1"], [size="0"])) > :where(option:checked) { background: var(--nova-accent-doux); color: var(--nova-texte); font-weight: 600; }
+:where(input[type="checkbox"], input[type="radio"]) { accent-color: var(--nova-accent); width: 18px; height: 18px; margin: 0 6px 0 0; vertical-align: -3px; cursor: pointer; }
+:where(input[type="file"]) { font-family: var(--nova-police); font-size: var(--nova-petit); color: var(--nova-texte-2); }
+:where(input[type="file"])::file-selector-button {
+  margin-right: var(--nova-e3); padding: 8px 14px; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon);
+  background: var(--nova-surface); color: var(--nova-lien); font: 600 var(--nova-petit) var(--nova-police); cursor: pointer;
+}
+:where(input[type="file"])::file-selector-button:hover { background: var(--nova-accent-doux); border-color: var(--nova-accent); }
+html body .ui-slider.ui-slider-horizontal { height: 6px; border: 0; border-radius: 999px; background: var(--nova-note-np); }
+html body .ui-slider .ui-slider-range, html body .ui-slider .ui-slider-range.ui-widget-header { background: var(--nova-accent); border: 0; border-radius: 999px; }
+html body .ui-slider .ui-slider-handle { top: -8px; width: 22px; height: 22px; margin-left: -11px; border: 2px solid var(--nova-accent); border-radius: 50%; background: var(--nova-surface); cursor: grab; }
+html body .ui-slider .ui-slider-handle:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }

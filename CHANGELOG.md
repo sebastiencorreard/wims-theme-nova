@@ -86,6 +86,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Champs de formulaire au style de Nova partout : listes déroulantes de 40 px avec chevron, listes à choix multiples aérées, cases et boutons radio de 18 px à la couleur de la classe, bouton « Parcourir » d'un envoi de fichier, curseur « Niveau » du moteur de recherche.
 - Polices uniformes : le bloc de recherche des accueils, les accordéons et la barre d'outils de l'éditeur de texte prennent la police de Nova (plus de Verdana) ; « Désactiver l'éditeur », l'étiquette « New » et les petits textes de la taxonomie passent à 12 px au moins.
 - Titre de l'onglet du navigateur dans la langue de la page (« Notes », « Feuille d'exercices »… au lieu de « Scores of the participants », « Worksheet »), nom de la classe sur son accueil.
 - Accueil de l'élève plus rapide à s'afficher sur un téléphone modeste (environ deux fois moins de travail au chargement) : historique des examens et pastille des badges calculés en une fois, réglages du thème lus une seule fois.

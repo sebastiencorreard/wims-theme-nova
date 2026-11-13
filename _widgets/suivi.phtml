@@ -1,7 +1,11 @@
 !read themes/$wims_theme/lang/suivi.phtml.$lang
 <section id="nova-suivi" aria-labelledby="nova-suivi-titre">
   <div class="nova-suivi-haut">
-    <div><h1 id="nova-suivi-titre">$nova_sv_titre</h1><p id="nova-suivi-sous-titre">$nova_sv_sous_titre</p></div>
+    <div class="nova-suivi-titres">
+!if $wims_classname!=$empty
+<div class="wims_classname nova-ligne-classe">$wims_classname - $wims_institutionname</div>
+!endif
+<h1 id="nova-suivi-titre">$nova_sv_titre</h1><p id="nova-suivi-sous-titre">$nova_sv_sous_titre</p></div>
     <div class="nova-suivi-actions">
       <p id="nova-suivi-etat" role="status">$nova_sv_chargement</p>
       <label class="nova-suivi-auto"><input id="nova-suivi-auto" type="checkbox" checked> <span id="nova-suivi-auto-libelle">$nova_sv_actualiser</span></label>

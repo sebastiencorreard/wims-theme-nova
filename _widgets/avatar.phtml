@@ -25,6 +25,9 @@
 !set nova_ar=!line 9 of $nova_av
 !set nova_an=!line 10 of $nova_av
 <section id="nova-avatar-page" aria-labelledby="nova-avatar-titre">
+!if $wims_classname!=$empty
+<div class="wims_classname nova-ligne-classe">$wims_classname - $wims_institutionname</div>
+!endif
 <h1 id="nova-avatar-titre">$nova_av_titre</h1>
 !read themes/$wims_theme/lang/eleve-textes.phtml.$lang avatar
 <p class="nova-avatar-credits">$nova_av_credits</p>

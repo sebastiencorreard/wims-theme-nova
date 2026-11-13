@@ -33,6 +33,9 @@
 !set nova_nl=!linecnt $nova_ad
 
 <section id="nova-activite" aria-labelledby="nova-activite-titre">
+!if $wims_classname!=$empty
+<div class="wims_classname nova-ligne-classe">$wims_classname - $wims_institutionname</div>
+!endif
 <h1 id="nova-activite-titre">$wims_name_myactivity</h1>
 <div class="nova-activite-cartes">
 

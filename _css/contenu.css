@@ -1031,3 +1031,15 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
  * jusqu'au passage de nova.js (pas de « Chapitre 3 » qui clignote). */
 html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 .wimsbody .wims_seq_id.nova-seq-num { display: inline-flex; align-items: center; justify-content: center; align-self: center; min-width: 1.9em; height: 1.9em; padding: 0 .45em; box-sizing: border-box; border: 0; border-radius: 9px; background: var(--nova-accent); color: var(--nova-sur-accent); font-size: 1rem; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+/* Titres de page (audit C1, 2026-11-14, utilisateur, maquette A + ligne du haut de B) : un seul modèle, centré.
+ * Ligne du haut (classe - établissement) en petites capitales, couleur d'accent ; sous-titre gris, droit (pas d'italique).
+ * Pages de Nova (Mon activité, Mon avatar, Suivi en direct) : même ligne (gabarits) et titre centré. Aspect seul : pas de
+ * réglage « thème standard ». */
+.wimsbody .wims_classname { margin: 0 0 var(--nova-e1); font-size: .8125rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: center; color: var(--nova-lien); }
+.wimsbody .wims_classname :is(.wims_classdesc, .wims_institutiondesc) { font-size: inherit; color: inherit; }
+.wimsbody .wims_classname:empty { display: none; }
+.wimsbody h2.wims_subtitle { font-style: normal; font-weight: 600; font-size: 1.125rem; color: var(--nova-texte-2); }
+#nova-activite-titre, #nova-avatar-titre { text-align: center; }
+.nova-suivi-haut > .nova-suivi-titres { flex: 1 1 100%; text-align: center; }
+.nova-suivi-haut > .nova-suivi-titres + .nova-suivi-actions { margin-inline: auto; justify-content: center; }

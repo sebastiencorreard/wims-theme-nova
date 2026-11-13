@@ -1074,6 +1074,9 @@
     if (!t || standard('textes')) return;
     var titre = (t.getAttribute('data-titre') || '').replace(/<[^>]*>/g, '').trim();
     if (titre) document.title = titre;
+    // Titre de page vide (livret, export des notes) : celui du module (audit C1, 2026-11-14).
+    var h = document.querySelector('#wims_modu_title1 > h1.wims_title');
+    if (h && titre && !h.textContent.trim()) h.textContent = titre;
   }
 
   /* ===== js/src/20-composants.js : composants repris à Foundation et jQuery UI (accordéons, fenêtres, panneaux, onglets), carrousel, boutons collants, connexion ===== */

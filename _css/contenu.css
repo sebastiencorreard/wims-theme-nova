@@ -937,6 +937,69 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 /* Notes des feuilles et des examens centrées, « -- » et 0 compris (WIMS ne met une classe qu'aux cellules colorées) ;
  * 2026-11-12, utilisateur. Réglage « Tableaux du thème standard ». */
 html:not(.nova-std-tableaux) .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(:first-child) { text-align: center; }
+/* Détail des notes d'un élève en cartes (« Mes notes » de l'élève, détail vu par l'enseignant ; adm/class/userscore,
+ * getuser.phtml ; nova.js notesDetail ; audit A3, maquette A, 2026-11-13, utilisateur). Réglages « notes-eleve » et
+ * « notes-enseignant » du thème standard : tableaux de WIMS. Avant nova.js, tableaux cachés (secours 3 s). */
+html.nova-js:not(.nova-role-prof, .nova-std-notes-eleve) .wimsbody table.wimstable:is([id^="TABLE_sheet"], #TABLE_exam):not([data-nova-detail]),
+html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wimstable:is([id^="TABLE_sheet"], #TABLE_exam):not([data-nova-detail]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.wimsbody :is(.nova-nd, .nova-nd-moyenne) { box-sizing: border-box; max-width: 860px; margin-inline: auto; text-align: left; }
+.wimsbody .nova-nd-pied-texte { display: flex; flex-direction: column; gap: 2px; }
+.wimsbody .nova-nd-carte { background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); box-shadow: var(--nova-ombre); margin: 0 0 var(--nova-e3); overflow: hidden; }
+.wimsbody .nova-nd-titre-sec { font-size: 1rem; font-weight: 800; margin: var(--nova-e5) 2px var(--nova-e2); padding: 0; border: 0; text-align: left; }
+.wimsbody .nova-nd-petit { font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-nd-moyenne { padding: var(--nova-e3) var(--nova-e4) var(--nova-e2); margin-top: var(--nova-e4); }
+.wimsbody .nova-nd-moy-haut { display: flex; align-items: center; gap: var(--nova-e4); }
+.wimsbody .nova-nd-grand { font-family: var(--nova-police-chiffres); font-weight: 700; font-size: 2rem; line-height: 1; color: var(--nova-accent); }
+.wimsbody .nova-nd-moy-titre { font-weight: 700; }
+.wimsbody .nova-nd-echelle { position: relative; height: 8px; border-radius: 4px; background: var(--nova-note-np); margin: 30px 0 6px; }
+.wimsbody .nova-nd-plage { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: color-mix(in oklab, var(--nova-accent) 25%, var(--nova-surface)); }
+.wimsbody .nova-nd-moy-classe { position: absolute; top: -3px; width: 2px; height: 14px; margin-left: -1px; background: var(--nova-texte-2); }
+.wimsbody .nova-nd-moi { position: absolute; top: -6px; width: 4px; height: 20px; margin-left: -2px; border-radius: 2px; background: var(--nova-accent); }
+.wimsbody .nova-nd-moi::after { content: attr(data-texte); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--nova-accent); white-space: nowrap; }
+.wimsbody .nova-nd-legende { display: flex; justify-content: space-between; font-size: 12px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-pastille { flex: none; display: inline-block; min-width: 3.6em; padding: 3px 12px; border-radius: 999px; text-align: center; font-family: var(--nova-police-chiffres); font-weight: 700; font-size: var(--nova-petit); white-space: nowrap; background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-nd-pastille.nova-nd-vide { background: var(--nova-note-np); color: var(--nova-texte-2); }
+.wimsbody .nova-nd-ligne, .wimsbody .nova-nd-ex { display: flex; align-items: center; gap: var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-nd-carte > .nova-nd-ligne:first-child { border-top: 0; }
+.wimsbody .nova-nd-nom, .wimsbody .nova-nd-ex-corps { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.wimsbody .nova-nd-num { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--nova-texte-2); background: var(--nova-fond); border: 1px solid var(--nova-bord); }
+.wimsbody .nova-nd-restants { border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-nd-restants > summary { padding: 10px var(--nova-e4); font-size: var(--nova-petit); color: var(--nova-texte-2); cursor: pointer; }
+.wimsbody .nova-nd-feuille > summary { display: block; padding: var(--nova-e3) var(--nova-e4); cursor: pointer; list-style: none; }
+.wimsbody .nova-nd-feuille > summary::-webkit-details-marker { display: none; }
+.wimsbody .nova-nd-entete-haut { display: flex; align-items: center; gap: var(--nova-e2); }
+.wimsbody .nova-nd-noms { flex: 1; min-width: 0; }
+.wimsbody .nova-nd-etiquette { font-size: 12px; font-weight: 700; color: var(--nova-accent); text-transform: uppercase; letter-spacing: .04em; }
+.wimsbody .nova-nd-nom-feuille { font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.wimsbody .nova-nd-chevron { flex: none; width: 20px; height: 20px; background: var(--nova-texte-2); -webkit-mask: var(--nova-ic-chevron, url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>')) center / contain no-repeat; mask: var(--nova-ic-chevron, url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>')) center / contain no-repeat; }
+.wimsbody .nova-nd-feuille[open] .nova-nd-chevron { transform: rotate(180deg); }
+.wimsbody .nova-nd-segments { display: flex; gap: 3px; margin: 10px 0 6px; }
+.wimsbody .nova-nd-segments > i { flex: 1; height: 8px; border-radius: 4px; }
+.wimsbody .nova-nd-ex-titre { line-height: 1.3; }
+.wimsbody .nova-nd-ex-infos { margin-top: 2px; font-size: 13px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-pas-fait .nova-nd-ex-titre { color: var(--nova-texte-2); }
+.wimsbody .nova-nd-essais { display: inline-flex; flex-wrap: wrap; gap: 2px; margin-left: 6px; vertical-align: middle; }
+.wimsbody .nova-nd-essais > i { width: 9px; height: 9px; border-radius: 3px; }
+.wimsbody .nova-nd-plus { font-size: 11px; line-height: 9px; }
+.wimsbody .nova-nd-qualite { flex: none; min-width: 2.8em; padding: 3px 8px; border-radius: 8px; text-align: center; font-family: var(--nova-police-chiffres); font-weight: 700; font-size: var(--nova-petit); color: var(--nova-texte); }
+.wimsbody :is(.nova-nd-segments, .nova-nd-essais) > i.nova-nd-n-zero, .wimsbody .nova-nd-qualite.nova-nd-n-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+.wimsbody .nova-nd-n-rouge { background: var(--nova-note-rouge); }
+.wimsbody .nova-nd-n-orange { background: var(--nova-note-orange); }
+.wimsbody .nova-nd-n-jaune { background: var(--nova-note-jaune); }
+.wimsbody .nova-nd-n-vert { background: var(--nova-note-vert); }
+.wimsbody .nova-nd-qualite.nova-nd-n-vert { color: #fff; }
+.wimsbody .nova-nd-n-np { background: var(--nova-note-np); }
+.wimsbody .nova-nd-qualite.nova-nd-n-np { color: var(--nova-texte-2); font-weight: 400; }
+.wimsbody .nova-nd-pied { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nova-e2) var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); font-size: 13px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+/* Page « Notes » de l'enseignant, ligne « Afficher » (main.phtml : liens wims_button collés, choix en cours = span
+ * .disabled grisé ; 2026-11-13, utilisateur) : sélecteur, choix en cours en accent, autres en contour.
+ * Réglage « notes-enseignant » du thème standard. */
+:where(html:not(.nova-std-notes-enseignant)) .wimsbody .field.box:has(> a.wims_button[href*="job_affi="]) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+:where(html:not(.nova-std-notes-enseignant)) .wimsbody .field.box:has(> a.wims_button[href*="job_affi="]) > :is(a, span).wims_button { margin: 0; min-height: 0; height: auto; line-height: 1.25; padding: 7px 14px; border-radius: 999px; font-size: var(--nova-petit); font-weight: 600; box-shadow: none; }
+:where(html:not(.nova-std-notes-enseignant)) .wimsbody .field.box:has(> a.wims_button[href*="job_affi="]) > a.wims_button { background: var(--nova-surface); color: var(--nova-lien); border: 1px solid var(--nova-bord-fort); }
+:where(html:not(.nova-std-notes-enseignant)) .wimsbody .field.box:has(> a.wims_button[href*="job_affi="]) > a.wims_button:hover { background: var(--nova-accent-doux); border-color: var(--nova-accent); }
+:where(html:not(.nova-std-notes-enseignant)) .wimsbody .field.box:has(> a.wims_button[href*="job_affi="]) > span.wims_button.disabled { background: var(--nova-accent); color: var(--nova-sur-accent); border: 1px solid var(--nova-accent); opacity: 1; cursor: default; }
 /* Réponses à choix marquées dans l'énoncé (nova.js retourReponse, variante A, 2026-11-08) : cadre et pastille
  * ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié), accent (choisi, sans bonne réponse montrée) ;
  * choix non retenus pâlis. Le [k] de WIMS est inutile à côté. */

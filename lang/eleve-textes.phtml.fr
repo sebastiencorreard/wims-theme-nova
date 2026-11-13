@@ -45,3 +45,8 @@
       data-coul-degrades-aide="Barre du haut, boutons et titres des fenêtres. La première couleur sert aux liens." data-coul-verrou-degrade="Atteins le niveau %s du badge %b pour les dégradés." data-coul-degrades-noms="Crépuscule,Braise,Framboise,Soleil couchant,Océan,Aurore,Forêt,Nuit étoilée"
       data-coul-recompense="Au niveau %s : la couleur de ton WIMS." data-coul-recompense-deg="Au niveau %s : les dégradés." data-coul-recompense-deg2="Au niveau %s : les dégradés, une fois ta couleur débloquée." data-coul-verrou-degrade2="Atteins le niveau %s du badge %b pour les dégradés (après la couleur)." data-coul-choisir="Choisir ma couleur"></div>
 !exit
+
+:notes_detail
+!! _widgets/notes-detail.phtml (nova.js notesDetail)
+<template id="nova-notes-textes" data-moi="toi" data-eleve="élève" data-examen-restant="%1 examen pas encore passé" data-examens-restants="%1 examens pas encore passés" data-commence="%1 exercice sur %2 commencé" data-commences="%1 exercices sur %2 commencés" data-pas-commence="Pas encore commencé" data-pas-fait="Pas encore fait" data-tous="(tous les exercices)" data-ouvrir="Ouvrir la feuille" data-feuilles="Feuilles d'exercices"></template>
+!exit

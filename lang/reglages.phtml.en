@@ -76,6 +76,12 @@
 !set nova_std_tableaux=Standard tables
 !set nova_std_tableaux_aide=Table cells clickable only on their link or button.
 !set nova_std_tableaux_liste=<li>A table cell that contains a single link or button is no longer clickable as a whole: click the link or button itself; the cell no longer darkens on hover.</li><li>Teacher's Scores page: sheet and exam scores (« -- », 0...) left-aligned as WIMS writes them, instead of centred.</li>
+!set nova_std_notes_eleve=Standard student scores page
+!set nova_std_notes_eleve_aide=WIMS tables instead of cards, for students.
+!set nova_std_notes_eleve_liste=<li>The student's "My scores" page: WIMS tables (one row per exercise, columns Required points, Weight, Quality, Success, Last result, Number of tries, sortable) instead of the large average with its bar, exam score badges and one collapsible card per worksheet.</li>
+!set nova_std_notes_enseignant=Standard student detail and teacher Scores page
+!set nova_std_notes_enseignant_aide=WIMS tables instead of cards, for teachers.
+!set nova_std_notes_enseignant_liste=<li>Detail of a student's work (name clicked on the "Scores" page): WIMS tables instead of cards (average with its bar, exams, one collapsible card per worksheet).</li><li>"Scores" page: "Show" line with WIMS buttons instead of the selector (current choice in colour).</li>
 !set nova_app_activite=Students' "My activity" page
 !set nova_app_activite_aide=Replaces the WIMS page with a simple one: regularity, working time, latest scores.
 !set nova_app_act_seuil=Encourage students who work fewer than

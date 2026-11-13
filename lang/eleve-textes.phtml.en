@@ -45,3 +45,8 @@
       data-coul-degrades-aide="Top bar, buttons and window titles. The first colour is used for links." data-coul-verrou-degrade="Reach level %s of the %b badge for gradients." data-coul-degrades-noms="Twilight,Embers,Raspberry,Sunset,Ocean,Aurora,Forest,Starry night"
       data-coul-recompense="At level %s: the colour of your WIMS." data-coul-recompense-deg="At level %s: gradients." data-coul-recompense-deg2="At level %s: gradients, once your colour is unlocked." data-coul-verrou-degrade2="Reach level %s of the %b badge for gradients (after the colour)." data-coul-choisir="Choose my colour"></div>
 !exit
+
+:notes_detail
+!! _widgets/notes-detail.phtml (nova.js notesDetail)
+<template id="nova-notes-textes" data-moi="you" data-eleve="student" data-examen-restant="%1 exam not taken yet" data-examens-restants="%1 exams not taken yet" data-commence="%1 of %2 exercises started" data-commences="%1 of %2 exercises started" data-pas-commence="Not started yet" data-pas-fait="Not done yet" data-tous="(all exercises)" data-ouvrir="Open the worksheet" data-feuilles="Worksheets"></template>
+!exit

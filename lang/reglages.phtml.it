@@ -76,6 +76,12 @@
 !set nova_std_tableaux=Tabelle standard
 !set nova_std_tableaux_aide=Celle cliccabili solo sul loro link o pulsante.
 !set nova_std_tableaux_liste=<li>Una cella di tabella che contiene un solo link o pulsante non è più cliccabile per intero: bisogna cliccare sul link o sul pulsante, e la cella non si scurisce più al passaggio del mouse.</li><li>Pagina « Voti » dell'insegnante: voti di fogli ed esami (« -- », 0...) allineati a sinistra come li scrive WIMS, invece che centrati.</li>
+!set nova_std_notes_eleve=Pagina dei voti dello studente standard
+!set nova_std_notes_eleve_aide=Tabelle di WIMS invece delle schede, per gli studenti.
+!set nova_std_notes_eleve_liste=<li>Pagina "I miei voti" dello studente: le tabelle di WIMS (una riga per esercizio, colonne Punti richiesti, Peso, Qualità, Riuscita, Ultimo risultato, Numero di tentativi, ordinabili) invece della media in grande con la sua barra, dei voti d'esame in distintivi e di una scheda pieghevole per foglio.</li>
+!set nova_std_notes_enseignant=Dettaglio di uno studente e pagina Voti del docente standard
+!set nova_std_notes_enseignant_aide=Tabelle di WIMS invece delle schede, per il docente.
+!set nova_std_notes_enseignant_liste=<li>Dettaglio del lavoro di uno studente (nome cliccato nella pagina "Voti"): le tabelle di WIMS invece delle schede (media con la sua barra, esami, una scheda pieghevole per foglio).</li><li>Pagina "Voti": riga "Mostra" con i pulsanti di WIMS invece del selettore (scelta attuale a colori).</li>
 !set nova_app_activite=Pagina «La mia attività» degli studenti
 !set nova_app_activite_aide=Sostituisce la pagina di WIMS con una pagina semplice: regolarità, tempo di lavoro, ultimi voti.
 !set nova_app_act_seuil=Incoraggiare gli studenti che lavorano meno di

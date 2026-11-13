@@ -357,3 +357,282 @@
       new MutationObserver(relancer).observe(corps, { subtree: true, attributes: true, attributeFilter: ['style', 'aria-hidden', 'hidden'] });
     }
   }
+
+  /* « Mes notes » de l'élève et détail du travail d'un élève vu par l'enseignant (adm/class/userscore, getuser.phtml ;
+   * audit A3, maquette A choisie par l'utilisateur le 2026-11-13). Les tableaux de WIMS deviennent des cartes :
+   * - moyenne globale (div.wimscenter > b) : grand chiffre, phrase « min/moy/max » de WIMS, barre 0..max avec la plage de
+   *   la classe, sa moyenne et l'élève ;
+   * - examens (#TABLE_exam) : examens notés en pastille, les autres repliés (« N examens pas encore passés ») ;
+   * - une carte repliée (<details>) par feuille (table[id^=TABLE_sheet]) : étiquette (« Chapitre 1 », « Feuille 1 »), titre,
+   *   note en pastille, barre à segments (qualité de chaque exercice), indicateurs de WIMS ; ouverte : une ligne par
+   *   exercice (qualité en pastille de couleur, autres colonnes en petit, essais en petits carrés lus dans l'info-bulle
+   *   de WIMS), points requis et poids dits une fois s'ils sont communs, puis les infos de gauche de WIMS et le lien.
+   * Colonnes lues par leur en-tête : un exercice pas fait a toujours nb_indic+1 cases « -- » (WIMS), même si l'en-tête en
+   * a moins (en-tête sans « Réussite » au chapitre 2 du banc). Tableaux d'origine gardés, cachés (hidden).
+   * Réglages « Mes notes de l'élève » / « Détail d'un élève (enseignant) » du thème standard : notes-eleve,
+   * notes-enseignant (tableaux de WIMS). Avant nova.js, les tableaux sont cachés par le CSS (secours 3 s). */
+  function notesDetail() {
+    var examens = document.getElementById('TABLE_exam');
+    var feuilles = document.querySelectorAll('.wimsbody table.wimstable[id^="TABLE_sheet"]:not([data-nova-detail])');
+    if (!examens && !feuilles.length) return;
+    var mu = document.querySelector('meta[name="nova-utilisateur"]');
+    var prof = !!(mu && mu.content === 'supervisor');
+    var tous = Array.prototype.slice.call(feuilles);
+    if (examens && !examens.hasAttribute('data-nova-detail')) tous.push(examens);
+    if (standard(prof ? 'notes-enseignant' : 'notes-eleve')) {
+      tous.forEach(function (t) { t.setAttribute('data-nova-detail', 'std'); });
+      return;
+    }
+    var tx = document.getElementById('nova-notes-textes');
+    var texte = function (n, defaut) { return (tx && tx.getAttribute('data-' + n)) || defaut; };
+    var POINT = ' ' + String.fromCharCode(183) + ' ', TIRET = String.fromCharCode(8211);
+    var propre = function (s) { return (s || '').replace(/\s+/g, ' ').trim(); };
+    var nombre = function (s) { var m = /-?\d+(?:[.,]\d+)?/.exec(s || ''); return m ? parseFloat(m[0].replace(',', '.')) : NaN; };
+    // Niveau Nova d'une note sur 10 (palette A, decisions/eleve.md) : arrondi comme WIMS (adm/class/colors).
+    var niveau = function (v) {
+      if (isNaN(v)) return 'np';
+      if (v <= 0) return 'zero';
+      if (v <= 3) return 'rouge';
+      if (v <= 6) return 'orange';
+      if (v <= 8) return 'jaune';
+      return 'vert';
+    };
+    var el = function (tag, classe, contenu) {
+      var e = document.createElement(tag);
+      if (classe) e.className = classe;
+      if (contenu !== undefined && contenu !== null) e.textContent = contenu;
+      return e;
+    };
+    var pluriel = function (n, un, plusieurs, m) { return (n > 1 ? plusieurs : un).replace('%1', n).replace('%2', m === undefined ? '' : m); };
+    // Sauts de ligne « spacer » de WIMS avant un tableau remplacé (scripts de tri sautés) : retirés, la carte a sa marge.
+    var sansSauts = function (e) {
+      var p = e.previousElementSibling;
+      while (p && (p.tagName === 'SCRIPT' || (p.tagName === 'BR' && p.classList.contains('spacer')))) {
+        var q = p.previousElementSibling;
+        if (p.tagName === 'BR') p.parentNode.removeChild(p);
+        p = q;
+      }
+    };
+    var cacher = function (t, carte) {
+      var bloc = t.closest('.table-scroll, .wims_scrollable') || t;
+      bloc.parentNode.insertBefore(carte, bloc);
+      bloc.hidden = true;
+      t.setAttribute('data-nova-detail', '');
+      sansSauts(carte);
+    };
+    var pastille = function (valeur, max, classe) {
+      var v = propre(valeur);
+      var p = el('span', 'nova-nd-pastille' + (classe ? ' ' + classe : ''), isNaN(nombre(v)) ? TIRET + (max ? '/' + max : '') : v.replace(/\s+/g, '') + (max && v.indexOf('/') < 0 ? '/' + max : ''));
+      if (isNaN(nombre(v))) p.classList.add('nova-nd-vide');
+      return p;
+    };
+
+    // Moyenne globale (sans notes manuelles ; masquée par la classe : rien).
+    var moy = null;
+    Array.prototype.some.call(document.querySelectorAll('.wimsbody div.wimscenter'), function (d) {
+      if (d.querySelector(':scope > b') && /\/\s*\d/.test(d.textContent) && !d.closest('table')) { moy = d; return true; }
+      return false;
+    });
+    if (moy && !moy.hasAttribute('data-nova-detail')) {
+      moy.setAttribute('data-nova-detail', '');
+      var b = moy.querySelector(':scope > b'), petit = moy.querySelector('.small');
+      var avant = '', apres = '';
+      for (var n = moy.firstChild; n && n !== b; n = n.nextSibling) avant += n.textContent;
+      for (n = b.nextSibling; n && n !== petit; n = n.nextSibling) apres += n.textContent;
+      var max = nombre(apres) || 20;
+      var carteM = el('div', 'nova-nd-carte nova-nd-moyenne');
+      var haut = el('div', 'nova-nd-moy-haut');
+      haut.appendChild(el('span', 'nova-nd-grand', propre(b.textContent)));
+      var lib = el('div', 'nova-nd-moy-texte');
+      lib.appendChild(el('div', 'nova-nd-moy-titre', propre(avant).replace(/\s*:\s*$/, '') + ' /' + max));
+      if (petit) lib.appendChild(el('div', 'nova-nd-petit', propre(petit.textContent)));
+      haut.appendChild(lib);
+      carteM.appendChild(haut);
+      var vals = petit ? /([\d.,]+)\s*\/\s*([\d.,]+)\s*\/\s*([\d.,]+)\s*$/.exec(propre(petit.textContent)) : null;
+      var moi = nombre(b.textContent);
+      if (!isNaN(moi)) {
+        var pc = function (v) { return Math.max(0, Math.min(100, 100 * v / max)) + '%'; };
+        var ech = el('div', 'nova-nd-echelle');
+        ech.setAttribute('aria-hidden', 'true');
+        if (vals) {
+          var plage = el('span', 'nova-nd-plage');
+          plage.style.left = pc(nombre(vals[1]));
+          plage.style.right = 'calc(100% - ' + pc(nombre(vals[3])) + ')';
+          ech.appendChild(plage);
+          var mc = el('span', 'nova-nd-moy-classe');
+          mc.style.left = pc(nombre(vals[2]));
+          ech.appendChild(mc);
+        }
+        var m1 = el('span', 'nova-nd-moi');
+        m1.style.left = pc(moi);
+        m1.setAttribute('data-texte', prof ? texte('eleve', 'student') : texte('moi', 'you'));
+        ech.appendChild(m1);
+        carteM.appendChild(ech);
+        var leg = el('div', 'nova-nd-legende');
+        leg.setAttribute('aria-hidden', 'true');
+        [0, max / 2, max].forEach(function (v) { leg.appendChild(el('span', '', String(v))); });
+        carteM.appendChild(leg);
+      }
+      moy.parentNode.insertBefore(carteM, moy);
+      moy.hidden = true;
+    }
+
+    // Examens.
+    if (examens && !examens.hasAttribute('data-nova-detail')) {
+      var cap = examens.querySelector('caption');
+      var thNote = examens.querySelectorAll('thead th');
+      var maxE = thNote.length ? (/\/\s*(\d+)/.exec(thNote[thNote.length - 1].textContent) || [])[1] : '';
+      var bloc = el('section', 'nova-nd');
+      bloc.appendChild(el('h2', 'nova-nd-titre-sec', propre(cap ? cap.textContent : '')));
+      var carteE = el('div', 'nova-nd-carte'), restants = [];
+      Array.prototype.forEach.call(examens.querySelectorAll('tbody > tr'), function (tr) {
+        var td = tr.cells;
+        if (td.length < 3 || tr.querySelector('th')) return;   // en-tête rangé dans tbody (<caption> dans <thead> chez WIMS)
+        var ligne = el('div', 'nova-nd-ligne');
+        ligne.appendChild(el('span', 'nova-nd-num', propre(td[0].textContent)));
+        ligne.appendChild(el('span', 'nova-nd-nom', propre(td[1].textContent)));
+        ligne.appendChild(pastille(td[2].textContent, maxE));
+        if (isNaN(nombre(td[2].textContent))) restants.push(ligne); else carteE.appendChild(ligne);
+      });
+      if (restants.length) {
+        var rep = el('details', 'nova-nd-restants');
+        rep.appendChild(el('summary', '', pluriel(restants.length, texte('examen-restant', '%1 exam not taken yet'), texte('examens-restants', '%1 exams not taken yet'))));
+        restants.forEach(function (l) { rep.appendChild(l); });
+        carteE.appendChild(rep);
+      }
+      bloc.appendChild(carteE);
+      cacher(examens, bloc);
+    }
+
+    // Feuilles.
+    var section = null;
+    Array.prototype.forEach.call(feuilles, function (t, rang) {
+      var ths = Array.prototype.slice.call(t.querySelectorAll('thead tr:last-child > th'));
+      var noms = ths.map(function (th) { var tt = th.querySelector('.wims_tooltip'); return propre(tt ? tt.firstChild.textContent : th.textContent); });
+      var tete = t.querySelector('thead tr:first-child > th');
+      var gauche = tete && tete.querySelector('.float_left'), droite = tete && tete.querySelector('ul.float_right');
+      var lien = tete && tete.querySelector('a[href*="adm%2Fsheet"], a[href*="adm/sheet"]');
+      var chapeau = '';
+      if (gauche) { for (var nn = gauche.firstChild; nn; nn = nn.nextSibling) if (nn.nodeName !== 'UL') chapeau += nn.textContent; } else if (tete) chapeau = tete.textContent;
+      chapeau = propre(chapeau.replace(/\u00a0/g, ' '));
+      var coupe = /^(.*?)\s+:\s+(.*)$/.exec(chapeau);
+      var carte = el('details', 'nova-nd-carte nova-nd-feuille');
+      var thead = t.querySelector('thead[id]');
+      if (thead) carte.id = 'nova-' + thead.id;
+      var resume = el('summary', 'nova-nd-entete');
+      var bloc1 = el('div', 'nova-nd-entete-haut');
+      var noms1 = el('div', 'nova-nd-noms');
+      noms1.appendChild(el('div', 'nova-nd-etiquette', coupe ? coupe[1] : ''));
+      noms1.appendChild(el('div', 'nova-nd-nom-feuille', coupe ? coupe[2] : chapeau));
+      bloc1.appendChild(noms1);
+      var aide = null, indicateurs = [];
+      if (droite) Array.prototype.forEach.call(droite.querySelectorAll(':scope > li'), function (li, i) {
+        var a = li.querySelector('a.wims_button_help');
+        if (a) aide = a;
+        var s = '';
+        for (var k = li.firstChild; k; k = k.nextSibling) if (k !== a) s += k.textContent;
+        s = propre(s);
+        if (i === 0) {
+          var mm = /:\s*(.*)$/.exec(s);
+          bloc1.appendChild(pastille(mm ? mm[1] : s, ''));
+        } else indicateurs.push(s.replace(/\s*:\s*/, ' : ').replace(/\s+(\/|%)/g, '$1'));
+      });
+      bloc1.appendChild(el('span', 'nova-nd-chevron'));
+      resume.appendChild(bloc1);
+      // Exercices.
+      var lignes = [], communs = {}, faits = 0;
+      var iQual = noms.length > 4 ? 4 : -1;
+      Array.prototype.forEach.call(t.querySelectorAll('tbody > tr'), function (tr) {
+        var td = Array.prototype.slice.call(tr.cells);
+        if (td.length < 2) return;
+        var fait = td.length === noms.length && iQual >= 0 && !isNaN(nombre(td[iQual].textContent)) && propre(td[iQual].textContent) !== '--';
+        var qual = fait ? nombre(td[iQual].textContent) : NaN;
+        if (fait) faits++;
+        var infos = [];
+        [2, 3].forEach(function (c) {
+          if (!td[c] || !noms[c]) return;
+          var v = propre(td[c].textContent);
+          if (!(c in communs)) communs[c] = v; else if (communs[c] !== v) communs[c] = null;
+        });
+        var essais = null;
+        if (fait) td.forEach(function (cel, c) {
+          if (c < 5 || !noms[c]) return;
+          var tt = cel.querySelector('.wims_tooltip');
+          if (tt) {
+            infos.push(noms[c] + ' : ' + propre(tt.firstChild.textContent));
+            var graines = tt.querySelectorAll('.wims_seed_item');
+            if (graines.length) {
+              essais = el('span', 'nova-nd-essais');
+              essais.setAttribute('aria-hidden', 'true');
+              var liste = Array.prototype.slice.call(graines);
+              if (liste.length > 20) { essais.appendChild(el('span', 'nova-nd-plus', String.fromCharCode(8230))); liste = liste.slice(-20); }
+              liste.forEach(function (g) {
+                var v = parseFloat(g.getAttribute('title'));
+                var c2 = el('i', 'nova-nd-n-' + (isNaN(v) ? 'np' : niveau(Math.round(v))));
+                c2.title = g.getAttribute('title') || '';
+                essais.appendChild(c2);
+              });
+            }
+          } else infos.push(noms[c] + ' : ' + propre(cel.textContent));
+        });
+        lignes.push({ td: td, fait: fait, qual: qual, infos: infos, essais: essais });
+      });
+      var pNote = bloc1.querySelector('.nova-nd-pastille');
+      if (pNote && lignes.length && !faits) pNote.classList.add('nova-nd-vide');   // rien de commencé : grise (maquette A)
+      var seg = el('div', 'nova-nd-segments');
+      seg.setAttribute('aria-hidden', 'true');
+      lignes.forEach(function (l) { seg.appendChild(el('i', 'nova-nd-n-' + niveau(Math.ceil(l.qual)))); });
+      if (lignes.length) resume.appendChild(seg);
+      var bas = indicateurs.slice();
+      if (lignes.length) bas.push(faits ? pluriel(faits, texte('commence', '%1 of %2 exercises started'), texte('commences', '%1 of %2 exercises started'), lignes.length) : texte('pas-commence', 'Not started yet'));
+      resume.appendChild(el('div', 'nova-nd-petit', bas.join(POINT)));
+      carte.appendChild(resume);
+      lignes.forEach(function (l) {
+        var ex = el('div', 'nova-nd-ex' + (l.fait ? '' : ' nova-nd-pas-fait'));
+        ex.appendChild(el('span', 'nova-nd-num', propre(l.td[0].textContent)));
+        var corps = el('div', 'nova-nd-ex-corps');
+        corps.appendChild(el('div', 'nova-nd-ex-titre', propre(l.td[1].textContent)));
+        var infos = l.infos.slice();
+        [2, 3].forEach(function (c) { if (communs[c] === null && l.td[c]) infos.unshift(noms[c] + ' : ' + propre(l.td[c].textContent)); });
+        var d = el('div', 'nova-nd-ex-infos', l.fait ? infos.join(POINT) : texte('pas-fait', 'Not done yet'));
+        if (l.essais) d.appendChild(l.essais);
+        corps.appendChild(d);
+        ex.appendChild(corps);
+        var q = el('span', 'nova-nd-qualite nova-nd-n-' + niveau(Math.ceil(l.qual)), l.fait ? propre(l.td[iQual].textContent) : TIRET);
+        if (l.fait && noms[iQual]) q.title = noms[iQual];
+        ex.appendChild(q);
+        carte.appendChild(ex);
+      });
+      // Pied : points requis et poids communs, infos de gauche de WIMS (état, poids, formule, min/moy/max), aide, lien.
+      var pied = el('div', 'nova-nd-pied'), morceaux = [];
+      [2, 3].forEach(function (c) { if (communs[c]) morceaux.push(noms[c] + ' : ' + communs[c]); });
+      var piedTexte = el('span', 'nova-nd-pied-texte');
+      if (morceaux.length) piedTexte.appendChild(el('span', '', morceaux.join(POINT) + ' ' + texte('tous', '(all exercises)')));
+      // Infos de la feuille (état, poids de la feuille, formule, min/moy/max), précédées de « Chapitre 1 : » : le poids
+      // de la feuille ne se confond pas avec celui des exercices.
+      var infosF = [];
+      if (gauche) Array.prototype.forEach.call(gauche.querySelectorAll('li'), function (li) { var s2 = propre(li.textContent); if (s2) infosF.push(s2.replace(/\s*:\s*/, ' : ')); });
+      if (infosF.length) piedTexte.appendChild(el('span', '', (coupe ? coupe[1] + ' : ' : '') + infosF.join(POINT)));
+      if (piedTexte.firstChild) pied.appendChild(piedTexte);
+      var actions = el('span', 'nova-nd-actions');
+      if (aide) actions.appendChild(aide);
+      if (lien) { lien.className = (lien.className + ' nova-nd-lien').trim(); lien.textContent = texte('ouvrir', 'Open the worksheet'); actions.appendChild(lien); }
+      if (actions.firstChild) pied.appendChild(actions);
+      if (pied.firstChild) carte.appendChild(pied);
+      if (!section) {
+        section = el('section', 'nova-nd');
+        section.appendChild(el('h2', 'nova-nd-titre-sec', texte('feuilles', 'Worksheets')));
+        cacher(t, section);
+      } else {
+        var blocT = t.closest('.table-scroll, .wims_scrollable') || t;
+        blocT.hidden = true;
+        t.setAttribute('data-nova-detail', '');
+        sansSauts(blocT);
+      }
+      section.appendChild(carte);
+    });
+    // Feuille visée par l'adresse (#sheetN) : ouverte.
+    var h = /^#sheet(\d+)$/.exec(location.hash);
+    var cible = h && document.getElementById('nova-sheet' + h[1]);
+    if (cible) { cible.open = true; cible.scrollIntoView(); }
+  }

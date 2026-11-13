@@ -62,6 +62,10 @@
 !if ($module=adm/class/sheet or $module=adm/class/exam) and $wims_user!=$empty
   !read themes/$wims_theme/_widgets/fiche-ressource.phtml
 !endif
+!! Detail des notes d'un eleve en cartes (adm/class/userscore ; js/nova.js, notesDetail ; 2026-11-13).
+!if $module=adm/class/userscore and $wims_user!=$empty
+  !read themes/$wims_theme/_widgets/notes-detail.phtml
+!endif
 !! Liens de connexion (scripts/adm/class/links.phtml) : cartes et boutons Copier (js/nova.js, liensConnexion ; 2026-11-10).
 !if adm/class isin $module and $wims_user!=$empty
   !read themes/$wims_theme/lang/name-textes.phtml.$lang header

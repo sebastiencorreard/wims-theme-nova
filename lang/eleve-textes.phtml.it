@@ -45,3 +45,8 @@
       data-coul-degrades-aide="Barra in alto, pulsanti e titoli delle finestre. Il primo colore è usato per i link." data-coul-verrou-degrade="Raggiungi il livello %s del distintivo %b per le sfumature." data-coul-degrades-noms="Crepuscolo,Brace,Lampone,Tramonto,Oceano,Aurora,Foresta,Notte stellata"
       data-coul-recompense="Al livello %s: il colore del tuo WIMS." data-coul-recompense-deg="Al livello %s: le sfumature." data-coul-recompense-deg2="Al livello %s: le sfumature, una volta sbloccato il tuo colore." data-coul-verrou-degrade2="Raggiungi il livello %s del distintivo %b per le sfumature (dopo il colore)." data-coul-choisir="Scegli il mio colore"></div>
 !exit
+
+:notes_detail
+!! _widgets/notes-detail.phtml (nova.js notesDetail)
+<template id="nova-notes-textes" data-moi="tu" data-eleve="studente" data-examen-restant="%1 esame non ancora svolto" data-examens-restants="%1 esami non ancora svolti" data-commence="%1 esercizio su %2 iniziato" data-commences="%1 esercizi su %2 iniziati" data-pas-commence="Non ancora iniziato" data-pas-fait="Non ancora fatto" data-tous="(tutti gli esercizi)" data-ouvrir="Apri il foglio" data-feuilles="Fogli di esercizi"></template>
+!exit

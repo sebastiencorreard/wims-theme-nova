@@ -145,12 +145,12 @@
 }
 
 /* Sombre : automatique (réglage de l'appareil), mais SEULEMENT quand htmlheader.phtml pose
- * <meta name="nova-sombre"> (un gabarit ne peut pas toucher à <html> : :has() le remplace).
+ * <meta name="nova-sombre"> (classe html.nova-sombre posée par le script de tête ; avant : :root:has(meta), coûteux, audit B2 point 4).
  * Tant que le cadre provisoire de Standard et les feuilles métier gardent leurs couleurs écrites
  * en dur, le sombre rend des pages illisibles (texte clair sur encadré clair, constaté le
  * 2026-10-01) : htmlheader.phtml ne pose l'attribut qu'une fois toutes les surfaces couvertes. */
 @media (prefers-color-scheme: dark) {
-  :root:has(meta[name="nova-sombre"]) {
+  :root.nova-sombre {
     --nova-fond: #121418;
     --nova-surface: #1B1E23;
     --nova-surface-2: #23272E;
@@ -175,7 +175,7 @@
  * bleu, fonds blancs) : audit du 2026-10-01, 70 pages sur 88 illisibles en tout-sombre. Les jetons
  * reprennent donc leurs valeurs claires dans .wimsbody ; le cadre reste sombre. */
 @media (prefers-color-scheme: dark) {
-  :root:has(meta[name="nova-sombre"]) .wimsbody {
+  :root.nova-sombre .wimsbody {
     --nova-fond: #F5F6F8;
     --nova-surface: #FFFFFF;
     --nova-surface-2: #F0F2F5;
@@ -194,8 +194,8 @@
     color: var(--nova-texte);
     background: var(--nova-fond);
   }
-  :root:has(meta[name="nova-sombre"]) #wimspagebox { background: transparent; }
-  :root:has(meta[name="nova-sombre"]) .wimsbody {
+  :root.nova-sombre #wimspagebox { background: transparent; }
+  :root.nova-sombre .wimsbody {
     margin: var(--nova-e4);
     border-radius: var(--nova-rayon-carte);
   }

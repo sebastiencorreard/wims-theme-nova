@@ -717,7 +717,7 @@ html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(> a)), html:
 /* Élèves : sans les titres « Consigne : » et « Contenu » de WIMS (student.phtml, h2 avant #exam_desc et avant
  * la liste, parfois précédée d'un avertissement d'IP) — demande de l'utilisateur, 2026-10-03. En CSS : le
  * module relit ses textes en vue élève, une surcharge de traduction n'y tiendrait pas. */
-html:not(.nova-std-examens) body:has(#nova-eleve) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
+html:not(.nova-std-examens) body:is(.nova-role-eleve *, #nova-specificite) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
 
 /* Accueil de l'élève : bouton « 🏆 Mes notes 🏆 » tout en haut (user.phtml, demande de l'utilisateur, 2026-10-03). */
 .nova-mes-notes { margin: 0 0 var(--nova-e4); text-align: center; }
@@ -911,7 +911,7 @@ html.nova-js:not(.nova-std-reponse) .send_answer input[type="submit"]:not(.nova-
 
 /* Accueil d'un élève qui n'a qu'un cours (js/nova.js, coursUnique ; demande de l'utilisateur, 2026-10-05) :
  * caché pendant que nova.js l'emmène dans le cours ; s'il ne le fait pas (.nova-sans-saut), ou au plus 3 s. */
-.nova-js body:has(#nova-eleve) .wimsbody:has(> ul.wims_subclasses > li:only-child):not(.nova-sans-saut) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-js body:is(.nova-role-eleve *, #nova-specificite) .wimsbody:has(> ul.wims_subclasses > li:only-child):not(.nova-sans-saut) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 
 /* Animations coupées (js/nova.js, animationsCoupees : par défaut, sauf --nova-animations: oui ; toujours si
  * l'appareil demande de réduire les animations ; demandes de l'utilisateur, 2026-10-05). Durées ramenées à presque rien : l'état

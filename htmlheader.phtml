@@ -45,7 +45,7 @@ $wims_CSS
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
 <meta name="nova-type" content="$class_typename">
-<meta name="nova-css" content="071a8f08a0">
+<meta name="nova-css" content="b3b15f105a">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -123,6 +123,7 @@ $wims_CSS
   /* Role (2026-11-13) : html.nova-role-prof pour l'enseignant, tot (reglages notes-eleve / notes-enseignant, CSS). */
   var mu = document.querySelector('meta[name="nova-utilisateur"]');
   if (mu && mu.content === 'supervisor') d.classList.add('nova-role-prof');
+  if (document.querySelector('meta[name="nova-sombre"]')) d.classList.add('nova-sombre');
   /* Rubriques masquees aux eleves (meme memoire de session : jetons sans-communication, sans-liens). Reglage
      --nova-masques-eleves s'il est pose, sinon l'ancien --nova-communication-eleves. */
   var val = function (cle, nom) { try { var m2 = new RegExp('--nova-' + nom + '\\s*:\\s*([^;}\\n]*)').exec(sessionStorage.getItem(cle) || ''); return m2 ? m2[1].trim() : ''; } catch (e) { return ''; } };

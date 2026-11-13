@@ -276,7 +276,7 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
   /* Le menu remonte jusqu'à la barre du haut et recouvre le début du fil d'Ariane, dont le texte
    * commence déjà après lui (demande de l'utilisateur, 2026-10-03). Le fil d'Ariane prend pour cela
    * une hauteur fixe, sur une ligne ; le menu, fixe sous la barre, le recouvre. Élèves : pas de fil d'Ariane. */
-  body:has(#wimsbodybox > #wimsmenumodubox):not(:has(#nova-eleve)) .breadcrumbs {
+  body:has(#wimsbodybox > #wimsmenumodubox):not(:is(.nova-role-eleve *, #nova-specificite)) .breadcrumbs {
     box-sizing: border-box;
     height: 48px;
     flex-wrap: nowrap;
@@ -289,8 +289,8 @@ html:not(.nova-menu-edition) #wimsmenumodubox .menu_title.nova-replie + * { disp
    * sous le menu de gauche (z-index 100), qui en recouvre déjà le début, au-dessus du contenu. Les ancres de la page
    * s'arrêtent sous les deux bandes (64 + 48 px). Élèves : pas de fil d'Ariane (bouton Retour). Réglable (--nova-fil-fixe). */
   /* Réglage « Fil d'Ariane fixe » à « non » (page Apparence) : html.nova-fil-libre, le fil défile. */
-  html:not(.nova-fil-libre) body:not(:has(#nova-eleve)) > nav:has(> .breadcrumbs) { position: sticky; top: 64px; z-index: 90; background: var(--nova-fond); }
-  html:not(.nova-fil-libre):has(body:not(:has(#nova-eleve)) > nav > .breadcrumbs) { scroll-padding-top: 124px; }
+  html:not(.nova-fil-libre) body:not(:is(.nova-role-eleve *, #nova-specificite)) > nav:has(> .breadcrumbs) { position: sticky; top: 64px; z-index: 90; background: var(--nova-fond); }
+  html:not(.nova-fil-libre):has(body:not(:is(.nova-role-eleve *, #nova-specificite)) > nav > .breadcrumbs) { scroll-padding-top: 124px; }
 }
 
 /* Téléphone et tablette : menu replié à gauche, ouvert par le bouton de la barre du haut. */
@@ -969,7 +969,7 @@ html.nova-sans-animation .nova-menu-piste, html.nova-sans-animation .nova-menu-p
 
 /* Élèves : pas de fil d'Ariane ; « Retour » dans la barre (js/nova.js, retourEleve). */
 /* Où qu'il soit : dans la fenêtre d'un exercice d'examen, il est rangé dans #wimsexam (2026-10-03). */
-html:not(.nova-std-navigation) body:has(#nova-eleve) nav:has(> .breadcrumbs) { display: none; }
+html:not(.nova-std-navigation) body:is(.nova-role-eleve *, #nova-specificite) nav:has(> .breadcrumbs) { display: none; }
 #wimstopbox .menuitem.nova-retour {
   order: -2;
   flex-shrink: 0;
@@ -1182,27 +1182,27 @@ html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-
 /* Menu lateral hors de #wimsbodybox (page de reponse, HTML de module desequilibre) : nova.js placerMenu le
  * remet en place ; cache jusque-la pour ne pas le voir sous la page, visible au bout de 3 s sans nova.js. */
 html.nova-js #wimsmenumodubox:not(#wimsbodybox > *) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
-html.nova-js:not(.nova-profil-pret) body:is(:has(#wimsmenumodubox), :has(#nova-eleve)) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+html.nova-js:not(.nova-profil-pret) body:is(:has(#wimsmenumodubox), :is(.nova-role-eleve *, #nova-specificite)) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 /* Élève : plus de colonne à gauche, le menu latéral est le tiroir ☰ à toutes les largeurs (sans JavaScript, la
  * colonne reste). */
 @media (min-width: 1024px) {
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox {
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox > #wimsmenumodubox {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: min(320px, 86vw); max-height: none; min-height: 0; margin: 0;
     overflow-y: auto; z-index: 300; padding-top: var(--nova-e5);
     transform: translateX(-102%); transition: transform .2s ease;
     box-shadow: 0 0 32px rgb(0 0 0 / 25%); visibility: hidden;
   }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimstopbox .nova-menu-bouton { display: inline-flex; }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) > .nova-pied { padding-left: var(--nova-e5); }
-  html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsmenumodubox .menuitem { display: block; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimstopbox .nova-menu-bouton { display: inline-flex; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) > .nova-pied { padding-left: var(--nova-e5); }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menuitem { display: block; }
   /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
-  body:has(#nova-eleve).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
+  body:is(.nova-role-eleve *, #nova-specificite).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js:not(.nova-std-menus) body:has(#nova-eleve) #wimsbodybox > #wimsmenumodubox { transition: none; } }
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox > #wimsmenumodubox { transition: none; } }
 
 /* Réglage « Navigation complète pour l'élève » : liens du compte que Nova cache aux élèves (user_links.phtml). */
 html:not(.nova-std-navigation) #user_links > li.nova-lien-complet { display: none; }
@@ -1214,11 +1214,11 @@ html.nova-std-textes .nova-nom-nova { display: none; }
 html.nova-std-textes .nova-nom-std { display: inline; }
 /* Réglage « Rubrique Communication des élèves » à « non » : la rubrique (forum, écrire à l'enseignant) disparaît du
  * menu des élèves (2026-10-07). */
-html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)),
-html.nova-sans-communication body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)) + * { display: none !important; }
+html.nova-sans-communication body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)),
+html.nova-sans-communication body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menu_title:has(+ * :is(a.forum, a.mail)) + * { display: none !important; }
 /* Rubrique « Liens externes » (autres classes, liens de l'ENT qui sortent de WIMS) masquée aux élèves (2026-10-08). */
-html.nova-sans-liens body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))),
-html.nova-sans-liens body:has(#nova-eleve) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))) + * { display: none !important; }
+html.nova-sans-liens body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))),
+html.nova-sans-liens body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menu_title:has(+ * :is(a.U_oclass, a[href]:not([href*="wims.cgi"]))) + * { display: none !important; }
 /* Pied de page : lien vers les CGU (_widgets/footer.phtml, 2026-10-08). */
 .nova-pied { clear: both; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
 /* Pied de page en bas de l'écran même quand la page est courte (demande de l'utilisateur, 2026-10-08) : la page est une

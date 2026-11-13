@@ -167,6 +167,8 @@
     !read themes/$wims_theme/_procs/eleve.proc
     !if $nova_est_eleve=yes
       <span id="nova-eleve" hidden></span>
+      !! html.nova-role-eleve (audit B2 point 4, 2026-11-13) : remplace body:has(#nova-eleve) dans le CSS, recalcul moins cher.
+      <script>document.documentElement.classList.add('nova-role-eleve');</script>
       !! Nova : jetons de l'avatar a jour sur la page d'une feuille (retour d'exercice ; l'accueil passe par user.phtml).
       !if $module=adm/sheet
         !read themes/$wims_theme/_widgets/avatar-barre.phtml

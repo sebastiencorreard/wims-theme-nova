@@ -2297,32 +2297,82 @@
    * montre autant que la largeur de la carte le permet : la plus récente en grand, avec sa note ;
    * les plus anciennes qui ne tiennent pas se résument en « +k » (notes en infobulle). Recalculé
    * quand la carte change de largeur (rotation, fenêtre). */
+  /* Mesure groupée (audit B2, 2026-11-13) : l'ancienne boucle masquait une case puis relisait scrollWidth, une mise en
+   * page complète par case et par barre (226 ms sur l'accueil de l'élève, processeur ralenti six fois). Ici, pour
+   * toutes les barres à la fois : tout remettre, lire les largeurs (1 mise en page), poser les « +k » d'essai, les lire
+   * (1 mise en page), écrire, puis vérifier si une case de moins tient (1 mise en page). Même résultat que la boucle : le moins de cases masquées pour que la ligne tienne. */
+  function ajusterHistoriques(liste) {
+    var largeur = function (e) { var r = e.getBoundingClientRect(); return r.width; };
+    liste.forEach(function (h) {
+      Array.prototype.forEach.call(h.cases, function (li) { li.classList.remove('nova-ancienne'); });
+      if (h.plus.parentNode) h.plus.remove();
+      if (h.plus2 && h.plus2.parentNode) h.plus2.remove();
+    });
+    var aReduire = liste.filter(function (h) {
+      h.dispo = h.barre.clientWidth;
+      h.trop = h.ol.scrollWidth - h.dispo;
+      if (!h.dispo || h.trop <= 0) return false;
+      var cs = getComputedStyle(h.ol);
+      h.gap = parseFloat(cs.columnGap) || 0;
+      h.w = Array.prototype.map.call(h.cases, function (li) {
+        var c = getComputedStyle(li);
+        return largeur(li) + (parseFloat(c.marginLeft) || 0) + (parseFloat(c.marginRight) || 0);
+      });
+      return true;
+    });
+    if (!aReduire.length) return;
+    // « +k » d'essai : un chiffre, et deux si plus de dix cases peuvent être masquées.
+    aReduire.forEach(function (h) {
+      h.plus.textContent = '+8';
+      h.ol.insertBefore(h.plus, h.cases[0]);
+      if (h.n > 10) {
+        h.plus2 = h.plus2 || h.plus.cloneNode(false);
+        h.plus2.textContent = '+88';
+        h.ol.insertBefore(h.plus2, h.cases[0]);
+      }
+    });
+    aReduire.forEach(function (h) {
+      h.wPlus1 = largeur(h.plus) + h.gap;
+      h.wPlus2 = h.plus2 && h.plus2.parentNode ? largeur(h.plus2) + h.gap : h.wPlus1;
+    });
+    aReduire.forEach(function (h) {
+      if (h.plus2 && h.plus2.parentNode) h.plus2.remove();
+      var reste = h.trop, k;
+      for (k = 1; k < h.n; k++) {
+        reste -= h.w[k - 1] + h.gap;
+        if (reste + (k < 10 ? h.wPlus1 : h.wPlus2) <= 0) break;
+      }
+      if (k >= h.n) k = h.n - 1;
+      for (var i = 0; i < k; i++) h.cases[i].classList.add('nova-ancienne');
+      h.k = k;
+      // Les chiffres d'essai (« +8 », « +88 ») peuvent être plus larges que le vrai « +k » : essayer une case de moins.
+      if (k > 1) { h.cases[k - 1].classList.remove('nova-ancienne'); h.plus.textContent = '+' + (k - 1); }
+    });
+    aReduire.forEach(function (h) {
+      if (h.k > 1 && h.ol.scrollWidth <= h.dispo) h.k--;
+    });
+    aReduire.forEach(function (h) {
+      var k = h.k;
+      if (k > 1) h.cases[k - 1].classList.add('nova-ancienne');
+      h.plus.textContent = '+' + k;
+      h.plus.title = Array.prototype.slice.call(h.cases, 0, k).map(function (li) {
+        var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
+      }).join(' \u00B7 ');
+    });
+  }
+
   function historique(barre, cases) {
     barre.classList.add('nova-score-examen');
     var n = cases.length;
-    var ol = cases[0].parentNode;
     cases[n - 1].classList.add('nova-derniere');
     var plus = document.createElement('li');
     plus.className = 'nova-plus-anciennes';
-    var ajuster = function () {
-      Array.prototype.forEach.call(cases, function (li) { li.classList.remove('nova-ancienne'); });
-      if (plus.parentNode) plus.remove();
-      var dispo = barre.clientWidth;
-      if (!dispo || ol.scrollWidth <= dispo) return;
-      ol.insertBefore(plus, cases[0]);
-      for (var k = 1; k < n; k++) {
-        cases[k - 1].classList.add('nova-ancienne');
-        plus.textContent = '+' + k;
-        if (ol.scrollWidth <= dispo) break;
-      }
-      plus.title = Array.prototype.slice.call(cases, 0, k).map(function (li) {
-        var a = li.querySelector('a'); return a ? a.textContent.trim() : '';
-      }).join(' \u00B7 ');
-    };
-    ajuster();
+    var h = { barre: barre, cases: cases, n: n, ol: cases[0].parentNode, plus: plus };
+    var ajuster = function () { ajusterHistoriques([h]); };
     if (window.ResizeObserver) {
-      var largeur = barre.clientWidth, attente = 0;
+      var largeur = -1, attente = 0;
       new ResizeObserver(function () {
+        if (largeur < 0) { largeur = barre.clientWidth; return; }   // premier appel : déjà ajusté par scores()
         if (barre.clientWidth === largeur) return;
         largeur = barre.clientWidth;
         cancelAnimationFrame(attente);
@@ -2330,10 +2380,12 @@
       }).observe(barre);
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster);
+    return h;
   }
 
   function scores() {
     if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    var historiques = [];
     Array.prototype.forEach.call(document.querySelectorAll('.wims_score_bar'), function (barre) {
       if (barre.classList.contains('nova-score')) return;
       var cases = barre.querySelectorAll('ol > li');
@@ -2355,7 +2407,7 @@
           notes++;
         }
       });
-      if (notes) { historique(barre, cases); return; }
+      if (notes) { historiques.push(historique(barre, cases)); return; }
       if (barre.closest('li.wims_exam_item')) return;   // examen : pas de compteur de feuille
       var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
       var compte = document.createElement('span');
@@ -2363,6 +2415,7 @@
       compte.textContent = reussis + '/' + cases.length;
       barre.appendChild(compte);
     });
+    ajusterHistoriques(historiques);
     Array.prototype.forEach.call(document.querySelectorAll('.wimsbody li[class$="_item"] > :is(ul, div, span):not(.wims_score_bar, .wims_seq_item_n)'), function (bloc) {
       if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
     });

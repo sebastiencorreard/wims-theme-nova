@@ -92,6 +92,15 @@
 .property_fields .field input[type="number"] { width: 8rem; max-width: 100%; box-sizing: border-box; }
 @media (min-width: 640px) { .property_fields .field.box:not(.fullwidth, .halfwidth) { box-sizing: border-box; padding-right: var(--nova-e5); } }
 @media (max-width: 639.98px) { .wimsbody fieldset.property_fields { min-width: 0; } }
+/* Réponse d'un exercice hors énoncé (table.oefnoembed de scripts/oef/form.phtml), au téléphone (audit A1, 2026-11-13) : un
+ * champ garde la largeur de son attribut size (40 caractères : 391 px) et faisait déborder le cadre de réponse, qui défilait
+ * de côté. Le champ prend la place qui reste dans la ligne, sans la dépasser ; le fieldset peut se réduire. Correction de
+ * débordement, hors réglages std (comme property_fields). Pas les images cliquables : jamais réduites (contenu.css). */
+@media (max-width: 639.98px) {
+  .wimsbody fieldset.oefform { min-width: 0; }
+  .wimsbody table.oefnoembed { max-width: 100%; }
+  .wimsbody table.oefnoembed :is(input[type="text"], input[type="number"], input:not([type]), textarea, select) { width: 100%; box-sizing: border-box; }
+}
 .property_fields .field:has(> #formulaB) { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--nova-e2); }
 .property_fields .field:has(> #formulaB)::after { content: ""; order: 3; flex-basis: 100%; }
 .property_fields .field:has(> #formulaB) > label:first-child { order: 1; margin-bottom: 0; }

@@ -83,6 +83,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Téléphone : le cadre « Entrez votre réponse » d'un exercice ne dépasse plus de l'écran quand le champ de réponse est long ; le champ prend la place disponible.
 - Export des notes vers un tableur (enseignant) : le lien Config / Maintenance du pied de page a de nouveau son libellé (il était vide, avec deux engrenages).
 - Fil d'Ariane : plus de « * » en fin de fil sur une page sans titre (Configuration et maintenance, Séquences...).
 - Pages plus légères pour WIMS : les textes de Nova n'occupent plus la réserve de noms de variables (environ trois fois plus de marge sur la configuration d'une classe) ; moins de risque d'erreur « variable_name_buffer_overflow » sur les exercices lourds et la version imprimable d'une feuille.

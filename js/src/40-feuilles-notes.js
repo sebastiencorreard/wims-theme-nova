@@ -372,6 +372,14 @@
    * Réglages « Mes notes de l'élève » / « Détail d'un élève (enseignant) » du thème standard : notes-eleve,
    * notes-enseignant (tableaux de WIMS). Avant nova.js, les tableaux sont cachés par le CSS (secours 3 s). */
   function notesDetail() {
+    // Titre « Mes notes » de l'élève (2026-11-13, utilisateur) : page marquée par le gabarit (#nova-notes-titre, élève,
+    // job=getuser), qui cache le titre de WIMS jusqu'ici. Réglage notes-eleve : titre de WIMS.
+    var h1 = document.getElementById('nova-notes-titre') && document.querySelector('#wims_modu_title1 > h1.wims_title');
+    if (h1 && !h1.hasAttribute('data-nova-titre')) {
+      var txT = document.getElementById('nova-notes-textes');
+      if (!standard('notes-eleve') && txT && txT.getAttribute('data-titre')) h1.textContent = txT.getAttribute('data-titre');
+      h1.setAttribute('data-nova-titre', '');
+    }
     var examens = document.getElementById('TABLE_exam');
     var feuilles = document.querySelectorAll('.wimsbody table.wimstable[id^="TABLE_sheet"]:not([data-nova-detail])');
     if (!examens && !feuilles.length) return;

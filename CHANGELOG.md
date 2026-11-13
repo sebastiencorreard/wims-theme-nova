@@ -10,7 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
-- **Mes notes** en cartes : moyenne en grand avec une barre qui situe l'élève dans la classe, examens notés en pastilles (les autres repliés), une carte repliable par feuille avec sa note, une barre colorée par exercice et, ouverte, une ligne par exercice (qualité en couleur, réussite, dernier résultat, essais en petits carrés). Au téléphone, la page passe de 16 000 à 2 500 px environ. Réglage « Mes notes de l'élève du thème standard » pour garder les tableaux.
+- **Mes notes** en cartes : moyenne en grand avec une barre qui situe l'élève dans la classe, examens notés en pastilles (les autres repliés), une carte repliable par feuille avec sa note, une barre colorée par exercice et, ouverte, une ligne par exercice (qualité en couleur, réussite, dernier résultat, essais en petits carrés). Au téléphone, la page passe de 16 000 à 2 500 px environ. La page s'intitule « Mes notes », comme le bouton de l'accueil. Réglage « Mes notes de l'élève du thème standard » pour garder les tableaux et le titre de WIMS.
 - Portail, groupement : l'avatar et la couleur de l'élève sont recopiés dans chacun de ses cours ; la sauvegarde d'un seul cours les emporte.
 - Correction d'un exercice à réponses mêlées : colonnes centrées quand les réponses sont courtes (nombres, tuiles), à gauche sinon ; case laissée vide de la taille d'une tuile.
 - **Activité fermée** (et autres pages d'erreur de WIMS) : présentées en carte Nova, avec un cadenas quand l'accès est refusé ; en examen, le « Retour » qui ne faisait rien n'est plus affiché.

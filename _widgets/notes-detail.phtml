@@ -2,3 +2,8 @@
 !! eleve vu par l'enseignant ; audit A3, maquette A, 2026-11-13). nova.js notesDetail. Textes en clair :
 !! lang/eleve-textes.phtml.<lang>, etiquette notes_detail.
 !read themes/$wims_theme/lang/eleve-textes.phtml.$lang notes_detail
+!! Titre « Mes notes » de l'eleve (2026-11-13, utilisateur) au lieu de « Detail du travail de <nom> » : pose par nova.js
+!! (reglage notes-eleve), l'ancien cache jusque-la (secours 3 s). L'enseignant garde le titre de WIMS.
+!if $wims_user!=supervisor and $job=getuser
+<style id="nova-notes-titre">html.nova-js:not(.nova-std-notes-eleve) #wims_modu_title1 > h1.wims_title:not([data-nova-titre]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }</style>
+!endif

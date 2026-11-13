@@ -17,7 +17,7 @@
 !set nova_rg_rubrique=Ajustes de Nova
 !set nova_sv_titre=Seguimiento en directo
 !set nova_avs_titre=Avatares de los alumnos,Insignias de los alumnos
-!set nova_pied=Condiciones,Contacto
+!set nova_pied=Condiciones,Contacto,Config./Mantenim.
 !! Version imprimable d'une feuille (adm/sheet, job=print : tous les exercices calcules dans une seule page) : le tampon
 !! des noms de variables (32 Ko) y est presque plein avant la barre (debordement vu le 2026-11-12, serveur de l'utilisateur,
 !! dans ce fichier). Seuls les textes de la barre et du menu ci-dessus y sont lus ; nova.js prend ses textes de secours.

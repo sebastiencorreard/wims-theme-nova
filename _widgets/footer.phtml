@@ -5,7 +5,7 @@
 !! icones du jeu Font_Awesome de WIMS (rien avec default), comme dans la rubrique Profil.
 !! Enseignant, hors examen et outil (2026-11-12, utilisateur) : seulement "CGU", Config / Maintenance (dans une classe ou
 !! une zone) et "Nous contacter" (courriel du gestionnaire du site, $wims_site_manager : par defaut wims@<nom du serveur>) ;
-!! pas d'Aide. Reglage "Menus du theme standard" : comme avant. Textes : nova_pied (name.phtml), "CGU,Nous contacter".
+!! pas d'Aide. Reglage "Menus du theme standard" : comme avant. Textes : nova_pied (name.phtml), "CGU,Nous contacter,Config / Maintenance".
 !reset nova_pp
 !if ($wims_user=supervisor or yes isin $supervisable $user_supervisable) and _exam notin $wims_session and _tool notin $wims_session
   !read themes/$wims_theme/_widgets/std-menus.phtml
@@ -13,7 +13,7 @@
     !set nova_pp=1
   !endif
 !endif
-!default nova_pied=Terms,Contact us
+!default nova_pied=Terms,Contact us,Config/Maintenance
 <div class="nova-pied">
   <div class="wimsmenu menu nova-pied-groupe">
     <div class="menuitem cgu">
@@ -29,8 +29,14 @@
   !if $nova_pp=1
     !if $wims_class!=$empty
     <div class="menuitem SE_config">
+      !! Libelle de WIMS ; vide sur l'export des notes (adm/class/userscore, job=csv : html/name.phtml s'y arrete avant),
+      !! et !href sans texte ne referme pas le lien : texte de Nova (3e de nova_pied), audit A2, 2026-11-13.
       !set wims_ref_class=SE_config
-      !href module=adm/class/config $wims_name_SE_config
+      !set nova_pq=$wims_name_SE_config
+      !if $nova_pq=$empty
+        !set nova_pq=!item 3 of $nova_pied
+      !endif
+      !href module=adm/class/config $nova_pq
       !reset wims_ref_class
     </div>
     !endif

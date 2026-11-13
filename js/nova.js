@@ -8401,6 +8401,35 @@
       bouton(f, t('b-effacer'), 'r', function (b) { b.disabled = true; location.href = c.href; });
     }
 
+    // Message d'accueil (adm/class/motd) : WIMS efface sans rien demander ; Nova demande (audit C8, 2026-11-14).
+    // Lien d'un message (classe ou eleve) ou bouton du formulaire commun (eleves choisis ou tous).
+    function effacerMotd(titre, partir) {
+      var f = fenetre('corbeille', 'r', titre, '');
+      f.corps.appendChild(el('p', '', t('motd-effacer')));
+      annuler(f).focus();
+      bouton(f, t('b-effacer'), 'r', function (b) { b.disabled = true; partir(); });
+    }
+    document.addEventListener('click', function (ev) {
+      if (ev.defaultPrevented || ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || !tx.hasAttribute('data-motd-effacer')) return;
+      var m = ev.target.closest && ev.target.closest('.wimsbody a.wims_warning[href*="job=delete"], .wimsbody input.wims_warning[type="submit"]');
+      if (!m) return;
+      var href = m.getAttribute('href') || '';
+      var form = m.form;
+      if (href ? !/motd/.test(href) : !(form && form.querySelector('input[name="module"][value="adm/class/motd"]'))) return;
+      ev.preventDefault();
+      if (href) {
+        effacerMotd(t(/user=\.CLASS\./.test(href) ? 'motd-classe' : 'motd-eleve'), function () { location.href = m.href; });
+        return;
+      }
+      effacerMotd(t('motd-choix'), function () {
+        if (form.requestSubmit) { form.requestSubmit(m); return; }
+        var h = document.createElement('input');
+        h.type = 'hidden'; h.name = m.name; h.value = m.value;
+        form.appendChild(h);
+        form.submit();
+      });
+    }, true);
+
     document.addEventListener('click', function (ev) {
       if (ev.defaultPrevented || ev.button !== 0 || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
       var a = ev.target.closest && ev.target.closest('.nova-etat-menu a[href], .nova-statut-actions a[href]');

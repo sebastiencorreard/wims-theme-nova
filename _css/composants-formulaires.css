@@ -149,6 +149,22 @@
   color: var(--nova-texte);
   border-color: var(--nova-texte-2);
 }
+/* Boutons de danger (audit C8, 2026-11-14, utilisateur) : sur la page, contour rouge (comme « Désactiver » d'une fiche),
+ * au lieu du fond brun de WIMS (« .wims_button.wims_warning ») ; le rouge plein est réservé au bouton qui confirme, dans la
+ * fenêtre de Nova (.nova-conf). Couleur seule : pas de réglage « thème standard ». */
+body.main_body :is(a.wims_button, input[type="submit"], input[type="button"], button).wims_warning:not(.nova-conf *) {
+  border: 1px solid color-mix(in oklab, var(--nova-erreur) 45%, white);
+  background: var(--nova-surface);
+  background-image: none;
+  color: var(--nova-erreur);
+  box-shadow: none;
+  text-shadow: none;
+}
+body.main_body :is(a.wims_button, input[type="submit"], input[type="button"], button).wims_warning:not(.nova-conf *):is(:hover, :focus-visible) {
+  border-color: var(--nova-erreur);
+  background: var(--nova-erreur-fond);
+  color: var(--nova-erreur);
+}
 .legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
 .wims_emph { color: var(--nova-lien); }
 

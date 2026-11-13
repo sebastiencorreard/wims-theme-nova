@@ -24,6 +24,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Boutons « Effacer » en contour rouge, comme « Désactiver » ; le Message d'accueil demande confirmation avant d'effacer.
 - Accueil : colonne « No » des tableaux de feuilles, examens, documents… réduite à l'icône et au numéro (le mot « Feuille », « Examen »… reste en info-bulle et pour les lecteurs d'écran) ; lignes moins hautes.
 - Détail du travail d'un élève (nom cliqué dans « Notes ») : mêmes cartes que « Mes notes » de l'élève, avec tous les indicateurs. Page « Notes » : la ligne « Afficher » devient un sélecteur (choix en cours en couleur, autres boutons en contour, espacés). Réglage « Détail d'un élève et page Notes de l'enseignant du thème standard » pour garder la présentation de WIMS.
 - **Séquences pédagogiques** : état en pastille qui ouvre un menu (Activer ou Désactiver, Effacer avec confirmation), « Modifier » et flèches Monter / Descendre dans la barre de titre ; chaque séquence se replie (Tout replier / Tout déplier), et se déplace en la saisissant par sa barre de titre (au doigt : appui maintenu ; les autres cartes s'écartent, une silhouette marque sa place). Option « Numéro seul, sans mot générique » dans Configurer.

@@ -74,6 +74,10 @@
 !if ($module=adm/class/sheet or $module=adm/class/exam) and $wims_user!=$empty
   !read themes/$wims_theme/_widgets/fiche-ressource.phtml
 !endif
+!! Message d'accueil : confirmation de "Effacer" (js/nova.js, confirmationsRessources ; audit C8, 2026-11-14).
+!if $module=adm/class/motd and $wims_user=supervisor
+  !read themes/$wims_theme/_widgets/confirmations.phtml
+!endif
 !! Detail des notes d'un eleve en cartes (adm/class/userscore ; js/nova.js, notesDetail ; 2026-11-13).
 !if $module=adm/class/userscore and $wims_user!=$empty
   !read themes/$wims_theme/_widgets/notes-detail.phtml

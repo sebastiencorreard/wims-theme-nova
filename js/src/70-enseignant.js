@@ -2392,6 +2392,7 @@
         boucle = requestAnimationFrame(defiler);
       }
       function bouger(e) { dernier = e.clientY; suivre(); }
+      function bloquer(e) { if (e.cancelable) e.preventDefault(); }
       function rangPlace() {
         var k = 0;
         for (var x = parent.firstElementChild; x && x !== place; x = x.nextElementSibling) if (autres.indexOf(x) >= 0) k++;
@@ -2403,6 +2404,10 @@
         document.removeEventListener('pointerup', lacher);
         document.removeEventListener('pointercancel', annuler);
         document.removeEventListener('keydown', echap, true);
+        document.removeEventListener('touchmove', bloquer, { passive: false });
+        var sansClic = function (e) { e.stopPropagation(); e.preventDefault(); };
+        document.addEventListener('click', sansClic, true);
+        setTimeout(function () { document.removeEventListener('click', sansClic, true); }, 0);
         var rang = garder ? rangPlace() : rang0;
         var av = positions();
         if (rang !== rang0) parent.insertBefore(d, place);
@@ -2421,16 +2426,42 @@
       document.addEventListener('pointerup', lacher);
       document.addEventListener('pointercancel', annuler);
       document.addEventListener('keydown', echap, true);
+      document.addEventListener('touchmove', bloquer, { passive: false });
       boucle = requestAnimationFrame(defiler);
     }
+    // Toute la barre de titre sert de poignée (2026-11-13, utilisateur), sauf ses boutons et liens. Souris, stylet : le
+    // glisser part après 5 px de déplacement (un simple clic reste un clic). Doigt : sur la poignée, tout de suite ; ailleurs
+    // dans la barre, après un appui maintenu (sinon la page ne défilerait plus au doigt).
     cartes.forEach(function (d) {
-      var p = d.querySelector('.nova-seq-poignee');
-      if (!p) return;
-      p.addEventListener('pointerdown', function (ev) {
-        if (occupe || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
-        ev.preventDefault();
-        glisser(d, ev);
+      var tete = d.querySelector(':scope > .nova-seq-tete');
+      if (!tete || !d.querySelector('.nova-seq-poignee')) return;
+      tete.classList.add('nova-seq-saisissable');
+      tete.addEventListener('pointerdown', function (ev) {
+        if (occupe || !ev.isPrimary || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+        if (ev.target.closest('button, a, input, select, .nova-etat-menu')) return;
+        var surPoignee = !!ev.target.closest('.nova-seq-poignee');
+        if (surPoignee && ev.pointerType !== 'mouse') { ev.preventDefault(); glisser(d, ev); return; }
+        var x0 = ev.clientX, y0 = ev.clientY, attente = 0;
+        var depart = function (e) { arreter(); glisser(d, e); };
+        var arreter = function () {
+          clearTimeout(attente);
+          document.removeEventListener('pointermove', bouge);
+          document.removeEventListener('pointerup', arreter);
+          document.removeEventListener('pointercancel', arreter);
+        };
+        var bouge = function (e) {
+          var loin = Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0);
+          if (ev.pointerType === 'touch') { if (loin > 8) arreter(); }
+          else if (loin > 5) depart(e);
+        };
+        if (ev.pointerType === 'mouse') ev.preventDefault();
+        if (ev.pointerType === 'touch') attente = setTimeout(function () { depart({ clientX: x0, clientY: y0 }); if (navigator.vibrate) navigator.vibrate(15); }, 350);
+        document.addEventListener('pointermove', bouge);
+        document.addEventListener('pointerup', arreter);
+        document.addEventListener('pointercancel', arreter);
       });
+      // Pas de menu contextuel sur un appui long dans la barre.
+      tete.addEventListener('contextmenu', function (e) { if (!e.target.closest('a, button')) e.preventDefault(); });
     });
   }
 

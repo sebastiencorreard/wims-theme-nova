@@ -19,7 +19,7 @@
 .nova-activite-futur .nova-activite-point { background: transparent; box-shadow: inset 0 0 0 2px var(--nova-piste); }
 
 /* Messages : encourager (accent), bien et bravo (vert), pause (ambre), vacances (neutre). */
-.nova-activite-msg { margin: 0; padding: var(--nova-e3) var(--nova-e4); border-radius: 12px; line-height: 1.45; }
+.nova-activite-msg { margin: 0; padding: var(--nova-e3) var(--nova-e4); border-radius: var(--nova-rayon-carte); line-height: 1.45; }
 .nova-activite-msg-encourage { background: var(--nova-accent-doux); color: var(--nova-lien-survol); }
 .nova-activite-msg-bien, .nova-activite-msg-bravo { background: var(--nova-succes-fond); color: var(--nova-succes); }
 .nova-activite-msg-bravo { font-weight: 600; }
@@ -38,7 +38,7 @@
 /* Dernières notes : carré coloré (niveaux de WIMS, jetons --nova-note-*), exercice, quand. */
 .nova-activite-notes { display: flex; flex-direction: column; gap: var(--nova-e3); margin: 0; padding: 0; list-style: none; }
 .nova-activite-note { display: flex; align-items: center; gap: var(--nova-e3); min-width: 0; }
-.nova-activite-carre { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 4px; box-sizing: border-box; border-radius: 8px; font-family: var(--nova-police-chiffres); font-weight: 700; color: var(--nova-neutre-fort); }
+.nova-activite-carre { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 36px; padding: 0 4px; box-sizing: border-box; border-radius: var(--nova-rayon-petit); font-family: var(--nova-police-chiffres); font-weight: 700; color: var(--nova-neutre-fort); }
 .nova-activite-n-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1px var(--nova-note-contour); }
 .nova-activite-n-rouge { background: var(--nova-note-rouge); }
 .nova-activite-n-orange { background: var(--nova-note-orange); }

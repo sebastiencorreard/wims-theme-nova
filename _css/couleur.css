@@ -16,7 +16,7 @@ dialog.nova-couleur-fenetre { width: min(28rem, calc(100vw - 24px)); }
 .nova-couleur-bloc h3 { margin: 0; font-size: 1rem; }
 .nova-couleur-bloc p { margin: 0; }
 .nova-couleur-fenetre .nova-couleur-aide { color: var(--nova-texte-2); font-size: .9rem; }
-.nova-couleur-fenetre .nova-couleur-verrou { display: flex; gap: var(--nova-e2); align-items: center; padding: var(--nova-e2) var(--nova-e3); border-radius: 10px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: .9rem; }
+.nova-couleur-fenetre .nova-couleur-verrou { display: flex; gap: var(--nova-e2); align-items: center; padding: var(--nova-e2) var(--nova-e3); border-radius: var(--nova-rayon); background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: .9rem; }
 .nova-couleur-fenetre .nova-couleur-verrou::before { content: "\1F512"; }
 .nova-couleur-fenetre .nova-couleur-liste { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
 .nova-couleur-fenetre .nova-couleur-pastille { max-width: none; border-width: 3px; }
@@ -24,7 +24,7 @@ dialog.nova-couleur-fenetre { width: min(28rem, calc(100vw - 24px)); }
 .nova-couleur-fenetre .nova-couleur-pastille[aria-pressed="true"]::after { content: "\2713"; display: grid; place-items: center; height: 100%; color: #fff; font-weight: 700; font-size: 1.1rem; }
 .nova-couleur-degrades { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nova-e2); }
 .wimsbody .nova-couleur-degrade, .nova-couleur-degrade { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--nova-e3);
-  border: 3px solid #fff; border-radius: 10px; box-shadow: 0 0 0 1px var(--nova-bord-fort); color: #fff; font-weight: 700; font-size: .9rem; cursor: pointer; overflow: hidden; }
+  border: 3px solid #fff; border-radius: var(--nova-rayon); box-shadow: 0 0 0 1px var(--nova-bord-fort); color: #fff; font-weight: 700; font-size: .9rem; cursor: pointer; overflow: hidden; }
 .nova-couleur-degrade[aria-pressed="true"]::after { content: "\2713"; margin-left: auto; }
 .nova-couleur-degrade:focus-visible { outline: 3px solid var(--nova-texte); outline-offset: 3px; }
 /* Carte de rappel dans la fenêtre des badges */

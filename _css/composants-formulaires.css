@@ -51,7 +51,7 @@
 .property_fields .field > label:first-child {
   display: block;
   margin-bottom: var(--nova-e1);
-  font-size: .875rem;
+  font-size: var(--nova-petit);
   font-weight: 700;
   line-height: 1.4;
   color: var(--nova-texte);
@@ -134,7 +134,7 @@
 #affined_search > legend.ui-accordion-header:hover { background: var(--nova-surface-2); }
 #affined_search .ui-accordion-content { padding: var(--nova-e3) 0 0; border: 0; background: none; }
 #affined_search .field.box { min-height: 0; padding: var(--nova-e2) var(--nova-e3) var(--nova-e2) 0; border: 0; background: none; }
-#affined_search .field.box > label:first-child { font-size: .875rem; font-weight: 700; color: var(--nova-texte); }
+#affined_search .field.box > label:first-child { font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte); }
 /* Bouton secondaire (« Mot de passe oublié »…) : à contour, au lieu du dégradé gris de WIMS. */
 .main_body a.wims_button.wims_secondary_button, a.wims_button.wims_secondary_button, button.wims_secondary_button {
   background: var(--nova-surface);

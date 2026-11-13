@@ -47,6 +47,7 @@
   --nova-e5: 24px; --nova-e6: 32px; --nova-e7: 48px;
   --nova-rayon: 10px;
   --nova-rayon-carte: 12px;
+  --nova-rayon-petit: 8px;      /* petits éléments : pastilles carrées, options (audit C7, 2026-11-13) */
   --nova-cible: 44px;
   --nova-ombre: 0 1px 2px rgb(0 0 0 / 6%), 0 2px 8px rgb(0 0 0 / 4%);
 }

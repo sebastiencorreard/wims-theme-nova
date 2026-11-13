@@ -28,7 +28,7 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
 .nova-app-actions { display: flex; justify-content: flex-end; margin-top: var(--nova-e3); }
 /* Réglages repliés : l'attribut hidden seul perdait contre « li.field { display: block } » de WIMS (vécu, 2026-10-06). */
 .nova-sans-effet[hidden] { display: none !important; }
-.nova-app-repli { flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: 8px; background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.nova-app-repli { flex: 1 1 100%; width: 100%; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); margin: var(--nova-e3) 0; padding: var(--nova-e2) var(--nova-e3); border-radius: var(--nova-rayon-petit); background: var(--nova-surface-2); color: var(--nova-texte-2); font-size: var(--nova-petit); }
 .nova-app-repli-bouton { min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
 @media (max-width: 639.98px) { .nova-app-ligne { grid-template-columns: 1fr; } .nova-app-choix { justify-self: start; } }
 /* Paliers et vacances des badges (2026-10-07) : libellé au-dessus, champ sur toute la largeur. */
@@ -127,7 +127,7 @@ dialog.nova-badges-fenetre::backdrop { background: rgb(0 0 0 / 40%); }
 .nova-badge-haut { display: grid; grid-template-columns: 96px 1fr; gap: var(--nova-e3); align-items: center; }
 .nova-badge-haut img { width: 96px; height: 96px; }
 .nova-badge-haut h3 { margin: 0; font-size: 1.125rem; }
-.nova-badge-haut p { margin: 2px 0 0; font-size: .875rem; color: var(--nova-texte-2); }
+.nova-badge-haut p { margin: 2px 0 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 .nova-badge-haut p.nova-badge-niveau { font-weight: 700; color: var(--nova-accent); font-size: 1rem; }
 .nova-badge-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)); gap: var(--nova-e2); }
 .nova-badge-chiffres div { background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); padding: var(--nova-e2); text-align: center; }
@@ -183,7 +183,7 @@ html.nova-page-reglages .wimsbody :is(form:has(#pr_cssfile), .nova-rg-lien) { di
 .nova-puces-ajout { display: inline-flex; gap: var(--nova-e1); align-items: center; }
 .wimsbody .nova-puces-ajout input { font: inherit; font-weight: 400; width: 10rem; min-height: 32px; margin: 0; border-radius: 999px; padding: 0 12px; }
 .wimsbody .nova-puces-ajout .wims_button { margin: 0; min-height: 32px; padding-block: 0; }
-.nova-puces-retablir { all: unset; cursor: pointer; color: var(--nova-lien); text-decoration: underline; font-size: .875rem; }
+.nova-puces-retablir { all: unset; cursor: pointer; color: var(--nova-lien); text-decoration: underline; font-size: var(--nova-petit); }
 .nova-puces-retablir:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 /* Page Apparence : lien vers les réglages de Nova. */
 .wimsbody .nova-rg-lien { max-width: 54rem; margin-inline: auto; }
@@ -206,10 +206,10 @@ details.nova-app-std[open] > summary::after { transform: rotate(-135deg); }
 details.nova-app-std > summary:focus-visible, details.nova-app-detail > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; border-radius: var(--nova-rayon); }
 .nova-app-ligne.nova-app-ligne-std { grid-template-columns: minmax(0, 1fr) auto; }
 .nova-app-ligne-std > details.nova-app-detail { grid-column: 1 / -1; }
-details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: .875rem; }
+details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: var(--nova-petit); }
 details.nova-app-detail > summary::before { content: "\25B8"; }
 details.nova-app-detail[open] > summary::before { content: "\25BE"; }
-details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem; display: grid; gap: 4px; font-size: .875rem; color: var(--nova-texte-2); }
+details.nova-app-detail > ul { margin: var(--nova-e1) 0 0; padding-left: 1.2rem; display: grid; gap: 4px; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 /* Les details de la section ne sont pas des cartes (règle générale des details de .wimsbody, plus haut). */
 .wimsbody details.nova-app-std, .wimsbody details.nova-app-detail { background: none; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none; border-radius: 0; padding-left: 0; padding-right: 0; margin-bottom: 0; }
 .wimsbody details.nova-app-detail { border-top: 0; padding: 0; margin: 0; }

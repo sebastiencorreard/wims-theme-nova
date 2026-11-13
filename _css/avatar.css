@@ -22,7 +22,7 @@
 .nova-avatar-portrait { width: 200px; max-width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: transparent; }   /* fond transparent de l'avatar : rien derrière (utilisateur, 2026-11-07) */
 .nova-avatar-portrait img { display: block; width: 100%; height: 100%; }
 /* Fond transparent choisi ou essayé : damier blanc et gris sous l'aperçu (convention, utilisateur, 2026-11-12). */
-.nova-avatar-portrait.nova-avatar-transparent { background-color: #fff;
+.nova-avatar-portrait.nova-avatar-transparent { background-color: var(--nova-surface);
   background-image: conic-gradient(#d4d4d4 25%, transparent 0 50%, #d4d4d4 0 75%, transparent 0); background-size: 20px 20px; }
 .nova-avatar-jetons { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; font-size: 1.15rem; font-weight: 700; }
 .nova-avatar-jetons .nova-piece { width: 30px; height: 30px; }
@@ -40,9 +40,9 @@
 .nova-avatar-compte { margin-left: 4px; font-size: .75rem; opacity: .8; }
 .nova-avatar-note { margin: var(--nova-e2) 0 var(--nova-e3); font-size: .9rem; color: var(--nova-texte-2); }
 .nova-avatar-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
-.nova-avatar-tuile { position: relative; aspect-ratio: 1; padding: 4px; border: 2px solid var(--nova-bord); border-radius: 12px;
+.nova-avatar-tuile { position: relative; aspect-ratio: 1; padding: 4px; border: 2px solid var(--nova-bord); border-radius: var(--nova-rayon-carte);
   background: var(--nova-surface); cursor: pointer; }
-.nova-avatar-tuile img { display: block; width: 100%; height: 100%; border-radius: 8px; }
+.nova-avatar-tuile img { display: block; width: 100%; height: 100%; border-radius: var(--nova-rayon-petit); }
 .nova-avatar-tuile.nova-avatar-porte { border-color: var(--nova-accent); box-shadow: 0 0 0 2px var(--nova-accent-doux); }
 .nova-avatar-tuile.nova-avatar-ferme img { opacity: .62; }   /* fermé : en couleur, un peu effacé (maquette A, 2026-11-07) */
 .nova-avatar-cadenas { position: absolute; left: 4px; top: 4px; display: grid; place-items: center; width: 20px; height: 20px;
@@ -63,9 +63,9 @@
 .nova-avatar-prix.nova-avatar-etoile { background: var(--nova-accent-doux); color: var(--nova-lien); border-color: var(--nova-accent); }
 .nova-avatar-tuile .nova-avatar-prix { position: absolute; right: 4px; bottom: 4px; }
 .nova-avatar-confirmer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e3); margin-top: var(--nova-e3);
-  padding: var(--nova-e3) var(--nova-e4); border: 1.5px solid var(--nova-accent); border-radius: 12px; background: var(--nova-accent-doux); }
+  padding: var(--nova-e3) var(--nova-e4); border: 1.5px solid var(--nova-accent); border-radius: var(--nova-rayon-carte); background: var(--nova-accent-doux); }
 .nova-avatar-confirmer[hidden], .nova-avatar-confirmer [hidden] { display: none; }   /* .wims_button l'emportait sur hidden (bouton Ouvrir vide, élément de badge) */
-.nova-avatar-confirmer img { width: 56px; height: 56px; border-radius: 10px; background: var(--nova-surface); }
+.nova-avatar-confirmer img { width: 56px; height: 56px; border-radius: var(--nova-rayon); background: var(--nova-surface); }
 .nova-avatar-confirmer p { flex: 1; min-width: 12rem; margin: 0; }
 /* Téléphone : le grand portrait est hors de l'écran pendant un essai ; l'aperçu du bandeau passe en grand (2026-11-07, utilisateur). */
 @media (max-width: 760px) {
@@ -169,7 +169,7 @@
 /* Badges cote a cote, sans chevauchement : taille selon leur nombre (--nova-n, pose par nova.js), 34 px au plus. */
 .nova-avatars-medailles { position: absolute; left: -6px; right: -6px; bottom: -18px; display: flex; justify-content: center; gap: 2px; }
 /* Quatre badges : petit niveau, pour qu'il ne cache pas l'image au telephone. */
-.nova-avatars-quatre .nova-avatars-niv { right: -2px; bottom: -2px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 8px; font-size: 10px; line-height: 15px; }
+.nova-avatars-quatre .nova-avatars-niv { right: -2px; bottom: -2px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: var(--nova-rayon-petit); font-size: 10px; line-height: 15px; }
 .nova-avatars-medaille { position: relative; display: block; flex: none; width: min(34px, calc((100% - 6px) / var(--nova-n, 3))); height: auto; aspect-ratio: 1; margin: 0; border-radius: 50%;
   background: var(--nova-surface); box-shadow: 0 0 0 2px var(--nova-surface), 0 1px 4px rgb(28 33 41 / .18); }
 .nova-avatars-medaille img { display: block; width: 100%; height: 100%; max-width: none; margin: 0; }
@@ -188,7 +188,7 @@
 .nova-avatars-dialogue { width: min(36rem, calc(100vw - 32px)); }
 .nova-avatars-fiche { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--nova-e4); align-items: start; }
 .nova-avatars-grand { width: 160px; height: 160px; border-radius: 16px; overflow: hidden; background: var(--nova-piste); }
-.nova-avatars-grand.nova-avatar-transparent { background-color: #fff;
+.nova-avatars-grand.nova-avatar-transparent { background-color: var(--nova-surface);
   background-image: conic-gradient(#d4d4d4 25%, transparent 0 50%, #d4d4d4 0 75%, transparent 0); background-size: 20px 20px; }
 .nova-avatars-texte h2 { margin: 0 40px 2px 0; font-size: 1.3rem; }
 .nova-avatars-login { margin: 0 0 var(--nova-e3); color: var(--nova-texte-2); font-size: .9rem; }

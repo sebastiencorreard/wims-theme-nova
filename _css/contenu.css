@@ -119,7 +119,7 @@
   padding: var(--nova-e3) var(--nova-e4) var(--nova-e3) var(--nova-e3);
   min-height: 64px;
   border: 1px solid var(--nova-bord);
-  border-radius: 12px;
+  border-radius: var(--nova-rayon-carte);
   background: var(--nova-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
   vertical-align: top;
@@ -141,7 +141,7 @@
   width: 36px;
   height: 36px;
   margin: 0;
-  border-radius: 10px;
+  border-radius: var(--nova-rayon);
   background: var(--nova-type-fond) var(--nova-type-icone) center / 20px no-repeat;
   -webkit-mask: none; mask: none;   /* jeu Lucide : masque posé sur .wims_<type>_item:before, pas sur ces cartes */
 }
@@ -312,7 +312,7 @@ ul.wims_serie_bar > li {
   border-radius: 999px;
   background: var(--nova-surface);
   color: var(--nova-texte-2);
-  font-size: .875rem;
+  font-size: var(--nova-petit);
   font-weight: 700;
   line-height: 1;
   cursor: default;
@@ -399,7 +399,7 @@ li.wims_sheet_item:not(:has(> a)), li.wims_exam_item:not(:has(> a)), li.wims_doc
   border-radius: 999px;
   background: var(--nova-type-fond);
   box-shadow: none;
-  font-size: .875rem;
+  font-size: var(--nova-petit);
   transform: none;
 }
 li.wims_sheet_item:not(:has(> a))::before, li.wims_exam_item:not(:has(> a))::before, li.wims_doc_item:not(:has(> a))::before, li.wims_vote_item:not(:has(> a))::before, li.wims_tool_item:not(:has(> a))::before, li.wims_glossary_item:not(:has(> a))::before, li.wims_freework_item:not(:has(> a))::before {
@@ -418,7 +418,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
 /* ---------- Barres de score (charte Nova) ----------
  * Feuille : un segment arrondi par exercice + compteur « réussis/total » ; examen : pastille de
  * note. Couleurs (WIMS les écrit parfois en ligne : !important) :
- *   non commencé #E3E6EB · commencé #F0A830 · réussi #2E9E5B · excellent #17734A (liseré or)
+ *   non commencé var(--nova-note-np) · commencé #F0A830 · réussi #2E9E5B · excellent #17734A (liseré or)
  *   · à retravailler #E06A4E ; notes : faible corail, moyen ambre, bon vert (fond doux, texte foncé). */
 :where(html:not(.nova-std-listes)) .wimsbody li.nova-vide, :where(html:not(.nova-std-listes)) .wimsbody .nova-vide{ display: none !important; }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score{
@@ -449,7 +449,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   border-radius: 5px;
   box-shadow: none;
   overflow: hidden;
-  background: #E3E6EB !important;
+  background: var(--nova-note-np) !important;
 }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li a{ display: block; width: 100%; height: 100%; font-size: 0; color: transparent; }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li:hover{ box-shadow: 0 0 0 2px var(--nova-accent); }
@@ -497,7 +497,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
   list-style: none;
   padding: 0 6px;
   border-radius: 999px;
-  background: #E3E6EB !important;
+  background: var(--nova-note-np) !important;
   color: var(--nova-texte-2);
   font-size: .75rem;
   font-weight: 700;
@@ -648,7 +648,7 @@ html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(> a)), html:
   margin: 0;
   padding: 12px 14px;
   border: 1px solid var(--nova-bord);
-  border-radius: 12px;
+  border-radius: var(--nova-rayon-carte);
   background: var(--nova-surface);
   box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
   color: var(--nova-texte);
@@ -671,7 +671,7 @@ html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(> a)), html:
   border-radius: 50%;
   background: var(--nova-accent-doux);
   color: var(--nova-accent);
-  font-size: .875rem;
+  font-size: var(--nova-petit);
   font-weight: 700;
 }
 :where(html:not(.nova-std-listes)) ol.wims_exam.nova-exam-liste > li.exo_item::before{ margin: 0; }
@@ -731,7 +731,7 @@ html:not(.nova-std-examens) body:is(.nova-role-eleve *, #nova-specificite) .wims
   border-radius: 999px;
   background: var(--nova-accent);
   color: var(--nova-sur-accent);
-  font-size: 1.0625rem;
+  font-size: var(--nova-corps);
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 4px 14px color-mix(in oklab, var(--nova-accent) 30%, transparent);
@@ -797,7 +797,7 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   margin: var(--nova-e4) 0;
   padding: var(--nova-e3) var(--nova-e4);
   border: 1px solid;
-  border-radius: 12px;
+  border-radius: var(--nova-rayon-carte);
   position: relative;
 }
 .nova-verdict::before {
@@ -826,7 +826,7 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   display: inline-block;
   padding: 0 .4em;
   border: 2px solid var(--nova-erreur);
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: var(--nova-erreur-fond);
   color: var(--nova-erreur);
 }
@@ -851,7 +851,7 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   display: inline-block;
   padding: 0 .4em;
   border: 2px solid var(--nova-succes);
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: var(--nova-succes-fond);
   color: var(--nova-succes);
 }
@@ -859,7 +859,7 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   display: inline-block;
   padding: 0 .4em;
   border: 2px solid var(--nova-attention);
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: var(--nova-attention-fond);
   color: var(--nova-attention-texte);
 }
@@ -981,7 +981,7 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 .wimsbody .nova-nd-essais { display: inline-flex; flex-wrap: wrap; gap: 2px; margin-left: 6px; vertical-align: middle; }
 .wimsbody .nova-nd-essais > i { width: 9px; height: 9px; border-radius: 3px; }
 .wimsbody .nova-nd-plus { font-size: 11px; line-height: 9px; }
-.wimsbody .nova-nd-qualite { flex: none; min-width: 2.8em; padding: 3px 8px; border-radius: 8px; text-align: center; font-family: var(--nova-police-chiffres); font-weight: 700; font-size: var(--nova-petit); color: var(--nova-texte); }
+.wimsbody .nova-nd-qualite { flex: none; min-width: 2.8em; padding: 3px 8px; border-radius: var(--nova-rayon-petit); text-align: center; font-family: var(--nova-police-chiffres); font-weight: 700; font-size: var(--nova-petit); color: var(--nova-texte); }
 .wimsbody :is(.nova-nd-segments, .nova-nd-essais) > i.nova-nd-n-zero, .wimsbody .nova-nd-qualite.nova-nd-n-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
 .wimsbody .nova-nd-n-rouge { background: var(--nova-note-rouge); }
 .wimsbody .nova-nd-n-orange { background: var(--nova-note-orange); }
@@ -1003,7 +1003,7 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 /* Réponses à choix marquées dans l'énoncé (nova.js retourReponse, variante A, 2026-11-08) : cadre et pastille
  * ✓ (choisi, juste), ✕ (choisi à tort), ! en pointillé (oublié), accent (choisi, sans bonne réponse montrée) ;
  * choix non retenus pâlis. Le [k] de WIMS est inutile à côté. */
-.oefstatement .nova-choix { position: relative; display: inline-block; border: 3px solid var(--nova-bord-fort); border-radius: 10px; padding: 2px 6px; background: var(--nova-surface); }
+.oefstatement .nova-choix { position: relative; display: inline-block; border: 3px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); padding: 2px 6px; background: var(--nova-surface); }
 .oefstatement .nova-choix.nova-choix-image { padding: 0; line-height: 0; }
 .oefstatement .nova-choix.nova-choix-image img { border-radius: 7px; }
 /* Choix en texte (ou formule en image, 2026-11-08) : marge à droite pour la pastille, qui ne couvre plus le texte. */

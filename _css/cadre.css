@@ -41,7 +41,7 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   align-items: center;
   min-height: var(--nova-cible);
   padding: 0 var(--nova-e3);
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   color: var(--nova-sur-accent);
   font-size: 1rem;
   text-decoration: none;
@@ -634,7 +634,7 @@ body.nova-examen-session #wimstopbox .nova-compte-seul .text_item, body.nova-exa
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--nova-surface);
   box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
   transition: transform .15s;
 }
@@ -965,7 +965,7 @@ html.nova-sans-animation .nova-menu-piste, html.nova-sans-animation .nova-menu-p
 }
 .nova-fin-session .nova-fin-session-bouton:hover { filter: brightness(1.1); color: #fff; }
 #wimstopbox .nova-examen-a-terminer a,
-#wimstopbox .menuitem.nova-examen-a-terminer:not(.is-submenu-item) > a { background: #fff; color: var(--nova-accent); }
+#wimstopbox .menuitem.nova-examen-a-terminer:not(.is-submenu-item) > a { background: var(--nova-surface); color: var(--nova-accent); }
 
 /* Élèves : pas de fil d'Ariane ; « Retour » dans la barre (js/nova.js, retourEleve). */
 /* Où qu'il soit : dans la fenêtre d'un exercice d'examen, il est rangé dans #wimsexam (2026-10-03). */
@@ -1069,10 +1069,10 @@ html:not(.nova-std-navigation) body:is(.nova-role-eleve *, #nova-specificite) na
   min-width: 38px;
   height: 32px;
   padding: 0 6px;
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: rgb(255 255 255 / 14%);
   color: var(--nova-sur-accent);
-  font-size: .875rem;
+  font-size: var(--nova-petit);
   font-weight: 700;
   line-height: 1;
   text-decoration: none;

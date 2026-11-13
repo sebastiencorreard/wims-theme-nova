@@ -31,7 +31,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: none;
   box-shadow: none;
   cursor: pointer;
@@ -79,7 +79,7 @@
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--nova-rayon-petit);
   background: var(--nova-surface);
   color: var(--nova-texte);
   box-shadow: 0 1px 0 rgb(0 0 0 / 25%);
@@ -95,7 +95,7 @@
 .nova-clavier .nova-touche sup { font-size: .62em; line-height: 0; vertical-align: .6em; }
 .nova-clavier .nova-touche:is(.f, .nav, .abc) { background: color-mix(in oklab, var(--nova-texte) 9%, var(--nova-surface)); }
 .nova-clavier .nova-touche.f { font-size: 1.125rem; }
-.nova-clavier .nova-touche.abc { font-size: .875rem; font-weight: 700; letter-spacing: .03em; }
+.nova-clavier .nova-touche.abc { font-size: var(--nova-petit); font-weight: 700; letter-spacing: .03em; }
 .nova-clavier .nova-touche.ok { background: var(--nova-accent); color: var(--nova-sur-accent); font-size: 1rem; font-weight: 700; }
 .nova-clavier .nova-touche.s2 { grid-column: span 2; }
 .nova-clavier .nova-touche:active { background: var(--nova-accent-doux); }

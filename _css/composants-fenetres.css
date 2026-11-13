@@ -67,7 +67,7 @@
 .nova-dialogue::backdrop { background: rgb(20 20 30 / 45%); }
 .nova-dialogue > .reveal { display: block; position: static; top: auto; width: auto; max-width: none; padding: 0; border: 0; background: none; }
 .nova-dialogue h1 { margin: 0 32px var(--nova-e3) 0; font-size: 1.25rem; }
-.nova-dialogue .close-button { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; font-size: 1.5rem; line-height: 1; color: var(--nova-texte-2); cursor: pointer; }
+.nova-dialogue .close-button { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border: 0; border-radius: var(--nova-rayon-petit); background: none; font-size: 1.5rem; line-height: 1; color: var(--nova-texte-2); cursor: pointer; }
 .nova-dialogue .close-button:hover { background: var(--nova-accent-doux); }
 .nova-dialogue .wimscenter { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--nova-e2); margin-top: var(--nova-e3); }
 /* Panneau « Abandonner » (scripts/oef/Main.phtml) : jQuery UI en fait une boîte de dialogue au
@@ -108,7 +108,7 @@ body.main_body :is(.wims_button, button, input).wims_secondary_button:hover {
   color: var(--nova-texte);
   border-color: var(--nova-texte-2);
 }
-body.main_body .wims_button_help { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; font-size: .875rem; min-height: 36px; padding: 0 var(--nova-e3); background-image: none; box-shadow: none; text-shadow: none; }
+body.main_body .wims_button_help { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; font-size: var(--nova-petit); min-height: 36px; padding: 0 var(--nova-e3); background-image: none; box-shadow: none; text-shadow: none; }
 
 /* Boîtes de dialogue jQuery UI (« Abandonner » d'un exercice, alertes de WIMS) : la même carte que
  * la confirmation (.nova-dialogue), au lieu du thème « smoothness » (barre de titre grise en dégradé,
@@ -135,7 +135,7 @@ body.main_body .wims_button_help { display: inline-flex; align-items: center; ju
 .ui-dialog .ui-dialog-titlebar-close {
   top: 0; right: 0; margin: 0;
   width: 36px; height: 36px;
-  border: 0; border-radius: 8px;
+  border: 0; border-radius: var(--nova-rayon-petit);
   background: none;
 }
 .ui-dialog .ui-dialog-titlebar-close:hover { background: var(--nova-accent-doux); }
@@ -191,7 +191,7 @@ body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover 
   gap: var(--nova-e2);
   padding: 14px 18px;
   list-style: none;
-  font-size: 1.0625rem;
+  font-size: var(--nova-corps);
   font-weight: 700;
   color: var(--nova-texte);
   cursor: pointer;

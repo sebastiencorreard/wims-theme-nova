@@ -1043,3 +1043,25 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
 #nova-activite-titre, #nova-avatar-titre { text-align: center; }
 .nova-suivi-haut > .nova-suivi-titres { flex: 1 1 100%; text-align: center; }
 .nova-suivi-haut > .nova-suivi-titres + .nova-suivi-actions { margin-inline: auto; justify-content: center; }
+
+/* Accueil de l'enseignant en cartes (audit D4, 2026-11-14, utilisateur, maquette B) : carte « classe » (nova.js
+ * accueilEnseignantCartes) et carte des onglets de ressources ; le moteur de recherche est déjà une carte (fieldset).
+ * Aspect seul : pas de réglage « thème standard ». Avant nova.js : bloc de bienvenue masqué (secours 3 s). */
+.wimsbody > .nova-carte-classe,
+.wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content {
+  margin: var(--nova-e4) 0;
+  padding: var(--nova-e4) var(--nova-e5);
+  border: 1px solid var(--nova-bord);
+  border-radius: var(--nova-rayon-carte);
+  background: var(--nova-surface);
+  box-shadow: var(--nova-ombre);
+}
+.wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content { padding-top: var(--nova-e3); }
+.nova-carte-classe > :first-child { margin-top: 0; }
+.nova-carte-classe > :last-child { margin-bottom: 0; }
+.nova-carte-classe > .wimscenter { margin-top: var(--nova-e3); }
+@media (max-width: 640px) {
+  .wimsbody > .nova-carte-classe,
+  .wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content { padding: var(--nova-e3); }
+}
+html.nova-js.nova-role-prof:not(.nova-cartes-pretes) .wimsbody > :is(.wims_greetings, .wims_greetings ~ a.wims_button_help, p.wims_connected, .wims_connected + .wimscenter) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

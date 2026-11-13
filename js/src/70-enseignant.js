@@ -2810,3 +2810,35 @@
       else effacerDevoir(c);
     });
   }
+
+  // Accueil de l'enseignant en cartes (audit D4, 2026-11-14, utilisateur, maquette B) : bienvenue, échéance, Guide,
+  // participants connectés et lien des séquences rangés dans une carte, avant celle des onglets (CSS). Cartes : aspect
+  // seul, pas de réglage « thème standard ». Masqués avant son passage (contenu.css) : nova-cartes-pretes les révèle.
+  function accueilEnseignantCartes() {
+    var racine = document.documentElement;
+    try {
+      var corps = document.querySelector('.wimsbody');
+      // Accueil d'une classe, d'un groupement ou d'un portail : onglets des ressources ou moteur de recherche (classe vide).
+      var salut = corps && corps.querySelector(':scope > .wims_greetings');
+      if (!salut || !racine.classList.contains('nova-role-prof') || !corps.querySelector(':scope > :is(#widget_supervisor_list, #wims_supervisor_search)')) return;
+      var carte = document.createElement('section');
+      carte.className = 'nova-carte-classe';
+      salut.parentNode.insertBefore(carte, salut);
+      // Jusqu'au premier bloc qui n'en fait pas partie : onglets, moteur, message de WIMS (« Pour démarrer rapidement »).
+      // « Aucun participant connecté » : div.wims_msg juste après le bouton Guide (sans liste), gardé dans la carte.
+      var fin = function (e) {
+        if (e.nodeType !== 1) return false;
+        if (e.matches('#widget_supervisor_list, #wims_supervisor_search, fieldset, form')) return true;
+        if (!e.matches('div.wims_msg')) return false;
+        var dernier = carte.lastElementChild;
+        return !(dernier && dernier.matches('a.wims_button_help, .wims_greetings') && !e.querySelector('ul, ol'));
+      };
+      for (var x = carte.nextSibling; x && !fin(x);) {
+        var suivant = x.nextSibling;
+        if (!(x.nodeType === 1 && x.matches('script, style, template'))) carte.appendChild(x);
+        x = suivant;
+      }
+    } finally {
+      racine.classList.add('nova-cartes-pretes');
+    }
+  }

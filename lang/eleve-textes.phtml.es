@@ -50,3 +50,8 @@
 !! _widgets/notes-detail.phtml (nova.js notesDetail)
 <template id="nova-notes-textes" data-titre="Mis notas" data-moi="tú" data-eleve="alumno" data-examen-restant="%1 examen aún no hecho" data-examens-restants="%1 exámenes aún no hechos" data-commence="%1 de %2 ejercicios empezado" data-commences="%1 de %2 ejercicios empezados" data-pas-commence="Aún no empezada" data-pas-fait="Aún no hecho" data-tous="(todos los ejercicios)" data-ouvrir="Abrir la hoja" data-feuilles="Hojas de ejercicios"></template>
 !exit
+
+:feuille
+!! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
+<template id="nova-feuille-textes" data-feuille="Hoja %1" data-reussi="%1 ejercicio logrado de %2" data-reussis="%1 ejercicios logrados de %2" data-etat-reussi="Logrado" data-etat-cours="En curso" data-etat-faire="Por hacer" data-points="%1 / %2 puntos" data-entrainement="Modo práctica" data-entrainement-aide="Tus respuestas no se califican mientras esté activado."></template>
+!exit

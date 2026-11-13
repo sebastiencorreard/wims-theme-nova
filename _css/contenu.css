@@ -1065,3 +1065,39 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
   .wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content { padding: var(--nova-e3); }
 }
 html.nova-js.nova-role-prof:not(.nova-cartes-pretes) .wimsbody > :is(.wims_greetings, .wims_greetings ~ a.wims_button_help, p.wims_connected, .wims_connected + .wimscenter) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+
+/* Feuille de l'élève, progression d'abord (audit D2, 2026-11-14, utilisateur, maquette B ; nova.js feuilleProgression) :
+ * carte d'en-tête (résumé, segments par exercice colorés par la qualité, validité, « Mode entraînement ») ; par exercice,
+ * état en étiquette, barre de points, « x / R points » et qualité en petit ; essais (carrés) non montrés.
+ * Réglage « Feuilles et examens en liste ». Avant nova.js : scores et bouton de WIMS masqués (secours 3 s). */
+:where(html:not(.nova-std-listes)) .nova-feuille-etat { margin: var(--nova-e4) 0; padding: var(--nova-e4) var(--nova-e5); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); }
+:where(html:not(.nova-std-listes)) .nova-feuille-resume strong { font-size: var(--nova-corps); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments { display: flex; gap: 3px; margin: var(--nova-e2) 0 var(--nova-e3); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > i { flex: 1; height: 8px; border-radius: 4px; background: var(--nova-note-np); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-rouge { background: var(--nova-note-rouge); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-orange { background: var(--nova-note-orange); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-jaune { background: var(--nova-note-jaune); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-vert { background: var(--nova-note-vert); }
+:where(html:not(.nova-std-listes)) .nova-feuille-etat > .nova-feuille-validite { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) .nova-entrainement { display: flex; align-items: center; gap: var(--nova-e3); min-height: var(--nova-cible); margin-top: var(--nova-e3); padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); color: var(--nova-texte); text-decoration: none; }
+:where(html:not(.nova-std-listes)) .nova-entrainement:hover { color: var(--nova-texte); }
+:where(html:not(.nova-std-listes)) .nova-entrainement:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 4px; border-radius: 4px; }
+:where(html:not(.nova-std-listes)) .nova-entrainement-texte { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+:where(html:not(.nova-std-listes)) .nova-entrainement-texte > strong { font-size: var(--nova-petit); }
+:where(html:not(.nova-std-listes)) .nova-entrainement-texte > span { font-size: .8125rem; color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) .nova-interrupteur { position: relative; flex: none; width: 44px; height: 26px; border-radius: 999px; background: var(--nova-bord-fort); transition: background-color .15s; }
+:where(html:not(.nova-std-listes)) .nova-interrupteur::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--nova-surface); box-shadow: 0 1px 2px rgb(0 0 0 / 20%); transition: left .15s; }
+:where(html:not(.nova-std-listes)) .nova-entrainement[aria-checked="true"] .nova-interrupteur { background: var(--nova-accent); }
+:where(html:not(.nova-std-listes)) .nova-entrainement[aria-checked="true"] .nova-interrupteur::after { left: 21px; }
+html.nova-sans-animation .nova-interrupteur, html.nova-sans-animation .nova-interrupteur::after { transition: none; }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.wims_exo_item.nova-exo-b { grid-template-columns: 36px minmax(0, 1fr) auto; }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.wims_exo_item.nova-exo-b > :not(a, .nova-etat-exo) { grid-column: 2 / -1; }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.wims_exo_item.nova-exo-b > .nova-etat-exo { grid-column: 3; grid-row: 1; align-self: center; padding: 3px 9px; border-radius: 999px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-reussi { background: var(--nova-succes-fond); color: var(--nova-succes); }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-cours { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-faire { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.nova-exo-b .wims_score_bar { display: none; }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.nova-exo-b .nova-barre-reussite { height: 8px; border-radius: 4px; background: var(--nova-note-np); }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-exo-chiffres { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--nova-e2); margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
+html.nova-js.nova-role-eleve:not(.nova-feuille-prete, .nova-std-listes) :is(ol.wims_sheet_list .wims_sheet_score, ol.wims_sheet_list .wims_score_bar, .wimsbody > a.wims_button[href*="job=suspend"], .wimsbody > a.wims_button[href*="job=reopen"]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

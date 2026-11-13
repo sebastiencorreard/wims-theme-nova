@@ -2,6 +2,7 @@
   /* ===== js/src/40-feuilles-notes.js : cartes de feuille, scores, notes ===== */
   function feuilleExercices() {
     if (standard('listes')) return;   // réglage « Feuilles et examens en liste »
+    if (feuilleProgression()) return;
     Array.prototype.forEach.call(document.querySelectorAll('ol.wims_sheet_list .wims_sheet_score'), function (bloc) {
       if (bloc.querySelector('.nova-scores')) return;
       var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, puces = [], pourcent = null;
@@ -643,4 +644,111 @@
     var h = /^#sheet(\d+)$/.exec(location.hash);
     var cible = h && document.getElementById('nova-sheet' + h[1]);
     if (cible) { cible.open = true; cible.scrollIntoView(); }
+  }
+
+  /* Feuille vue par l'élève, progression d'abord (audit D2, 2026-11-14, utilisateur, maquette B) : en tête, une carte
+   * « n exercices réussis sur N » (segments colorés par la qualité), la validité de la feuille (texte de WIMS) et
+   * « Mode entraînement », interrupteur à la place de « Suspendre l'enregistrement » / « Réactiver » (mêmes liens) ;
+   * par exercice, un état (Réussi, En cours, À faire), une barre de points et « x / R points », la qualité en petit.
+   * Scores de WIMS (adm/sheet/class.phtml) : « Qualité: m/10 », puis « Réussite: p% » (ou meilleure réussite, ou
+   * niveau /10 selon la sévérité de la feuille), « Points requis:R », éventuellement « Essais: a/b » ; lus par la forme
+   * des valeurs, pas par les libellés (toutes langues). Réglage « Feuilles et examens en liste » (feuilleExercices) ;
+   * sous-titre « Feuille n » : réglage « textes ». Sans textes (#nova-feuille-textes, élève seulement) : étiquettes. */
+  function feuilleProgression() {
+    var tx = document.getElementById('nova-feuille-textes');
+    var liste = document.querySelector('.wimsbody ol.wims_sheet_list');
+    var racine = document.documentElement;
+    if (!tx || !liste) { racine.classList.add('nova-feuille-prete'); return false; }
+    var t = function (k, a, b) { return (tx.getAttribute('data-' + k) || '').replace('%1', a == null ? '' : a).replace('%2', b == null ? '' : b); };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte != null) e.textContent = texte; return e; };
+    var num = function (v) { return parseFloat(String(v).replace(',', '.')); };
+    var niveau = function (q) { var n = Math.round(q); return n <= 0 ? 'zero' : n <= 3 ? 'rouge' : n <= 6 ? 'orange' : n <= 8 ? 'jaune' : 'vert'; };
+    try {
+      // Sous-titre « Feuille d'exercices No1 » : « Feuille 1 ».
+      var st = document.querySelector('#wims_modu_title1 > h2.wims_subtitle');
+      var mn = st && /(\d+)\D*$/.exec(st.textContent);
+      if (mn && !standard('textes') && t('feuille', mn[1])) st.textContent = t('feuille', mn[1]);
+
+      var exos = [];
+      Array.prototype.forEach.call(liste.querySelectorAll(':scope > li.wims_exo_item'), function (li) {
+        var bloc = li.querySelector('.wims_sheet_score');
+        if (!bloc || li.classList.contains('nova-exo-b')) return;
+        var texte = bloc.textContent.replace(/\s+/g, ' ').trim(), re = /([^:\d][^:]*?)\s*:\s*([\d.,]+(?:\s*\/\s*[\d.,]+)?\s*%?)/g, m, jetons = [];
+        while ((m = re.exec(texte))) jetons.push({ lib: m[1].trim(), val: m[2].replace(/\s+/g, '') });
+        if (!jetons.length || !/\//.test(jetons[0].val)) return;
+        var e = { li: li, qualite: num(jetons[0].val), libQualite: jetons[0].lib, valQualite: jetons[0].val, p: null, pourcent: false, requis: null, autres: [] };
+        jetons.slice(1).forEach(function (j) {
+          if (e.p === null && /%$/.test(j.val)) { e.p = num(j.val); e.pourcent = true; }
+          else if (e.p === null && /\/10$/.test(j.val) && e.requis === null) { e.p = num(j.val) * 10; e.prog = j; }
+          else if (e.requis === null && /^[\d.,]+$/.test(j.val)) e.requis = num(j.val);
+          else e.autres.push(j);
+        });
+        if (e.p === null || isNaN(e.p)) return;
+        var essais = Array.prototype.some.call(li.querySelectorAll('.wims_seed_item'), function (x) { return /^\d/.test(x.getAttribute('title') || ''); });
+        e.etat = e.p >= 100 ? 'reussi' : (e.p > 0 || e.qualite > 0 || essais) ? 'cours' : 'faire';
+        exos.push(e);
+      });
+      if (!exos.length) return false;
+
+      exos.forEach(function (e) {
+        var li = e.li, bloc = li.querySelector('.wims_sheet_score');
+        li.classList.add('nova-exo-b');
+        var etat = el('span', 'nova-etat-exo nova-etat-' + e.etat, t('etat-' + e.etat));
+        li.insertBefore(etat, li.querySelector(':scope > a') ? li.querySelector(':scope > a').nextSibling : li.firstChild);
+        var barre = el('div', 'nova-barre-reussite');
+        barre.setAttribute('aria-hidden', 'true');
+        var plein = el('span');
+        plein.style.width = Math.max(0, Math.min(100, e.p)) + '%';
+        if (e.p >= 100) barre.setAttribute('data-plein', '');
+        barre.appendChild(plein);
+        var ligne = el('div', 'nova-exo-chiffres');
+        var gauche = e.pourcent && e.requis ? t('points', Math.round(Math.min(100, e.p) * e.requis / 100), e.requis)
+          : e.prog ? e.prog.lib + ' ' + e.prog.val : Math.round(e.p) + ' %';
+        ligne.appendChild(el('span', 'nova-exo-points', gauche));
+        var droite = [e.libQualite.toLowerCase() + ' ' + e.valQualite].concat(e.autres.map(function (j) { return j.lib.toLowerCase() + ' ' + j.val; }));
+        ligne.appendChild(el('span', 'nova-exo-qualite', droite.join(' \u00b7 ')));
+        bloc.textContent = '';
+        bloc.appendChild(barre);
+        bloc.appendChild(ligne);
+      });
+
+      // Carte d'en-tête : résumé, validité, mode entraînement.
+      var corps = document.querySelector('.wimsbody');
+      var feuille = liste.closest('.wims_sheet');
+      var carte = el('section', 'nova-feuille-etat');
+      var n = exos.filter(function (e) { return e.etat === 'reussi'; }).length;
+      var tete = el('div', 'nova-feuille-resume');
+      tete.appendChild(el('strong', '', t(n > 1 ? 'reussis' : 'reussi', n, exos.length)));
+      carte.appendChild(tete);
+      var seg = el('div', 'nova-feuille-segments');
+      seg.setAttribute('aria-hidden', 'true');
+      exos.forEach(function (e) { seg.appendChild(el('i', e.etat === 'faire' ? 'nova-seg-np' : 'nova-seg-' + niveau(e.qualite))); });
+      carte.appendChild(seg);
+      var validite = corps.querySelector(':scope > p#name_student1');
+      if (validite) { validite.classList.add('nova-feuille-validite'); carte.appendChild(validite); }
+      var lien = corps.querySelector(':scope > a.wims_button:is([href*="job=suspend"], [href*="job=reopen"])');
+      if (lien) {
+        var actif = /job=reopen/.test(lien.getAttribute('href'));
+        // Texte de WIMS juste avant le lien (« L'enregistrement des notes est ouvert. » ou « … suspendu ») : remplacé.
+        var avant = lien.previousSibling;
+        while (avant && avant.nodeType === 3 && !avant.nodeValue.trim()) avant = avant.previousSibling;
+        if (avant && avant.nodeType === 3) avant.remove();
+        var mode = el('a', 'nova-entrainement');
+        mode.href = lien.href;
+        mode.setAttribute('role', 'switch');
+        mode.setAttribute('aria-checked', actif ? 'true' : 'false');
+        var txt = el('span', 'nova-entrainement-texte');
+        txt.appendChild(el('strong', '', t('entrainement')));
+        txt.appendChild(el('span', '', t('entrainement-aide')));
+        mode.appendChild(txt);
+        mode.appendChild(el('span', 'nova-interrupteur'));
+        mode.title = lien.textContent.trim();
+        carte.appendChild(mode);
+        lien.remove();
+      }
+      (feuille || liste).parentNode.insertBefore(carte, feuille || liste);
+      return true;
+    } finally {
+      racine.classList.add('nova-feuille-prete');
+    }
   }

@@ -176,6 +176,7 @@
       !! Nova : jetons de l'avatar a jour sur la page d'une feuille (retour d'exercice ; l'accueil passe par user.phtml).
       !if $module=adm/sheet
         !read themes/$wims_theme/_widgets/avatar-barre.phtml
+        !read themes/$wims_theme/lang/eleve-textes.phtml.$lang feuille
       !endif
     !endif
     </div>

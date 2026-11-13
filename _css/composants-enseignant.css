@@ -637,3 +637,19 @@ html.nova-seq-glisse, html.nova-seq-glisse * { cursor: grabbing !important; user
 .nova-depot-nom:empty { display: none; }
 .wimsbody .nova-depot input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 html.nova-js.nova-role-prof:not(.nova-export-pret) .wimsbody form:has(input[name="csvtype"]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+
+/* Message d'accueil (audit C2, 2026-11-14) : aperçu du message de la classe (bloc gris en ligne de WIMS, italique) en
+ * surface douce, texte droit ; menu « ... » des actions de chaque élève (nova.js motdActions, réglage « tableaux »). */
+.wimsbody .field.box > div[style*="DFDFDF" i] { padding: var(--nova-e3) var(--nova-e4) !important; border-radius: var(--nova-rayon); background: var(--nova-surface-2) !important; color: var(--nova-texte-2) !important; }
+.wimsbody .field.box > div[style*="DFDFDF" i] em { font-style: normal; }
+.wimsbody td details.nova-actions { display: inline-block; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; text-align: left; }
+.wimsbody td details.nova-actions > summary { display: grid; padding: 0; min-height: 0; place-items: center; width: 40px; height: 36px; margin: 0 auto; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); background: var(--nova-surface); color: var(--nova-texte-2); font-size: 1.25rem; font-weight: 800; line-height: 1; list-style: none; cursor: pointer; }
+.nova-actions > summary::-webkit-details-marker { display: none; }
+.nova-actions > summary::marker { content: ""; }
+.nova-actions > summary:hover, .nova-actions[open] > summary { border-color: var(--nova-accent); color: var(--nova-lien); background: var(--nova-accent-doux); }
+.nova-actions > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-actions-liste { display: flex; flex-direction: column; min-width: 12rem; margin-top: var(--nova-e1); padding: var(--nova-e1); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); box-shadow: var(--nova-ombre); }
+body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button { display: block; min-height: 0; margin: 0; padding: 8px 12px; border: 0; border-radius: 6px; background: none; box-shadow: none; color: var(--nova-texte); font-weight: 600; text-align: left; white-space: nowrap; }
+body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button:hover { background: var(--nova-surface-2); color: var(--nova-texte); }
+body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_warning { color: var(--nova-erreur); }
+body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_warning:hover { background: var(--nova-erreur-fond); color: var(--nova-erreur); }

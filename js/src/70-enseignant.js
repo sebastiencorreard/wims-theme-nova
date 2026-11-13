@@ -2973,3 +2973,43 @@
       racine.classList.add('nova-export-pret');
     }
   }
+
+  /* Message d'accueil (adm/class/motd ; audit C2, 2026-11-14, utilisateur, maquette validée) : les boutons de chaque
+   * élève (Modifier, Effacer, Écrire une alerte), empilés dans la dernière colonne, rangés dans un menu « ... » qui
+   * s'ouvre dans la cellule (le tableau défile : pas de menu flottant). Réglage « Tableaux du thème standard ». */
+  function motdActions() {
+    var tx = document.getElementById('nova-confirm-textes');
+    var table = document.getElementById('TABLE_userlist');
+    if (!tx || !tx.hasAttribute('data-motd-actions') || !table || !table.tBodies[0] || standard('tableaux')) return;
+    var menus = [];
+    Array.prototype.forEach.call(table.tBodies[0].rows, function (tr) {
+      var td = tr.cells[tr.cells.length - 1];
+      var liens = td ? td.querySelectorAll('a.wims_button') : [];
+      if (liens.length < 2) return;
+      var nom = tr.cells[1] ? tr.cells[1].textContent.replace(/\s+/g, ' ').trim() : '';
+      var d = document.createElement('details');
+      d.className = 'nova-actions';
+      var s = document.createElement('summary');
+      s.className = 'nova-actions-bouton';
+      s.setAttribute('aria-label', tx.getAttribute('data-motd-actions').replace('%1', nom));
+      s.title = s.getAttribute('aria-label');
+      s.textContent = '\u22ef';
+      var liste = document.createElement('div');
+      liste.className = 'nova-actions-liste';
+      Array.prototype.forEach.call(liens, function (a) { liste.appendChild(a); });
+      d.appendChild(s);
+      d.appendChild(liste);
+      td.textContent = '';
+      td.appendChild(d);
+      menus.push(d);
+      d.addEventListener('toggle', function () {
+        if (d.open) menus.forEach(function (m) { if (m !== d) m.open = false; });
+      });
+    });
+    if (!menus.length) return;
+    document.addEventListener('click', function (e) { menus.forEach(function (m) { if (m.open && !m.contains(e.target)) m.open = false; }); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      menus.forEach(function (m) { if (m.open) { m.open = false; m.querySelector('summary').focus(); } });
+    });
+  }

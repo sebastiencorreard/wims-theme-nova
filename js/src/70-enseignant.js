@@ -2126,6 +2126,29 @@
     });
   }
 
+  /* Colonne « No » des tableaux de ressources de l'accueil de l'enseignant (audit D3, 2026-11-13, utilisateur) : l'icône
+   * et le numéro seuls ; le mot de WIMS (« Feuille », « Examen », « Document »...) reste lu par les lecteurs d'écran
+   * (.nova-num-mot, caché à l'écran) et en info-bulle. Cellule sur une ligne. Réglage « Textes du thème standard ». */
+  function numerosRessources() {
+    if (standard('textes')) return;
+    var cellules = document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework, #wims_supervisor_glossary) table > tbody > tr > td:first-child:not([data-nova-num])');
+    Array.prototype.forEach.call(cellules, function (td) {
+      td.setAttribute('data-nova-num', '');
+      var marche = document.createTreeWalker(td, NodeFilter.SHOW_TEXT), n, textes = [];
+      while ((n = marche.nextNode())) if (n.nodeValue.trim()) textes.push(n);
+      if (textes.length !== 1) return;
+      var m = /^(\s*)([^\d\s][^\d]*?)([\s\u00a0]*)(\d+)\s*$/.exec(textes[0].nodeValue);
+      if (!m) return;
+      var mot = document.createElement('span');
+      mot.className = 'nova-num-mot';
+      mot.textContent = m[2] + ' ';
+      textes[0].parentNode.insertBefore(mot, textes[0]);
+      textes[0].nodeValue = m[4];
+      td.title = (m[2] + ' ' + m[4]).replace(/\s+/g, ' ').trim();
+      td.classList.add('nova-num-seul');
+    });
+  }
+
   /* Séquences pédagogiques, vue de l'enseignant (2026-11-12, utilisateur, maquette B ; adm/class/sequence, job=show).
    * Barre de titre : poignée, chevron (replier), titre, pastille d'état qui ouvre le menu (Activer ou Désactiver, Effacer :
    * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (script de

@@ -895,3 +895,12 @@
     if (page && !page.contains(corps) && page.parentElement !== corps && !corps.contains(page)) corps.appendChild(page);
     corps.insertBefore(menu, page && page.parentElement === corps ? page : corps.firstChild);
   }
+
+  /* Titre de l'onglet du navigateur dans la langue de la page (audit, 2026-11-13, utilisateur) : header.phtml écrit
+   * #nova-titre-onglet (title_<langue> de l'index du module ; nom de la classe sur son accueil). Réglage « textes ». */
+  function titreOnglet() {
+    var t = document.getElementById('nova-titre-onglet');
+    if (!t || standard('textes')) return;
+    var titre = (t.getAttribute('data-titre') || '').replace(/<[^>]*>/g, '').trim();
+    if (titre) document.title = titre;
+  }

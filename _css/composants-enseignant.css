@@ -601,3 +601,8 @@ html.nova-seq-glisse, html.nova-seq-glisse * { cursor: grabbing !important; user
 .wimsbody label.nova-seq-numero-choix { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 4px 0 0; font-weight: 400; }
 .wimsbody .nova-seq-numero-aide { margin: 0; color: var(--nova-texte-2); font-size: .8125rem; }
 .wimsbody input.nova-seq-mot-inutile { background: var(--nova-surface-2); color: var(--nova-texte-2); }
+
+/* Colonne « No » des tableaux de ressources de l'accueil : icône et numéro seuls, sur une ligne (nova.js numerosRessources,
+ * audit D3, 2026-11-13, utilisateur) ; le mot de WIMS reste pour les lecteurs d'écran. Réglage « textes ». */
+.wimsbody .nova-num-mot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wimsbody td.nova-num-seul { white-space: nowrap; }

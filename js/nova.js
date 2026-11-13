@@ -1067,6 +1067,15 @@
     corps.insertBefore(menu, page && page.parentElement === corps ? page : corps.firstChild);
   }
 
+  /* Titre de l'onglet du navigateur dans la langue de la page (audit, 2026-11-13, utilisateur) : header.phtml écrit
+   * #nova-titre-onglet (title_<langue> de l'index du module ; nom de la classe sur son accueil). Réglage « textes ». */
+  function titreOnglet() {
+    var t = document.getElementById('nova-titre-onglet');
+    if (!t || standard('textes')) return;
+    var titre = (t.getAttribute('data-titre') || '').replace(/<[^>]*>/g, '').trim();
+    if (titre) document.title = titre;
+  }
+
   /* ===== js/src/20-composants.js : composants repris à Foundation et jQuery UI (accordéons, fenêtres, panneaux, onglets), carrousel, boutons collants, connexion ===== */
   /* Accordéons de Foundation (data-accordion : adm/class/addmodule « Notation », adm/class/freework
    * « zones »), sans Foundation (2026-10-03). nova.js passe avant l'initialisation de Foundation
@@ -7754,6 +7763,29 @@
     });
   }
 
+  /* Colonne « No » des tableaux de ressources de l'accueil de l'enseignant (audit D3, 2026-11-13, utilisateur) : l'icône
+   * et le numéro seuls ; le mot de WIMS (« Feuille », « Examen », « Document »...) reste lu par les lecteurs d'écran
+   * (.nova-num-mot, caché à l'écran) et en info-bulle. Cellule sur une ligne. Réglage « Textes du thème standard ». */
+  function numerosRessources() {
+    if (standard('textes')) return;
+    var cellules = document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework, #wims_supervisor_glossary) table > tbody > tr > td:first-child:not([data-nova-num])');
+    Array.prototype.forEach.call(cellules, function (td) {
+      td.setAttribute('data-nova-num', '');
+      var marche = document.createTreeWalker(td, NodeFilter.SHOW_TEXT), n, textes = [];
+      while ((n = marche.nextNode())) if (n.nodeValue.trim()) textes.push(n);
+      if (textes.length !== 1) return;
+      var m = /^(\s*)([^\d\s][^\d]*?)([\s\u00a0]*)(\d+)\s*$/.exec(textes[0].nodeValue);
+      if (!m) return;
+      var mot = document.createElement('span');
+      mot.className = 'nova-num-mot';
+      mot.textContent = m[2] + ' ';
+      textes[0].parentNode.insertBefore(mot, textes[0]);
+      textes[0].nodeValue = m[4];
+      td.title = (m[2] + ' ' + m[4]).replace(/\s+/g, ' ').trim();
+      td.classList.add('nova-num-seul');
+    });
+  }
+
   /* Séquences pédagogiques, vue de l'enseignant (2026-11-12, utilisateur, maquette B ; adm/class/sequence, job=show).
    * Barre de titre : poignée, chevron (replier), titre, pastille d'état qui ouvre le menu (Activer ou Désactiver, Effacer :
    * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (script de
@@ -9064,7 +9096,7 @@
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
   function demarrer() { racineCache = {}; try { demarrage(); } finally { racineCache = null; } }
-  function demarrage() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); configurationGlobale(); securiteClasse(); formatsSauvegarde(); capaciteClasse(); ficheRessource(); etatsRessources(); sequencesEnseignant(); sequencesNumero(); confirmationsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); avatarsParticipants(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); notesDetail(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
+  function demarrage() { feuilleAJour(); titreOnglet(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); configurationGlobale(); securiteClasse(); formatsSauvegarde(); capaciteClasse(); ficheRessource(); etatsRessources(); numerosRessources(); sequencesEnseignant(); sequencesNumero(); confirmationsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); avatarsParticipants(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); notesDetail(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
   capterTinymce();   // avant le tinymce.init de WIMS (au chargement de la page)
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();

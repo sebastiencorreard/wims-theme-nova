@@ -24,6 +24,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Accueil : colonne « No » des tableaux de feuilles, examens, documents… réduite à l'icône et au numéro (le mot « Feuille », « Examen »… reste en info-bulle et pour les lecteurs d'écran) ; lignes moins hautes.
 - Détail du travail d'un élève (nom cliqué dans « Notes ») : mêmes cartes que « Mes notes » de l'élève, avec tous les indicateurs. Page « Notes » : la ligne « Afficher » devient un sélecteur (choix en cours en couleur, autres boutons en contour, espacés). Réglage « Détail d'un élève et page Notes de l'enseignant du thème standard » pour garder la présentation de WIMS.
 - **Séquences pédagogiques** : état en pastille qui ouvre un menu (Activer ou Désactiver, Effacer avec confirmation), « Modifier » et flèches Monter / Descendre dans la barre de titre ; chaque séquence se replie (Tout replier / Tout déplier), et se déplace en la saisissant par sa barre de titre (au doigt : appui maintenu ; les autres cartes s'écartent, une silhouette marque sa place). Option « Numéro seul, sans mot générique » dans Configurer.
 - Liste des participants : avatar de l'élève à gauche de son nom (silhouette sans avatar) ; un clic ouvre sa fiche d'avatar et de badges.
@@ -85,6 +86,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Titre de l'onglet du navigateur dans la langue de la page (« Notes », « Feuille d'exercices »… au lieu de « Scores of the participants », « Worksheet »), nom de la classe sur son accueil.
 - Accueil de l'élève plus rapide à s'afficher sur un téléphone modeste (environ deux fois moins de travail au chargement) : historique des examens et pastille des badges calculés en une fois, réglages du thème lus une seule fois.
 - Téléphone : le cadre « Entrez votre réponse » d'un exercice ne dépasse plus de l'écran quand le champ de réponse est long ; le champ prend la place disponible.
 - Export des notes vers un tableur (enseignant) : le lien Config / Maintenance du pied de page a de nouveau son libellé (il était vide, avec deux engrenages).

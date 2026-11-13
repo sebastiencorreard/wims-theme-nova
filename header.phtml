@@ -6,6 +6,18 @@
 <!-- begin of standard/header.phtml -->
 !read themes/$wims_theme/_widgets/accent.phtml
 !read themes/$wims_theme/_widgets/couleurs-notes.phtml
+!! Titre de l'onglet du navigateur traduit (audit, 2026-11-13, utilisateur) : WIMS y met le titre anglais de l'index du
+!! module ($module_title2 : "Scores of the participants") ; ici title_<langue> de l'index, et le nom de la classe sur
+!! l'accueil d'une classe ("WWW Interactive Multipurpose Server" sinon). Pose par nova.js (titreOnglet).
+!set nova_to=!module title_$lang $module
+!if $module=home and $wims_classname!=$empty
+  !set nova_to=$wims_classname
+!endif
+!if $nova_to!=$empty
+  !set nova_to=!replace internal " by &quot; in $nova_to
+<template id="nova-titre-onglet" data-titre="$nova_to"></template>
+!endif
+!reset nova_to
 
 !! Jeu d'icones Lucide de Nova (2026-11-11) : lien gifs/themes/Lucide vers icones/Lucide du theme, pour qu'il
 !! figure dans le choix "Jeu d'icones" de WIMS (pages de configuration seulement : un test par page).

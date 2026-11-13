@@ -3013,3 +3013,103 @@
       menus.forEach(function (m) { if (m.open) { m.open = false; m.querySelector('summary').focus(); } });
     });
   }
+
+  /* Listes à choix multiples (select multiple : Statistique d'activité, Évaluation des activités… ; audit C2,
+   * 2026-11-14, utilisateur, maquette validée) : une liste de cases avec « Tout cocher », qui pilote la liste de WIMS,
+   * cachée et toujours envoyée par le formulaire. Pas les listes à déplacer de WIMS (double-clic, boutons >>).
+   * Réglage « Feuilles et examens en liste ». */
+  function choixMultiples() {
+    var tx = document.getElementById('nova-choix-textes');
+    if (!tx || standard('listes')) return;
+    var n = 0;
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody select[multiple]:not([ondblclick])'), function (sel) {
+      if (sel.hidden || sel.style.visibility === 'hidden' || sel.options.length < 2 || sel.options.length > 80) return;
+      n++;
+      var boite = document.createElement('div');
+      boite.className = 'nova-choix';
+      var tete = document.createElement('div');
+      tete.className = 'nova-choix-tete';
+      var tout = document.createElement('button');
+      tout.type = 'button';
+      tout.className = 'nova-choix-tout';
+      tete.appendChild(tout);
+      var liste = document.createElement('div');
+      liste.className = 'nova-choix-liste';
+      liste.setAttribute('role', 'group');
+      var lab = sel.id ? document.querySelector('label[for="' + sel.id + '"]') : null;
+      if (lab) {
+        if (!lab.id) lab.id = 'nova-choix-' + n;
+        liste.setAttribute('aria-labelledby', lab.id);
+        lab.removeAttribute('for');
+      }
+      var cases = Array.prototype.map.call(sel.options, function (o) {
+        var l = document.createElement('label');
+        l.className = 'nova-choix-option';
+        var c = document.createElement('input');
+        c.type = 'checkbox';
+        c.checked = o.selected;
+        c.addEventListener('change', function () { o.selected = c.checked; majTout(); sel.dispatchEvent(new Event('change', { bubbles: true })); });
+        var sp = document.createElement('span');
+        sp.textContent = o.textContent.trim();
+        l.appendChild(c);
+        l.appendChild(sp);
+        liste.appendChild(l);
+        return c;
+      });
+      function majTout() {
+        var toutes = cases.every(function (c) { return c.checked; });
+        tout.textContent = tx.getAttribute(toutes ? 'data-rien' : 'data-tout');
+        tout.setAttribute('aria-pressed', toutes ? 'true' : 'false');
+      }
+      tout.addEventListener('click', function () {
+        var cocher = !cases.every(function (c) { return c.checked; });
+        cases.forEach(function (c, i) { c.checked = cocher; sel.options[i].selected = cocher; });
+        majTout();
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      majTout();
+      boite.appendChild(tete);
+      boite.appendChild(liste);
+      sel.hidden = true;
+      sel.parentNode.insertBefore(boite, sel.nextSibling);
+    });
+  }
+
+  /* Pages vides de l'enseignant (livret sans compétence, aucune variable technique ; audit C2, 2026-11-14) : le texte
+   * de WIMS dans une carte, avec l'action du menu qui la remplit (« Nouvelle compétence », « Ajouter une variable
+   * technique » : lien job=add… du module). Carte : aspect seul. */
+  function pagesVides() {
+    var corps = document.querySelector('.wimsbody');
+    if (!corps || !document.documentElement.classList.contains('nova-role-prof')) return;
+    // Module de la page : lien d'aide (dans la barre du haut au démarrage, déplacé ensuite dans le menu).
+    var aide = document.querySelector('a[href*="cmd=help"][href*="module=adm%2Fclass%2F"]');
+    var mod = aide && /module=adm%2Fclass%2F(livret|techvar)\b/.exec(aide.getAttribute('href') || '');
+    if (!mod) return;
+    var ici = corps.querySelector(':scope > .wims_content') || corps;
+    var texte = null, autre = false;
+    Array.prototype.forEach.call(ici.childNodes, function (x) {
+      if (x.nodeType === 3) { if (x.nodeValue.trim()) { if (texte) autre = true; texte = x; } return; }
+      if (x.nodeType !== 1 || ici !== corps) { if (x.nodeType === 1) autre = true; return; }
+      if (!x.matches('script, style, template, br, .wimstrap, #wims_class, #wimsmenumodubox, .nova-ariane, [hidden], [id^="nova-"]')) autre = true;
+    });
+    if (!texte || autre || texte.nodeValue.trim().length > 200) return;
+    var carte = document.createElement('section');
+    carte.className = 'nova-page-vide';
+    var rond = document.createElement('span');
+    rond.className = 'nova-page-vide-ico';
+    rond.setAttribute('aria-hidden', 'true');
+    carte.appendChild(rond);
+    var p = document.createElement('p');
+    p.textContent = texte.nodeValue.trim();
+    carte.appendChild(p);
+    var ajout = document.querySelector('#wimsmenumodubox a[href*="module=adm%2Fclass%2F' + mod[1] + '"][href*="job=add"], .wimsmenu a[href*="module=adm%2Fclass%2F' + mod[1] + '"][href*="job=add"]');
+    if (ajout) {
+      var b = document.createElement('a');
+      b.className = 'wims_button';
+      b.href = ajout.href;
+      b.textContent = ajout.textContent.trim();
+      carte.appendChild(b);
+    }
+    ici.insertBefore(carte, texte);
+    texte.remove();
+  }

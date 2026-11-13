@@ -653,3 +653,20 @@ body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button { dis
 body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button:hover { background: var(--nova-surface-2); color: var(--nova-texte); }
 body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_warning { color: var(--nova-erreur); }
 body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_warning:hover { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+
+/* Listes à choix multiples en cases (nova.js choixMultiples, audit C2, 2026-11-14 ; réglage « listes ») et pages vides
+ * en carte (nova.js pagesVides ; icône Lucide « inbox »). */
+.nova-choix { width: 100%; max-width: 40rem; }
+.nova-choix-tete { display: flex; justify-content: flex-end; margin: 0 0 var(--nova-e1); }
+.wimsbody .nova-choix-tout { min-height: 32px; margin: 0; padding: 0 var(--nova-e2); border: 0; background: none; box-shadow: none; color: var(--nova-lien); font: inherit; font-size: var(--nova-petit); font-weight: 700; cursor: pointer; }
+.wimsbody .nova-choix-tout:hover { text-decoration: underline; background: none; color: var(--nova-lien-survol); }
+.nova-choix-liste { max-height: 22rem; overflow-y: auto; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); background: var(--nova-surface); }
+.wimsbody .nova-choix-option { display: flex; align-items: center; gap: var(--nova-e3); min-height: var(--nova-cible); margin: 0; padding: 6px var(--nova-e3); font-weight: 400; cursor: pointer; }
+.wimsbody .nova-choix-option + .nova-choix-option { border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-choix-option:hover { background: var(--nova-surface-2); }
+.wimsbody .nova-choix-option > input { flex: none; margin: 0; }
+.wimsbody .nova-page-vide { max-width: 34rem; margin: var(--nova-e5) auto; padding: var(--nova-e6) var(--nova-e5); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); text-align: center; }
+.nova-page-vide-ico { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto var(--nova-e3); border-radius: 50%; background: var(--nova-accent-doux); }
+.nova-page-vide-ico::before { content: ""; width: 26px; height: 26px; background: var(--nova-accent); -webkit-mask: var(--nova-ico-vide) center / contain no-repeat; mask: var(--nova-ico-vide) center / contain no-repeat; }
+.nova-page-vide { --nova-ico-vide: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E"); }
+.wimsbody .nova-page-vide > p { margin: 0 0 var(--nova-e4); font-weight: 700; }

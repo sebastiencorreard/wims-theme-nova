@@ -72,3 +72,8 @@
 !! header.phtml, Liaison tableur (adm/class/userscore job=csv ; nova.js exportTableur, audit C2, 2026-11-14)
 <template id="nova-export-textes" data-titre="Collegamento con foglio di calcolo" data-eleves="Studenti" data-autres="Altro" data-feuille="Foglio %1" data-examen="Esame %1" data-moyenne="Media" data-col-login="Nome utente" data-col-lastname="Cognome" data-col-firstname="Nome" data-col-password="Password" data-col-email="Email" data-col-regnum="N. di iscrizione" data-col-comments="Commenti" data-col-photourl="Foto" data-col-external_auth="Accesso esterno" data-deposer="Trascina qui il file, oppure" data-choisir="sceglilo"></template>
 !exit
+
+:choix
+!! header.phtml, pages adm/ de l'enseignant (nova.js choixMultiples, audit C2, 2026-11-14)
+<template id="nova-choix-textes" data-tout="Seleziona tutto" data-rien="Deseleziona tutto"></template>
+!exit

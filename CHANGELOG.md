@@ -25,6 +25,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Liaison tableur en cartes et pastilles lisibles (« Feuille 3 » au lieu de « sheet3 »), zone de dépôt du fichier ; Message d'accueil : un menu « ⋯ » par élève ; listes à choix multiples en cases avec « Tout cocher » ; livret et variables techniques vides : une carte avec le bouton qui les remplit.
 - Accueil de la classe en cartes, comme la configuration : une carte pour la bienvenue et les participants connectés, une pour les feuilles et examens.
 - Boutons « Effacer » en contour rouge, comme « Désactiver » ; le Message d'accueil demande confirmation avant d'effacer.
 - Accueil : colonne « No » des tableaux de feuilles, examens, documents… réduite à l'icône et au numéro (le mot « Feuille », « Examen »… reste en info-bulle et pour les lecteurs d'écran) ; lignes moins hautes.

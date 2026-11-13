@@ -32,6 +32,7 @@
     if (c[0]) r.style.setProperty('--nova-accent', c[0]); else r.style.removeProperty('--nova-accent');
     if (c[1]) { r.style.setProperty('--nova-degrade', 'linear-gradient(90deg, ' + c[0] + ', ' + c[1] + ')'); r.classList.add('nova-degrade'); }
     else { r.style.removeProperty('--nova-degrade'); r.classList.remove('nova-degrade'); }
+    racineChangee();
     try { if (cle) { if (c[0]) localStorage.setItem(cle, c.join(' ')); else localStorage.removeItem(cle); } } catch (e) { /* sans stockage : cette page seulement */ }
   }
   // Droits de l'élève d'après l'accueil (#nova-badges) : 0 rien, 1 couleur, 2 dégradés ; null = récompense non proposée.

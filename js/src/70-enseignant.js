@@ -791,7 +791,7 @@
     var corps = document.querySelector('.wimsbody');
     if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
     // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
-    if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
+    if (racineStyle().getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
     var placer = function (el) {
       var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
       if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);
@@ -835,12 +835,10 @@
     var lireSS = function (k) { try { return JSON.parse(sessionStorage.getItem(k) || 'null'); } catch (e) { return null; } };
     var ecrireSS = function (k, v) { try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
     var plat = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
-    var cs = getComputedStyle(document.documentElement);
-    var mots = function (v, defaut) { return (texteCss(cs.getPropertyValue(v)) || defaut).split(',').map(plat).filter(Boolean); };
-    var motsT = mots('--nova-echauffement-entrainement', 'entrainement');
-    var motsN = mots('--nova-echauffement-note', 'not\u00e9, test');
-    // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
-    var motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
+    // Réglages lus seulement sur la page des examens (audit B2, 2026-11-13) : getComputedStyle force un recalcul de la page.
+    var cs = null;
+    var mots = function (v, defaut) { cs = cs || racineStyle(); return (texteCss(cs.getPropertyValue(v)) || defaut).split(',').map(plat).filter(Boolean); };
+    var motsT, motsN, motsD;
     var estDM = function (titre) {
       var p = ' ' + plat(titre) + ' ';
       return motsD.some(function (d) { return new RegExp(' ' + d + '[0-9]* ').test(p); });
@@ -908,6 +906,10 @@
     // 1. Accueil de l'enseignant : boutons.
     var table = document.getElementById('TABLE_supervisor_exam');
     if (!table || table.querySelector('.nova-dm-note')) return;
+    motsT = mots('--nova-echauffement-entrainement', 'entrainement');
+    motsN = mots('--nova-echauffement-note', 'not\u00e9, test');
+    // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
+    motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
     var examens = [];
     Array.prototype.forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
       var a = tr.querySelector('a[href*="module=adm%2Fclass%2Fexam"][href*="exam="]:not([href*="job="])');

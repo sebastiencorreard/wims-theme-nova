@@ -83,7 +83,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
-- Accueil de l'élève plus rapide à s'afficher sur un téléphone modeste : l'historique des examens sur les cartes se calcule en une fois.
+- Accueil de l'élève plus rapide à s'afficher sur un téléphone modeste (environ deux fois moins de travail au chargement) : historique des examens et pastille des badges calculés en une fois, réglages du thème lus une seule fois.
 - Téléphone : le cadre « Entrez votre réponse » d'un exercice ne dépasse plus de l'écran quand le champ de réponse est long ; le champ prend la place disponible.
 - Export des notes vers un tableur (enseignant) : le lien Config / Maintenance du pied de page a de nouveau son libellé (il était vide, avec deux engrenages).
 - Fil d'Ariane : plus de « * » en fin de fil sur une page sans titre (Configuration et maintenance, Séquences...).

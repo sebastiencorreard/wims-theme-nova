@@ -14,7 +14,7 @@
    * « réduire les animations » de l'appareil les coupe toujours. Demandes de l'utilisateur, 2026-10-05. */
   function animationsCoupees() {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-animations').trim().toLowerCase();
+    var v = racineStyle().getPropertyValue('--nova-animations').trim().toLowerCase();
     return !/^["']?(oui|yes|on|1)["']?$/.test(v);
   }
 
@@ -37,6 +37,35 @@
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
   var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux'];
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+
+  /* Variables de la racine pendant le démarrage (audit B2, 2026-11-13) : chaque getComputedStyle lu après une classe posée
+   * recalculait toute la page (40 à 60 ms sur un téléphone modeste). Pendant demarrer(), les réglages --nova-… sont lus une
+   * fois, ensemble, et gardés ; racineChangee() les fait relire quand Nova change une variable de la racine (couleur de
+   * l'élève, réglages de la structure). Les classes posées par nova.js ne changent aucune de ces variables. Hors du
+   * démarrage (évènements, minuteries), lecture directe. */
+  var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
+    'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
+    'dm-mots', 'dm-note-essais'];
+  var racineCache = null;
+  var racineLecteur = {
+    getPropertyValue: function (nom) {
+      var v = racineCache && racineCache.v;
+      if (v && Object.prototype.hasOwnProperty.call(v, nom)) return v[nom];
+      return getComputedStyle(document.documentElement).getPropertyValue(nom);
+    }
+  };
+  function racineStyle() {
+    if (!racineCache) return getComputedStyle(document.documentElement);
+    if (!racineCache.v) {
+      var cs = getComputedStyle(document.documentElement), v = {};
+      VARS_DEMARRAGE.concat(CLES_STANDARD.map(function (k) { return 'std-' + k; })).forEach(function (n) {
+        v['--nova-' + n] = cs.getPropertyValue('--nova-' + n);
+      });
+      racineCache.v = v;
+    }
+    return racineLecteur;
+  }
+  function racineChangee() { if (racineCache) racineCache.v = null; }
 
   /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
    * ?session= sans compteur ouvre l'accueil du contexte. */
@@ -111,7 +140,7 @@
     var attendu = m ? m.getAttribute('content') : '';
     if (!attendu) return;
     var lue = function () {
-      return getComputedStyle(document.documentElement).getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
+      return racineStyle().getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
     };
     if (lue() === attendu) return;
     var lien = [].filter.call(document.querySelectorAll('link[rel="stylesheet"][href]'), function (l) {

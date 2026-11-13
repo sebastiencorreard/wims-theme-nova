@@ -14,7 +14,7 @@
    * « réduire les animations » de l'appareil les coupe toujours. Demandes de l'utilisateur, 2026-10-05. */
   function animationsCoupees() {
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-animations').trim().toLowerCase();
+    var v = racineStyle().getPropertyValue('--nova-animations').trim().toLowerCase();
     return !/^["']?(oui|yes|on|1)["']?$/.test(v);
   }
 
@@ -37,6 +37,35 @@
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
   var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux'];
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+
+  /* Variables de la racine pendant le démarrage (audit B2, 2026-11-13) : chaque getComputedStyle lu après une classe posée
+   * recalculait toute la page (40 à 60 ms sur un téléphone modeste). Pendant demarrer(), les réglages --nova-… sont lus une
+   * fois, ensemble, et gardés ; racineChangee() les fait relire quand Nova change une variable de la racine (couleur de
+   * l'élève, réglages de la structure). Les classes posées par nova.js ne changent aucune de ces variables. Hors du
+   * démarrage (évènements, minuteries), lecture directe. */
+  var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
+    'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
+    'dm-mots', 'dm-note-essais'];
+  var racineCache = null;
+  var racineLecteur = {
+    getPropertyValue: function (nom) {
+      var v = racineCache && racineCache.v;
+      if (v && Object.prototype.hasOwnProperty.call(v, nom)) return v[nom];
+      return getComputedStyle(document.documentElement).getPropertyValue(nom);
+    }
+  };
+  function racineStyle() {
+    if (!racineCache) return getComputedStyle(document.documentElement);
+    if (!racineCache.v) {
+      var cs = getComputedStyle(document.documentElement), v = {};
+      VARS_DEMARRAGE.concat(CLES_STANDARD.map(function (k) { return 'std-' + k; })).forEach(function (n) {
+        v['--nova-' + n] = cs.getPropertyValue('--nova-' + n);
+      });
+      racineCache.v = v;
+    }
+    return racineLecteur;
+  }
+  function racineChangee() { if (racineCache) racineCache.v = null; }
 
   /* Adresse de l'accueil de la session (module de confiance : y écrire, header.phtml), avec des paramètres en plus. Un
    * ?session= sans compteur ouvre l'accueil du contexte. */
@@ -111,7 +140,7 @@
     var attendu = m ? m.getAttribute('content') : '';
     if (!attendu) return;
     var lue = function () {
-      return getComputedStyle(document.documentElement).getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
+      return racineStyle().getPropertyValue('--nova-css').trim().replace(/^["']|["']$/g, '');
     };
     if (lue() === attendu) return;
     var lien = [].filter.call(document.querySelectorAll('link[rel="stylesheet"][href]'), function (l) {
@@ -720,7 +749,7 @@
     window.addEventListener('scroll', function () {
       if (!attente) { attente = true; window.requestAnimationFrame(maj); }
     }, { passive: true });
-    maj();
+    window.requestAnimationFrame(maj);   // pas pendant le démarrage : scrollY force une mise en page (audit B2, 2026-11-13)
   }
 
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne
@@ -3157,7 +3186,7 @@
   function clavierMaths() {
     var form = document.forms.replyform;
     if (!form || !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
+    var reglage = racineStyle().getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
     if (!/^["']?(oui|yes|on|1)["']?$/.test(reglage)) return;
     var textes = document.getElementById('nova-textes');
     var t = function (n, d) { return (textes && textes.getAttribute('data-texte-clavier' + (n ? '-' + n : ''))) || d; };
@@ -3813,7 +3842,7 @@
     var corps = document.querySelector('.wimsbody');
     // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
     // accueil (demande de l'utilisateur, 2026-10-06).
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
+    var reglage = racineStyle().getPropertyValue('--nova-entree-directe').trim().toLowerCase();
     if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
     var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
     var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
@@ -3869,7 +3898,7 @@
    * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
   function activiteLien() {
     if (!document.getElementById('nova-eleve') || standard('menus')) return;
-    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
+    var v = racineStyle().getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
     if (v === 'non') return;
     document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
       a.href = a.href.replace(/module=adm%2Fclass%2Factivity(&\+job=[^&]*)?/, 'module=home&+nova_activite=1');
@@ -3883,8 +3912,8 @@
    *    du badge (#nova-badges, calculées par _procs/badges.awk) pour la fenêtre, ouverte d'un toucher. */
   function badges() {
     var racine = document.documentElement;
-    var actif = getComputedStyle(racine).getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
-    if (getComputedStyle(racine).getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
+    var actif = racineStyle().getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
+    if (racineStyle().getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
     var maison = document.querySelector('#wimstopbox .class_home a[href]');
     var surAccueil = !!document.getElementById('nova-badges');
     // « Mes badges » juste après « Mes notes », dans le même menu (le menu latéral ; demande de l'utilisateur,
@@ -4136,11 +4165,21 @@
     var p = document.querySelector('.nova-mes-notes a.nova-pastille-badge');
     if (!p) return;
     var imgs = [].slice.call(p.querySelectorAll('img')), libelle = p.querySelector('span');
+    // Largeurs lues une fois, puis calcul (audit B2, 2026-11-13 : relire scrollWidth après chaque badge masqué forçait une
+    // mise en page à chaque fois). Masquer un élément retire sa largeur, ses marges et un écart de la pastille.
     var ajuster = function () {
       imgs.forEach(function (i) { i.hidden = false; });
       if (libelle) libelle.hidden = false;
-      for (var n = imgs.length - 1; n > 0 && p.scrollWidth > p.clientWidth + 1; n--) imgs[n].hidden = true;
-      if (libelle && p.scrollWidth > p.clientWidth + 1) libelle.hidden = true;
+      var trop = p.scrollWidth - p.clientWidth - 1;
+      if (trop <= 0) return;
+      var gap = parseFloat(getComputedStyle(p).columnGap) || 0;
+      var place = function (e) {
+        var c = getComputedStyle(e);
+        return e.getBoundingClientRect().width + (parseFloat(c.marginLeft) || 0) + (parseFloat(c.marginRight) || 0) + gap;
+      };
+      var w = imgs.map(place);
+      for (var n = imgs.length - 1; n > 0 && trop > 0; n--) { imgs[n].hidden = true; trop -= w[n]; }
+      if (libelle && trop > 0) libelle.hidden = true;
     };
     ajuster();
     window.addEventListener('resize', ajuster);
@@ -4180,6 +4219,7 @@
     if (c[0]) r.style.setProperty('--nova-accent', c[0]); else r.style.removeProperty('--nova-accent');
     if (c[1]) { r.style.setProperty('--nova-degrade', 'linear-gradient(90deg, ' + c[0] + ', ' + c[1] + ')'); r.classList.add('nova-degrade'); }
     else { r.style.removeProperty('--nova-degrade'); r.classList.remove('nova-degrade'); }
+    racineChangee();
     try { if (cle) { if (c[0]) localStorage.setItem(cle, c.join(' ')); else localStorage.removeItem(cle); } } catch (e) { /* sans stockage : cette page seulement */ }
   }
   // Droits de l'élève d'après l'accueil (#nova-badges) : 0 rien, 1 couleur, 2 dégradés ; null = récompense non proposée.
@@ -6092,7 +6132,7 @@
     var corps = document.querySelector('.wimsbody');
     if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
     // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
-    if (getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
+    if (racineStyle().getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
     var placer = function (el) {
       var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
       if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);
@@ -6136,12 +6176,10 @@
     var lireSS = function (k) { try { return JSON.parse(sessionStorage.getItem(k) || 'null'); } catch (e) { return null; } };
     var ecrireSS = function (k, v) { try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
     var plat = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
-    var cs = getComputedStyle(document.documentElement);
-    var mots = function (v, defaut) { return (texteCss(cs.getPropertyValue(v)) || defaut).split(',').map(plat).filter(Boolean); };
-    var motsT = mots('--nova-echauffement-entrainement', 'entrainement');
-    var motsN = mots('--nova-echauffement-note', 'not\u00e9, test');
-    // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
-    var motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
+    // Réglages lus seulement sur la page des examens (audit B2, 2026-11-13) : getComputedStyle force un recalcul de la page.
+    var cs = null;
+    var mots = function (v, defaut) { cs = cs || racineStyle(); return (texteCss(cs.getPropertyValue(v)) || defaut).split(',').map(plat).filter(Boolean); };
+    var motsT, motsN, motsD;
     var estDM = function (titre) {
       var p = ' ' + plat(titre) + ' ';
       return motsD.some(function (d) { return new RegExp(' ' + d + '[0-9]* ').test(p); });
@@ -6209,6 +6247,10 @@
     // 1. Accueil de l'enseignant : boutons.
     var table = document.getElementById('TABLE_supervisor_exam');
     if (!table || table.querySelector('.nova-dm-note')) return;
+    motsT = mots('--nova-echauffement-entrainement', 'entrainement');
+    motsN = mots('--nova-echauffement-note', 'not\u00e9, test');
+    // Mot-clé de DM WIMS obligatoire (2026-11-08, utilisateur : « DMWIMS » ou « DM », éventuellement suivi d'un numéro).
+    motsD = mots('--nova-dm-mots', 'DMWIMS, DM');
     var examens = [];
     Array.prototype.forEach.call(table.querySelectorAll('tbody tr'), function (tr) {
       var a = tr.querySelector('a[href*="module=adm%2Fclass%2Fexam"][href*="exam="]:not([href*="job="])');
@@ -8651,7 +8693,7 @@
   }
   function reglagesStandard() {
     var d = document.documentElement;
-    var cs = getComputedStyle(d);
+    var cs = racineStyle();
     var actifs = CLES_STANDARD.filter(function (k) {
       var oui = cs.getPropertyValue('--nova-std-' + k).trim().replace(/["']/g, '') === 'oui';
       d.classList.toggle('nova-std-' + k, oui);
@@ -8730,10 +8772,12 @@
     style.id = id;
     style.textContent = 'html { ' + decl + '; }';
     document.head.appendChild(style);
+    racineChangee();
   }
 
   /* ===== js/src/99-demarrage.js : appel de toutes les fonctions, fin de la fonction englobante ===== */
-  function demarrer() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); configurationGlobale(); securiteClasse(); formatsSauvegarde(); capaciteClasse(); ficheRessource(); etatsRessources(); sequencesEnseignant(); sequencesNumero(); confirmationsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); avatarsParticipants(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
+  function demarrer() { racineCache = {}; try { demarrage(); } finally { racineCache = null; } }
+  function demarrage() { feuilleAJour(); menuEleve(); placerMenu(); piedDePage(); messageReporte(); propagationNova(); reglagesStructure(); reglagesStandard(); activiteLien(); menuServeur(); reconnexionCas(); apparenceNova(); apparenceClasse(); ecartsZones(); rubriqueReglages(); configurationClasse(); configurationGlobale(); securiteClasse(); formatsSauvegarde(); capaciteClasse(); ficheRessource(); etatsRessources(); sequencesEnseignant(); sequencesNumero(); confirmationsRessources(); editeursReactivables(); if (animationsCoupees()) document.documentElement.classList.add('nova-sans-animation'); autreExamen(); coursUnique(); oeilMotDePasse(); focusConnexion(); parcours(); parcoursExamen(); courseExercice(); feuilleExercices(); panneaux(); revelations(); accordeons(); menusDeroulants(); infobulles(); modeExamen(); profilLateral(); badges(); couleurPerso(); pastilleBadges(); avatarBarre(); avatarPage(); avatarsClasse(); avatarsParticipants(); chronoExercice(); retourEleve(); scores(); notesExamens(); libellesNotes(); examExercices(); carrousel(); notesNaN(); signesExamens(); notesColonnes(); dmNote(); forcerDesactivation(); legendeTypes(); clavierMaths(); claviersReponse(); glisserTactile(); dominos(); tuiles(); tuilesCorrigees(); associations(); aideExamen(); derniereConnexion(); imagesCliquables(); retourReponse(); boutonsCollants(); focusSuite(); initialiser(); chronometre(); serieEtapes(); typesExamen(); pagesExamen(); barreCompacte(); basculeMenu(); replisClasses(); cellulesCliquables(); accesClasse(); liensConnexion(); sectionsRepliables(); retourEnHaut(); enLigne(); centrerBarre(); adresseNette(); }
   capterTinymce();   // avant le tinymce.init de WIMS (au chargement de la page)
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer);
   else demarrer();

@@ -23,7 +23,7 @@
     var corps = document.querySelector('.wimsbody');
     // Réglage par surcharge CSS (jetons.css) : :root { --nova-entree-directe: non; } garde l'élève sur cet
     // accueil (demande de l'utilisateur, 2026-10-06).
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-entree-directe').trim().toLowerCase();
+    var reglage = racineStyle().getPropertyValue('--nova-entree-directe').trim().toLowerCase();
     if (/^["']?(non|no|none|aucune|off|0)["']?$/.test(reglage)) { if (corps) corps.classList.add('nova-sans-saut'); return; }
     var liste = corps && corps.querySelector(':scope > ul.wims_subclasses');
     var liens = liste ? liste.querySelectorAll('a[href*="type=authparticipant"]') : [];
@@ -79,7 +79,7 @@
    * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
   function activiteLien() {
     if (!document.getElementById('nova-eleve') || standard('menus')) return;
-    var v = getComputedStyle(document.documentElement).getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
+    var v = racineStyle().getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
     if (v === 'non') return;
     document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
       a.href = a.href.replace(/module=adm%2Fclass%2Factivity(&\+job=[^&]*)?/, 'module=home&+nova_activite=1');
@@ -93,8 +93,8 @@
    *    du badge (#nova-badges, calculées par _procs/badges.awk) pour la fenêtre, ouverte d'un toucher. */
   function badges() {
     var racine = document.documentElement;
-    var actif = getComputedStyle(racine).getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
-    if (getComputedStyle(racine).getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
+    var actif = racineStyle().getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
+    if (racineStyle().getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;
     var maison = document.querySelector('#wimstopbox .class_home a[href]');
     var surAccueil = !!document.getElementById('nova-badges');
     // « Mes badges » juste après « Mes notes », dans le même menu (le menu latéral ; demande de l'utilisateur,
@@ -346,11 +346,21 @@
     var p = document.querySelector('.nova-mes-notes a.nova-pastille-badge');
     if (!p) return;
     var imgs = [].slice.call(p.querySelectorAll('img')), libelle = p.querySelector('span');
+    // Largeurs lues une fois, puis calcul (audit B2, 2026-11-13 : relire scrollWidth après chaque badge masqué forçait une
+    // mise en page à chaque fois). Masquer un élément retire sa largeur, ses marges et un écart de la pastille.
     var ajuster = function () {
       imgs.forEach(function (i) { i.hidden = false; });
       if (libelle) libelle.hidden = false;
-      for (var n = imgs.length - 1; n > 0 && p.scrollWidth > p.clientWidth + 1; n--) imgs[n].hidden = true;
-      if (libelle && p.scrollWidth > p.clientWidth + 1) libelle.hidden = true;
+      var trop = p.scrollWidth - p.clientWidth - 1;
+      if (trop <= 0) return;
+      var gap = parseFloat(getComputedStyle(p).columnGap) || 0;
+      var place = function (e) {
+        var c = getComputedStyle(e);
+        return e.getBoundingClientRect().width + (parseFloat(c.marginLeft) || 0) + (parseFloat(c.marginRight) || 0) + gap;
+      };
+      var w = imgs.map(place);
+      for (var n = imgs.length - 1; n > 0 && trop > 0; n--) { imgs[n].hidden = true; trop -= w[n]; }
+      if (libelle && trop > 0) libelle.hidden = true;
     };
     ajuster();
     window.addEventListener('resize', ajuster);

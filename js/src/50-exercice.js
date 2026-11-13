@@ -546,7 +546,7 @@
   function clavierMaths() {
     var form = document.forms.replyform;
     if (!form || !window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) return;
-    var reglage = getComputedStyle(document.documentElement).getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
+    var reglage = racineStyle().getPropertyValue('--nova-clavier-maths').trim().toLowerCase();
     if (!/^["']?(oui|yes|on|1)["']?$/.test(reglage)) return;
     var textes = document.getElementById('nova-textes');
     var t = function (n, d) { return (textes && textes.getAttribute('data-texte-clavier' + (n ? '-' + n : ''))) || d; };

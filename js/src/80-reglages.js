@@ -592,7 +592,7 @@
   }
   function reglagesStandard() {
     var d = document.documentElement;
-    var cs = getComputedStyle(d);
+    var cs = racineStyle();
     var actifs = CLES_STANDARD.filter(function (k) {
       var oui = cs.getPropertyValue('--nova-std-' + k).trim().replace(/["']/g, '') === 'oui';
       d.classList.toggle('nova-std-' + k, oui);
@@ -671,4 +671,5 @@
     style.id = id;
     style.textContent = 'html { ' + decl + '; }';
     document.head.appendChild(style);
+    racineChangee();
   }

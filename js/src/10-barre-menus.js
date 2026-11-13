@@ -578,7 +578,7 @@
     window.addEventListener('scroll', function () {
       if (!attente) { attente = true; window.requestAnimationFrame(maj); }
     }, { passive: true });
-    maj();
+    window.requestAnimationFrame(maj);   // pas pendant le démarrage : scrollY force une mise en page (audit B2, 2026-11-13)
   }
 
   /* Écrans larges : le chronomètre (ou « Examen en cours ») au centre de la barre, s'il ne

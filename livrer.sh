@@ -13,8 +13,9 @@
 # minifié), les sources CSS (_css/, css.css.template : themes/mkcss.pl de WIMS reconstruit le css.css
 # de tous les thèmes et en a besoin), les licences, la documentation, ORIGINES.sha256 et VERSION.
 # Elle exclut l'historique git et construire-css.sh / livrer.sh / maj-vacances.py, qui dépendent du conteneur de
-# développement, les outils construire-js.sh / verifier.sh et les morceaux js/src (js/nova.js, assemblé et non
-# minifié, est livré), ainsi que l'exemple local.phtml.template de Standard et les badges PNG inutilisés.
+# développement, l'outil verifier.sh, ainsi que l'exemple local.phtml.template de Standard et les badges PNG inutilisés.
+# js/nova.js est réduit depuis le 2026-11-14 (audit B3) : ses sources js/src et construire-js.sh sont livrés avec lui
+# (forme modifiable exigée par la GPL).
 # Sans argument, refuse de livrer un dépôt modifié et non versionné : l'archive doit correspondre à un commit.
 set -e
 cd "$(dirname "$0")"
@@ -39,7 +40,7 @@ nom="$prefixe-$date-$commit"
 mkdir -p "$sortie"
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 mkdir "$tmp/$DOSSIER"
-git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh --exclude=maj-vacances.py --exclude=construire-js.sh --exclude=verifier.sh --exclude=js/src
+git archive "$commit" | tar -x -C "$tmp/$DOSSIER" --exclude=construire-css.sh --exclude=livrer.sh --exclude=maj-vacances.py --exclude=verifier.sh
 # VERSION : numéro choisi par l'utilisateur (fichier du dépôt), commit, date (lus par _procs/version.sh ; 2026-11-07).
 numero=$(git show "$commit:VERSION" 2>/dev/null | sed -n 1p)
 printf '%s\n%s\n%s\n' "${numero:-?}" "$commit" "$date" > "$tmp/$DOSSIER/VERSION"

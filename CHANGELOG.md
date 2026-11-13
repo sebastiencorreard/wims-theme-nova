@@ -77,6 +77,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 
 ### Installation
+- `js/nova.js` réduit de moitié (540 → 290 Ko, 80 Ko compressé) : pages plus rapides à charger. L'archive contient ses sources (`js/src`) et `construire-js.sh`.
 - « Préparer le retour » (Avatars des élèves) prépare aussi les badges pour une version antérieure de Nova.
 - Fichier des badges d'un élève renommé `score/<login>.nova_badges` (avant : `.nova`) ; l'ancien est renommé à la visite suivante de l'élève et lu en attendant.
 - **Jeu d'icônes « Lucide »** : nouveau choix dans « Jeu d'icônes » (Config / Maintenance › Présentation d'une classe, Configuration du site) ; icônes fines au trait, à la couleur du texte, pour toutes les entrées de WIMS (menus, barre, fil d'Ariane, messages, boutons). « Nouvelle feuille » et « Nouvel examen » ont des icônes assorties (presse-papiers + et presse-papiers horloge). Le jeu est livré avec Nova : il s'ajoute à la liste à la première visite d'une page de configuration.

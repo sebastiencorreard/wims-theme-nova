@@ -42,7 +42,7 @@ body.main_body .wims_button_help.nova-inactif:hover { opacity: .5; cursor: not-a
 .nova-reglages details.nova-rg-deplie[hidden] { display: none; }
 /* Étiquette « Nouveau » (Réglages de Nova, 2026-11-08 ; nova.js tagNouveau). */
 .nova-tag-nouveau { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--nova-accent); color: var(--nova-sur-accent, #fff);
-  font-size: .6875rem; font-weight: 700; line-height: 1.5; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; text-transform: none; }
+  font-size: .75rem; font-weight: 700; line-height: 1.5; letter-spacing: .02em; vertical-align: middle; white-space: nowrap; text-transform: none; }
 /* Onglet DM WIMS : où servent ses réglages (2026-11-09, utilisateur). */
 .nova-app-carte .nova-rg-usage-titre { margin: .5rem 0 .2rem; }
 .nova-app-carte ul.nova-rg-usage { margin: 0 0 0 1.2rem; padding: 0; list-style: disc; }

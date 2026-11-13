@@ -152,3 +152,11 @@
 .legend { background-color: var(--nova-accent-doux); color: var(--nova-texte); }
 .wims_emph { color: var(--nova-lien); }
 
+/* Polices uniformes (audit C6, 2026-11-13, utilisateur) : jQuery UI (.ui-widget : Verdana dans le bloc de recherche des
+ * accueils, accordéons, curseurs) et l'interface de TinyMCE (-apple-system) prennent la police de Nova ; textes de
+ * WIMS sous 12 px remontés à 12 px (« Désactiver l'éditeur » de TinyMCE en .6em, URN de la taxonomie en .small.hidden,
+ * nombres de la taxonomie). Contenu des éditeurs (iframe) inchangé. */
+html body .ui-widget, html body .ui-widget :is(input, select, textarea, button) { font-family: var(--nova-police); }
+html .tox.tox, html .tox.tox *:not(svg, svg *) { font-family: var(--nova-police); }
+html .wysiwyg_btns { font-size: .8125rem; }
+html .wimsbody .small.hidden, html .wimsbody sup.taxo_nb_elem { font-size: .75rem; }

@@ -545,7 +545,7 @@ html.nova-sans-animation .wimsbody :is(button.nova-cg-plus, button.nova-cg-entet
 
 /* Séquences pédagogiques, vue de l'enseignant (2026-11-12, utilisateur, maquette B ; nova.js sequencesEnseignant). Barre de
  * titre : poignée, chevron, titre, pastille d'état (menu), Modifier, flèches de déplacement (grises, sans fond : elles
- * déplacent, n'agissent pas sur le contenu). Glisser : carte rehaussée, trait épais à l'arrivée. Réglage std-listes. */
+ * déplacent, n'agissent pas sur le contenu). Glisser : carte repliée et rehaussée, silhouette repliée en pointillés à l'arrivée, les autres s'écartent. Réglage std-listes. */
 html.nova-js:not(.nova-std-listes) .wimsbody .wims_seq:not(.nova-seq) .wims_seq_actions,
 html.nova-js:not(.nova-std-listes) .wimsbody .wims_seq:not(.nova-seq):has(.wims_seq_actions) > .wims_title_seq .wims_status { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 .nova-etat-ico[data-icone='fleche-haut'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 7-7 7 7'/%3E%3Cpath d='M12 19V5'/%3E%3C/svg%3E"); }
@@ -569,8 +569,9 @@ html.nova-js:not(.nova-std-listes) .wimsbody .wims_seq:not(.nova-seq):has(.wims_
 .wimsbody .nova-seq-deplacer { display: inline-flex; flex-direction: column; margin-left: 2px; }
 .wimsbody .nova-seq-fleche { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 22px; border-radius: 6px; color: var(--nova-texte-2); text-decoration: none; }
 .wimsbody .nova-seq-fleche::before, .wimsbody .nova-seq-fleche::after { content: none; }
-.wimsbody a.nova-seq-fleche:hover { background: rgb(0 0 0 / 7%); color: var(--nova-texte); }
-.wimsbody a.nova-seq-fleche:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 0; }
+.wimsbody button.nova-seq-fleche { min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; cursor: pointer; }
+.wimsbody button.nova-seq-fleche:hover { background: rgb(0 0 0 / 7%); color: var(--nova-texte); }
+.wimsbody button.nova-seq-fleche:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 0; }
 .wimsbody .nova-seq-fleche[aria-disabled='true'] { opacity: .35; }
 @media (max-width: 40rem) {
   .wimsbody .nova-seq-tete > h2.wims_title_seq { flex-basis: calc(100% - 90px); }
@@ -586,10 +587,13 @@ html.nova-js:not(.nova-std-listes) .wimsbody .wims_seq:not(.nova-seq):has(.wims_
 .wimsbody .nova-seq-tout button.nova-seq-tout-b:hover { background: var(--nova-accent-doux); }
 .wimsbody .nova-seq-tout .nova-etat-ico { width: 18px; height: 18px; }
 .wimsbody span.nova-etat.nova-etat-petit { min-height: 24px; padding: 0 9px; font-size: .75rem; }
-.wimsbody .nova-seq.nova-seq-souleve { position: relative; z-index: 50; border-color: var(--nova-accent); box-shadow: 0 14px 30px rgb(0 0 0 / 22%); }
+.wimsbody .nova-seq.nova-seq-souleve { z-index: 50; border-color: var(--nova-accent); box-shadow: 0 14px 30px rgb(0 0 0 / 22%); }
+.wimsbody .nova-seq.nova-seq-volant { position: fixed; box-sizing: border-box; margin: 0; pointer-events: none; }
+.wimsbody .nova-seq-pliee-glisse .nova-seq-plier .nova-etat-ico { transform: rotate(-90deg); }
+.wimsbody .nova-seq.nova-seq-pliee-glisse > .wims_content_seq { display: none; }
+.wimsbody .nova-seq.nova-seq-pliee-glisse > .nova-seq-tete { border-bottom: 0; border-radius: var(--nova-rayon-carte); }
 html.nova-seq-glisse, html.nova-seq-glisse * { cursor: grabbing !important; user-select: none; -webkit-user-select: none; }
-.nova-seq-cible { position: fixed; z-index: 60; height: 6px; border-radius: 3px; background: var(--nova-accent); pointer-events: none; }
-.nova-seq-cible[hidden] { display: none; }
+.wimsbody .nova-seq-place { box-sizing: border-box; border: 2px dashed var(--nova-accent); border-radius: var(--nova-rayon-carte); background: var(--nova-accent-doux); opacity: .7; }
 .wimsbody .nova-seq.nova-seq-arrivee { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
 /* Page Configurer des séquences : case « Numéro seul » (nova.js sequencesNumero). */
 .wimsbody label.nova-seq-numero-choix { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 4px 0 0; font-weight: 400; }

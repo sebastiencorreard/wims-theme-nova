@@ -2126,9 +2126,9 @@
 
   /* Séquences pédagogiques, vue de l'enseignant (2026-11-12, utilisateur, maquette B ; adm/class/sequence, job=show).
    * Barre de titre : poignée, chevron (replier), titre, pastille d'état qui ouvre le menu (Activer ou Désactiver, Effacer :
-   * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (WIMS ne sait
-   * que remonter : Descendre N = moveup=N+1). Replis gardés par navigateur et par classe (localStorage). Glisser-déposer
-   * par la poignée : carte rehaussée, destination marquée d'un trait épais ; requête en arrière-plan (nova_seq_de,
+   * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (script de
+   * Nova, pas moveup). Replis gardés par navigateur et par classe (localStorage). Glisser-déposer par la poignée : carte
+   * repliée qui suit le pointeur, silhouette à sa place, les autres s'écartent ; requête en arrière-plan (nova_seq_de,
    * nova_seq_vers : _widgets/sequences.phtml, _procs/sequences.sh), puis la page est relue (numéros et liens de WIMS),
    * même position à l'écran. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes. */
   function sequencesEnseignant() {
@@ -2149,8 +2149,6 @@
     });
     if (!cartes.length) return;
     var numero = function (d) { return +d.id.replace('wims_seq_', ''); };
-    var lienMonter = document.querySelector('.wimsbody .wims_seq_actions a[href*="job=moveup"]');
-    var modeleMonter = lienMonter ? lienMonter.getAttribute('href') : '';
     var plis = lire(clePlis, localStorage) || [];
     var menus = menusEtat(), occupe = false;
 
@@ -2233,30 +2231,32 @@
         modifier.insertBefore(icone('crayon'), modifier.firstChild);
         tete.appendChild(modifier);
       }
-      // Monter : le lien de WIMS ; Descendre : remonter la suivante. Grisés en tête et en fin de liste.
-      if (cartes.length > 1 && modeleMonter) {
+      // Monter, Descendre : le script de Nova (comme le glisser), pas moveup de WIMS (2026-11-13, utilisateur : « Descendre »
+      // par moveup de la suivante bougeait d'autres cartes). Grisés en tête et en fin de liste.
+      if (cartes.length > 1) {
         var groupe = el('div', 'nova-seq-deplacer');
-        var fleche = function (a, sens, cible) {
-          var f = a || el('span');
-          f.className = 'nova-seq-fleche';
-          f.textContent = '';
+        var fleche = function (sens, actif, cible) {
+          var f = el(actif ? 'button' : 'span', 'nova-seq-fleche');
           f.appendChild(icone(sens === 'monter' ? 'fleche-haut' : 'fleche-bas'));
           f.setAttribute('aria-label', t(sens));
           f.title = t(sens);
-          if (!a) f.setAttribute('aria-disabled', 'true');
-          else f.addEventListener('click', function () { garderVue(d, cible); });
+          if (!actif) f.setAttribute('aria-disabled', 'true');
+          else {
+            f.type = 'button';
+            f.addEventListener('click', function () {
+              if (occupe) return;
+              var autre = cartes[cible - 1];
+              if (autre) autre.parentNode.insertBefore(d, cible < n ? autre : autre.nextSibling);
+              enregistrer(d, n, cible);
+            });
+          }
           groupe.appendChild(f);
         };
-        fleche(monter, 'monter', n - 1);
-        var suivante = cartes[i + 1];
-        var bas = null;
-        if (suivante) {
-          bas = el('a');
-          bas.href = modeleMonter.replace(/([?&]moveup=)\d+/, '$1' + numero(suivante));
-        }
-        fleche(bas, 'descendre', n + 1);
+        fleche('monter', i > 0, n - 1);
+        fleche('descendre', i < cartes.length - 1, n + 1);
         tete.appendChild(groupe);
       }
+      if (monter) monter.remove();
       actions.parentNode.removeChild(actions);
       d.classList.add('nova-seq');
       plier(d, plis.indexOf(n) >= 0);
@@ -2297,7 +2297,7 @@
       setTimeout(function () { arrivee.classList.remove('nova-seq-arrivee'); }, 1600);
     }
 
-    // Glisser-déposer par la poignée (souris, doigt, stylet).
+    // Déplacement enregistré (flèches, glisser) : requête en arrière-plan, puis la page est relue.
     function enregistrer(d, de, vers) {
       occupe = true;
       document.documentElement.classList.add('nova-occupe');
@@ -2328,28 +2328,61 @@
           relire(Math.max(2500, 1500 - (Date.now() - debut)));
         });
     }
+
+    // Glisser-déposer par la poignée (souris, doigt, stylet ; 2026-11-13, utilisateur) : la carte suit le pointeur, repliée
+    // le temps du glisser ; à sa place, une silhouette de carte repliée (pointillés) ; les autres cartes s'écartent pour
+    // lui faire place (glissement animé seulement si les animations sont permises).
     function glisser(d, ev) {
-      var y0 = ev.clientY, defil0 = window.scrollY, dernier = ev.clientY, rang0 = cartes.indexOf(d), rang = rang0, boucle = 0;
+      var anime = !animationsCoupees();
+      var r0 = d.getBoundingClientRect(), rang0 = cartes.indexOf(d), boucle = 0, dernier = ev.clientY;
       var autres = cartes.filter(function (c) { return c !== d; });
-      var trait = el('div', 'nova-seq-cible');
-      trait.hidden = true;
-      document.body.appendChild(trait);
-      d.classList.add('nova-seq-souleve');
+      var parent = d.parentNode, cs = getComputedStyle(d);
+      var ecart = ev.clientY - r0.top;
+      d.classList.add('nova-seq-souleve', 'nova-seq-pliee-glisse');
+      var hauteur = d.getBoundingClientRect().height;
+      if (ecart > hauteur - 8) ecart = hauteur / 2;
+      var place = el('div', 'nova-seq-place');
+      place.setAttribute('aria-hidden', 'true');
+      place.style.height = Math.round(hauteur) + 'px';
+      place.style.marginTop = cs.marginTop;
+      place.style.marginBottom = cs.marginBottom;
+      place.style.marginLeft = cs.marginLeft;
+      place.style.marginRight = cs.marginRight;
+      // Positions avant un changement, pour faire glisser les cartes de l'ancienne place à la nouvelle.
+      var positions = function () { return autres.map(function (c) { return c.getBoundingClientRect().top; }); };
+      var glissement = function (avant) {
+        if (!anime) return;
+        autres.forEach(function (c, k) {
+          var dy = avant[k] - c.getBoundingClientRect().top;
+          if (Math.abs(dy) > 1 && c.animate) c.animate([{ transform: 'translateY(' + dy + 'px)' }, { transform: 'none' }], { duration: 160, easing: 'ease-out' });
+        });
+      };
+      var avant = positions();
+      parent.insertBefore(place, d);
+      d.style.left = Math.round(r0.left) + 'px';
+      d.style.width = Math.round(r0.width) + 'px';
+      d.style.top = Math.round(dernier - ecart) + 'px';
+      d.classList.add('nova-seq-volant');
+      glissement(avant);
       document.documentElement.classList.add('nova-seq-glisse');
       menus.fermer(false);
+      // Milieu des voisines, déduit de la silhouette (jamais animée) : leurs positions à l'écran glissent encore.
+      var espace = function (a, b) { return Math.max(parseFloat(getComputedStyle(a).marginBottom) || 0, parseFloat(getComputedStyle(b).marginTop) || 0); };
+      var voisine = function (sens) {
+        var x = sens < 0 ? place.previousElementSibling : place.nextElementSibling;
+        while (x && autres.indexOf(x) < 0) x = x === d ? (sens < 0 ? x.previousElementSibling : x.nextElementSibling) : null;
+        return x;
+      };
       function suivre() {
-        d.style.transform = 'translateY(' + Math.round(dernier - y0 + window.scrollY - defil0) + 'px)';
-        var k = 0;
-        autres.forEach(function (c) { var r = c.getBoundingClientRect(); if (r.top + r.height / 2 < dernier) k++; });
-        rang = k;
-        if (rang === rang0) { trait.hidden = true; return; }
-        var dessous = autres[k], dessus = autres[k - 1];
-        var ref = (dessous || dessus).getBoundingClientRect();
-        var y = dessous ? (dessus ? (dessus.getBoundingClientRect().bottom + ref.top) / 2 : ref.top - 8) : ref.bottom + 8;
-        trait.hidden = false;
-        trait.style.left = Math.round(ref.left + 8) + 'px';
-        trait.style.width = Math.round(ref.width - 16) + 'px';
-        trait.style.top = Math.round(y - 3) + 'px';
+        d.style.top = Math.round(dernier - ecart) + 'px';
+        var bouge = false, av = positions();
+        for (var garde = 0; garde < cartes.length; garde++) {
+          var r = place.getBoundingClientRect(), prec = voisine(-1), suiv = voisine(1);
+          if (prec && dernier < r.top - espace(prec, place) - prec.offsetHeight / 2) { parent.insertBefore(place, prec); bouge = true; }
+          else if (suiv && dernier > r.bottom + espace(place, suiv) + suiv.offsetHeight / 2) { parent.insertBefore(place, suiv.nextSibling); bouge = true; }
+          else break;
+        }
+        if (bouge) glissement(av);
       }
       function defiler() {
         var marge = 72, v = 0;
@@ -2359,22 +2392,27 @@
         boucle = requestAnimationFrame(defiler);
       }
       function bouger(e) { dernier = e.clientY; suivre(); }
+      function rangPlace() {
+        var k = 0;
+        for (var x = parent.firstElementChild; x && x !== place; x = x.nextElementSibling) if (autres.indexOf(x) >= 0) k++;
+        return k;
+      }
       function finir(garder) {
         cancelAnimationFrame(boucle);
         document.removeEventListener('pointermove', bouger);
         document.removeEventListener('pointerup', lacher);
         document.removeEventListener('pointercancel', annuler);
         document.removeEventListener('keydown', echap, true);
-        trait.remove();
-        d.classList.remove('nova-seq-souleve');
+        var rang = garder ? rangPlace() : rang0;
+        var av = positions();
+        if (rang !== rang0) parent.insertBefore(d, place);
+        place.remove();
+        d.classList.remove('nova-seq-souleve', 'nova-seq-pliee-glisse', 'nova-seq-volant');
+        d.style.left = d.style.width = d.style.top = '';
         document.documentElement.classList.remove('nova-seq-glisse');
-        d.style.transform = '';
-        if (!garder || rang === rang0) return;
-        var de = numero(d), vers = rang + 1;
-        var apres = autres[rang];
-        if (apres) apres.parentNode.insertBefore(d, apres);
-        else { var der = autres[autres.length - 1]; der.parentNode.insertBefore(d, der.nextSibling); }
-        enregistrer(d, de, vers);
+        glissement(av);
+        if (rang === rang0) return;
+        enregistrer(d, numero(d), rang + 1);
       }
       function lacher() { finir(true); }
       function annuler() { finir(false); }
@@ -2384,7 +2422,6 @@
       document.addEventListener('pointercancel', annuler);
       document.addEventListener('keydown', echap, true);
       boucle = requestAnimationFrame(defiler);
-      suivre();
     }
     cartes.forEach(function (d) {
       var p = d.querySelector('.nova-seq-poignee');

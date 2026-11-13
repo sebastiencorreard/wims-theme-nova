@@ -2842,3 +2842,134 @@
       racine.classList.add('nova-cartes-pretes');
     }
   }
+
+  /* Liaison tableur (adm/class/userscore job=csv ; audit C2, 2026-11-14, utilisateur, maquette validée) : les deux
+   * formulaires en cartes (la phrase de WIMS en tête), le format en boutons accolés (la liste de WIMS reste, cachée),
+   * les cases en pastilles groupées (Élèves, Feuilles, Indicateur, Examens…, Autres ; pastilles : CSS sur
+   * input[name=csvdownload] + label, sans attendre nova.js), l'envoi de fichier en zone de dépôt. Noms techniques de
+   * WIMS (sheet3, examduration2…) remplacés par « Feuille 3 », « Examen 2 », gardés en petit : réglage « textes ».
+   * Cartes et pastilles : aspect seul. Formulaires masqués avant son passage (contenu.css), secours 3 s. */
+  function exportTableur() {
+    var racine = document.documentElement;
+    var tx = document.getElementById('nova-export-textes');
+    var bas = document.querySelector('.wimsbody form input[name="csvtype"][value="download"]');
+    if (!tx || !bas) { racine.classList.add('nova-export-pret'); return; }
+    var t = function (k, a) { return (tx.getAttribute('data-' + k) || '').replace('%1', a == null ? '' : a); };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte != null) e.textContent = texte; return e; };
+    var nettoyer = function (x) { return x.replace(/[\s\u00a0:]+$/, '').replace(/^[\s\u00a0]+/, ''); };
+    // La phrase de WIMS (nœud texte en tête du formulaire) devient le titre de la carte.
+    var intro = function (box) {
+      var x = box.firstChild;
+      for (; x; x = x.nextSibling) if (x.nodeType === 3 && x.nodeValue.trim()) break;
+      if (!x) return;
+      var h = el('p', 'nova-export-titre', nettoyer(x.nodeValue.replace(/\s+/g, ' ')));
+      box.insertBefore(h, x);
+      x.remove();
+      // Bouton Aide qui suit la phrase : à côté du titre.
+      var aide = h.nextElementSibling;
+      if (aide && aide.matches('a.wims_button_help')) h.appendChild(aide);
+    };
+    try {
+      // Titre de page : l'entrée du menu qui mène ici (« Liaison tableur »), absente du menu simplifié : texte de Nova.
+      var m = document.querySelector('#wimsmenumodubox a[href*="job=csv"]');
+      var h1 = document.querySelector('#wims_modu_title1 > h1.wims_title');
+      var titre = m ? m.textContent.trim() : t('titre');
+      if (titre && h1 && !standard('textes')) { h1.textContent = titre; document.title = titre; }
+
+      var form1 = bas.form, box1 = form1.querySelector('.wims_form') || form1;
+      form1.classList.add('nova-export');
+      intro(box1);
+      // Format : boutons accolés qui pilotent la liste de WIMS.
+      var sel = form1.querySelector('select#csvformat');
+      if (sel) {
+        var seg = el('span', 'nova-export-format');
+        seg.setAttribute('role', 'radiogroup');
+        Array.prototype.forEach.call(sel.options, function (o) {
+          var b = el('button', '', o.textContent.trim().toUpperCase());
+          b.type = 'button';
+          b.setAttribute('role', 'radio');
+          var maj = function () { Array.prototype.forEach.call(seg.children, function (c, i) { c.setAttribute('aria-checked', sel.selectedIndex === i ? 'true' : 'false'); }); };
+          b.addEventListener('click', function () { sel.value = o.value; maj(); sel.dispatchEvent(new Event('change', { bubbles: true })); });
+          seg.appendChild(b);
+          maj();
+        });
+        Array.prototype.forEach.call(seg.children, function (c, i) { c.setAttribute('aria-checked', sel.selectedIndex === i ? 'true' : 'false'); });
+        sel.hidden = true;
+        sel.parentNode.insertBefore(seg, sel);
+      }
+      // Cases : une rangée par groupe.
+      var autres = null, groupes = [];
+      Array.prototype.forEach.call(form1.querySelectorAll('.field > ul > li'), function (li) {
+        var cases = li.querySelectorAll('input[name="csvdownload"]');
+        if (!cases.length) return;
+        var b = li.querySelector(':scope > b');
+        var g = el('div', 'nova-export-groupe');
+        var titre = b ? nettoyer(b.textContent.replace(/\s+/g, ' ')) : (!groupes.length ? t('eleves') : '');
+        var puces = el('div', 'nova-export-puces');
+        Array.prototype.forEach.call(cases, function (c) {
+          var lab = li.querySelector('label[for="' + c.id + '"]');
+          puces.appendChild(c);
+          if (lab) puces.appendChild(lab);
+        });
+        if (!titre && cases.length === 1) {
+          if (!autres) { autres = el('div', 'nova-export-groupe'); autres.appendChild(el('span', 'nova-export-groupe-titre', t('autres'))); autres.appendChild(el('div', 'nova-export-puces')); }
+          while (puces.firstChild) autres.lastChild.appendChild(puces.firstChild);
+          li.remove();
+          return;
+        }
+        if (titre) g.appendChild(el('span', 'nova-export-groupe-titre', titre));
+        g.appendChild(puces);
+        li.textContent = '';
+        li.appendChild(g);
+        groupes.push(g);
+      });
+      if (autres) {
+        var ul = form1.querySelector('.field > ul');
+        if (ul) { var li2 = el('li'); li2.appendChild(autres); ul.appendChild(li2); }
+      }
+      // Libellés lisibles, nom de WIMS en petit.
+      if (!standard('textes')) {
+        Array.prototype.forEach.call(form1.querySelectorAll('input[name="csvdownload"]'), function (c) {
+          var lab = form1.querySelector('label[for="' + c.id + '"]');
+          if (!lab || lab.textContent.trim() !== c.value) return;
+          var v = c.value, r;
+          var lisible = tx.getAttribute('data-col-' + v) ||
+            ((r = /^sheet(?:exo)?(\d+)$/.exec(v)) ? t('feuille', r[1]) :
+              (r = /^exam(?:exo|duration)?(\d+)$/.exec(v)) ? t('examen', r[1]) :
+                (r = /^average(\d+)$/.exec(v)) ? t('moyenne') + (r[1] !== '1' ? ' ' + r[1] : '') : '');
+          if (!lisible) return;
+          lab.textContent = lisible + ' ';
+          lab.appendChild(el('small', 'nova-export-tech', v));
+        });
+      }
+      // Envoi d'un fichier : zone de dépôt.
+      var haut = document.querySelector('.wimsbody form input[name="csvtype"][value="upload"]');
+      if (haut) {
+        var form2 = haut.form, box2 = form2.querySelector('.wims_form') || form2;
+        form2.classList.add('nova-export');
+        intro(box2);
+        var f = form2.querySelector('input[type="file"]');
+        if (f) {
+          var zone = el('label', 'nova-depot');
+          var ligne = el('span', 'nova-depot-texte', t('deposer') + ' ');
+          ligne.appendChild(el('strong', '', t('choisir')));
+          var nom = el('span', 'nova-depot-nom');
+          nom.setAttribute('aria-live', 'polite');
+          f.parentNode.insertBefore(zone, f);
+          // Libellé de WIMS (« Fichier de données ») avant le champ : retiré, la zone le remplace.
+          var prev = zone.previousSibling;
+          if (prev && prev.nodeType === 3 && prev.nodeValue.trim()) prev.remove();
+          zone.appendChild(f);
+          zone.appendChild(ligne);
+          zone.appendChild(nom);
+          f.addEventListener('change', function () { nom.textContent = f.files && f.files[0] ? f.files[0].name : ''; zone.classList.toggle('nova-depot-plein', !!nom.textContent); });
+          ['dragenter', 'dragover'].forEach(function (k) { zone.addEventListener(k, function () { zone.classList.add('nova-depot-survol'); }); });
+          ['dragleave', 'drop'].forEach(function (k) { zone.addEventListener(k, function () { zone.classList.remove('nova-depot-survol'); }); });
+        }
+        var hr = form2.previousElementSibling;
+        if (hr && hr.tagName === 'HR') hr.remove();
+      }
+    } finally {
+      racine.classList.add('nova-export-pret');
+    }
+  }

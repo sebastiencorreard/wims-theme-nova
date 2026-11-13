@@ -67,3 +67,8 @@
 !! _widgets/sequences.phtml
 <template id="nova-seq-textes" data-plier="Comprimi" data-deplier="Espandi" data-tout-plier="Comprimi tutto" data-tout-deplier="Espandi tutto" data-compte="%1 sequenze" data-compte-1="1 sequenza" data-monter="Sposta su" data-descendre="Sposta giù" data-glisser="Trascina per spostare" data-modifier="Modifica" data-activer="Gli studenti vedono la sequenza e le sue risorse attive." data-desactiver="La sequenza scompare dalla pagina degli studenti; le sue risorse restano." data-effacer="Il raggruppamento scompare; fogli, esami e documenti restano. Viene chiesta conferma." data-enregistrement="Salvataggio..." data-erreur="Lo spostamento non è stato salvato. La pagina verrà ricaricata." data-numero="Solo il numero, senza parola generica" data-numero-aide="Le sequenze vengono mostrate solo con il loro numero, per te e per gli studenti. La parola qui sopra ritorna se togli la spunta."></template>
 !exit
+
+:export
+!! header.phtml, Liaison tableur (adm/class/userscore job=csv ; nova.js exportTableur, audit C2, 2026-11-14)
+<template id="nova-export-textes" data-titre="Collegamento con foglio di calcolo" data-eleves="Studenti" data-autres="Altro" data-feuille="Foglio %1" data-examen="Esame %1" data-moyenne="Media" data-col-login="Nome utente" data-col-lastname="Cognome" data-col-firstname="Nome" data-col-password="Password" data-col-email="Email" data-col-regnum="N. di iscrizione" data-col-comments="Commenti" data-col-photourl="Foto" data-col-external_auth="Accesso esterno" data-deposer="Trascina qui il file, oppure" data-choisir="sceglilo"></template>
+!exit

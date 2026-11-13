@@ -67,3 +67,8 @@
 !! _widgets/sequences.phtml
 <template id="nova-seq-textes" data-plier="Collapse" data-deplier="Expand" data-tout-plier="Collapse all" data-tout-deplier="Expand all" data-compte="%1 sequences" data-compte-1="1 sequence" data-monter="Move up" data-descendre="Move down" data-glisser="Drag to move" data-modifier="Edit" data-activer="Students see the sequence and its active resources." data-desactiver="The sequence disappears from the students' page; its resources remain." data-effacer="The grouping disappears; sheets, exams and documents remain. Confirmation is asked." data-enregistrement="Saving..." data-erreur="The move was not saved. The page will be reloaded." data-numero="Number only, no generic word" data-numero-aide="Sequences are shown with their number only, for you and for students. The word kept above comes back if you uncheck."></template>
 !exit
+
+:export
+!! header.phtml, Liaison tableur (adm/class/userscore job=csv ; nova.js exportTableur, audit C2, 2026-11-14)
+<template id="nova-export-textes" data-titre="Spreadsheet link" data-eleves="Students" data-autres="Other" data-feuille="Sheet %1" data-examen="Exam %1" data-moyenne="Average" data-col-login="Login" data-col-lastname="Last name" data-col-firstname="First name" data-col-password="Password" data-col-email="Email" data-col-regnum="Registration number" data-col-comments="Comments" data-col-photourl="Photo" data-col-external_auth="External login" data-deposer="Drop the file here, or" data-choisir="choose it"></template>
+!exit

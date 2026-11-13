@@ -67,3 +67,8 @@
 !! _widgets/sequences.phtml
 <template id="nova-seq-textes" data-plier="Replier" data-deplier="Déplier" data-tout-plier="Tout replier" data-tout-deplier="Tout déplier" data-compte="%1 séquences" data-compte-1="1 séquence" data-monter="Monter" data-descendre="Descendre" data-glisser="Glisser pour déplacer" data-modifier="Modifier" data-activer="Les élèves voient la séquence et ses ressources actives." data-desactiver="La séquence disparaît de la page des élèves ; ses ressources restent." data-effacer="Le regroupement disparaît ; feuilles, examens et documents restent. Confirmation demandée." data-enregistrement="Enregistrement..." data-erreur="Le déplacement n'a pas été enregistré. La page va être rechargée." data-numero="Numéro seul, sans mot générique" data-numero-aide="Les séquences s'affichent avec leur numéro seul, pour vous comme pour les élèves. Le mot gardé ci-dessus revient si vous décochez."></template>
 !exit
+
+:export
+!! header.phtml, Liaison tableur (adm/class/userscore job=csv ; nova.js exportTableur, audit C2, 2026-11-14)
+<template id="nova-export-textes" data-titre="Liaison tableur" data-eleves="Élèves" data-autres="Autres" data-feuille="Feuille %1" data-examen="Examen %1" data-moyenne="Moyenne" data-col-login="Identifiant" data-col-lastname="Nom" data-col-firstname="Prénom" data-col-password="Mot de passe" data-col-email="Courriel" data-col-regnum="N° d'inscription" data-col-comments="Commentaires" data-col-photourl="Photo" data-col-external_auth="Connexion externe" data-deposer="Déposez le fichier ici, ou" data-choisir="choisissez-le"></template>
+!exit

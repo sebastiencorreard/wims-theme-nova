@@ -67,3 +67,8 @@
 !! _widgets/sequences.phtml
 <template id="nova-seq-textes" data-plier="Plegar" data-deplier="Desplegar" data-tout-plier="Plegar todo" data-tout-deplier="Desplegar todo" data-compte="%1 secuencias" data-compte-1="1 secuencia" data-monter="Subir" data-descendre="Bajar" data-glisser="Arrastrar para mover" data-modifier="Modificar" data-activer="Los alumnos ven la secuencia y sus recursos activos." data-desactiver="La secuencia desaparece de la página de los alumnos; sus recursos se conservan." data-effacer="La agrupación desaparece; hojas, exámenes y documentos se conservan. Se pide confirmación." data-enregistrement="Guardando..." data-erreur="El desplazamiento no se ha guardado. La página se va a recargar." data-numero="Solo el número, sin palabra genérica" data-numero-aide="Las secuencias se muestran solo con su número, para usted y para los alumnos. La palabra de arriba vuelve si desmarca la casilla."></template>
 !exit
+
+:export
+!! header.phtml, Liaison tableur (adm/class/userscore job=csv ; nova.js exportTableur, audit C2, 2026-11-14)
+<template id="nova-export-textes" data-titre="Enlace con hoja de cálculo" data-eleves="Alumnos" data-autres="Otros" data-feuille="Hoja %1" data-examen="Examen %1" data-moyenne="Media" data-col-login="Usuario" data-col-lastname="Apellido" data-col-firstname="Nombre" data-col-password="Contraseña" data-col-email="Correo" data-col-regnum="N.º de inscripción" data-col-comments="Comentarios" data-col-photourl="Foto" data-col-external_auth="Conexión externa" data-deposer="Suelte el archivo aquí, o" data-choisir="elíjalo"></template>
+!exit

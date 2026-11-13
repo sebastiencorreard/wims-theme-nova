@@ -606,3 +606,34 @@ html.nova-seq-glisse, html.nova-seq-glisse * { cursor: grabbing !important; user
  * audit D3, 2026-11-13, utilisateur) ; le mot de WIMS reste pour les lecteurs d'écran. Réglage « textes ». */
 .wimsbody .nova-num-mot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .wimsbody td.nova-num-seul { white-space: nowrap; }
+
+/* Liaison tableur (adm/class/userscore job=csv ; audit C2, 2026-11-14, utilisateur ; nova.js exportTableur) : formulaires
+ * en cartes, groupes de pastilles, format en boutons accolés, zone de dépôt. Les pastilles se lisent sur la structure de
+ * WIMS (input[name=csvdownload] + label), sans attendre nova.js. Aspect seul : pas de réglage « thème standard ». */
+.wimsbody form.nova-export { margin: var(--nova-e4) 0; padding: var(--nova-e4) var(--nova-e5) var(--nova-e5); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); }
+.wimsbody form.nova-export ul { margin: 0; padding: 0; list-style: none; }
+.wimsbody form.nova-export li { margin: 0 0 var(--nova-e3); }
+.wimsbody form.nova-export .field { margin: var(--nova-e2) 0 0; padding: 0; border: 0; background: none; min-height: 0; }
+.nova-export-titre { display: flex; align-items: center; flex-wrap: wrap; gap: var(--nova-e2); margin: 0 0 var(--nova-e3); font-size: var(--nova-corps); font-weight: 700; color: var(--nova-lien); }
+.nova-export-groupe-titre { display: block; margin: 0 0 6px; font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte); }
+.nova-export-puces { display: flex; flex-wrap: wrap; gap: 6px; }
+.wimsbody input[type="checkbox"][name="csvdownload"] { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.wimsbody input[type="checkbox"][name="csvdownload"] + label { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: 0; padding: 4px 12px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); color: var(--nova-texte); font-size: .875rem; font-weight: 400; line-height: 1.2; cursor: pointer; }
+.wimsbody input[type="checkbox"][name="csvdownload"] + label:hover { border-color: var(--nova-accent); }
+.wimsbody input[type="checkbox"][name="csvdownload"]:checked + label { border-color: var(--nova-accent); background: var(--nova-accent-doux); color: var(--nova-lien); font-weight: 700; }
+.wimsbody input[type="checkbox"][name="csvdownload"]:checked + label::before { content: "\2713"; }
+.wimsbody input[type="checkbox"][name="csvdownload"]:focus-visible + label { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-export-tech { font-family: var(--nova-police-chiffres); font-size: .6875rem; font-weight: 400; color: var(--nova-texte-2); }
+.nova-export-format { display: inline-flex; vertical-align: middle; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); overflow: hidden; }
+.wimsbody .nova-export-format > button { min-height: 36px; margin: 0; padding: 0 14px; border: 0; border-radius: 0; background: var(--nova-surface); color: var(--nova-lien); font: inherit; font-size: .875rem; font-weight: 700; box-shadow: none; cursor: pointer; }
+.wimsbody .nova-export-format > button + button { border-left: 1px solid var(--nova-bord-fort); }
+.wimsbody .nova-export-format > button[aria-checked="true"] { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-export-format > button:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -3px; }
+.nova-depot { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nova-e1); min-height: 96px; margin: var(--nova-e2) 0; padding: var(--nova-e4); border: 2px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon-carte); background: var(--nova-fond); color: var(--nova-texte-2); text-align: center; cursor: pointer; }
+.nova-depot:hover, .nova-depot.nova-depot-survol { border-color: var(--nova-accent); background: var(--nova-accent-doux); }
+.nova-depot:focus-within { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-depot-texte strong { color: var(--nova-lien); }
+.nova-depot-nom { font-weight: 700; color: var(--nova-texte); }
+.nova-depot-nom:empty { display: none; }
+.wimsbody .nova-depot input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+html.nova-js.nova-role-prof:not(.nova-export-pret) .wimsbody form:has(input[name="csvtype"]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }

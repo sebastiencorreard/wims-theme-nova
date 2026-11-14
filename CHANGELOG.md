@@ -80,7 +80,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 
 ### Installation
-- Guide du développeur (`guide/`, PDF dans l'archive) : quels fichiers modifier selon son objectif, choix faits, pièges.
+- Guide du développeur (`guide-nova.typ`, PDF dans l'archive) : quels fichiers modifier selon son objectif, choix faits, pièges.
 - `js/nova.js` réduit de moitié (540 → 290 Ko, 80 Ko compressé) : pages plus rapides à charger. L'archive contient ses sources (`js/src`) et `construire-js.sh`.
 - « Préparer le retour » (Avatars des élèves) prépare aussi les badges pour une version antérieure de Nova.
 - Fichier des badges d'un élève renommé `score/<login>.nova_badges` (avant : `.nova`) ; l'ancien est renommé à la visite suivante de l'élève et lu en attendant.

@@ -1,6 +1,6 @@
 // Guide pour modifier et maintenir le thème Nova (WIMS), à destination des humains.
-// Compiler depuis la racine du thème (le guide lit les sources pour ses annexes) :
-//   typst compile --root . guide/guide-nova.typ guide/guide-nova.pdf
+// Compiler (le guide lit les sources du thème pour ses annexes ; il est à la racine du thème pour que Typst y ait accès) :
+//   typst compile guide-nova.typ
 // livrer.sh le compile dans l'archive (si typst est installé) et verifier.sh contrôle qu'il nomme chaque fichier.
 //
 // revue de structure : 2026-11-14 (première version). Changer cette ligne à chaque revue (@annexe-maintenir) :
@@ -13,7 +13,9 @@
 #set document(title: "Modifier et maintenir Nova", author: "Contributeurs de Nova")
 #set text(lang: "fr", font: ("Fira Sans", "Noto Sans", "DejaVu Sans", "Libertinus Serif"), size: 10pt)
 #let hydra-titre() = context {
-  let t = query(selector(heading.where(level: 1)).before(here()))
+  // Le chapitre qui commence sur cette page, sinon le dernier commencé avant.
+  let ici = query(heading.where(level: 1)).filter(h => h.location().page() == here().page())
+  let t = if ici.len() > 0 { ici } else { query(selector(heading.where(level: 1)).before(here())) }
   if t.len() > 0 { text(8pt, fill: luma(110), t.last().body) }
 }
 #set page(paper: "a4", margin: (x: 2cm, top: 2cm, bottom: 2.2cm),
@@ -158,7 +160,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [`js/src/`], [Sources de `nova.js`, par domaine (@annexe-js). Autres scripts de `js/` : chargés à la demande.],
   [`icones/`], [Jeu d'icônes Lucide pour WIMS et ses outils de construction.],
   [`img/`, `polices/`, `_avatar/`], [Images (logos, badges), polices (Atkinson Hyperlegible), dessins de l'avatar.],
-  [`guide/`], [Ce guide.],
+  [`guide-nova.typ`], [Ce guide (à la racine : Typst ne lit les sources que sous le dossier du fichier compilé).],
 )
 
 // ================================================================= 2
@@ -201,7 +203,7 @@ Si la création échoue, quelqu'un d'autre travaille : attendre.]
 + Pour une version : `./livrer.sh` (@livrer).
 
 // ================================================================= 3
-= Comment WIMS assemble une page Nova
+= Comment WIMS assemble une page Nova <assemblage>
 
 Comprendre cet ordre évite la moitié des surprises : une variable posée trop tard est vide, un script lancé trop tôt
 ne trouve pas son élément.
@@ -633,44 +635,427 @@ des cartes « Réglages de Nova » (`_widgets/version.phtml`, `_procs/version.sh
 // ================================================================= 8
 = Pièges à connaître <pieges>
 
-Chaque piège ci-dessous a coûté du temps au moins une fois. Ils sont classés par domaine.
+Chaque piège ci-dessous a coûté du temps au moins une fois. Il est décrit en trois temps : *ce qu'on voit* (le
+symptôme, souvent trompeur), *pourquoi* (le mécanisme de WIMS ou du navigateur en cause) et *que faire*. Beaucoup
+découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage si un « pourquoi » paraît obscur.
 
-== Fichiers et encodages
-- Gabarits et `lang/` en latin-1, servis en windows-1252. `grep -a` toujours. Un fichier enregistré en UTF-8 affiche « Ã© » (contrôlé).
-- Dans un gabarit, `$=` (sélecteur CSS « finit par ») perd son `$` : écrire `$$=`.
-- Dans un `!if`, `=` est une comparaison. `$httpd_HTTP_COOKIE` est figé à la connexion : inutilisable pour un choix fait après.
-- Date du jour dans un gabarit : `!char 1 to 8 of $wims_now`.
-- Nom du dossier du thème : lettres et chiffres seulement (un point : `css.css` non chargé ; un tiret : accueils sans Nova).
+#let piege(titre, vu, cause, faire) = block(breakable: false, width: 100%, above: 1.1em, below: .4em)[
+  #set par(justify: false)
+  #text(weight: "bold", fill: accent)[#titre]
+  #v(-.3em)
+  #grid(columns: (5.2em, 1fr), column-gutter: .7em, row-gutter: .45em,
+    text(8.5pt, weight: "bold", fill: luma(105))[On voit], vu,
+    text(8.5pt, weight: "bold", fill: luma(105))[Pourquoi], cause,
+    text(8.5pt, weight: "bold", fill: luma(105))[Que faire], faire)
+]
+
+== Fichiers, encodages et langage de WIMS
+
+#piege[Des accents cassés (« Ã© ») dans une page ou un texte][
+  Un « é » s'affiche « Ã© », ou un texte de `lang/` apparaît vide ou tronqué.
+][
+  WIMS lit gabarits et fichiers de `lang/` octet par octet, sans conversion, et la page est déclarée en
+  windows-1252. Un fichier enregistré en UTF-8 code « é » sur deux octets : le navigateur affiche deux caractères.
+][
+  Enregistrer ces fichiers en latin-1 (ISO-8859-1) : régler l'éditeur par extension (`*.phtml`, `lang/*`).
+  `./verifier.sh` contrôle l'encodage. Pour chercher dedans, toujours `grep -a` : sans cette option, certains `grep`
+  prennent un fichier latin-1 pour un fichier binaire et le sautent sans rien dire.
+]
+
+#piege[Un caractère accentué dans le JavaScript][
+  Tout `nova.js` cesse de fonctionner, ou un texte affiché par le script est faux.
+][
+  `nova.js` est lui aussi servi en windows-1252. Un « é » tapé en UTF-8 y arrive en deux caractères. Autre
+  variante vécue : un outil d'écriture (éditeur, script) a transformé l'échappement `\u0300` d'une expression
+  régulière en vrai caractère ; l'expression ne voulait plus rien dire et le script entier s'est arrêté.
+][
+  Pas de caractère non ASCII dans le code, hors commentaires : écrire `'\u00e9'`. Mieux : mettre le texte dans
+  `lang/` (@textes). `./verifier.sh` signale tout caractère non ASCII hors commentaire : le lancer après chaque
+  modification de `js/src/`. En CSS, même règle : `content: "\203A"`, et pour une variable au texte accentué
+  (`"not\e9"`) la lire par la fonction `texteCss` de `00-commun.js` (Chrome rend l'échappement brut).
+]
+
+#piege[Un `$` qui disparaît dans un gabarit][
+  Un sélecteur comme `[href$=".pdf"]` écrit dans un gabarit ne sélectionne rien ; un prix `5$` s'affiche `5`.
+][
+  Avant d'envoyer la page, WIMS remplace chaque `$nom` par la valeur de la variable `nom`. `$=` est pris pour une
+  variable au nom vide, remplacée par rien.
+][
+  Doubler le signe : `$$=` (WIMS écrit un seul `$`). Vaut pour tout `$` qui doit arriver dans la page.
+]
+
+#piege[Des commandes `!if` qui apparaissent dans la page][
+  Des lignes `!if …` ou `!read …` sont visibles dans le code source de la page, dans `<head>`.
+][
+  `htmlheader.phtml` n'est pas lu par l'interpréteur de gabarits mais par le programme C de WIMS (`config.c`), qui ne
+  fait que remplacer les `$variables`. Aucune commande n'y est exécutée.
+][
+  Ne mettre dans `htmlheader.phtml` que du HTML, des variables et des scripts. Une décision (choisir une couleur selon
+  la classe, par exemple) va dans un widget lu par `header.phtml` (ex. `_widgets/accent.phtml`).
+]
+
+#piege[Un texte remplacé par une valeur sans rapport][
+  Le libellé d'un bouton est vide, ou affiche un nombre ou un identifiant.
+][
+  Toutes les variables d'une page WIMS partagent un seul espace de noms : textes de `lang/`, variables du module et
+  variables de travail du thème. Un texte et une variable de travail de même nom s'écrasent (vécu : le texte
+  d'un bouton remplacé par un paramètre d'achat de l'avatar).
+][
+  Préfixer les variables de travail du thème (`nova_…`) et donner aux textes des noms distincts. Encore mieux, pour un
+  texte destiné à `nova.js` : les textes en clair, qui ne créent aucune variable (@textes).
+]
+
+#piege[« variable_name_buffer_overflow » sur une page chargée][
+  Une erreur WIMS citant un fichier sans rapport, sur une page lourde seulement : exercice OEF dans une feuille,
+  accueil de l'enseignant, configuration de la classe, version imprimable d'une feuille.
+][
+  WIMS réserve 32 Ko pour les *noms* de toutes les variables d'une page, partagés entre WIMS, le module (un exercice
+  OEF en crée beaucoup) et le thème. Chaque nom compte environ 17 octets, et `!reset` ne libère rien. Le thème standard
+  en utilise 17 à 19 Ko ; Nova monte à 28 ou 29 Ko sur les pages les plus chargées : la marge est faible.
+][
+  Ne pas créer de variable sans besoin : pas de `!set` pour un texte de `nova.js` (textes en clair) ; ne lire un
+  fichier de `lang/` que dans la branche du gabarit qui s'en sert. `verifier.sh` plafonne `lang/name.phtml` (lu sur
+  chaque page) à 4 000 octets de noms. Tester une nouveauté sur la version imprimable d'une longue feuille.
+]
+
+#piege[Un paramètre de l'adresse introuvable][
+  `&nova_x=1` est dans l'adresse, mais `$nova_x` est vide dans le gabarit ; ou `$httpd_QUERY_STRING` montre une
+  ancienne adresse.
+][
+  WIMS ne crée une variable que pour les paramètres déclarés par le module courant (`var.def`). Et
+  `$httpd_QUERY_STRING`, comme `$httpd_HTTP_COOKIE`, est restitué depuis la session : c'est celui de la *connexion*,
+  pas de la requête en cours.
+][
+  Lire la requête en cours par `!sh printf '%s' "$$QUERY_STRING"`, puis la découper par `!getopt` (voir
+  `header.phtml`). La valeur lue est brute : la filtrer (piège suivant). Un choix de l'utilisateur fait après la
+  connexion ne peut pas passer par un cookie lu côté serveur.
+]
+
+#piege[Une valeur de l'adresse exécutée par le serveur][
+  Rien de visible : c'est une faille. Une adresse fabriquée (avec `;`, des accents graves) fait exécuter une commande.
+][
+  Une valeur venue de l'adresse (y compris `$class` ou `$exam`) est collée telle quelle par WIMS dans une ligne `!sh`
+  ou dans la page. Les guillemets autour n'y changent rien.
+][
+  Toujours la réduire avant usage : `!text select 0123456789 in $x` pour un nombre (sans le mot `char`, qui serait
+  pris comme liste de caractères), ou la comparer à une liste connue (`isitemof`). `!bound` avant `!writefile`.
+  N'écrire dans la page que ce que `nova.js` lit, jamais un fichier entier.
+]
+
+#piege[Le nom du dossier du thème][
+  Après un renommage du dossier, `css.css` n'est plus chargé (nom avec un point), ou les accueils retombent sur le
+  thème par défaut (nom avec un tiret ou un soulignement).
+][
+  WIMS refuse de charger la feuille d'un thème dont le nom contient un point, et l'accueil ne garde que lettres,
+  chiffres et `/` du nom pour trouver ses gabarits.
+][
+  Lettres et chiffres seulement (`Nova`, `Nova14`) ; `livrer.sh` refuse les autres noms. Dans le code, toujours
+  `themes/$wims_theme/…`, jamais `themes/Nova/…`.
+]
+
+== Écrire et calculer sur le serveur
+
+#piege[Un `!writefile` qui n'écrit rien][
+  Le fichier attendu n'existe pas, sans aucun message d'erreur.
+][
+  WIMS n'autorise l'écriture dans `wimshome/` que depuis un module « de confiance » (accueil `home`, modules `adm/…`)
+  et ne crée *jamais* de dossier. Un gabarit du thème hérite des droits du module de la page où il est lu.
+][
+  Écrire depuis l'accueil (`user.phtml`, module `home`), dans un dossier qui existe déjà. Une donnée propre à un élève
+  va dans `score/` de la classe, sous le nom de l'élève suivi d'un suffixe : elle est alors sauvegardée, cachée et
+  restaurée avec ses notes. Un fichier à la racine de la classe n'est pas sauvegardé.
+]
+
+#piege[Un script `.proc` de WIMS qui ne fait rien][
+  Des lignes `x=…` apparaissent en texte dans la page, et les variables restent vides.
+][
+  Les `.proc` de WIMS affectent par `x=…`, sans `!set`. Lus par `!read`, en mode page, ces lignes sont du texte à
+  afficher.
+][
+  Les lire par `!readproc`.
+]
+
+#piege[Un script shell qui échoue seulement depuis une page][
+  Un script de `_procs/` fonctionne lancé à la main dans le conteneur, mais ne fait rien quand une page l'appelle.
+][
+  Lancé par `!sh` depuis une page, il tourne dans un environnement restreint : `mktemp` y échoue, par exemple.
+][
+  Pas de fichier temporaire hors de la session : enchaîner par des tubes (`|`). Tester le script depuis une vraie page.
+]
+
+#piege[La feuille de style d'une classe vidée à l'enregistrement][
+  Après « Enregistrer » dans la configuration d'une classe, sa feuille de style est vide ou tronquée.
+][
+  WIMS range plusieurs champs dans un même fichier, séparés par des lignes qui commencent par « : ». Une feuille qui
+  contient une ligne `:root {` est coupée là.
+][
+  Ne jamais écrire de ligne qui commence par « : » dans une feuille de classe : `html:root { … }`. Pour lire un tel
+  fichier depuis le thème, `!sh cat` plutôt que `!record`.
+]
+
+#piege[Une action du thème que l'index de WIMS ne voit pas][
+  Le thème modifie un fichier de la classe (ordre des séquences, par exemple), la page le montre, mais une autre
+  page de WIMS affiche encore l'ancien état.
+][
+  Le module calcule ses index (`var.proc`) *avant* que `header.phtml` soit lu, et n'affiche son gabarit qu'*après*.
+  Une action du thème est vue par le gabarit, pas par ce que le module a déjà calculé ou écrit.
+][
+  Mettre à jour aussi les index concernés (voir `_procs/sequences.sh`), ou faire l'action sur une page où le module
+  relit ses fichiers ensuite.
+]
+
+#piege[« Terminer » un examen déconnecte l'élève][
+  L'élève qui termine un examen se retrouve déconnecté.
+][
+  WIMS garde l'examen dans la session de connexion ; « Terminer » efface la session entière. Ce n'est pas Nova.
+][
+  Rien à corriger dans le thème ; le savoir pour ne pas chercher une panne qui n'existe pas.
+]
 
 == CSS
-- Spécificité : une règle de WIMS comme `.ui-widget input[type="submit"]` bat `input[type="submit"]` de Nova : préfixer.
-- `:not(a, b)` prend la spécificité de son argument le plus fort.
-- Une classe de Nova peut déjà exister avec un autre sens (`.nova-vide` masque !) : vérifier dans `css.css`.
-- Au téléphone, `.wimsbody` défile en largeur : `position: sticky` s'y colle au bord de `.wimsbody`, pas de l'écran.
-- Mesurer un masquage par la taille réelle (`getBoundingClientRect`), pas par l'attribut `hidden`.
-- Préfixe de page d'élève : `html.nova-role-eleve`, jamais `body:has(#…)` (lent sur tout le document).
+
+#piege[Une règle de Nova sans effet][
+  La règle est bien dans `_css/`, `css.css` est reconstruit, mais l'élément ne change pas.
+][
+  Les feuilles de WIMS restent chargées (Nova les surcharge sans les réécrire), et certaines ont des sélecteurs plus
+  forts. Exemple : `.ui-widget input[type="submit"]` (spécificité 0,2,1) l'emporte sur `input[type="submit"]` (0,1,1),
+  même placée avant. Autre cause : `:not(a, b)` prend la spécificité de son argument *le plus fort*, si bien qu'une
+  règle commune en `:not(…)` peut battre une règle plus précise en apparence.
+][
+  Dans les outils du navigateur (Inspecter › Styles), repérer la règle gagnante et reprendre son préfixe
+  (`.ui-widget input[…]`), ou ajouter un type d'élément (`li.x > div.y` au lieu de `li.x .y`). Vérifier que la règle
+  est bien arrivée dans `css.css` : `grep -a`.
+]
+
+#piege[Une classe de Nova qui existe déjà][
+  Un élément créé par Nova est invisible alors que son code paraît juste.
+][
+  Le nom de classe choisi est déjà utilisé ailleurs dans Nova avec un autre sens : `.nova-vide` masque un bloc
+  (`display: none !important`). Autre cas : `.nova-score` désigne à la fois une barre et une étiquette.
+][
+  Avant de nommer une classe, la chercher dans `css.css` (`grep -a 'nova-xxx' css.css`). Qualifier un sélecteur
+  ambigu par son parent (`.nova-scores .nova-score`).
+]
+
+#piege[Une règle trop large qui touche WIMS][
+  Après une règle sur `.inline` ou `input ~ label`, des éléments de WIMS sans rapport changent ou disparaissent.
+][
+  WIMS réutilise des noms génériques : les segments `.wims_seed_item` portent aussi la classe `inline` ; les boutons
+  radio écrits par `!formradio` sont suivis de leurs libellés frères, que `input ~ label` atteint.
+][
+  Viser précisément : exclure `:is([type=radio], [type=checkbox]) + label`, qualifier par le conteneur. Comparer les
+  pages avant et après (@chap-verifier).
+]
+
+#piege[Une icône SVG en `data:` qui n'apparaît pas][
+  L'icône, définie par une image `url("data:image/svg+xml,…")`, n'est pas affichée ; aucune erreur.
+][
+  Dans une adresse, `#` annonce la fin de l'adresse (le fragment). `stroke="#000"` coupe donc le SVG en deux.
+][
+  Écrire les couleurs par leur nom (`black`) ou encoder le signe (`%23000`).
+]
+
+#piege[Un tiret devant une entrée de menu, sur certains serveurs seulement][
+  Une entrée ajoutée par Nova dans la barre ou un menu porte un tiret « – » devant son libellé, chez un utilisateur
+  mais pas sur le poste de développement.
+][
+  Le serveur utilise le jeu d'icônes Font_Awesome de WIMS, dont la feuille pose `content: "\f068"` (un tiret) devant
+  tout lien de menu sans icône. Le poste de développement est souvent en jeu `default`, qui ne le fait pas.
+][
+  Toute entrée de barre créée par Nova a son propre `::before` (pictogramme ou `content: none`) ; une entrée de menu
+  prend une classe que la feuille Font_Awesome connaît (`heart`, `star`…). Tester en injectant
+  `gifs/themes/Font_Awesome/icon-min.css` (@chap-verifier).
+]
+
+#piege[`position: sticky` qui ne colle pas au téléphone][
+  Un élément censé rester visible en haut de l'écran défile avec la page au téléphone.
+][
+  Au téléphone, `.wimsbody` défile en largeur (`overflow-x: auto`, filet de sécurité contre les débordements) : un
+  élément `sticky` se colle alors au bord de `.wimsbody`, qui défile lui-même, et non à l'écran.
+][
+  Position fixe plus un repère dans la page (voir `boutonsCollants` dans `20-composants.js`).
+]
+
+#piege[Un masquage qui ne masque pas][
+  Le code pose l'attribut `hidden`, un test dit « masqué », mais l'élément est visible.
+][
+  `hidden` n'est qu'un `display: none` par défaut du navigateur : une règle `display` de WIMS l'emporte.
+][
+  Masquer par une classe de Nova ; vérifier un masquage par la taille réelle (`getBoundingClientRect`), jamais par
+  la présence de l'attribut.
+]
+
+#piege[Une page lente au téléphone][
+  Sur un téléphone modeste, la page met du temps à réagir après le chargement ou à chaque action.
+][
+  `css.css` est lourd ; un sélecteur `body:has(…)` oblige le navigateur à revérifier tout le document à chaque
+  changement, et chaque lecture de style (`getComputedStyle`, une taille) après une écriture recalcule toute la page
+  (40 à 60 ms chaque fois).
+][
+  En CSS, préfixer par une classe posée tôt sur `html` (`html.nova-role-eleve`), jamais `body:has(#…)`. En
+  JavaScript, lire les réglages par `racineStyle()` (`00-commun.js`), et regrouper : tout lire, calculer, puis tout
+  écrire.
+]
+
+#piege[L'ancien aspect après une mise à jour][
+  Après le dépôt d'une nouvelle version, un utilisateur voit encore l'ancien aspect, parfois des jours.
+][
+  WIMS appelle la feuille `css.css?ver=<version de WIMS>` : son adresse ne change pas quand le thème change, et le
+  navigateur garde l'ancienne en cache.
+][
+  Rien à faire en production : `construire-css.sh` écrit une empreinte, et `nova.js` recharge la feuille si elle ne
+  correspond pas. En développement, vider le cache (ou désactiver le cache dans les outils du navigateur).
+]
 
 == JavaScript
-- `nova.js` démarre avant le `DOMContentLoaded` de WIMS : brancher TinyMCE par `tinymce.on('AddEditor')`.
-- Dynapi remplace les globales `MouseEvent` et `DragEvent` : `document.createEvent('MouseEvents')`.
-- TinyMCE recopie son texte à l'envoi après les écouteurs de Nova : agir sur ce qui part par l'évènement `formdata`.
-- `querySelectorAll('ul a')` depuis un élément vise aussi un `ul` ancêtre : viser précisément.
-- Les attributs `data-*` des éléments de textes ne servent jamais de repère CSS.
-- Au démarrage, les liens « Aide » sont encore dans la barre du haut, pas dans le menu : repérer le module par un sélecteur sans conteneur.
+
+#piege[L'élément d'origine apparaît une fraction de seconde][
+  Au chargement, la page de WIMS s'affiche brièvement telle quelle, puis Nova la transforme (« clignotement »).
+][
+  `nova.js` est chargé en différé : il ne passe qu'après le premier affichage.
+][
+  Masquer en CSS ce que le script va remplacer, sous la classe `.nova-js` (posée par le script de tête : sans
+  JavaScript, la page reste complète), avec un délai de secours si le script ne transforme rien. Reconnaître
+  l'élément par sa *structure* (`div:has(> .corr_label)`), pas par une classe que `nova.js` posera trop tard.
+  Vérifier en bloquant `nova.js` (@js).
+]
+
+#piege[Un élément introuvable au démarrage de `nova.js`][
+  `document.querySelector` renvoie `null` pour un élément pourtant visible dans la page finale.
+][
+  `nova.js` démarre avant le `DOMContentLoaded` sur lequel attendent WIMS et ses bibliothèques. Les éditeurs
+  TinyMCE n'existent pas encore ; les liens « Aide » sont encore dans la barre du haut (`#wimstopbox`), pas dans le
+  menu où WIMS les range ensuite.
+][
+  Se brancher sur l'évènement de la bibliothèque (`tinymce.on('AddEditor')`), ou viser un élément par un sélecteur
+  sans conteneur (`a[href*="cmd=help"]`).
+]
+
+#piege[Une modification du formulaire perdue à l'envoi][
+  `nova.js` modifie un champ juste avant l'envoi, mais le serveur reçoit l'ancienne valeur (zones de texte riche).
+][
+  TinyMCE recopie son contenu dans la zone de texte à son propre écouteur `submit`, posé *après* ceux de Nova :
+  il écrase la modification.
+][
+  Agir sur ce qui part par l'évènement `formdata`, le seul qui passe après la recopie.
+]
+
+#piege[`new MouseEvent` qui échoue dans un exercice][
+  Une erreur « MouseEvent is not a constructor » (ou un clic simulé sans effet) sur les exercices à glisser.
+][
+  La bibliothèque Dynapi de WIMS remplace les objets globaux `MouseEvent` et `DragEvent` du navigateur.
+][
+  Créer l'évènement par `document.createEvent('MouseEvents')`.
+]
+
+#piege[Un sélecteur qui attrape trop][
+  `el.querySelectorAll('ul a')` renvoie aussi des liens hors de `el`, ou une règle masque des alertes sans rapport.
+][
+  Dans `querySelectorAll`, tout le sélecteur est évalué dans le document : `ul` peut être un *ancêtre* de `el`. De
+  même, les attributs `data-*` qui portent les textes de `nova.js` sont dans la barre : un sélecteur
+  `[data-quelque-chose]` les atteint.
+][
+  Viser précisément (`#lang_list a`, `:scope > ul a`). Ne jamais se servir des attributs de textes comme repères ;
+  qualifier un sélecteur par la classe de l'élément visé.
+]
 
 == Exercices
-- Images cliquables (`input[type=image]`) : jamais réduites (le clic est lu en pixels de l'image).
-- Dynapi crée ses calques après « load » et place une case sur son repère `<a id="fill<n>">` ; une marge posée avant n'est pas encore mesurée.
-- Les étiquettes à déplacer sont dans `<body>`, hors de `.wimsbody`.
-- Agrandir une formule MathJax : `zoom` sur `.wims_mathml`, pas la taille de police.
-- La note de fin d'exercice est dans `.answer_analysis`, masqué par le verdict de Nova.
 
-== Serveur
-- `!writefile` : module de confiance, aucun dossier créé, échec silencieux.
-- Valeurs de l'adresse brutes : filtrer avant `!sh` et avant de les écrire dans la page.
-- Un `.proc` se lit par `!readproc`.
-- Feuille de classe : jamais de ligne commençant par « : ».
-- « Terminer » un examen efface toute la session de l'élève.
+#piege[Une réponse sur image faussement comptée fausse][
+  Sur un exercice où l'on clique dans une image, l'élève clique au bon endroit et la réponse est fausse.
+][
+  `<input type="image">` envoie la position du clic en pixels *affichés*, que WIMS lit en pixels de l'image : toute
+  réduction de l'image (au téléphone) décale la réponse.
+][
+  Ne jamais réduire ces images (`max-width: none`, la zone défile) ; `nova.js` (`imagesCliquables`) convertit les
+  coordonnées en secours.
+]
+
+#piege[Des cases ou des étiquettes décalées dans un exercice à glisser][
+  Les cases à remplir ne sont plus en face du texte, ou les étiquettes échappent aux règles CSS de Nova.
+][
+  Dynapi crée ses calques *après* le chargement, en position absolue, d'après des repères (`a` d'identifiant
+  `fill` suivi d'un numéro) ; une marge ajoutée trop tôt n'est pas encore mesurée. Ses étiquettes sont placées
+  directement dans `<body>`, hors de `.wimsbody`. L'état d'une case est une couleur de fond posée *en ligne*.
+][
+  Insérer du contenu au-dessus avant le chargement ; ajuster tailles et positions dans l'enveloppe de `setAnchor`
+  (`40-exercices.js`) ; ne pas préfixer par `.wimsbody` les règles des étiquettes ; lire l'état par la couleur
+  (`[style*="rgb(96, 96, 255)"]`) sans l'effacer. Ne jamais changer le nombre de cases par ligne (`f_cut`) : des
+  exercices en dépendent.
+]
+
+#piege[Une formule qui refuse de grandir][
+  Augmenter la taille de police autour d'une formule ne change pas sa largeur.
+][
+  MathJax recalcule son échelle d'après la police environnante : la formule reste de la même taille.
+][
+  Agrandir par `zoom` sur `.wims_mathml` ; mesurer `mjx-container` une fois MathJax fini (il retouche encore la page
+  environ une seconde après le chargement).
+]
+
+#piege[La note de l'exercice absente de la page de réponse][
+  Sur la page de réponse, la note de fin d'exercice ou de série n'apparaît pas.
+][
+  WIMS l'écrit dans `.answer_analysis`, que le verdict de Nova masque (il le remplace par une présentation plus
+  lisible).
+][
+  C'est voulu : l'élève voit sa note sur la feuille. Le réglage « standard » `reponse` rend l'affichage de WIMS.
+]
+
+#piege[Une image de fond manquante dans un exercice de géométrie][
+  Seules des flèches s'affichent ; l'élève répond à l'aveugle.
+][
+  L'outil de dessin de WIMS (`flydraw`) ne lit nativement que le GIF ; un JPEG ou un PNG passe par ImageMagick.
+  Sans lui, aucune erreur.
+][
+  Installer ImageMagick sur le serveur (`INSTALLER.md`). Ce n'est pas le thème.
+]
+
+== Menus
+
+#piege[Une rubrique entière du menu disparaît pour les élèves][
+  Pour les élèves d'une classe qui masque les « Liens externes », une rubrique complète (Profil, Déconnexion…)
+  disparaît après l'ajout d'une entrée par Nova.
+][
+  Ce réglage masque *toute* rubrique qui contient un lien hors de `wims.cgi`, même un simple `#ancre`.
+][
+  Une entrée créée par Nova pointe toujours vers une adresse `wims.cgi`. Tester avec ce réglage activé.
+]
+
+#piege[Une ancre de lien qui ne correspond plus][
+  Le script compare `location.hash` à `#a-b` et ne trouve rien, alors que le lien semble bon.
+][
+  WIMS encode l'ancre des entrées qu'on lui ajoute (`$wims_rm_0`, `local.phtml`) : `#a-b` devient `#a%2Db`.
+][
+  Comparer aux deux formes.
+]
+
+#piege[Le menu latéral au mauvais endroit][
+  Le menu latéral apparaît sous la page, ou dans le contenu, sur certaines pages de WIMS.
+][
+  Sur la page de réponse d'un exercice, WIMS place le menu ailleurs ; un module au HTML déséquilibré fait refermer
+  le conteneur avant le menu, que le navigateur range alors sous la page.
+][
+  `placerMenu` (`10-barre-menus.js`) le remet en place d'où qu'il vienne : toute règle du menu suppose
+  `#wimsbodybox > #wimsmenumodubox`.
+]
+
+#piege[Des groupes de menu sans titre][
+  Un groupe sans intitulé apparaît en tête du menu après l'ajout d'une rubrique.
+][
+  `local.phtml` modifie la liste des entrées *avant* que WIMS retire les séparateurs vides de tête : ils ouvrent
+  alors des groupes vides.
+][
+  Retirer tous les séparateurs vides de tête avant d'insérer un groupe (voir `local.phtml`).
+]
+
+#piege[Les pages d'erreur de WIMS ne sont pas aux couleurs de Nova][
+  Une page « erreur » de WIMS n'a ni barre, ni menu, ni comportement de Nova.
+][
+  Ces pages (`msg/user_error.phtml`) ne lisent aucun fichier du thème, seulement `css.css`.
+][
+  Seul le CSS peut les retoucher ; leur texte et leurs liens ne sont pas modifiables par le thème.
+]
 
 // ================================================================= Annexes
 #set heading(numbering: "A.1")
@@ -765,6 +1150,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`construire-avatar.py`], [construit `js/avatar-extras.js` depuis `_avatar/`],
   [`maj-vacances.py`], [met à jour `_procs/vacances-zones.txt` (calendrier scolaire officiel)],
   [`VERSION`, `CHANGELOG.md`, `nouveautes.html`], [version, changements, page qui les affiche],
+  [`guide-nova.typ`], [ce guide (Typst ; PDF dans l'archive livrée)],
   [`LISEZMOI.md`, `INSTALLER.md`, `LICENSE`, `ORIGINES.sha256`, `.gitignore`], [documentation, licence, empreintes des originaux de WIMS],
 )
 

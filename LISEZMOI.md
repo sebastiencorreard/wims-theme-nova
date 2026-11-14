@@ -4,8 +4,8 @@ Thème pour WIMS 4.32, dérivé de `standard` : sobre et lumineux, adapté au t�
 Nombreuses modifications de l'interface pour améliorer la clarté et la lisibilité.
 Pour les élèves : ludification de WIMS (badges, avatars, couleur personnalisée...)
 Pour les profs : suivi des élèves en direct, menu personnalisable, réglahes centralisés.
-. Installation : voir `INSTALLER.md`. Modifier ou maintenir le thème : `guide/guide-nova.typ` (guide du développeur ;
-  en PDF dans l'archive livrée, ou `typst compile --root . guide/guide-nova.typ`).
+. Installation : voir `INSTALLER.md`. Modifier ou maintenir le thème : `guide-nova.typ` (guide du développeur ;
+  en PDF dans l'archive livrée, ou `typst compile guide-nova.typ`).
 
 ## Principes
 

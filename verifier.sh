@@ -110,6 +110,36 @@ for f in sorted(glob.glob('*.phtml') + glob.glob('_widgets/*.phtml') + glob.glob
         if re.search(r'themes/Nova\b', l) and not re.match(r'\s*(!!|#|//|/?\*)', l):
             ko('%s:%d : chemin « themes/Nova » en dur (écrire themes/$wims_theme)' % (f, k))
 
+# 8. Guide du développeur (guide/guide-nova.typ, 2026-11-14, utilisateur) : il nomme chaque fichier du dépôt (hors images,
+#    polices, dessins de l'avatar, jeu Lucide construit) ; il compile ; revue de sa structure tous les 40 commits.
+guide = 'guide/guide-nova.typ'
+if os.path.exists(guide):
+    texte = open(guide, encoding='utf-8').read()
+    suivis = subprocess.run(['git', 'ls-files'], capture_output=True, text=True).stdout.split('\n')
+    suivis += [f for f in glob.glob('_widgets/*') + glob.glob('_procs/*') + glob.glob('_css/*.css') + glob.glob('js/src/*.js') if f not in suivis]
+    absents = set()
+    for f in suivis:
+        if not f or re.match(r'(img|polices|_avatar|guide)/|icones/Lucide/|icones/__pycache__', f): continue
+        nom = os.path.basename(f)
+        if f.startswith('lang/'):
+            nom = nom.split('.phtml')[0]
+            if nom.startswith('adm_class_'): nom = 'lang/adm_class_'
+        if nom not in texte: absents.add(f if not f.startswith('lang/') else 'lang/' + nom.replace('lang/', ''))
+    for f in sorted(absents):
+        ko('%s : fichier absent du guide (%s) : dire à quoi il sert (annexe D, et une recette s\'il en change une)' % (f, guide))
+    if shutil.which('typst'):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            r = subprocess.run(['typst', 'compile', '--root', '.', guide, os.path.join(d, 'g.pdf')], capture_output=True, text=True)
+            if r.returncode: ko('Guide : la compilation échoue : ' + r.stderr.strip()[:600])
+    else:
+        print('(typst absent : compilation du guide non vérifiée)')
+    h = subprocess.run(['git', 'log', '-1', '--format=%H', '-G', 'revue de structure :', '--', guide], capture_output=True, text=True).stdout.strip()
+    if h:
+        n = int(subprocess.run(['git', 'rev-list', '--count', h + '..HEAD'], capture_output=True, text=True).stdout.strip() or 0)
+        if n >= 40:
+            print('! Guide : %d commits depuis la dernière revue de structure : la faire (annexe E du guide), puis changer la ligne « revue de structure ».' % n)
+
 if err:
     print('\n'.join('✗ ' + e for e in err)); print('%d problème(s).' % len(err)); sys.exit(1)
 print('verifier.sh : tout est bon.')

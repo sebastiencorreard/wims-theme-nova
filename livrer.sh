@@ -47,6 +47,14 @@ printf '%s\n%s\n%s\n' "${numero:-?}" "$commit" "$date" > "$tmp/$DOSSIER/VERSION"
 # Ni exemple de Standard, ni images inutilisées : badges PNG (seuls les WebP sont affichés ; 2026-10-08). Le dossier
 # img/badges/etoile, exclu jusqu'au 2026-11-07, sert au badge Au top.
 rm -f "$tmp/$DOSSIER/local.phtml.template" "$tmp/$DOSSIER"/img/badges/*.png "$tmp/$DOSSIER"/img/badges/*/*.png
+# Guide du développeur en PDF (guide/guide-nova.typ, 2026-11-14), compilé depuis le thème extrait : ses annexes lisent
+# les sources de ce commit. Sans typst, l'archive n'a que la source du guide.
+if command -v typst >/dev/null; then
+  typst compile --root "$tmp/$DOSSIER" --input commit="$commit" --input date="$date" "$tmp/$DOSSIER/guide/guide-nova.typ" "$tmp/$DOSSIER/guide/guide-nova.pdf" \
+    || { echo "Guide : compilation impossible, rien n'est livré." >&2; exit 1; }
+else
+  echo "(typst absent : guide livré sans PDF)"
+fi
 tar -czf "$sortie/$nom.tgz" -C "$tmp" "$DOSSIER"
 echo "Livraison : $(cd "$sortie" && pwd)/$nom.tgz ($(du -h "$sortie/$nom.tgz" | cut -f1), commit $commit)"
 # Dernière version seulement : les archives précédentes partent (chacune se reconstruit par ./livrer.sh <commit>).

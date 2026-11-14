@@ -581,7 +581,7 @@ qui montre les variantes ; on code celle qui est choisie).
   [`nova.js` assemblé et réduit], [540 → 290 Ko ; le téléphone le charge plus vite], [Modifier `js/src/` ; les sources sont livrées (GPL)],
   [Menu de l'enseignant simplifié, personnalisable], [Sept entrées utiles d'abord ; le reste à un clic], [Le serveur envoie tout, le navigateur masque],
   [Menu du compte réduit pour les élèves], [Moins de distraction ; rien de nécessaire], [Une condition dans `_widgets/user_links.phtml`],
-  [Pas de Foundation complet], [64 Ko pour quelques classes utilisées], [`foundation-min.css` ; le JS de Foundation reste chargé],
+  [Pas de Foundation complet], [64 Ko de CSS et 210 Ko de JS par page pour quelques classes utilisées], [`foundation-min.css` ; plus de JS de Foundation : ses composants sont repris dans `20-composants.js`],
   [Icônes Lucide], [Un seul style, licence libre], [Toute nouvelle icône est une icône Lucide],
   [Quatre langues complètes], [fr, en, es, it ; repli sur l'anglais pour les autres], [Tout texte nouveau dans les quatre],
 )

@@ -45,7 +45,12 @@
 --- _css/seriebar_arrows.css ---
 #
 # 3. Foundation : seulement ce que WIMS utilise encore (foundation-min.css remplace
-#    foundation_flex, _menu, _dropdown_menu, _visibility et _xygrid ; le JS reste chargé).
+#    foundation_flex, _menu, _dropdown_menu, _visibility et _xygrid). Le JS de Foundation n'est plus chargé
+#    depuis le 2026-10-03 (_widgets/footer.phtml) : nova.js reprend ses composants (js/src/20-composants.js).
+#    Revu le 2026-11-14 : foundation_card (cartes de adm/class/sheet, adm/createxo, aide canvasdraw) et
+#    foundation_reveal (masque les fenêtres data-reveal avant nova.js et sans JavaScript) servent ;
+#    foundation_responsive-embed n'est utilisé par aucun module installé, gardé pour les documents qui
+#    intègrent une vidéo (classe documentée de Foundation, 647 octets).
 --- Nova/_css/foundation-min.css ---
 #
 # 4. Nova : surcharges, en dernier. Le cadre de Standard (theme.css, general.css, typo.css,

@@ -77,7 +77,8 @@ Pour les profs : suivi des élèves en direct, menu personnalisable, réglahes c
   menu de la classe sont ignorés : la lisibilité prime.
 - **Feuilles métier de WIMS gardées** (`themes/_css/` : exercices, feuilles, examens, forum…), et
   surchargées par Nova en fin de fichier. Foundation n'est gardé que pour ce que WIMS utilise
-  (`_css/foundation-min.css`) ; son JavaScript reste chargé.
+  (`_css/foundation-min.css`) ; son JavaScript n'est plus chargé (2026-10-03) : nova.js reprend
+  accordéons, fenêtres de confirmation, panneaux et menus déroulants.
 - **Mode sombre : désactivé** (2026-10-01, à la demande). Prêt dans `jetons.css` : cadre sombre,
   contenu sur feuille claire (en tout-sombre, 70 pages sur 88 illisibles). Pour le rallumer : voir le
   commentaire en tête de `htmlheader.phtml`.

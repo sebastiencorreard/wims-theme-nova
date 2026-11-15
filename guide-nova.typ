@@ -243,6 +243,22 @@ beaucoup sur certaines pages (accueil de l'enseignant, configuration : environ 4
 - `lang/name.phtml` (lu sur chaque page) ne garde que la barre et le menu : 4 000 octets de noms au plus (contrôlé) ;
 - un widget ne lit ses textes que dans la branche qui s'en sert. `!reset` ne libère rien.
 
+#attention[*Une limite de WIMS qui rend le code de Nova moins lisible.* Les variables de travail des gabarits ont
+des noms courts et peu explicites (`nova_sl`, `nova_lf`, `nova_pz_u`…) à cause de ce tampon, pas par choix de style.
+Le tampon est fixé à la compilation de WIMS (`VARNAME_LEN`, `src/var.c`) : le thème ne peut pas l'agrandir. Un nom
+occupe à peu près sa longueur (environ 17 octets en moyenne, mesuré) et reste réservé jusqu'à la fin de la page,
+même après `!reset`. Passer de `nova_sl` à `nova_ligne_menu` ajouterait 8 octets ; sur les quelque 200 noms de
+travail de Nova, 1 à 2 Ko, une bonne part des 4 Ko de marge des pages les plus chargées. D'où deux habitudes :
+- *noms courts*, et *mêmes noms d'un fichier à l'autre* pour le même rôle (`nova_q` la requête, `nova_i` un rang,
+  `nova_k` un compteur, `nova_l` une ligne) : un nom réutilisé ne coûte qu'une fois par page, ce qui économise plus que
+  la brièveté ;
+- *le sens de chaque variable dans un bloc `!! Variables`* en tête du fichier ou du bloc qui les introduit (@serveur) :
+  un commentaire ne crée aucune variable et ne coûte rien dans le tampon.
+Des noms plus longs restent possibles dans un gabarit lu seulement sur une page légère (« Mon activité », page des
+avatars), après essai sur une page chargée (version imprimable d'une longue feuille, par exemple) ; pas dans
+ceux lus sur toutes les pages (`header.phtml`, `local.phtml`, widgets de l'enseignant). WIMS lui-même suit la même
+habitude dans ses gabarits (`i_`, `1_`, `tmp_`).]
+
 == Côté navigateur
 
 + Scripts de tête de `htmlheader.phtml` : classes sur `<html>`, menu simplifié, réglages « standard » gardés pour la
@@ -1070,6 +1086,7 @@ qui montre les variantes ; on code celle qui est choisie).
   [Réglages « thème standard »], [Un site doit pouvoir revenir à ce qu'il connaît, réglage par réglage], [Toute transformation déclare son réglage (@standard)],
   [Réglages en variables CSS], [Un seul mécanisme pour le site, la structure et la classe, lisible par CSS, JS et serveur], [@reglage],
   [Textes de `nova.js` en clair (attributs `data-*`)], [Le tampon de 32 Ko des noms de variables débordait], [@textes ; jamais de `!set` pour un texte de `nova.js`],
+  [Noms de variables de gabarit courts], [Limite de WIMS : tampon de 32 Ko des noms par page, 4 Ko de marge au plus juste (@tampon)], [Noms courts et réutilisés ; leur sens dans le bloc `!! Variables` du fichier],
   [`nova.js` assemblé et réduit], [540 → 290 Ko ; le téléphone le charge plus vite], [Modifier `js/src/` ; les sources sont livrées (GPL)],
   [Menu de l'enseignant simplifié, personnalisable], [Sept entrées utiles d'abord ; le reste à un clic], [Le serveur envoie tout, le navigateur masque],
   [Menu du compte réduit pour les élèves], [Moins de distraction ; rien de nécessaire], [Une condition dans `_widgets/user_links.phtml`],

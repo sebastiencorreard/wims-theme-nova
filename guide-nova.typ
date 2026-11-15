@@ -465,17 +465,118 @@ la page doit redevenir celle du thème standard.]
 #table(columns: (1fr, 1.5fr), align: left,
   [Fichier], [Rôle],
   [`_procs/menumodubox0.proc`], [copie de WIMS qui regroupe le menu d'une classe en familles (Activités, Participants, Communication, Classe, Aide et outils)],
-  [`local.phtml`], [point d'accroche de WIMS : entrées ajoutées (`$wims_rm_0`, `nom,1,paramètres`, libellé `$wims_name_<nom>`)],
+  [`local.phtml`], [point d'accroche de WIMS, lu sur chaque page juste avant d'écrire le menu : c'est là qu'on ajoute ou retire une entrée],
   [`htmlheader.phtml`], [script de tête : menu simplifié par défaut (`window.novaMenu.defaut`), posé avant l'affichage],
   [`_widgets/menu-serveur.phtml`, `menu-bascule.phtml`], [choix de l'enseignant gardé sur le serveur ; repère du bouton « Menu complet »],
-  [`js/src/10-barre-menus.js`], [`basculeMenu`, `menuPersonnel` (« Choisir les entrées du menu »), `sectionsRepliables`],
+  [`js/src/10-barre-menus.js`], [`placerMenu` (icônes), `menuServeur`, `basculeMenu`, `menuPersonnel` (« Choisir les entrées du menu »), `sectionsRepliables`],
 )
 Le serveur envoie *toujours le menu complet* ; le navigateur en masque une partie (sans JavaScript : menu complet).
+
+=== Comment le menu est fait
+
+Le menu latéral d'une page est la variable `$wims_rm_0` : *une ligne par entrée*, trois champs séparés par des
+virgules.
+```
+itemsep,0,Participants                        titre de groupe (type 0)
+add_sheet,1,module=adm/class/sheet&sheet=3    lien dans WIMS (type 1) : WIMS ajoute la session
+monlien,2,https://exemple.org                 lien externe (type 2) : adresse complète
+```
+- Le premier champ est le *nom* de l'entrée. Son libellé est la variable `$wims_name_<nom>` ; dans la page, l'entrée
+  devient `<li class="menuitem <nom>">`. Pour connaître le nom d'une entrée existante, la regarder dans l'inspecteur
+  du navigateur : c'est la classe à côté de `menuitem`.
+- Sur l'accueil d'une classe, les lignes sont préparées par `_procs/menumodubox0.proc` (lu par `supervisor.phtml`),
+  qui lit dans l'ordre les procédures de WIMS (`themes/_procs/classtools.proc`, `supervisorusermanage.proc`…).
+  Ailleurs, c'est le module de la page qui les prépare.
+- Dans tous les cas, WIMS lit ensuite `local.phtml` du thème, puis écrit le menu. `local.phtml` voit donc le menu
+  complet et peut le réécrire.
+
+=== Ajouter une entrée
+
+Le modèle le plus simple est le dernier bloc de `local.phtml` (« Réglages de Nova », placée après « Apparence »).
+Pour ajouter une entrée `nova_bilan` après « Nouvel examen » (`add_exam`) :
+```
+!if $wims_user=supervisor and add_exam isin $wims_rm_0 and nova_bilan notin $wims_rm_0
+  !default nova_bilan_titre=Report
+  !set wims_name_nova_bilan=$nova_bilan_titre
+  !set nova_bc=!linecnt $wims_rm_0
+  !reset nova_br
+  !for nova_bi=1 to $nova_bc
+    !set nova_bl=!line $nova_bi of $wims_rm_0
+    !set nova_br=!append line $nova_bl to $nova_br
+    !set nova_bn=!item 1 of $nova_bl
+    !if $nova_bn=add_exam
+      !set nova_br=!append line nova_bilan,1,module=adm/class/userscore to $nova_br
+    !endif
+  !next nova_bi
+  !set wims_rm_0=$nova_br
+  !reset nova_bc nova_bi nova_bl nova_bn nova_br
+!endif
+```
+Le bloc recopie le menu ligne à ligne dans `nova_br` et glisse la nouvelle ligne après celle qu'il cherche. Ensuite :
++ *Condition* (première ligne) : le rôle (`$wims_user=supervisor`), la page si besoin (`$module=…`), la présence de
+  l'entrée repère, et `nova_bilan notin $wims_rm_0` pour ne pas l'ajouter deux fois.
++ *Texte* : `!set nova_bilan_titre=…` dans `lang/name.phtml.fr`, `.en`, `.es`, `.it` (@textes ; ce fichier est lu
+  sur chaque page : libellé court). Le `!default` en anglais sert de secours.
++ *Lien* : toujours une adresse de WIMS (type 1). Pour une page de Nova, un paramètre lu par un widget
+  (`module=home&nova_suivi=1`, @serveur).
++ *Icône* : dans `placerMenu` (`10-barre-menus.js`), donner au lien une classe que les jeux d'icônes de WIMS
+  connaissent (`eye`, `account`, `config_module`, `trophy`…) ; la tester avec le jeu Font_Awesome, car
+  certaines classes perdent contre le tiret (voir l'encadré) :
+  `var a = menu.querySelector('.nova_bilan > a'); if (a) a.classList.add('trophy');`
++ *Menu simplifié* : sur l'accueil d'une classe, seules les entrées de la liste `defaut` du script de tête
+  (`htmlheader.phtml`) sont montrées. Y ajouter `'nova_bilan'` pour qu'elle le soit. Un enseignant qui a déjà
+  choisi ses entrées garde sa propre liste : pour qu'il voie la nouvelle une première fois, l'ajouter à la liste
+  `[['nova_suivi', 'suivi_v1'], …]` de `menuServeur`. Sur les autres pages, tout est montré par défaut : rien à faire.
++ `./construire-js.sh`, `./verifier.sh`.
+
+=== Retirer une entrée
+
+Trois façons, de la plus légère à la plus forte :
+- *Ne plus la montrer par défaut* (elle reste dans « Menu complet » et dans « Choisir les entrées du menu ») : retirer son
+  nom de la liste `defaut` de `htmlheader.phtml`.
+- *La cacher à tous* : une règle dans `cadre.css`,
+  `:where(html:not(.nova-std-menus)) #wimsmenumodubox .menuitem.<nom> { display: none; }`.
+- *Ne pas l'envoyer* : dans la boucle de recopie de `local.phtml`, sauter sa ligne. C'est ce que fait le premier bloc
+  pour le trombinoscope de WIMS : `!if $nova_avr!=remplace or $(nova_sl[1])!=photoboard`.
+
+Retirer une entrée change le thème standard : la règle ou le bloc doit respecter le réglage « Menus du thème
+standard » (@standard). Côté serveur, sa valeur se lit par `!read themes/$wims_theme/_widgets/std-menus.phtml`
+(résultat dans `$nova_pstd` : `oui` ou `non`). Ajouter une ligne à `nova_std_menus_liste`.
+
+=== Renommer, déplacer, regrouper
+
+- *Renommer* : `!set wims_name_<nom>=…` dans `local.phtml`, avec un texte de `lang/name.phtml.<l>`.
+- *Titre d'une famille* de l'accueil : `nova_menu_activites`, `_participants`, `_communication`, `_classe`, `_aide`
+  dans `lang/name.phtml.<l>`.
+- *Ordre des familles* de l'accueil : l'ordre des `!read themes/_procs/….proc` dans `_procs/menumodubox0.proc`.
+- *Déplacer une entrée* : dans la boucle de `local.phtml`, sauter sa ligne à l'ancienne place et l'ajouter à la
+  nouvelle.
+
+=== Lire `local.phtml`
+
+Ses variables de travail ont des noms courts (chaque nom compte dans le tampon de 32 Ko, @tampon) et sont effacées en
+fin de bloc. Elles ne sont décrites que par les commentaires `!!` placés au-dessus de leur première affectation.
+#table(columns: (0.6fr, 2fr), align: left,
+  [Variable], [Sens],
+  [`nova_avm`], [la page des avatars est-elle proposée ? `oui` (avatar activé), `badges` (avatar coupé, badges actifs), autre chose : non],
+  [`nova_avs_titre`], [texte de `lang/name.phtml` : les deux titres possibles de l'entrée, « Avatars des élèves, Badges des élèves »],
+  [`nova_avr`], [`remplace` quand l'entrée prend la place et le nom du trombinoscope de WIMS ; `oui` quand le réglage « Menus du thème standard » l'interdit],
+  [`nova_sc`, `nova_si`, `nova_sl`], [nombre de lignes du menu, numéro de la ligne lue, la ligne elle-même],
+  [`nova_sg`, `nova_sp`], [numéro de ligne du dernier titre de groupe vu ; de celui du groupe Participants (0 : absent)],
+  [`nova_sr`], [le menu réécrit, recopié dans `$wims_rm_0` à la fin],
+  [`nova_ici`], [1 sur l'accueil (module `home`) : la rubrique Participants n'est ajoutée que là],
+  [`nova_sn`], [titre posé en tête quand le menu du module n'en a pas],
+  [`nova_bc`, `nova_bi`, `nova_bl`, `nova_bn`, `nova_br`], [second bloc (« Réglages de Nova ») : nombre de lignes, numéro, ligne, nom de l'entrée, menu réécrit],
+)
+
+#verifier[menu simplifié et menu complet ; « Choisir les entrées du menu » propose l'entrée ; une classe seule et une
+zone d'un portail ; jeu d'icônes Font_Awesome injecté (@chap-verifier) ; `--nova-std-menus: oui`.]
 
 #attention[Le jeu d'icônes Font_Awesome met un tiret devant toute entrée sans icône : une entrée créée par Nova a
 son pictogramme, ou une classe que la feuille d'icônes connaît. Chez un élève dont les « liens externes » sont
 masqués, une rubrique qui contient un lien hors de `wims.cgi` disparaît entière : une entrée de Nova pointe
-toujours vers `wims.cgi`.]
+toujours vers `wims.cgi`. Un séparateur sans titre laissé en tête du menu ouvre un groupe sans intitulé : `local.phtml`
+les retire avant d'insérer.]
 
 == Barre du haut, fil d'Ariane, pied de page <barre>
 
@@ -485,6 +586,23 @@ toujours vers `wims.cgi`.]
 - Fil d'Ariane : `_widgets/ariane.phtml` (copie adaptée). Masqué aux élèves (bouton « Retour » à la place).
 - Pied de page : `_widgets/footer.phtml` (CGU, aide), menu de pied de page de l'enseignant dans `supervisor.phtml`.
 
+Les entrées de la barre (`$wims_hm`) sont préparées par WIMS, hors du thème (`html/headmenu*.phtml`) ; le thème ne
+fait que les écrire. Pour y changer quelque chose :
+- *Ajouter un bouton* : un widget lu par `header.phtml` à l'endroit de la barre, sous sa condition. Modèle :
+  `_widgets/examencours.phtml` (bouton « Examen en cours » : condition, textes avec `!default`, un
+  `<li class="menuitem …">` qui contient un lien `!href`). Lui donner une icône par un `::before` dans `cadre.css`,
+  ou `content: none` : sinon le jeu Font_Awesome y met un tiret.
+- *Retirer ou déplacer une entrée de WIMS* : en CSS (`#wimstopbox .menuitem.<nom>`), ou en JavaScript dans
+  `10-barre-menus.js` ; sous le réglage `navigation` ou `menus` (@standard).
+- *Menu du compte* (nom, mot de passe, déconnexion) : `_widgets/user_links.phtml`. La liste réduite des élèves est
+  la branche `!if $nova_est_eleve=yes` ; y ajouter ou retirer un `<li class="menuitem">`.
+- *Pied de page* : chaque lien de `footer.phtml` est un `<div class="menuitem <classe>">` autour d'un `!href` ; la
+  classe (`cgu`, `help`) donne l'icône. Les libellés de l'enseignant sont les éléments de `nova_pied`
+  (`lang/name.phtml.<l>`).
+
+#verifier[à 390 px : la barre tient sur une ligne, ce qui dépasse est dans « ⋯ » ; en élève et en enseignant ;
+pendant un examen (le chronomètre prend de la place).]
+
 == Accueils <accueils>
 
 - Site (visiteur) : `visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples),
@@ -493,6 +611,30 @@ toujours vers `wims.cgi`.]
   `js/src/60-eleve.js`.
 - Enseignant : `supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ;
   `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources`, `sequencesEnseignant`).
+
+Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
+`!read` est l'ordre des blocs à l'écran.
+
+*Ajouter un bloc à un accueil* :
++ Écrire le bloc dans un widget `_widgets/<nom>.phtml` (commentaire `!!` en tête : qui le lit, quand, pourquoi).
++ Le lire dans le gabarit, à la place voulue, sous sa condition :
+  `!read themes/$wims_theme/_widgets/<nom>.phtml`. Dans `user.phtml`, la liste des feuilles, examens et documents
+  est écrite par les `!read themes/_widgets/user_var….phtml` : se placer avant ou après.
++ Textes : `lang/eleve.phtml.<l>` (lu en tête de `user.phtml`) ou `lang/enseignant.phtml.<l>` ; styles dans
+  `accueil.css`.
++ `user.phtml` sert aussi à l'enseignant d'un portail ou d'un groupement, et dans chaque zone : tester le rôle
+  (`$wims_user=supervisor`) et le type (`$class_typename`) avant d'afficher un bloc d'élève.
+
+*Remplacer l'accueil par une page de Nova* (comme « Mon activité », le suivi, les avatars) : un widget d'entrée lu
+tout en haut du gabarit teste un paramètre de l'adresse (`nova_activite=1`), écrit la page, puis saute la suite.
+Modèle : `_widgets/activite-entree.phtml` et `activite.phtml`. Le lien qui y mène est une adresse de WIMS :
+`module=home&nova_activite=1`.
+
+*Déplacer un bloc de WIMS* sans toucher au gabarit : en JavaScript (`accueilEnseignantCartes` range l'accueil de
+l'enseignant en cartes), avec la recette contre le clignotement (@js).
+
+#verifier[classe seule, puis portail ou groupement (accueil de la structure et d'une zone) ; un élève sans aucune
+ressource ; à 390 px.]
 
 == Exercices <exercices>
 
@@ -504,6 +646,32 @@ WIMS) après le chargement, en positions absolues. Lire les pièges « Exercices
 Règles d'or : ne jamais réduire une image cliquable (le clic serait mal placé) ; ne jamais changer `f_cut` ;
 reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer.
 
+#table(columns: (1fr, 1.6fr), align: left,
+  [Je veux changer…], [Fonction de `50-exercice.js`, réglage],
+  [le verdict de la page de réponse (bandeau juste / faux, note)], [`alignerVerdict`, `noteSeule` ; réglage `reponse`],
+  [la réponse de l'élève réaffichée dans l'énoncé (cadre, pastille)], [`retourReponse` ; réglage `reponse`],
+  [les étoiles d'une bonne réponse], [`etoiles`, `nueeEtoiles`, `poserEtoiles` ; animations (@choix)],
+  [le clavier du téléphone, le clavier mathématique], [`claviersReponse`, `clavierMaths`],
+  [les étiquettes à déplacer au doigt], [`glisserTactile`, `tuiles`, `tuilesCorrigees`, `caseVisee`],
+  [les dominos], [`dominos` ; règles en fin de `composants-dominos.css` ; réglage `dominos`],
+  [les éléments à associer], [`associations`],
+  [une image où l'on clique], [`imagesCliquables`],
+)
+
+*Méthode* pour un type d'exercice que Nova traite mal :
++ Trouver un exercice qui le montre et garder son adresse. Relever le HTML que WIMS écrit (inspecteur), *sans*
+  `nova.js` (le bloquer) : c'est sur cette structure que la règle ou la fonction doit s'appuyer.
++ L'aspect de repos se règle en CSS, sur la structure de WIMS (`div:has(> .corr_label)`, `[style*="…"]`), jamais sur
+  une classe posée par `nova.js` : elle arrive après le premier affichage.
++ Le comportement va dans une fonction de `50-exercice.js` qui s'arrête si la page n'est pas concernée et si le
+  réglage standard est choisi (@js).
++ Le type d'une réponse n'est pas écrit dans la page : le reconnaître par sa structure. Un champ sans attribut
+  `type` est un champ de texte.
+
+#verifier[l'énoncé *et* la page de réponse (juste, faux, partiel) ; dans une feuille et hors feuille ; en examen ;
+formules en MathML et en images (`&useropts=52` ou `10` dans l'adresse) ; au doigt sur un téléphone, pas seulement à
+la souris ; une réponse réellement envoyée donne la même note qu'avec le thème standard.]
+
 == Examens et chronomètre <examens>
 
 #ou[`js/src/30-examen.js`, `_css/chrono.css`, `_widgets/headmenu.phtml` (chronomètre), `examencours.phtml`
@@ -512,10 +680,51 @@ reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer
 Un examen vit dans la session de connexion de l'élève ; « Terminer » efface toute la session. Ne jamais cliquer
 un lien d'exercice d'examen pour tester (cela démarre une session et consomme un essai).
 
+#table(columns: (1fr, 1.6fr), align: left,
+  [Je veux changer…], [Où],
+  [l'aspect ou les seuils du chronomètre], [`chrono.css` ; `chronometre` (états posés en `data-etat`), `chronoMiroir` (copie sur la page de l'examen)],
+  [le chronomètre d'un exercice à temps limité], [`chronoExercice` ; le bloc « Exercice OEF chronométré » de `headmenu.phtml`],
+  [ce que l'élève voit pendant un examen (menu, « Terminer », aide grisée)], [`modeExamen`, `aideExamen`],
+  [la page de l'examen (liste des exercices, étapes d'une série)], [`pagesExamen`, `examExercices`, `serieEtapes`, `typesExamen`],
+  [un parcours (« course »)], [`parcours`, `habillerParcours`, `parcoursExamen`, `courseExercice`],
+  [le message « Vous avez déjà commencé un autre examen »], [`autreExamen` ; `examencours.phtml`],
+  [la fenêtre qui confirme la fin], [`fenetreVerification`],
+)
+
+Le chronomètre de WIMS (`span#chrono_exam` et son script) reste dans la page, écrit tel quel par `headmenu.phtml` :
+Nova lit son décompte et l'habille, il ne compte pas le temps lui-même. Toute cette partie relève du réglage
+`examens`.
+
+*Tester sans risque* : un élève de test et un examen de quelques minutes. Pour voir le bouton « Examen en cours » sans
+démarrer d'examen, écrire le verrou `log/classes/<classe>/.parmreg/<élève>.exam` (`IP session fin numéro`) avant la
+connexion, puis le retirer. Vérifier la cible d'un lien avec `document.elementFromPoint`, sans cliquer.
+
+#verifier[élève en examen à 390 px : chronomètre visible, « Terminer » accessible ; fin du temps ; page qui confirme
+« Terminer » (aucun menu latéral) ; reconnexion pendant un examen ; classe à connexion CAS si le site en a.]
+
 == Feuilles et notes <feuilles>
 
 #ou[`js/src/40-feuilles-notes.js` (feuille de l'élève, historiques, tableaux de notes, détail des notes),
 `_widgets/couleurs-notes.phtml`, `notes-detail.phtml`, `contenu.css`.]
+
+#table(columns: (1fr, 1.6fr), align: left,
+  [Je veux changer…], [Où],
+  [les cartes d'exercices d'une feuille (élève)], [`feuilleExercices`, `feuilleProgression` ; `contenu.css` (`li.wims_sheet_item`) ; réglage `listes`],
+  [les barres de score], [`scores` ; toujours écrire `.nova-scores .nova-score` (la classe `.nova-score` sert aussi d'étiquette de feuille)],
+  [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
+  [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS],
+  [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN`],
+  [le détail des notes d'un élève], [`notesDetail` ; `_widgets/notes-detail.phtml` (textes)],
+)
+
+Deux précautions :
+- *Spécificité* : la règle commune des cartes, `li.wims_sheet_item > :not(…)`, est forte. Une règle
+  `li.wims_sheet_item .x` perd contre elle : écrire `li.wims_sheet_item > div.x`.
+- *Tableaux de notes* : lire une colonne par son *en-tête*, pas par son rang (un exercice non fait a plus de cases
+  que l'en-tête n'a de colonnes) ; ignorer les lignes qui contiennent des `th`.
+
+#verifier[un élève sans note, avec des notes partielles, avec tout réussi ; l'enseignant sur le tableau de la
+classe et sur le détail d'un élève ; à 390 px, les tableaux défilent sans élargir la page.]
 
 == Récompenses : badges, couleur, avatar, « Mon activité » <recompenses>
 
@@ -545,19 +754,73 @@ Les boutons de danger sont en contour rouge sur la page ; le rouge plein est ré
 la fenêtre de confirmation de Nova (`confirmationsRessources`, `effacerMotd`). Une page vide reçoit une carte qui
 dit quoi faire (`pagesVides`).
 
+*Ajouter quelque chose à une page de l'enseignant* (un bouton, une aide, une carte) :
++ Repérer la page : son module (`adm/class/sheet`, `adm/class/config`…) et son `job`, lisibles dans l'adresse.
++ Si le serveur doit fournir des textes ou des données : un widget lu par `header.phtml` sous la condition de cette
+  page (@serveur). Pour des textes seuls, une étiquette de `lang/enseignant-textes.phtml.<l>` suffit (@textes) ;
+  `header.phtml` en lit déjà plusieurs ainsi (`export`, `choix`).
++ Une fonction dans `70-enseignant.js`, qui commence par chercher l'élément de textes et s'arrête s'il manque :
+  c'est lui qui dit que la page est la bonne.
++ L'appeler dans `demarrage()` ; styles dans `composants-enseignant.css`.
+
+*Demander une confirmation* avant une action irréversible : suivre `confirmationsRessources` (fenêtre de Nova,
+bouton rouge plein) et `_widgets/confirmations.phtml` (ses textes). Beaucoup de liens « Effacer » de WIMS sont de
+simples liens : la confirmation doit retenir le clic, puis ouvrir le lien d'origine.
+
+*Une action qui écrit sur le serveur* (désactiver, propager, renuméroter) : un paramètre `nova_<action>=1` ajouté à
+une adresse de WIMS, un widget qui le lit et le filtre, un script de `_procs/` (@serveur). Ajouter le paramètre à
+la liste que `adresseNette` retire de l'adresse (`00-commun.js`), pour qu'un rechargement ne rejoue pas l'action.
+
+#verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
+actif et désactivé si la page a une zone de texte ; à 390 px.]
+
 == Suivi en direct (salle informatique) <suivi>
 
 #ou[`_widgets/suivi-entree.phtml` (accès : sessions autorisées par WIMS seulement), `suivi.phtml`,
 `_procs/suivi.pl` (relevé en lecture seule), `js/suivi.js`, `_css/suivi.css`, `lang/suivi*.phtml`.]
 
+Le suivi est une page de Nova posée sur l'accueil (`module=home&nova_suivi=1`), avec son propre script : `suivi.js`
+n'est pas dans `nova.js` et n'est chargé que là.
+- *Ajouter une information par élève* : la relever dans `_procs/suivi.pl` (il ne fait que lire les fichiers de la
+  classe), puis l'afficher dans `js/suivi.js`.
+- *Textes* : `nova_sv_…` pour le gabarit (`lang/suivi.phtml.<l>`), `nova_svj_…` pour `suivi.js` (élément
+  `#nova-suivi-textes`).
+- *Accès* : ne pas élargir la condition de `suivi-entree.phtml` (la page montre le travail de tous les élèves).
+
+#verifier[deux élèves connectés qui travaillent pendant que la page est ouverte ; une classe et une zone de portail.]
+
 == Ajouter une icône <icones>
 
-Nova n'utilise que le jeu *Lucide* (licence ISC). Dans le CSS, une icône est un masque SVG en `data:` :
+Nova n'utilise que le jeu *Lucide* (licence ISC, https://lucide.dev). Deux cas.
+
+*Une icône dans une règle de Nova* (bouton, carte, repère) : un masque SVG en `data:`, coloré par la couleur du texte.
++ Choisir l'icône sur le site de Lucide et copier le contenu de son SVG (les balises `path`, `circle`…).
++ L'écrire sur un pseudo-élément, en encodant `<` en `%3C` et `>` en `%3E`, avec des apostrophes à l'intérieur :
+  ```css
+  .nova-mon-bouton::before {
+    content: ""; flex: none; width: 18px; height: 18px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("…le même…") center / contain no-repeat;
+  }
+  ```
+  Les deux lignes `-webkit-mask` et `mask` sont nécessaires. La couleur vient de `background` : `stroke='black'` ne
+  sert qu'à dessiner le masque.
++ `./construire-css.sh`, puis regarder l'icône : un masque mal écrit ne donne aucune erreur, seulement un carré plein
+  ou rien.
+
 #attention[Jamais de `#` brut dans un SVG en `data:` (`stroke="#000"` coupe l'adresse, l'icône disparaît sans
 erreur) : écrire `stroke='black'` ou `%23`.]
-Le jeu d'icônes proposé à WIMS (`icones/Lucide/icon-min.css`) se reconstruit par `icones/construire-lucide.py`
-(correspondances Font Awesome → Lucide dans `icones/correspondance.py`) ; `_procs/jeu-icones.sh` crée le lien
-`gifs/themes/Lucide` à la première page de configuration.
+
+*Une icône d'entrée de menu ou de barre de WIMS* : elle vient du jeu d'icônes choisi par le site (`default`,
+Font_Awesome, ou Lucide fourni par Nova). Donner à l'entrée une classe que ces jeux connaissent (@menu). Pour changer
+l'icône Lucide d'une classe de WIMS, ou en donner une à une entrée de Nova : `icones/correspondance.py` (`G` : glyphe
+Font Awesome → icône Lucide ; `C` : classes de WIMS corrigées ; `E` : entrées propres à Nova), puis reconstruire
+`icones/Lucide/icon-min.css` par `icones/construire-lucide.py` (ses arguments sont décrits en tête du script).
+`_procs/jeu-icones.sh` crée le lien `gifs/themes/Lucide` à la première page de configuration.
+
+#verifier[avec le jeu `default` (aucune icône de WIMS), Font_Awesome et Lucide : pas de tiret devant l'entrée, pas
+de double icône.]
 
 == Passer à une nouvelle version de WIMS <wims>
 

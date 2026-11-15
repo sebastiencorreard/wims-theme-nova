@@ -578,68 +578,112 @@ masqués, une rubrique qui contient un lien hors de `wims.cgi` disparaît entiè
 toujours vers `wims.cgi`. Un séparateur sans titre laissé en tête du menu ouvre un groupe sans intitulé : `local.phtml`
 les retire avant d'insérer.]
 
-== Barre du haut, fil d'Ariane, pied de page <barre>
+== Modifier la barre du haut, le fil d'Ariane ou le pied de page <barre>
 
-- Barre : `_widgets/headmenu.phtml` (entrées ; chronomètre d'examen), `headhome.phtml` (logo « WIMS »),
-  `user_links.phtml` (compte, langues), `site_title.phtml` ; styles dans `cadre.css` ; comportement dans
-  `10-barre-menus.js` (`barreCompacte` : ce qui ne tient pas passe dans « ⋯ » ; `centrerBarre`, `retourEleve`).
-- Fil d'Ariane : `_widgets/ariane.phtml` (copie adaptée). Masqué aux élèves (bouton « Retour » à la place).
-- Pied de page : `_widgets/footer.phtml` (CGU, aide), menu de pied de page de l'enseignant dans `supervisor.phtml`.
+#ou[`_widgets/headmenu.phtml` (entrées ; chronomètre d'examen), `headhome.phtml` (logo « WIMS »),
+`user_links.phtml` (compte, langues), `site_title.phtml`, `ariane.phtml` (fil d'Ariane), `footer.phtml` (pied de
+page) ; styles dans `cadre.css` ; comportement dans `10-barre-menus.js`.]
 
 Les entrées de la barre (`$wims_hm`) sont préparées par WIMS, hors du thème (`html/headmenu*.phtml`) ; le thème ne
-fait que les écrire. Pour y changer quelque chose :
-- *Ajouter un bouton* : un widget lu par `header.phtml` à l'endroit de la barre, sous sa condition. Modèle :
-  `_widgets/examencours.phtml` (bouton « Examen en cours » : condition, textes avec `!default`, un
-  `<li class="menuitem …">` qui contient un lien `!href`). Lui donner une icône par un `::before` dans `cadre.css`,
-  ou `content: none` : sinon le jeu Font_Awesome y met un tiret.
-- *Retirer ou déplacer une entrée de WIMS* : en CSS (`#wimstopbox .menuitem.<nom>`), ou en JavaScript dans
-  `10-barre-menus.js` ; sous le réglage `navigation` ou `menus` (@standard).
-- *Menu du compte* (nom, mot de passe, déconnexion) : `_widgets/user_links.phtml`. La liste réduite des élèves est
-  la branche `!if $nova_est_eleve=yes` ; y ajouter ou retirer un `<li class="menuitem">`.
-- *Pied de page* : chaque lien de `footer.phtml` est un `<div class="menuitem <classe>">` autour d'un `!href` ; la
-  classe (`cgu`, `help`) donne l'icône. Les libellés de l'enseignant sont les éléments de `nova_pied`
-  (`lang/name.phtml.<l>`).
+fait que les écrire. On ne change donc pas la liste de WIMS : on ajoute à côté, ou on masque.
+
+=== Ajouter un bouton dans la barre
+
+Modèle : `_widgets/examencours.phtml` (bouton « Examen en cours »).
++ Créer `_widgets/<nom>.phtml`. En tête, la condition d'affichage (rôle, page, pas en examen), puis les textes avec
+  un secours en anglais :
+  ```
+  !if $wims_user!=supervisor and $wims_user!=$empty and $wims_class!=$empty and _exam notin $wims_session
+    !default nova_monbouton=My button
+    <li class="menuitem nova-monbouton">
+      !href module=home&nova_mapage=1 $nova_monbouton
+    </li>
+  !endif
+  ```
++ Le lire dans `header.phtml`, dans le bloc qui écrit la barre, à côté de
+  `!read themes/$wims_theme/_widgets/examencours.phtml`.
++ Texte : `!set nova_monbouton=…` dans `lang/name.phtml.fr`, `.en`, `.es`, `.it` (@textes).
++ Icône, dans `cadre.css` : `#wimstopbox .menuitem.nova-monbouton > a::before { … }` (@icones), ou
+  `content: none`. Sans cela, le jeu Font_Awesome met un tiret devant le bouton.
++ `./construire-css.sh`.
+
+=== Retirer ou déplacer une entrée de la barre
+
++ Relever sa classe dans l'inspecteur : `<li class="menuitem <nom>">` dans `#wimstopbox`.
++ La masquer dans `cadre.css`, sous le réglage `navigation` (@standard) :
+  `:where(html:not(.nova-std-navigation)) #wimstopbox .menuitem.<nom> { display: none; }`
++ Pour la déplacer (dans le menu latéral, dans « ⋯ »), une fonction de `10-barre-menus.js` qui déplace l'élément ;
+  `barreCompacte` range déjà dans « ⋯ » ce qui ne tient pas, `retourEleve` remplace le fil d'Ariane de l'élève par un
+  bouton « Retour ».
++ Ajouter une ligne à la liste du réglage (`nova_std_navigation_liste`).
+
+=== Changer le menu du compte
+
+Le menu du compte (nom, mot de passe, déconnexion) est écrit par `_widgets/user_links.phtml`. La liste réduite des
+élèves est la branche `!if $nova_est_eleve=yes` : elle parcourt les liens de WIMS (`$wims_user_links`) et n'en
+laisse voir que certains. Les autres reçoivent la classe `nova-lien-complet`, masquée par le CSS tant que le réglage
+« Navigation complète pour l'élève » n'est pas posé. Pour montrer un lien de plus aux élèves, ajouter son nom au
+test `!if $nova_lc=passwd` ; pour une entrée nouvelle, écrire un `<li class="menuitem">` dans cette branche.
+
+=== Ajouter un lien au pied de page
+
+Dans `_widgets/footer.phtml`, recopier un bloc existant :
+```
+<div class="menuitem cgu">
+  !set wims_ref_class=cgu
+  !href module=adm/light&phtml=cgu.phtml $wims_name_cgu
+</div>
+```
+en changeant la classe, l'adresse et le texte. La classe (`cgu`, `help`) donne l'icône. Les libellés propres à l'enseignant sont les éléments de `nova_pied`
+(`lang/name.phtml.<l>`) : ajouter un élément à la fin, dans les quatre langues.
 
 #verifier[à 390 px : la barre tient sur une ligne, ce qui dépasse est dans « ⋯ » ; en élève et en enseignant ;
-pendant un examen (le chronomètre prend de la place).]
+pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome injecté.]
 
-== Accueils <accueils>
+== Ajouter un bloc ou une page à un accueil <accueils>
 
-- Site (visiteur) : `visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples),
-  `search_classe.phtml` ; `_css/accueil.css`.
-- Élève : `user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ;
-  `js/src/60-eleve.js`.
-- Enseignant : `supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ;
-  `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources`, `sequencesEnseignant`).
-
+#table(columns: (0.6fr, 1.6fr), align: left,
+  [Accueil], [Fichiers],
+  [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
+  [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources`, `sequencesEnseignant`)],
+)
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
 
-*Ajouter un bloc à un accueil* :
+=== Ajouter un bloc
+
 + Écrire le bloc dans un widget `_widgets/<nom>.phtml` (commentaire `!!` en tête : qui le lit, quand, pourquoi).
-+ Le lire dans le gabarit, à la place voulue, sous sa condition :
-  `!read themes/$wims_theme/_widgets/<nom>.phtml`. Dans `user.phtml`, la liste des feuilles, examens et documents
-  est écrite par les `!read themes/_widgets/user_var….phtml` : se placer avant ou après.
++ Le lire dans le gabarit, à la place voulue : `!read themes/$wims_theme/_widgets/<nom>.phtml`. Dans `user.phtml`,
+  la liste des feuilles, examens et documents est écrite par les `!read themes/_widgets/user_var….phtml` : se placer
+  avant ou après.
++ Poser la condition *dans le widget*. `user.phtml` sert aussi à l'enseignant d'un portail ou d'un groupement, et
+  dans chaque zone : tester le rôle (`$wims_user=supervisor`) et le type (`$class_typename`) avant d'afficher un
+  bloc d'élève.
 + Textes : `lang/eleve.phtml.<l>` (lu en tête de `user.phtml`) ou `lang/enseignant.phtml.<l>` ; styles dans
   `accueil.css`.
-+ `user.phtml` sert aussi à l'enseignant d'un portail ou d'un groupement, et dans chaque zone : tester le rôle
-  (`$wims_user=supervisor`) et le type (`$class_typename`) avant d'afficher un bloc d'élève.
 
-*Remplacer l'accueil par une page de Nova* (comme « Mon activité », le suivi, les avatars) : un widget d'entrée lu
-tout en haut du gabarit teste un paramètre de l'adresse (`nova_activite=1`), écrit la page, puis saute la suite.
-Modèle : `_widgets/activite-entree.phtml` et `activite.phtml`. Le lien qui y mène est une adresse de WIMS :
-`module=home&nova_activite=1`.
+=== Remplacer l'accueil par une page de Nova
 
-*Déplacer un bloc de WIMS* sans toucher au gabarit : en JavaScript (`accueilEnseignantCartes` range l'accueil de
-l'enseignant en cartes), avec la recette contre le clignotement (@js).
+C'est ainsi que sont faites « Mon activité », le suivi en direct et la page des avatars.
++ Un *widget d'entrée*, lu tout en haut du gabarit, teste un paramètre de l'adresse (`nova_activite=1`), le filtre
+  (@serveur), lit le widget de la page, puis saute le reste de l'accueil. Modèle : `_widgets/activite-entree.phtml`.
++ Le *widget de la page* écrit le contenu. Modèle : `_widgets/activite.phtml`.
++ Le *lien* qui y mène est une adresse de WIMS, `module=home&nova_activite=1` : une entrée de menu (@menu) ou un
+  bouton de la barre (@barre).
++ Nommer les deux fichiers dans l'annexe D de ce guide.
+
+=== Réordonner les blocs de WIMS sans toucher au gabarit
+
+Une fonction JavaScript déplace les blocs une fois la page lue (`accueilEnseignantCartes` range l'accueil de
+l'enseignant en cartes). Suivre la recette contre le clignotement (@js), et le réglage `listes` ou `menus`.
 
 #verifier[classe seule, puis portail ou groupement (accueil de la structure et d'une zone) ; un élève sans aucune
 ressource ; à 390 px.]
 
-== Exercices <exercices>
+== Corriger ou améliorer l'affichage d'un exercice <exercices>
 
-#ou[`js/src/50-exercice.js` (verdict, étoiles, clavier mathématique, images cliquables, dominos, tuiles, éléments à
-associer), `contenu.css`, `composants-dominos.css`.]
+#ou[`js/src/50-exercice.js`, `contenu.css`, `composants-dominos.css`.]
 
 Les exercices OEF sont le terrain le plus fragile : beaucoup d'éléments y sont créés par *Dynapi* (bibliothèque de
 WIMS) après le chargement, en positions absolues. Lire les pièges « Exercices » du @pieges avant d'y toucher.
@@ -647,7 +691,7 @@ Règles d'or : ne jamais réduire une image cliquable (le clic serait mal placé
 reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer.
 
 #table(columns: (1fr, 1.6fr), align: left,
-  [Je veux changer…], [Fonction de `50-exercice.js`, réglage],
+  [Ce qui est en cause], [Fonction de `50-exercice.js`, réglage],
   [le verdict de la page de réponse (bandeau juste / faux, note)], [`alignerVerdict`, `noteSeule` ; réglage `reponse`],
   [la réponse de l'élève réaffichée dans l'énoncé (cadre, pastille)], [`retourReponse` ; réglage `reponse`],
   [les étoiles d'une bonne réponse], [`etoiles`, `nueeEtoiles`, `poserEtoiles` ; animations (@choix)],
@@ -658,31 +702,46 @@ reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer
   [une image où l'on clique], [`imagesCliquables`],
 )
 
-*Méthode* pour un type d'exercice que Nova traite mal :
-+ Trouver un exercice qui le montre et garder son adresse. Relever le HTML que WIMS écrit (inspecteur), *sans*
-  `nova.js` (le bloquer) : c'est sur cette structure que la règle ou la fonction doit s'appuyer.
+=== Corriger un exercice mal affiché
+
++ *Reproduire.* Garder l'adresse de l'exercice. L'ouvrir avec le thème standard (ou avec
+  `--nova-std-reponse: oui`, `--nova-std-dominos: oui`) : si le défaut est aussi là, il vient de l'exercice ou de
+  WIMS, pas de Nova.
++ *Relever le HTML de WIMS.* Bloquer `nova.js` (outils du navigateur) et regarder dans l'inspecteur ce que WIMS
+  écrit : c'est sur cette structure que la correction doit s'appuyer.
++ *Trouver la règle ou la fonction en cause.* Dans l'inspecteur, les règles de Nova viennent de `css.css` :
+  retrouver leur feuille par `grep -a -n "<sélecteur>" _css/*.css`. Pour le JavaScript, construire la version
+  lisible (`NOVA_JS_LISIBLE=1 ./construire-js.sh`) et chercher la classe `nova-…` posée sur l'élément.
++ *Corriger au plus étroit* : un sélecteur qui ne vise que ce type d'exercice, pas tous les exercices.
++ Reconstruire, puis refaire les vérifications ci-dessous sur *d'autres* exercices du même type.
+
+=== Habiller un type de réponse que Nova ne traite pas
+
 + L'aspect de repos se règle en CSS, sur la structure de WIMS (`div:has(> .corr_label)`, `[style*="…"]`), jamais sur
-  une classe posée par `nova.js` : elle arrive après le premier affichage.
-+ Le comportement va dans une fonction de `50-exercice.js` qui s'arrête si la page n'est pas concernée et si le
-  réglage standard est choisi (@js).
+  une classe posée par `nova.js` : elle arrive après le premier affichage et l'élève verrait l'ancien aspect un
+  instant.
 + Le type d'une réponse n'est pas écrit dans la page : le reconnaître par sa structure. Un champ sans attribut
   `type` est un champ de texte.
++ Le comportement va dans une nouvelle fonction de `50-exercice.js`, appelée dans `demarrage()`, qui s'arrête si la
+  page n'est pas concernée ou si le réglage standard est choisi (@js).
++ Si l'habillage masque ou déplace quelque chose : le rattacher à un réglage (`reponse`, `dominos`) et compléter sa
+  liste (@standard).
 
 #verifier[l'énoncé *et* la page de réponse (juste, faux, partiel) ; dans une feuille et hors feuille ; en examen ;
 formules en MathML et en images (`&useropts=52` ou `10` dans l'adresse) ; au doigt sur un téléphone, pas seulement à
 la souris ; une réponse réellement envoyée donne la même note qu'avec le thème standard.]
 
-== Examens et chronomètre <examens>
+== Modifier le chronomètre ou une page d'examen <examens>
 
 #ou[`js/src/30-examen.js`, `_css/chrono.css`, `_widgets/headmenu.phtml` (chronomètre), `examencours.phtml`
-(bouton « Examen en cours »).]
+(bouton « Examen en cours »). Tout relève du réglage `examens`.]
 
 Un examen vit dans la session de connexion de l'élève ; « Terminer » efface toute la session. Ne jamais cliquer
 un lien d'exercice d'examen pour tester (cela démarre une session et consomme un essai).
 
 #table(columns: (1fr, 1.6fr), align: left,
-  [Je veux changer…], [Où],
-  [l'aspect ou les seuils du chronomètre], [`chrono.css` ; `chronometre` (états posés en `data-etat`), `chronoMiroir` (copie sur la page de l'examen)],
+  [Ce qui est en cause], [Où],
+  [le chronomètre d'un examen], [`chronometre`, `chronoMiroir` (copie sur la page de l'examen) ; `chrono.css`],
   [le chronomètre d'un exercice à temps limité], [`chronoExercice` ; le bloc « Exercice OEF chronométré » de `headmenu.phtml`],
   [ce que l'élève voit pendant un examen (menu, « Terminer », aide grisée)], [`modeExamen`, `aideExamen`],
   [la page de l'examen (liste des exercices, étapes d'une série)], [`pagesExamen`, `examExercices`, `serieEtapes`, `typesExamen`],
@@ -691,44 +750,86 @@ un lien d'exercice d'examen pour tester (cela démarre une session et consomme u
   [la fenêtre qui confirme la fin], [`fenetreVerification`],
 )
 
-Le chronomètre de WIMS (`span#chrono_exam` et son script) reste dans la page, écrit tel quel par `headmenu.phtml` :
-Nova lit son décompte et l'habille, il ne compte pas le temps lui-même. Toute cette partie relève du réglage
-`examens`.
+=== Changer l'aspect ou les seuils du chronomètre
 
-*Tester sans risque* : un élève de test et un examen de quelques minutes. Pour voir le bouton « Examen en cours » sans
-démarrer d'examen, écrire le verrou `log/classes/<classe>/.parmreg/<élève>.exam` (`IP session fin numéro`) avant la
-connexion, puis le retirer. Vérifier la cible d'un lien avec `document.elementFromPoint`, sans cliquer.
+Le chronomètre de WIMS (`span#chrono_exam` et son script) reste dans la page, écrit tel quel par `headmenu.phtml` :
+Nova lit son décompte et l'habille, il ne compte pas le temps lui-même.
++ *Aspect.* `chronometre` pose un état sur `.nova-chrono` : `data-etat="normal"`, `attention`, `critique` ou `fin`.
+  Chaque état a sa règle dans `chrono.css` (`.nova-chrono[data-etat="attention"] { … }`) : y changer couleurs et
+  taille, avec les variables de `jetons.css`.
++ *Seuils.* Par défaut 300 s (attention) et 60 s (critique). `chronometre` les lit dans les attributs
+  `data-seuil-attention` et `data-seuil-critique` de la boîte `.nova-chrono`. Cette boîte est écrite sous
+  l'étiquette `headmenu_1` de `lang/name-textes.phtml.<l>` : y poser les deux attributs, dans les quatre langues.
++ *Textes* (« Moins de 5 minutes », « Temps écoulé »…) : attributs `data-texte-…` de la même boîte (@textes). Si
+  un seuil change, changer aussi le texte qui l'annonce.
++ `./construire-css.sh` ou `./construire-js.sh` selon ce qui a changé.
+
+=== Changer ce que l'élève voit pendant un examen
+
+Pendant un examen, la session contient `_exam` : `modeExamen` s'en sert pour réduire la page (menu, lien
+« Terminer », aide). Pour montrer ou cacher un élément de plus, le faire dans `modeExamen`, et vérifier la page qui
+confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni chronomètre.
+
+=== Tester sans risque
+
++ Un élève de test et un examen de quelques minutes, jamais un compte réel.
++ Pour voir le bouton « Examen en cours » sans démarrer d'examen : écrire le verrou
+  `log/classes/<classe>/.parmreg/<élève>.exam` (`IP session fin numéro`) *avant* la connexion, puis le retirer.
++ Vérifier la cible d'un lien avec `document.elementFromPoint`, sans cliquer.
++ « Terminer » ne clôt rien tant qu'aucune réponse n'est envoyée et qu'il reste du temps : WIMS montre le détail du
+  score. Ce n'est pas une panne.
 
 #verifier[élève en examen à 390 px : chronomètre visible, « Terminer » accessible ; fin du temps ; page qui confirme
-« Terminer » (aucun menu latéral) ; reconnexion pendant un examen ; classe à connexion CAS si le site en a.]
+« Terminer » ; reconnexion pendant un examen ; classe à connexion CAS si le site en a.]
 
-== Feuilles et notes <feuilles>
+== Modifier une feuille d'exercices ou un tableau de notes <feuilles>
 
-#ou[`js/src/40-feuilles-notes.js` (feuille de l'élève, historiques, tableaux de notes, détail des notes),
-`_widgets/couleurs-notes.phtml`, `notes-detail.phtml`, `contenu.css`.]
+#ou[`js/src/40-feuilles-notes.js`, `_widgets/couleurs-notes.phtml`, `notes-detail.phtml`, `contenu.css`.]
 
 #table(columns: (1fr, 1.6fr), align: left,
-  [Je veux changer…], [Où],
+  [Ce qui est en cause], [Où],
   [les cartes d'exercices d'une feuille (élève)], [`feuilleExercices`, `feuilleProgression` ; `contenu.css` (`li.wims_sheet_item`) ; réglage `listes`],
-  [les barres de score], [`scores` ; toujours écrire `.nova-scores .nova-score` (la classe `.nova-score` sert aussi d'étiquette de feuille)],
+  [les barres de score], [`scores`],
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
-  [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS],
-  [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN`],
+  [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],
+  [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
   [le détail des notes d'un élève], [`notesDetail` ; `_widgets/notes-detail.phtml` (textes)],
 )
 
-Deux précautions :
-- *Spécificité* : la règle commune des cartes, `li.wims_sheet_item > :not(…)`, est forte. Une règle
-  `li.wims_sheet_item .x` perd contre elle : écrire `li.wims_sheet_item > div.x`.
-- *Tableaux de notes* : lire une colonne par son *en-tête*, pas par son rang (un exercice non fait a plus de cases
-  que l'en-tête n'a de colonnes) ; ignorer les lignes qui contiennent des `th`.
+=== Ajouter une information sur la carte d'un exercice
+
++ L'information doit déjà être dans la page de WIMS (un texte, un attribut `title`) : `feuilleExercices` ne fait que
+  réordonner ce que WIMS a écrit. Si elle n'y est pas, il faut un widget côté serveur (@serveur).
++ Dans `feuilleExercices`, créer l'élément et l'ajouter à la carte (`li.wims_sheet_item`).
++ Style dans `contenu.css`. La règle commune des cartes, `li.wims_sheet_item > :not(…)`, est forte : une règle
+  `li.wims_sheet_item .x` perd contre elle. Écrire `li.wims_sheet_item > div.x`.
++ La classe `.nova-score` sert à la fois de barre de score et d'étiquette de feuille : toujours la qualifier
+  (`.nova-scores .nova-score`).
++ Texte : attribut de l'élément de textes de la feuille (`lang/eleve-textes.phtml.<l>`, @textes).
+
+=== Changer les couleurs des notes
+
++ Les quatre couleurs sont `--nova-note-rouge`, `-orange`, `-jaune`, `-vert` (plus `-np` pour « non passé » et
+  `-zero`) dans `jetons.css` : les changer là change les barres, les pastilles et les tableaux.
++ Les *tranches* (1 à 3 rouge, 4 à 6 orange, 7 et 8 jaune, 9 et 10 vert) sont dans
+  `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS (une règle écrite par couleur de la classe), et à
+  trois endroits de `40-feuilles-notes.js` pour ce que Nova dessine (chercher `'rouge'`) : les changer ensemble.
++ Vérifier le contraste du texte posé sur chaque couleur.
+
+=== Modifier un tableau de notes
+
++ Repérer le tableau par sa classe ou sa légende, et la fonction qui le traite (table ci-dessus).
++ Lire une colonne par son *en-tête*, pas par son rang : un exercice non fait a plus de cases que l'en-tête n'a de
+  colonnes. Ignorer les lignes qui contiennent des `th` (WIMS écrit la légende dans l'en-tête, et le navigateur
+  range alors la ligne d'en-tête dans le corps).
++ Mesurer en une fois : lire toutes les largeurs, calculer, puis écrire (`ajusterHistoriques` est le modèle).
 
 #verifier[un élève sans note, avec des notes partielles, avec tout réussi ; l'enseignant sur le tableau de la
 classe et sur le détail d'un élève ; à 390 px, les tableaux défilent sans élargir la page.]
 
-== Récompenses : badges, couleur, avatar, « Mon activité » <recompenses>
+== Ajouter un badge, un élément d'avatar ou une couleur ; régler « Mon activité » <recompenses>
 
-#table(columns: (1fr, 1.5fr), align: left,
+#table(columns: (0.6fr, 1.9fr), align: left,
   [Fonction], [Fichiers],
   [Badges], [`_procs/badges.awk` (calcul sur l'accueil de l'élève, niveaux dans `score/<login>.nova_badges`), `user.phtml`, `js/src/60-eleve.js`, `img/badges/`, `composants-reglages-badges.css`],
   [Ma couleur], [`_widgets/couleur-choix.phtml`, `js/src/61-couleur.js`, `_css/couleur.css`],
@@ -742,7 +843,82 @@ Les fichiers de l'élève (`score/<login>.nova_badges`, `.nova_avatar`, `.nova_c
 une fois ; le bouton « Préparer le retour » du trombinoscope en découle. Avant de toucher à ces fichiers, lire
 @compatibilite.
 
-== Pages de l'enseignant <enseignant>
+=== Changer les paliers ou les seuils d'un badge
+
+Rien à coder : ce sont des réglages (`--nova-fidelite-paliers`, `--nova-perseverance-reussite`,
+`--nova-echauffement-sessions`, `--nova-top-seuil`…). Valeur par défaut dans `jetons.css` ; un site ou une classe les
+change dans « Réglages de Nova ». Un niveau gagné n'est jamais retiré : il est gardé dans le fichier de l'élève.
+
+=== Ajouter un élément à l'avatar
+
+Le catalogue est `_procs/avatar-catalogue.txt` : une ligne par élément, dans l'ordre d'affichage.
+```
+<catégorie> <valeur> <prix> [mois=<m>,<m>…]
+top froBand 2                 coiffure rare : 2 pièces
+noel bonnetNoel 1 mois=12     proposé et dessiné en décembre seulement
+```
+Prix : `libre` (ouvert d'office), `1` ou `2` (pièces), ou `<badge>:<niveau>` (récompense d'un badge : `fidelite`,
+`perseverance`, `echauffement`, `top`).
+- *Un élément que DiceBear dessine déjà* (style Avataaars) : ajouter sa ligne, avec la valeur exacte de DiceBear.
+- *Un élément dessiné pour Nova* :
+  + le dessiner dans Inkscape sur la tête de référence (page de 280 × 280), en partant d'un fichier de
+    `_avatar/noel/` ; l'enregistrer en `_avatar/<catégorie>/<valeur>.svg` ;
+  + `./construire-avatar.py` (il produit `js/avatar-extras.js` et pose son empreinte dans `62-avatar.js`) ;
+  + `./construire-js.sh` ;
+  + ajouter la ligne au catalogue.
+- *Changer un prix, retirer un élément* : modifier ou retirer sa ligne, puis regarder l'avatar d'un élève qui
+  portait l'élément retiré.
+- Une *catégorie nouvelle* s'ajoute en plus à `AVATAR_CATEGORIES` de `62-avatar.js` (ordre des onglets), à
+  `AVATAR_EXTRAS` si elle est dessinée pour Nova, et demande son texte.
+
+=== Ajouter un badge
+
+C'est le changement le plus large du thème : une vingtaine de fichiers. Suivre un badge existant pas à pas :
+`grep -a -rl echauffement --exclude=css.css --exclude=nova.js .` donne la liste. Dans l'ordre :
++ *Maquette* des huit niveaux, validée ; images dans `img/badges/<dossier>/<nom>_01.webp` à `_08.webp`.
++ *Réglages* dans `jetons.css` : `--nova-<clé>-paliers` (huit nombres) et les seuils du calcul ; la clé s'ajoute
+  aux valeurs possibles de `--nova-badges-actifs`.
++ *Calcul* dans `_procs/badges.awk` : lire les réglages (section `#conf`), compter d'après les notes (section
+  `#score`), garder le niveau dans le stock (section `#stock`), et écrire une ligne de sortie de la même forme que
+  les autres : `<clé> on niveau total prochain nouveau obtenu np palier1 … palierN`, ou `<clé> off`.
++ *Affichage de l'élève* : `user.phtml` transmet la ligne ; dans `60-eleve.js`, `badges` construit un panneau par
+  badge (suivre `echauffement`), `fenetreBadges` et `pastilleBadges` annoncent un niveau gagné.
++ *Textes* : nom, aide, annonces dans `lang/eleve-textes.phtml.<l>` ; réglages dans
+  `lang/enseignant-textes.phtml.<l>`.
++ *Réglages de Nova* : les champs dans `_widgets/apparence-classe.phtml`, leur enregistrement dans
+  `80-reglages.js` (@reglage).
++ *Ce qui dépend des badges* : `_procs/avatar.awk` (pièces et éléments débloqués, trombinoscope), le catalogue de
+  l'avatar (`<clé>:<niveau>`), `61-couleur.js` (badge qui débloque « Ma couleur »), `70-enseignant.js`.
++ *Retour à une version antérieure* : le stock garde une ligne par badge. Essayer la version précédente sur un
+  élève qui a la nouvelle ligne : elle doit l'ignorer sans rien perdre (@compatibilite).
++ `LISEZMOI.md` et `CHANGELOG.md`.
+
+=== Ajouter une couleur ou un dégradé à « Ma couleur »
+
++ La palette et les dégradés (`DEGRADES` : un nom et deux couleurs de la palette) sont en tête de
+  `js/src/61-couleur.js` : y ajouter la couleur ou le dégradé.
++ Vérifier le contraste du texte blanc posé dessus (au moins 3,5:1) : la couleur devient l'accent de l'élève
+  (barre, boutons).
++ Le choix est enregistré par `_widgets/couleur-choix.phtml`, qui ne laisse passer qu'un nom de la palette, et
+  appliqué par `user.phtml`, qui vérifie le droit de choisir : essayer le nouveau nom jusqu'au bout (choisir,
+  recharger, se reconnecter).
++ `./construire-js.sh`.
+Le niveau de badge qui débloque couleurs et dégradés est un réglage (`--nova-couleur-badge`,
+`--nova-couleur-niveau`, `--nova-couleur-degrade`).
+
+=== Régler « Mon activité » et les vacances
+
+- *Seuils* (jours par semaine sous lesquels on encourage, objectif, heures, notes) : réglages
+  `--nova-activite-seuil`, `-objectif`, `-heures`, `-notes` (@reglage). Le calcul est dans `_procs/activite.awk`.
+- *Vacances scolaires* : `_procs/vacances-zones.txt`, une ligne par période :
+  `<zone> <année> <nom> <début>-<fin>`. Le mettre à jour par `./maj-vacances.py` (dates officielles des zones A, B et C) avant une
+  livraison ; le script n'est pas livré.
+
+#verifier[un élève qui gagne un niveau (annonce une seule fois, niveau gardé après reconnexion) ; un élève dans une
+zone d'un portail ; la page de l'enseignant (trombinoscope) ; badges ou avatar coupés par le réglage : rien ne
+s'affiche ; élément de saison hors de son mois.]
+
+== Ajouter un bouton ou une action à une page de l'enseignant <enseignant>
 
 #ou[`js/src/70-enseignant.js` (le plus gros fichier : configuration, fiches de feuille et d'examen, séquences,
 confirmations, export…), `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
@@ -750,44 +926,68 @@ confirmations, export…), `_css/composants-enseignant.css`, widgets de textes (
 (`desactiver.phtml` + `_procs/desactiver.sh`, `propager.phtml` + `_procs/propager.sh`, `ecarts-zones.phtml`,
 `sequences.phtml` + `_procs/sequences.sh`, `participants-zones.phtml`).]
 
-Les boutons de danger sont en contour rouge sur la page ; le rouge plein est réservé au bouton qui confirme, dans
-la fenêtre de confirmation de Nova (`confirmationsRessources`, `effacerMotd`). Une page vide reçoit une carte qui
-dit quoi faire (`pagesVides`).
+=== Ajouter un bouton, une aide ou une carte
 
-*Ajouter quelque chose à une page de l'enseignant* (un bouton, une aide, une carte) :
 + Repérer la page : son module (`adm/class/sheet`, `adm/class/config`…) et son `job`, lisibles dans l'adresse.
-+ Si le serveur doit fournir des textes ou des données : un widget lu par `header.phtml` sous la condition de cette
-  page (@serveur). Pour des textes seuls, une étiquette de `lang/enseignant-textes.phtml.<l>` suffit (@textes) ;
-  `header.phtml` en lit déjà plusieurs ainsi (`export`, `choix`).
-+ Une fonction dans `70-enseignant.js`, qui commence par chercher l'élément de textes et s'arrête s'il manque :
-  c'est lui qui dit que la page est la bonne.
++ *Textes.* Ajouter une étiquette à `lang/enseignant-textes.phtml.<l>` (@textes) et la lire dans `header.phtml`
+  sous la condition de la page :
+  ```
+  !if $module=adm/class/sheet and $wims_user=supervisor
+    !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang monbouton
+  !endif
+  ```
+  Si le serveur doit aussi fournir des données, écrire un widget à la place (@serveur).
++ *Fonction* dans `70-enseignant.js`. Elle commence par chercher l'élément de textes et s'arrête s'il manque : c'est
+  lui qui dit que la page est la bonne.
 + L'appeler dans `demarrage()` ; styles dans `composants-enseignant.css`.
++ `./construire-js.sh`, `./construire-css.sh`, `./verifier.sh`.
 
-*Demander une confirmation* avant une action irréversible : suivre `confirmationsRessources` (fenêtre de Nova,
-bouton rouge plein) et `_widgets/confirmations.phtml` (ses textes). Beaucoup de liens « Effacer » de WIMS sont de
-simples liens : la confirmation doit retenir le clic, puis ouvrir le lien d'origine.
+=== Demander une confirmation avant une action irréversible
 
-*Une action qui écrit sur le serveur* (désactiver, propager, renuméroter) : un paramètre `nova_<action>=1` ajouté à
-une adresse de WIMS, un widget qui le lit et le filtre, un script de `_procs/` (@serveur). Ajouter le paramètre à
-la liste que `adresseNette` retire de l'adresse (`00-commun.js`), pour qu'un rechargement ne rejoue pas l'action.
+Suivre `confirmationsRessources` (fenêtre de Nova) et `_widgets/confirmations.phtml` (ses textes). Beaucoup de liens
+« Effacer » de WIMS sont de simples liens : la fonction retient le clic, ouvre la fenêtre, puis suit le lien
+d'origine si l'enseignant confirme. Les boutons de danger sont en contour rouge sur la page ; le rouge plein est
+réservé au bouton qui confirme, dans la fenêtre.
+
+=== Ajouter une action qui écrit sur le serveur
+
+Modèles : désactiver (`desactiver.phtml`), propager (`propager.phtml`), renuméroter (`sequences.phtml`).
++ Le bouton mène à une adresse de WIMS augmentée d'un paramètre : `…&nova_<action>=1`.
++ Un widget, lu par `header.phtml` sous la condition la plus étroite, lit ce paramètre, le filtre, vérifie le rôle
+  *côté serveur*, puis lance un script de `_procs/` (@serveur).
++ Ajouter le paramètre à la liste que `adresseNette` (`00-commun.js`) retire de l'adresse : un rechargement de la
+  page ne doit pas rejouer l'action.
++ Dire à l'enseignant ce qui a été fait : `actionAccueil` lance l'action en arrière-plan, `messageReporte` affiche
+  son message en tête de la page de retour (`00-commun.js`).
+
+=== Donner un contenu à une page vide
+
+`pagesVides` pose une carte qui dit quoi faire sur une page sans ressource. Ajouter un cas : la condition qui
+reconnaît la page, et son texte. La classe `.nova-vide` est déjà prise (elle masque) : la carte est
+`.nova-page-vide`.
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
 
-== Suivi en direct (salle informatique) <suivi>
+== Ajouter une information au suivi en direct <suivi>
 
 #ou[`_widgets/suivi-entree.phtml` (accès : sessions autorisées par WIMS seulement), `suivi.phtml`,
 `_procs/suivi.pl` (relevé en lecture seule), `js/suivi.js`, `_css/suivi.css`, `lang/suivi*.phtml`.]
 
-Le suivi est une page de Nova posée sur l'accueil (`module=home&nova_suivi=1`), avec son propre script : `suivi.js`
-n'est pas dans `nova.js` et n'est chargé que là.
-- *Ajouter une information par élève* : la relever dans `_procs/suivi.pl` (il ne fait que lire les fichiers de la
-  classe), puis l'afficher dans `js/suivi.js`.
-- *Textes* : `nova_sv_…` pour le gabarit (`lang/suivi.phtml.<l>`), `nova_svj_…` pour `suivi.js` (élément
-  `#nova-suivi-textes`).
-- *Accès* : ne pas élargir la condition de `suivi-entree.phtml` (la page montre le travail de tous les élèves).
+Le suivi (salle informatique) est une page de Nova posée sur l'accueil (`module=home&nova_suivi=1`). Elle a son
+propre script : `suivi.js` n'est pas dans `nova.js`, il est chargé par `suivi.phtml` seulement.
 
-#verifier[deux élèves connectés qui travaillent pendant que la page est ouverte ; une classe et une zone de portail.]
++ *Relever* l'information dans `_procs/suivi.pl` : il lit les fichiers de la classe sans rien écrire et sort un
+  relevé en JSON. Ajouter le champ à l'enregistrement de l'élève.
++ *Afficher* le champ dans `js/suivi.js`, puis augmenter le numéro de `suivi.js?v=…` dans `_widgets/suivi.phtml` :
+  sans cela, les navigateurs gardent l'ancien script.
++ *Textes* : `nova_sv_…` pour le gabarit (`lang/suivi.phtml.<l>`), `nova_svj_…` pour `suivi.js` (élément
+  `#nova-suivi-textes`).
++ *Styles* : `_css/suivi.css`, puis `./construire-css.sh`.
++ Ne pas élargir la condition de `suivi-entree.phtml` : la page montre le travail de tous les élèves.
+
+#verifier[deux élèves connectés qui travaillent pendant que la page est ouverte ; une classe et une zone de
+portail ; un élève en examen.]
 
 == Ajouter une icône <icones>
 

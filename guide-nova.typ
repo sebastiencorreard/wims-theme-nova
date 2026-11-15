@@ -415,6 +415,18 @@ Un texte et une variable de travail de même nom s'écrasent : nommer les textes
 + *Filtrer toute valeur venue de l'adresse* avant de s'en servir : `!text select 0123456789 in $x`, ou la comparer à
   une liste (`isitemof`) ; `!bound` avant `!writefile`. WIMS colle les valeurs telles quelles dans une ligne `!sh`.
 
+*Calculer* : le langage des gabarits de WIMS ne convient pas à un calcul lourd (parcourir les notes d'un élève,
+compter des semaines). Le gabarit lance alors un script par `!sh` et lit ce qu'il écrit :
+```
+!set nova_r=!sh cat "$$fichier" | awk -v auj=$nova_auj -f themes/$wims_theme/_procs/mon-calcul.awk
+```
+Les scripts de Nova sont en _AWK_ (`badges.awk`, `avatar.awk`, `activite.awk`), en shell ou en Perl (`suivi.pl`) :
+des langages installés partout où WIMS tourne, sans rien ajouter au serveur. AWK lit un texte ligne par ligne, le
+découpe en champs et applique des règles (« si la ligne ressemble à ceci, faire cela ») : il convient aux fichiers
+de notes de WIMS, qui ont une ligne par réponse envoyée. Le serveur a la variante *mawk* 1.3.4, plus limitée que le
+`gawk` d'un poste de travail : pas de `{n}` dans les expressions régulières, pas de fonction de date `mktime`
+(`badges.awk` calcule les jours du calendrier lui-même). Essayer un script avec `mawk`, pas avec `gawk`.
+
 Où écrire :
 - `!writefile wimshome/…` ne marche que depuis un *module de confiance* (accueil `home`, `adm/…`) et *ne crée aucun
   dossier* (échec silencieux) : écrire dans un dossier qui existe.
@@ -1952,6 +1964,10 @@ entrée.
   [Terme], [Définition],
   ..terme[Accueil][Première page d'un rôle, écrite entièrement par le thème : `visitor.phtml` (site), `user.phtml`
     (élève, et enseignant d'une _structure_), `supervisor.phtml` (enseignant d'une _classe_).][@accueils],
+  ..terme[AWK][Petit langage de traitement de texte présent sur tout système Unix (son nom : les initiales de ses
+    auteurs, Aho, Weinberger, Kernighan). Il lit un texte ligne par ligne et applique des règles. Nova s'en sert pour
+    les calculs faits sur le serveur (fichiers `.awk` de `_procs/`), lancés par `!sh` ; le serveur a la variante
+    mawk.][@serveur],
   ..terme[Classe][Espace d'un enseignant avec ses élèves, ses _feuilles_ et ses _examens_ ; désignée par un numéro.
     Ses données sont dans `log/classes/<numéro>/`.],
   ..terme[Clignotement][Ce que voit l'utilisateur quand `nova.js` transforme une page déjà affichée telle que WIMS

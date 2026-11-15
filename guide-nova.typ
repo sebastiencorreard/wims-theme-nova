@@ -118,6 +118,9 @@ Un thème WIMS est un dossier de `public_html/themes/`. WIMS y lit des *gabarits
 commandes `!if`, `!read`, `!set`… exécuté sur le serveur) à des points d'accroche fixes, et sert au navigateur sa
 feuille `css.css`. Nova ajoute un script, `js/nova.js`.
 
+Les mots de WIMS (module, classe, zone, feuille, examen…) et ceux de Nova (gabarit, widget, jeton…) sont définis
+dans le @annexe-glossaire.
+
 == Le principe : disposer, pas réécrire
 
 #encadre("Principe fondateur")[
@@ -231,7 +234,7 @@ d'un portail ou d'un groupement), `supervisor.phtml` (enseignant d'une classe). 
 #attention[Il n'existe *pas* d'autre point d'accroche : pas de surcharge générale de `html/*.phtml`. Les *pages
 d'erreur* de WIMS ne lisent aucun fichier du thème (seulement `css.css`) : leur texte n'est pas modifiable.]
 
-=== Le tampon des noms de variables
+=== Le tampon des noms de variables <tampon>
 
 Chaque page a un tampon de *32 Ko pour les noms* de variables WIMS, partagé entre WIMS, le module (un exercice OEF
 en consomme beaucoup) et le thème. Plein, WIMS affiche « variable_name_buffer_overflow ». Nova en utilise déjà
@@ -1226,10 +1229,11 @@ Ce guide n'est utile que s'il dit vrai. Trois mécanismes le tiennent à jour.
     découper, et l'écrire ici ;
   - les pièges du @pieges sont-ils encore vrais ? en manque-t-il un qui a coûté du temps ?
   - les choix du @choix ont-ils changé ?
+  - les mots de WIMS ou de Nova employés sans explication ont-ils une entrée dans le @annexe-glossaire ?
   Puis changer la date de la ligne « revue de structure », et le dire dans le message de commit.
 
 À chaque changement du thème, en plus : mettre à jour la section concernée (une recette, une ligne de l'@annexe-fichiers,
-un piège). Un changement qui ne change rien à la façon de travailler (correction ponctuelle, nouveau texte) ne demande
+un piège ; un mot nouveau dans le @annexe-glossaire). Un changement qui ne change rien à la façon de travailler (correction ponctuelle, nouveau texte) ne demande
 rien.
 
 = Installer un WIMS de développement <annexe-installer>
@@ -1399,3 +1403,80 @@ WIMS le démarre à la première requête. Si le conteneur porte un autre nom qu
 + Un exercice avec une formule et une figure s'affiche entièrement (TeX, MathJax, ImageMagick).
 + Nova choisi comme thème : la page change d'aspect ; `./construire-css.sh` se termine par
   « css.css : … octets, … feuilles » sans « Feuille introuvable ».
+
+= Glossaire <annexe-glossaire>
+
+Les mots de WIMS et ceux propres à Nova employés dans ce guide. Un mot en _italique_ dans une définition a sa propre
+entrée.
+
+#let terme(nom, def, ..voir) = (strong(nom), [#def#if voir.pos().len() > 0 [ (#voir.pos().at(0))]])
+#table(columns: (auto, 1fr), align: left,
+  [Terme], [Définition],
+  ..terme[Accueil][Première page d'un rôle, écrite entièrement par le thème : `visitor.phtml` (site), `user.phtml`
+    (élève, et enseignant d'une _structure_), `supervisor.phtml` (enseignant d'une _classe_).][@accueils],
+  ..terme[Classe][Espace d'un enseignant avec ses élèves, ses _feuilles_ et ses _examens_ ; désignée par un numéro.
+    Ses données sont dans `log/classes/<numéro>/`.],
+  ..terme[Clignotement][Ce que voit l'utilisateur quand `nova.js` transforme une page déjà affichée telle que WIMS
+    l'a écrite. S'évite par une règle CSS sous `.nova-js`.][@js],
+  ..terme[Commande `!`][Instruction du langage des _gabarits_ et des modules de WIMS, exécutée sur le serveur :
+    `!set` (variable), `!if`, `!read` (lire un gabarit), `!readproc` (lire une _procédure_), `!sh` (lancer un script),
+    `!writefile`. Les variables s'écrivent `$nom`.][@serveur],
+  ..terme[Dynapi][Bibliothèque JavaScript de WIMS qui dessine les exercices à déplacer (tuiles, dominos, éléments à
+    associer). Elle crée ses éléments après le chargement de la page, hors de `.wimsbody`.][@exercices],
+  ..terme[Empreinte][Courte somme de contrôle des sources, écrite par `construire-css.sh` et `construire-js.sh` dans
+    `css.css`, `htmlheader.phtml` et l'adresse de `nova.js`, pour que le navigateur abandonne une copie périmée.][@commandes],
+  ..terme[Examen][Activité notée, en temps limité, que l'élève passe dans une _session_ à part (suffixe `_exam`) ;
+    certains liens y sont volontairement inactifs.][@examens],
+  ..terme[Feuille (d'exercices)][Liste d'exercices préparée par l'enseignant, notée au fil du travail de l'élève. À
+    ne pas confondre avec une _feuille de style_.][@feuilles],
+  ..terme[Feuille de la classe][Feuille de style CSS propre à une _classe_ ou à une _structure_, saisie dans sa
+    configuration (page Apparence) ; Nova y range les _réglages_ `--nova-…` de l'enseignant.][@reglage],
+  ..terme[Feuille de style][Fichier CSS. Les sources de Nova sont dans `_css/`, réunies dans `css.css`.][@css],
+  ..terme[Gabarit][Fichier `.phtml` lu par WIMS pour fabriquer une page : du HTML mêlé de _commandes `!`_.
+    Les gabarits du thème sont lus à des _points d'accroche_ fixes.][@assemblage],
+  ..terme[Gestionnaire du site][Administrateur du serveur WIMS ; il règle le site depuis la page de maintenance
+    (`module=adm/manage`), y compris les réglages de Nova pour tout le site.][@reglage],
+  ..terme[Groupement][_Structure_ qui réunit plusieurs classes d'un même établissement sous un administrateur ; le
+    travail s'y fait dans des _zones_.],
+  ..terme[Jeton][Variable CSS nommée qui porte une décision de design (couleur, espacement, police) :
+    `--nova-accent`, `--nova-surface`… Toutes dans `_css/jetons.css`.][@jetons],
+  ..terme[Lucide][Jeu d'icônes libre utilisé par Nova ; toute nouvelle icône en vient.][@icones],
+  ..terme[MathJax][Bibliothèque qui affiche les formules mathématiques dans le navigateur ; elle retouche la page
+    encore un moment après le chargement.],
+  ..terme[Module][Application de WIMS : un exercice, un outil, un document ou une page d'administration (`adm/…`).
+    Dossier de `public_html/modules/`, nommé dans l'adresse (`module=…`).],
+  ..terme[Module de confiance][Module autorisé à lire et écrire dans les données du serveur (`wimshome/log/…`) :
+    l'accueil et les modules `adm/…`. Un _gabarit_ du thème n'a que les droits du module de la page.][@serveur],
+  ..terme[OEF][_Online Exercise Format_ : le format de la plupart des exercices de WIMS. Une page d'exercice OEF
+    utilise beaucoup de variables (voir _tampon des noms_).][@exercices],
+  ..terme[Point d'accroche][Fichier du thème que WIMS lit à un endroit fixe de la page (`header.phtml`,
+    `tail.phtml`, accueils…). Il n'y en a pas d'autres.][@assemblage],
+  ..terme[Portail][_Structure_ d'établissement organisée en niveaux, programmes et cours ; le travail s'y fait
+    dans des _zones_.],
+  ..terme[Procédure (`.proc`)][Fichier de WIMS fait d'affectations `x=…` (sans `!set`) ; se lit par `!readproc`.
+    `var.proc` est celle qu'un module exécute avant d'afficher sa page.][@serveur],
+  ..terme[Réglage `--nova-…`][Variable CSS que l'enseignant ou le _gestionnaire du site_ pose pour régler Nova
+    (couleur, badges, animations…), dans la _feuille de la classe_ ou dans `log/nova.conf`.][@reglage],
+  ..terme[Réglage « standard »][Réglage qui rend au thème _Standard_ une partie de ce que Nova transforme (menus,
+    réponses, tableaux…) ; classe `nova-std-<r>` sur `<html>`.][@standard],
+  ..terme[Rôle][Visiteur, élève, enseignant, administrateur de _structure_, _gestionnaire du site_. Nova doit
+    tout laisser faire à chacun.],
+  ..terme[Séquence][Regroupement, par l'enseignant, de _feuilles_, d'_examens_ et de documents présentés à l'élève
+    dans l'ordre ; l'accueil de l'élève en montre une à la fois.][@accueils],
+  ..terme[Session][Visite en cours d'un utilisateur, désignée par `session=…` dans l'adresse ; son état est gardé
+    sur le serveur (`sessions/`). Suffixes : `_exam` (examen), `_mhelp` (fenêtre d'aide).],
+  ..terme[Standard][Le thème de base de WIMS, dont Nova est dérivé ; référence de comparaison.][@choix],
+  ..terme[Structure][_Portail_ ou _groupement_, par opposition à une _classe_ seule.],
+  ..terme[Tampon des noms][Place limitée (32 Ko par page) pour les noms de variables WIMS ; plein, la page s'arrête
+    sur « variable_name_buffer_overflow ».][@tampon],
+  ..terme[Thème][Dossier de `public_html/themes/` qui donne son apparence à WIMS : _gabarits_, `css.css`, scripts.],
+  ..terme[TinyMCE][Éditeur de texte riche que WIMS place dans certains formulaires (consignes, commentaires).][@pieges],
+  ..terme[Verrou][Fichier qui signale qu'une personne ou un outil travaille sur un serveur de test partagé ;
+    on attend qu'il disparaisse avant d'y toucher.][@commandes],
+  ..terme[Widget][Morceau de _gabarit_ réutilisable, lu par `!read`. WIMS a les siens (`themes/_widgets/`) ; Nova
+    a ses copies et les siens dans `_widgets/` (une action serveur = un widget).][@serveur],
+  ..terme[`wimshome`][Préfixe des chemins vers le dossier d'installation de WIMS (`/home/wims`) dans les commandes
+    de fichiers : `!writefile wimshome/log/…`.][@serveur],
+  ..terme[Zone][Classe ou cours à l'intérieur d'une _structure_, désigné par un chemin (`class=<n>/1/101`) ; les
+    élèves y travaillent et leurs notes y sont rangées.],
+)

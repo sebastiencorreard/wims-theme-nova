@@ -529,6 +529,10 @@ un lien d'exercice d'examen pour tester (cela démarre une session et consomme u
 Un nouveau badge ou un nouvel élément d'avatar commence par une *maquette* validée (@choix). Les scripts `awk`
 tournent sous mawk 1.3.4 : pas de `{n}` dans les expressions régulières, pas de `mktime`.
 
+Les fichiers de l'élève (`score/<login>.nova_badges`, `.nova_avatar`, `.nova_couleur`) ont changé de nom et de place
+une fois ; le bouton « Préparer le retour » du trombinoscope en découle. Avant de toucher à ces fichiers, lire
+@compatibilite.
+
 == Pages de l'enseignant <enseignant>
 
 #ou[`js/src/70-enseignant.js` (le plus gros fichier : configuration, fiches de feuille et d'examen, séquences,
@@ -638,6 +642,77 @@ des cartes « Réglages de Nova » (`_widgets/version.phtml`, `_procs/version.sh
 
 *Autres documents du dépôt* : `LISEZMOI.md` (présentation, fonctions), `INSTALLER.md` (installation sur un serveur),
 `LICENSE`, `.gitignore`. `local.phtml.template` est l'exemple de Standard, gardé pour référence et non livré.
+
+== Compatibilité d'une version à l'autre <compatibilite>
+
+Un site doit pouvoir installer une version de Nova, puis revenir à la précédente, sans que les élèves perdent rien.
+Cette règle a été rompue une fois, le 12 novembre 2026 ; le bouton « Préparer le retour » existe pour réparer cela.
+
+=== Ce qui a changé le 12 novembre 2026
+
+#table(columns: (0.8fr, 1.3fr, 1.3fr), align: left,
+  [Donnée de l'élève], [Avant (1.3 et premières livraisons de la 1.4)], [Depuis],
+  [Avatar (choix, éléments achetés)], [`.nova_avatar_<login>` à la racine de la classe ou de la structure], [`score/<login>.nova_avatar`],
+  [Couleur personnelle], [`.nova_couleur_<login>` à la racine], [`score/<login>.nova_couleur`],
+  [Niveaux des badges], [`score/<login>.nova` dans chaque zone], [`score/<login>.nova_badges` dans chaque zone],
+)
+
+Pourquoi :
+- *Avatar et couleur.* WIMS ne s'occupe que du dossier `score/` d'une classe. Un fichier posé à la racine n'était
+  pas dans la sauvegarde de la classe, ne suivait pas un élève supprimé puis rétabli, et n'était pas effacé par
+  « nettoyer la classe » (il revenait donc l'année suivante, sans les notes qui le justifiaient). Dans `score/`, WIMS
+  fait tout cela seul.
+- *Badges.* Le nom `.nova` ne disait pas ce que le fichier contenait ; il a été aligné sur les deux autres.
+- Dans une structure (portail, groupement), la référence est le `score/` de la racine ; `_procs/avatar-zones.sh` en
+  met une copie dans chaque zone de l'élève, pour qu'elle parte avec la sauvegarde de la zone. La copie la plus
+  récente l'emporte partout.
+
+Dans le sens de la montée, rien à faire : à la première visite de l'élève, la version actuelle déplace ses anciens
+fichiers (`avatar.proc`, `user.phtml`, `_widgets/couleur-choix.phtml`) ; en attendant, les pages de l'enseignant
+lisent le nouveau nom, sinon l'ancien (`avatars-classe.sh`, `suivi.pl`).
+
+=== Ce que fait « Préparer le retour »
+
+Une version d'avant le 12 novembre ne connaît que les anciens noms. Installée telle quelle après une version
+récente, elle montrerait des élèves sans avatar ni couleur, et recalculerait les badges d'après les notes : niveau
+perdu, ou badge annoncé une seconde fois.
+
+Le bouton est en bas du trombinoscope de l'enseignant (page « Avatars des élèves »), quand l'avatar est activé.
+Il appelle la page avec `nova_avatars_retour=1` ; `_widgets/avatars-classe.phtml` lance alors
+`_procs/avatars-retour.sh`, qui, pour tous les élèves de la classe ou de la structure entière :
+- recopie `score/<login>.nova_avatar` et `.nova_couleur` vers `.nova_avatar_<login>` et `.nova_couleur_<login>` ;
+- recopie `score/<login>.nova_badges` en `score/<login>.nova` dans chaque zone ;
+- garde la date des fichiers (`cp -p`) et ne retire rien.
+
+À savoir :
+- *Le faire juste avant de changer de version.* Tant que la version actuelle est en place, elle retire l'ancienne
+  copie à la visite suivante de l'élève.
+- *Le retour à la version actuelle se fait seul.* Un ancien fichier plus récent que celui de `score/` (l'élève a
+  changé d'avatar ou gagné un niveau sous l'ancienne version) l'emporte ; sinon il est effacé.
+- *Limite.* Le bouton n'est pas proposé quand l'avatar est coupé et que seuls les badges sont actifs : lancer alors
+  le script à la main, `avatars-retour.sh <dossier de WIMS> <numéro de la classe ou de la structure>`.
+- Le script n'utilise aucun fichier temporaire : `mktemp` échoue dans un script lancé depuis une page (@pieges).
+
+=== La règle pour la suite
+
+Ne plus casser la compatibilité. Sont concernés tous les endroits où Nova garde quelque chose d'une version à
+l'autre : les fichiers `score/<login>.nova_…`, les réglages `--nova-…` écrits dans la feuille d'une classe et dans
+`log/nova.conf`, les clés gardées dans le navigateur (`localStorage`).
+
++ *Ajouter, ne pas changer.* Une donnée nouvelle prend un fichier nouveau, ou un champ ajouté à la fin, qu'une
+  ancienne version ignore. Ne renommer et ne déplacer un fichier, un réglage ou une clé que s'il n'y a pas d'autre
+  solution.
++ *Ne pas changer le sens d'une valeur existante* (un réglage `oui`/`non`, l'ordre des champs d'un fichier) : une
+  ancienne version la lirait de travers.
++ Si un changement est inévitable, le livrer complet :
+  - la nouvelle version lit l'ancien format tant qu'il existe, et le convertit à la visite de l'élève ;
+  - quand deux copies existent, la plus récente l'emporte ;
+  - le chemin du retour est prévu dès la même livraison : une ligne de plus dans `avatars-retour.sh`, pas un
+    second bouton ;
+  - une ligne dans la rubrique Installation de `CHANGELOG.md`, et une ligne dans le tableau ci-dessus.
++ *Essayer le retour avant de livrer* : installer la version précédente à côté (`./livrer.sh <commit>`, dossier
+  d'un autre nom : deux versions partagent les mêmes données), ouvrir un compte d'élève sous l'une puis sous
+  l'autre, et comparer avatar, couleur et badges.
 
 // ================================================================= 8
 = Pièges à connaître <pieges>

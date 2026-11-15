@@ -2,7 +2,9 @@
 # Construit css.css à partir de css.css.template, comme themes/mkcss.pl de WIMS, mais sans Java
 # (minification prudente en Python au lieu de yuicompressor) et depuis l'hôte :
 #   - « --- Nova/… --- » : feuille de ce dépôt ;
-#   - « --- _css/… --- » ou « --- standard/… --- » : feuille commune, lue dans le conteneur wims432 ;
+#   - « --- _css/… --- » ou « --- standard/… --- » : feuille commune de WIMS, lue dans le conteneur ($CONTENEUR,
+#     wims432 par défaut) ou, si WIMS_THEMES est posé (WIMS installé sans Docker), dans ce dossier
+#     (ex. WIMS_THEMES=/home/wims/public_html/themes ./construire-css.sh) ;
 #   - « *-* nom » : couleur OEF, remplacée d'après Nova/oefcolors s'il existe, sinon themes/oefcolors.
 # Les lignes « # … » du modèle sont des commentaires et ne sont pas copiées.
 #   ./construire-css.sh            minifié (à livrer)
@@ -11,7 +13,9 @@ set -e
 LISIBLE=; [ "${1:-}" = "--lisible" ] && LISIBLE=1
 cd "$(dirname "$0")"
 CONTENEUR=${CONTENEUR:-wims432}
-THEMES=/home/wims/public_html/themes
+THEMES=${WIMS_THEMES:-/home/wims/public_html/themes}
+# Lit une feuille commune de WIMS : dans le dossier WIMS_THEMES s'il est posé, sinon dans le conteneur.
+lire_wims() { if [ -n "${WIMS_THEMES:-}" ]; then cat "$THEMES/$1"; else docker exec "$CONTENEUR" cat "$THEMES/$1"; fi; }
 tmp=$(mktemp)
 # Empreinte de la feuille (2026-11-09) : WIMS appelle css.css à une adresse fixe (?ver=<version de WIMS>), qu'une mise à
 # jour du thème ne change pas ; un navigateur garde alors l'ancienne feuille avec le nouveau nova.js. L'empreinte des
@@ -31,14 +35,14 @@ while IFS= read -r ligne || [ -n "$ligne" ]; do
       printf '\n/*! depuis %s */\n' "$f" >> "$tmp"
       case "$f" in
         Nova/*) cat "${f#Nova/}" >> "$tmp" ;;
-        *) docker exec "$CONTENEUR" cat "$THEMES/$f" >> "$tmp" || { echo "Feuille introuvable : $f" >&2; exit 1; } ;;
+        *) lire_wims "$f" >> "$tmp" || { echo "Feuille introuvable : $f" >&2; exit 1; } ;;
       esac ;;
     *) printf '%s\n' "$ligne" >> "$tmp" ;;
   esac
 done < css.css.template
 
 # Couleurs OEF (même règle que mkcss.pl : « !set nom=valeur » dans oefcolors).
-if [ -f oefcolors ]; then couleurs=$(cat oefcolors); else couleurs=$(docker exec "$CONTENEUR" cat "$THEMES/oefcolors"); fi
+if [ -f oefcolors ]; then couleurs=$(cat oefcolors); else couleurs=$(lire_wims oefcolors); fi
 printf '%s\n' "$couleurs" | sed -n 's/^!set \([A-Za-z0-9_]*\)=\(#*[A-Za-z0-9]*\).*/\1 \2/p' | while read -r nom valeur; do
   sed -i "s/\*-\* *$nom\b/$valeur/g" "$tmp"
 done

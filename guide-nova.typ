@@ -168,9 +168,13 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
 
 == Ce qu'il faut
 
-- Un *WIMS 4.32 de développement* dans Docker (image construite par le `Dockerfile` du projet de développement,
-  qui ajoute `imagemagick` et `zip` dont WIMS a besoin), le dossier du thème *monté en lecture seule* dans
-  `/home/wims/public_html/themes/Nova`. Le serveur répond sur `http://127.0.0.1:8080/wims`.
+- Un *WIMS 4.32 de développement*, installé à votre choix *dans un conteneur Docker* ou *directement sur une machine
+  Linux* (une machine virtuelle convient) : @annexe-installer compare les deux et donne les étapes. Dans les deux cas,
+  le dossier du thème doit apparaître dans `public_html/themes/Nova` du serveur WIMS. Jamais un serveur où
+  travaillent de vrais élèves : on y casse des pages et on y crée des classes de test.
+- Sans Docker, `construire-css.sh` et `livrer.sh` lisent les feuilles de WIMS dans le dossier indiqué par
+  `WIMS_THEMES` (ex. `export WIMS_THEMES=/home/wims/public_html/themes`) ; avec Docker, dans le conteneur nommé par
+  `CONTENEUR` (par défaut `wims432`).
 - *Node.js* et *terser 5* : `construire-js.sh` le cherche dans `$NOVA_TERSER`, puis dans `../../outils-js/node_modules/.bin`, puis dans le `PATH`
   (`npm install terser@5.36.0` dans un dossier `outils-js` à côté du projet).
 - *Python 3* (contrôles, outils d'icônes et d'avatar), *typst* (ce guide), *Playwright* (captures et tests, conseillé).
@@ -179,8 +183,8 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
 == Les quatre commandes <commandes>
 
 #table(columns: (auto, auto, 1fr), align: left,
-  [Commande], [Conteneur ?], [Ce qu'elle fait],
-  [`./construire-css.sh`], [oui], [Concatène les feuilles de `css.css.template` (celles de WIMS lues *dans le conteneur*, celles de Nova dans `_css/`), réduit, écrit `css.css` et l'empreinte (`_css/empreinte.css`, meta `nova-css`).],
+  [Commande], [Lit WIMS ?], [Ce qu'elle fait],
+  [`./construire-css.sh`], [oui], [Concatène les feuilles de `css.css.template` (celles de WIMS lues *dans le conteneur* ou dans `$WIMS_THEMES`, celles de Nova dans `_css/`), réduit, écrit `css.css` et l'empreinte (`_css/empreinte.css`, meta `nova-css`).],
   [`./construire-js.sh`], [non], [Assemble `js/src/*.js` dans l'ordre des noms, réduit par terser, écrit `js/nova.js` et son empreinte dans `htmlheader.phtml`. `NOVA_JS_LISIBLE=1` : sans réduction, pour déboguer.],
   [`./verifier.sh`], [non], [Contrôles : assemblage à jour, syntaxe, ASCII dans le code, encodages, langues, chemins en dur, couverture de ce guide.],
   [`./livrer.sh`], [oui], [Refuse un dépôt modifié ; lance `verifier.sh` et `construire-css.sh` ; produit `livraisons/nova-<date>-<commit>.tgz` (avec ce guide en PDF).],
@@ -1227,3 +1231,170 @@ Ce guide n'est utile que s'il dit vrai. Trois mécanismes le tiennent à jour.
 À chaque changement du thème, en plus : mettre à jour la section concernée (une recette, une ligne de l'@annexe-fichiers,
 un piège). Un changement qui ne change rien à la façon de travailler (correction ponctuelle, nouveau texte) ne demande
 rien.
+
+= Installer un WIMS de développement <annexe-installer>
+
+Nova se développe contre un vrai serveur WIMS 4.32 : les pages sont fabriquées par WIMS, et `construire-css.sh` lit
+les feuilles communes de WIMS (`public_html/themes/_css/…`). Deux façons de l'avoir sur son poste : *dans un conteneur
+Docker* ou *installé directement* sur une machine Linux (la vôtre, ou une machine virtuelle). Les deux donnent le même
+WIMS ; seule change la façon de le loger.
+
+== Lequel choisir
+
+#table(columns: (auto, 1fr, 1fr), align: left,
+  [], [Avec Docker], [Sans Docker],
+  [Mise en place], [Une commande (`docker compose up -d --build`) une fois l'image décrite ; refaite à l'identique sur un autre poste.], [Paquets, compte `wims`, compilation et Apache à faire à la main, une fois.],
+  [Effet sur le poste], [Aucun : Apache, Maxima, PARI/GP, TeX restent dans l'image. Supprimer le conteneur et ses volumes efface tout.], [Apache et les paquets de WIMS installés sur la machine ; un compte `wims` ; le port 80 occupé. Une machine virtuelle évite de toucher au poste.],
+  [Thème], [Monté en lecture seule depuis votre dossier de travail : vous éditez chez vous, WIMS sert la même copie.], [Le dépôt doit être dans `public_html/themes/Nova` (ou y être lisible) : un peu de gymnastique de droits.],
+  [Repartir de zéro], [Facile : `docker compose down -v`, ou copie des volumes (`log/`) pour garder un état de test et y revenir.], [Sauvegarder et restaurer `/home/wims/log` à la main.],
+  [Commandes], [Tout accès aux fichiers de WIMS passe par `docker exec` ; les scripts de Nova le font seuls.], [Fichiers de WIMS lus directement (`less`, `grep`, éditeur) : plus simple pour lire les sources de WIMS.],
+  [Pièges], [Ceux d'un conteneur (charge de la machine, numéro de compte, SELinux) : réglés par les fichiers ci-dessous.], [Ceux d'une installation de serveur (Apache, droits, CGI).],
+  [Ressources], [Image d'environ 1,8 Go (TeX surtout) ; Docker ou Podman à installer.], [Les mêmes paquets, sans Docker.],
+)
+
+*Conseil* : Docker si vous l'avez déjà ou si plusieurs personnes doivent avoir le même banc ; sans Docker si vous
+préférez lire et modifier WIMS lui-même, ou si votre machine de développement est déjà une machine virtuelle dédiée.
+
+== Ce qu'il faut dans les deux cas
+
+- Les sources de WIMS 4.32, `wims-4.32.tgz`, sur le site de WIMS (#link("https://wimsedu.info")[`wimsedu.info`],
+  rubrique téléchargement).
+- Une Debian récente (ou Ubuntu) et ces paquets :
+
+```sh
+apt install build-essential autoconf flex libfl-dev bison libgd-dev \
+  libcrypt-dev libgmp-dev librecode-dev apache2 perl wget zip unzip \
+  ca-certificates lsb-release tzdata maxima pari-gp imagemagick \
+  texlive-latex-base texlive-fonts-recommended
+```
+
+  `imagemagick` : sans lui, `flydraw` ne lit pas les images JPEG/PNG et certaines figures d'exercice manquent sans
+  erreur visible. `zip` : sauvegarde des classes au format .zip. `texlive` : formules composées en image.
+- Des modules d'exercices pour avoir de quoi tester : page de maintenance du site
+  (`wims.cgi?module=adm/manage`, compte gestionnaire), rubrique de téléchargement des modules.
+
+== Sans Docker
+
+Toutes les commandes en `wims` se lancent depuis `/home/wims`.
+
+```sh
+# 1. Le compte qui fait tourner WIMS
+sudo useradd -m -d /home/wims -s /bin/bash wims
+sudo cp wims-4.32.tgz /home/wims/ && sudo chown wims: /home/wims/wims-4.32.tgz
+
+# 2. Décompresser et compiler, en tant que wims
+sudo -iu wims
+tar xzf wims-4.32.tgz
+mkdir -p log
+# Réponses aux questions de ./compile données d'avance (adapter) :
+printf 'manager_site=127.0.0.1\nclass_regpass=all,all,all\n' > log/wims.conf
+printf 'changez-moi\n' > log/.wimspass        # mot de passe du gestionnaire du site
+chmod 600 log/wims.conf log/.wimspass
+./compile --mathjax
+exit
+
+# 3. Brancher WIMS sur Apache, en root
+cd /home/wims
+sudo ./bin/setwrapexec
+sudo ./bin/apache-config
+sudo a2dismod -f mpm_event && sudo a2enmod mpm_prefork cgi
+sudo systemctl restart apache2
+```
+
+WIMS répond alors sur `http://127.0.0.1/wims`. `class_regpass=all,all,all` permet de créer des classes de test sans
+courrier électronique ; `--mathjax` affiche les formules comme sur un serveur de production.
+
+*Le thème.* WIMS n'a besoin que de *lire* le dossier du thème. Le plus simple : votre dépôt directement à sa place,
+à votre nom, lisible par tous.
+
+```sh
+export WIMS_THEMES=/home/wims/public_html/themes  # lu par construire-css.sh, livrer.sh
+sudo install -d -o "$USER" "$WIMS_THEMES/Nova"
+git clone https://github.com/sebastiencorreard/wims-theme-nova "$WIMS_THEMES/Nova"
+chmod -R a+rX "$WIMS_THEMES/Nova"
+```
+
+Choisir ensuite Nova comme thème dans la configuration du site (page de maintenance) ou dans celle d'une classe de test.
+
+== Avec Docker
+
+Trois fichiers dans un dossier de travail, à côté de `wims-4.32.tgz` et d'un dossier `themes/Nova` (votre clone du
+dépôt). Ils reprennent les étapes ci-dessus ; les commentaires disent ce qui est propre au conteneur.
+
+`Dockerfile` :
+
+```dockerfile
+FROM debian:trixie
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      build-essential autoconf flex libfl-dev bison libgd-dev \
+      libcrypt-dev libgmp-dev librecode-dev apache2 perl wget zip unzip \
+      ca-certificates lsb-release tzdata procps maxima pari-gp imagemagick \
+      texlive-latex-base texlive-fonts-recommended \
+ && rm -rf /var/lib/apt/lists/*
+# Numéro de compte propre au conteneur : avec 1000 (souvent le vôtre),
+# le noyau compte aussi vos processus, WIMS atteint sa limite et tous
+# ses scripts échouent.
+RUN useradd -m -u 10432 -d /home/wims -s /bin/bash wims
+COPY --chown=wims:wims wims-4.32.tgz /home/wims/
+USER wims
+WORKDIR /home/wims
+# manager_site : « 172. » = adresse sous laquelle le conteneur voit l'hôte.
+# threshold1/2 : le conteneur lit la charge de toute la machine ; sans
+# ce réglage, WIMS refuse de nouvelles sessions dès que l'hôte travaille.
+ARG MANAGER_PASSWORD=changez-moi
+RUN tar xzf wims-4.32.tgz && rm wims-4.32.tgz && mkdir -p log \
+ && printf 'manager_site=127.0.0.1 172.\nthreshold1=2000\n' > log/wims.conf \
+ && printf 'threshold2=4000\nclass_regpass=all,all,all\n' >> log/wims.conf \
+ && printf '%s\n' "$MANAGER_PASSWORD" > log/.wimspass \
+ && chmod 600 log/wims.conf log/.wimspass \
+ && ./compile --mathjax < /dev/null
+USER root
+RUN ./bin/setwrapexec && ./bin/apache-config \
+ && a2dismod -f mpm_event && a2enmod mpm_prefork cgi
+COPY entrypoint.sh /entrypoint.sh
+EXPOSE 80
+CMD ["/entrypoint.sh"]
+```
+
+`entrypoint.sh` (exécutable) :
+
+```sh
+#!/bin/sh
+# Le volume log/ a pu être créé par une image où « wims » avait un autre numéro.
+chown -R wims:wims /home/wims/log
+exec apachectl -D FOREGROUND
+```
+
+`compose.yaml` :
+
+```yaml
+services:
+  wims:
+    build: .
+    container_name: wims432
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      # classes et réglages, gardés d'une image à l'autre
+      - wims-log:/home/wims/log
+      # modules téléchargés
+      - wims-modules:/home/wims/public_html/modules
+      # le thème, en lecture seule
+      - ./themes/Nova:/home/wims/public_html/themes/Nova:ro,z
+volumes:
+  wims-log:
+  wims-modules:
+```
+
+Puis `docker compose up -d --build` : WIMS répond sur `http://127.0.0.1:8080/wims`. Le `z` du montage sert aux
+systèmes à SELinux (Fedora) ; ailleurs il est sans effet. Le démon de WIMS (`wimslogd`) n'a pas besoin d'être lancé :
+WIMS le démarre à la première requête. Si le conteneur porte un autre nom que `wims432`, le donner aux scripts par
+`CONTENEUR=<nom>`.
+
+== Vérifier l'installation
+
++ La page d'accueil de WIMS s'affiche, et la maintenance (`wims.cgi?module=adm/manage`) accepte le mot de passe choisi.
++ Un exercice avec une formule et une figure s'affiche entièrement (TeX, MathJax, ImageMagick).
++ Nova choisi comme thème : la page change d'aspect ; `./construire-css.sh` se termine par
+  « css.css : … octets, … feuilles » sans « Feuille introuvable ».

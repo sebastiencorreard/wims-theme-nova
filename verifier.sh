@@ -127,6 +127,12 @@ if os.path.exists(guide):
         if nom not in texte: absents.add(f if not f.startswith('lang/') else 'lang/' + nom.replace('lang/', ''))
     for f in sorted(absents):
         ko('%s : fichier absent du guide (%s) : dire à quoi il sert (annexe D, et une recette s\'il en change une)' % (f, guide))
+    # Réglages --nova-… (bloc :where(:root) de jetons.css) : chacun est décrit dans l'annexe des réglages du guide (2026-11-15).
+    jt = open('_css/jetons.css', encoding='utf-8').read()
+    bloc = re.search(r':where\(:root\) \{(.*?)\n\}', jt, re.S)
+    for k in sorted(set(re.findall(r'--nova-([a-z0-9-]+)\s*:', re.sub(r'/\*.*?\*/', '', bloc.group(1), flags=re.S)))) if bloc else []:
+        if not k.startswith('std-') and '("%s", [' % k not in texte:
+            ko('--nova-%s : réglage absent de l\'annexe des réglages du guide (liste reglages-doc de %s)' % (k, guide))
     if shutil.which('typst'):
         import tempfile
         with tempfile.TemporaryDirectory() as d:

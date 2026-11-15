@@ -1762,14 +1762,17 @@ nouveau n'y figure pas (@annexe-maintenir).
 
 = Maintenir ce guide <annexe-maintenir>
 
-Ce guide n'est utile que s'il dit vrai. Trois mécanismes le tiennent à jour.
+Ce guide n'est utile que s'il dit vrai. Quatre mécanismes le tiennent à jour.
 
-+ *Annexes produites à la compilation* (A, B, C) : elles lisent les sources. Rien à faire, sauf si un fichier de
++ *Annexes produites à la compilation* (A, B, C, et les valeurs de l'@annexe-variables) : elles lisent les sources. Rien à faire, sauf si un fichier de
   `js/src/` est ajouté ou renommé : l'ajouter à la liste `js-fichiers` (@annexe-js ; la compilation échoue sinon sur un
   fichier disparu).
 + *Couverture* (contrôlée par `verifier.sh`, bloquante) : tout fichier de `_widgets/`, `_procs/`, `_css/`, `js/`,
   `js/src/`, `icones/`, de la racine, et tout groupe de `lang/` doit être *nommé* dans ce guide. Un fichier nouveau
   oblige donc à dire à quoi il sert, dans l'@annexe-fichiers et, s'il change une recette, au @recettes.
++ *Réglages* (contrôlé par `verifier.sh`, bloquant) : tout réglage `--nova-…` du bloc `:where(:root)` de `jetons.css`
+  doit être décrit dans la liste `reglages-doc` de l'@annexe-variables. Un paramètre d'adresse, un fichier de données ou
+  une clé de `localStorage` nouveaux s'ajoutent à la main dans la même annexe.
 + *Revue de structure* (signalée par `verifier.sh`, non bloquante) : tous les *40 commits* depuis la ligne
   « revue de structure » en tête du source, `verifier.sh` le rappelle. La revue répond à ces questions :
   - les objectifs du @recettes sont-ils encore ceux qu'on rencontre ? (relire les derniers messages de commit : un
@@ -1953,6 +1956,225 @@ WIMS le démarre à la première requête. Si le conteneur porte un autre nom qu
 + Un exercice avec une formule et une figure s'affiche entièrement (TeX, MathJax, ImageMagick).
 + Nova choisi comme thème : la page change d'aspect ; `./construire-css.sh` se termine par
   « css.css : … octets, … feuilles » sans « Feuille introuvable ».
+
+= Réglages, paramètres et données de Nova <annexe-variables>
+
+Cette annexe liste ce qui *dure* : ce qu'un site règle, ce qu'une adresse transmet, ce que Nova garde sur le
+serveur ou dans le navigateur. Tout ce qui y figure est soumis à la règle de compatibilité (@compatibilite) : on
+ajoute, on ne renomme pas.
+
+N'y figurent pas, volontairement : les variables de travail des gabarits (`nova_sl`, `nova_br`… : locales à un
+bloc, décrites par le commentaire `!!` au-dessus de leur première affectation) et les textes (les fichiers de
+`lang/` sont leur propre index, @textes).
+
+== Réglages `--nova-…` <annexe-reglages>
+
+Valeurs par défaut lues à la compilation dans `_css/jetons.css` (bloc `:where(:root)`). Un réglage se change, du
+plus faible au plus fort, dans `log/nova.conf` (site), la feuille du portail ou du groupement, la feuille de la
+classe (@reglage). Les valeurs sont des mots sans accent (`oui`, `non`, `defaut`, `aucune`), des nombres, ou des
+listes séparées par des espaces.
+
+#let jetons = read("/_css/jetons.css")
+#let regle-decl = regex("--nova-([a-z0-9-]+):\s*([^;]+);")
+#let defauts = {
+  let d = (:)
+  let bloc = jetons.match(regex("(?s):where\(:root\) \{(.*?)\n\}")).captures.at(0).replace(regex("(?s)/\*.*?\*/"), "")
+  for m in bloc.matches(regle-decl) { d.insert(m.captures.at(0), m.captures.at(1).trim()) }
+  d
+}
+#let reglages-doc = (
+  ("Général", (
+    ("animations", [Animations de Nova (étoiles, menus, carrousel…). Toujours coupées si l'appareil demande de réduire les animations.]),
+    ("entree-directe", [L'élève qui n'a qu'un cours (portail) ou qu'une classe (groupement) y entre directement.]),
+    ("clavier-maths", [Clavier mathématique tactile dans les champs de réponse.]),
+    ("fil-fixe", [Fil d'Ariane de l'enseignant fixe sous la barre du haut, sur grand écran.]),
+    ("decorations", [Décorations de saison de la barre.]),
+    ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen. Vérifié aussi côté serveur.]),
+    ("masques-eleves", [Rubriques du menu masquées aux élèves : liste parmi `communication` et `liens`, ou `aucune`.]),
+    ("communication-eleves", [Ancien réglage (rubrique Communication des élèves), gardé pour les classes qui l'ont posé ; remplacé par `masques-eleves`.]),
+  )),
+  ("« Mon activité »", (
+    ("activite", [Remplace la page d'activité de WIMS par celle de Nova.]),
+    ("activite-seuil", [Jours de travail par semaine en dessous desquels on encourage l'élève.]),
+    ("activite-objectif", [Jours de travail visés par semaine.]),
+    ("activite-heures", [Heures par semaine au-delà desquelles on invite à faire des pauses.]),
+    ("activite-notes", [Nombre de dernières notes montrées.]),
+    ("vacances", [Vacances scolaires : `zone-a`, `zone-b`, `zone-c` (dates livrées avec Nova), ou des périodes `AAAAMMJJ-AAAAMMJJ`.]),
+  )),
+  ("Badges", (
+    ("badges", [Badges des élèves.]),
+    ("badges-actifs", [Badges proposés : `tous`, `aucun`, ou une liste de clés (`fidelite`, `perseverance`, `echauffement`, `top`).]),
+    ("fidelite-jours", [Régularité : jours différents avec une réponse envoyée pour qu'une semaine compte (1 à 7).]),
+    ("fidelite-paliers", [Régularité : semaines comptées pour chaque niveau (huit au plus).]),
+    ("perseverance-paliers", [Persévérance : exercices réussis après des difficultés, pour chaque niveau.]),
+    ("perseverance-reussite", [Persévérance : note à atteindre (au moins).]),
+    ("perseverance-echec", [Persévérance : une note strictement en dessous est une note faible.]),
+    ("perseverance-echecs", [Persévérance : notes faibles nécessaires avant la réussite.]),
+    ("perseverance-examens", [Persévérance : les examens comptent aussi.]),
+    ("echauffement-sessions", [Échauffement : sessions d'entraînement complètes à faire avant d'ouvrir le DM noté.]),
+    ("echauffement-paliers", [Échauffement : DM préparés pour chaque niveau.]),
+    ("echauffement-entrainement", [Mots du titre qui désignent un entraînement (séparés par des virgules).]),
+    ("echauffement-note", [Mots du titre qui désignent un DM noté.]),
+    ("top-seuil", [Au top : note à atteindre à un DM noté.]),
+    ("top-paliers", [Au top : DM notés réussis pour chaque niveau.]),
+  )),
+  ("DM WIMS", (
+    ("dm-mots", [Mots du titre qui désignent un DM WIMS.]),
+    ("dm-note-essais", [Nombre de sessions du DM noté créé par « Créer le DM noté ».]),
+  )),
+  ("« Ma couleur »", (
+    ("couleur-badge", [Badge dont le niveau débloque la couleur personnelle.]),
+    ("couleur-niveau", [Niveau de ce badge qui débloque les couleurs.]),
+    ("couleur-degrade", [Niveau de ce badge qui débloque les dégradés.]),
+  )),
+  ("Avatar", (
+    ("avatar", [Avatar des élèves.]),
+    ("avatar-seuil", [Note (sur 10) à partir de laquelle un exercice réussi compte pour les pièces.]),
+    ("avatar-secondes", [Durée minimale entre l'ouverture de l'exercice et la réponse pour qu'il compte.]),
+    ("avatar-max-jour", [Nombre d'exercices qui comptent par jour, au plus.]),
+    ("avatar-depart", [Pièces offertes au départ.]),
+    ("avatar-paliers", [Exercices comptés qui donnent chacun une pièce, au début.]),
+    ("avatar-pas", [Ensuite, une pièce tous les tant d'exercices.]),
+  )),
+)
+#{
+  let vus = ()
+  let cellules = ()
+  for (groupe, lignes) in reglages-doc {
+    cellules.push(table.cell(colspan: 3, fill: luma(245), text(weight: "bold", groupe)))
+    for (cle, sens) in lignes {
+      vus.push(cle)
+      cellules.push(raw("--nova-" + cle))
+      cellules.push(if cle in defauts { raw(defauts.at(cle)) } else { text(fill: rgb("#A3221B"))[absent de `jetons.css`] })
+      cellules.push(sens)
+    }
+  }
+  table(columns: (4.9cm, 2.9cm, 1fr), align: left, table.header([Réglage], [Défaut], [Sens]), ..cellules)
+  let std = defauts.keys().filter(k => k.starts-with("std-"))
+  [*Thème standard* : #std.len() réglages `--nova-std-<r>`, tous à `defaut` (ni `oui` ni `non` : la structure puis le
+  site décident). Liste et sens : @annexe-std et @standard.]
+  let oublies = defauts.keys().filter(k => k not in vus and not k.starts-with("std-"))
+  if oublies.len() > 0 {
+    parbreak()
+    text(fill: rgb("#A3221B"))[*Réglages de `jetons.css` sans description ici* (à ajouter à `reglages-doc`, dans le
+    source de ce guide) : #oublies.map(k => raw("--nova-" + k)).join(", ").]
+  }
+}
+
+== Jetons de design <annexe-jetons>
+
+Lus à la compilation dans le premier bloc `:root` de `_css/jetons.css`. Ce ne sont pas des réglages : une feuille
+de Nova s'en sert au lieu d'écrire une valeur en dur (@jetons).
+
+#{
+  let bloc = jetons.match(regex("(?s)\n:root \{(.*?)\n\}")).captures.at(0)
+  bloc = bloc.replace(regex("(?m)^\s*/\* ([^*\n]{3,40}) \*/\s*$"), m => "@@" + m.captures.at(0) + "@@")
+  bloc = bloc.replace(regex("(?s)/\*.*?\*/"), "")
+  let cellules = (table.cell(colspan: 4, text(weight: "bold")[Accent]),)
+  let n = 0
+  for l in bloc.split("\n") {
+    let t = l.match(regex("@@(.+)@@"))
+    if t != none {
+      if calc.odd(n) { cellules.push([]); cellules.push([]) }
+      n = 0
+      let titre = t.captures.at(0)
+      if titre == "Clair" { titre = "Couleurs" }
+      cellules.push(table.cell(colspan: 4, text(weight: "bold", titre)))
+    } else {
+      for m in l.matches(regle-decl) {
+        cellules.push(raw("--nova-" + m.captures.at(0)))
+        cellules.push(text(8.5pt, raw(m.captures.at(1).trim())))
+        n += 1
+      }
+    }
+  }
+  if calc.odd(n) { cellules.push([]); cellules.push([]) }
+  table(columns: (auto, 1fr, auto, 1fr), align: left, ..cellules)
+}
+
+== Paramètres d'adresse <annexe-parametres>
+
+Ajoutés à une adresse de WIMS (`wims.cgi?…&module=home&nova_suivi=1`). WIMS ne les connaît pas : un widget les lit
+dans la requête, les filtre, puis agit (@serveur). `adresseNette` retire de l'adresse ceux qui déclenchent une
+action, pour qu'un rechargement ne la rejoue pas.
+
+#table(columns: (5.9cm, 1fr, 3.9cm), align: left,
+  table.header([Paramètre], [Effet], [Lu par]),
+  [`nova_suivi=1`], [ouvre le suivi en direct], [`suivi-entree.phtml`],
+  [`nova_activite=1`], [ouvre « Mon activité »], [`activite-entree.phtml`],
+  [`nova_avatar=1`], [ouvre « Mon avatar »], [`avatar-entree.phtml`],
+  [`nova_avatar_ouvrir=<cat.val>`], [achète un élément d'avatar avec des pièces], [`avatar-entree.phtml`],
+  [`nova_avatar_choix=<cat.val,…>`], [enregistre l'avatar choisi], [`avatar-entree.phtml`],
+  [`nova_avatars=1`], [ouvre le trombinoscope de l'enseignant], [`avatars-entree.phtml`],
+  [`nova_avatars_retour=1`], [prépare le retour à une version antérieure (@compatibilite)], [`avatars-entree.phtml`],
+  [`nova_couleur=<nom>`], [enregistre la couleur personnelle (`classe` : revenir à celle de la classe)], [`couleur-choix.phtml`],
+  [`nova_menu=<…>`], [enregistre le choix de menu de l'enseignant (`simple` ou `complet`, puis ses entrées)], [`menu-serveur.phtml`],
+  [`nova_replis=<…>`], [enregistre les classes repliées sur l'accueil d'une structure], [`replis-classes.phtml`],
+  [`nova_propager=<quoi>`], [recopie des réglages vers les zones dépendantes], [`propager.phtml`],
+  [`nova_desactiver=<type>…`], [désactive une ressource malgré un refus de WIMS], [`desactiver.phtml`],
+  [`nova_seq_de`, `nova_seq_vers`, `nova_seq_numero`], [déplace une séquence (chiffres) ; choisit d'afficher le numéro seul (`oui`, `non`)], [`sequences.phtml`],
+  [`nova_reglages=1` et un paramètre par réglage], [enregistre les réglages du site (formulaire de la page Apparence du gestionnaire)], [`reglages-site.phtml`],
+)
+
+== Données sur le serveur <annexe-donnees>
+
+#table(columns: (1.3fr, 1.5fr), align: left,
+  [Fichier (sous `log/` de WIMS)], [Contenu],
+  [`nova.conf`], [réglages du site : des déclarations `--nova-… : valeur;`],
+  [`classes/<classe>/css`], [feuille de style de la classe ; Nova y tient le bloc `/* Nova : reglages de la page Apparence */ html:root { … }`],
+  [`classes/<c>/score/<login>.nova_badges`], [niveaux des badges de l'élève, une ligne par badge ; dans chaque zone],
+  [`classes/<c>/score/<login>.nova_avatar`], [avatar : une ligne pour le choix, une pour les éléments achetés ; à la racine de la structure, recopié dans les zones],
+  [`classes/<c>/score/<login>.nova_couleur`], [nom de la couleur personnelle ; mêmes emplacements que l'avatar],
+  [`classes/<c>/.nova_menu_<login>`, `.nova_menu_modtool_<login>`, `.nova_menu_p_<module>_<login>`], [choix de menu de l'enseignant : accueil, modtool, une page donnée],
+  [`classes/<c>/.nova_replis_<login>`], [classes repliées par l'enseignant sur l'accueil d'une structure],
+  [`classes/<c>/seq/.def`], [ligne `sequence_nova_numero` ajoutée par Nova (la classe affiche le numéro seul des séquences)],
+)
+Les fichiers de `score/` sont sauvegardés, restaurés et effacés par WIMS avec les notes de l'élève. Ceux de la racine
+d'une classe (`.nova_menu_…`, `.nova_replis_…`) ne sont pas dans la sauvegarde : ce ne sont que des préférences
+d'affichage.
+
+== Données dans le navigateur <annexe-navigateur>
+
+Clés de `localStorage` : elles restent d'une visite à l'autre, sur cet appareil seulement. Aucune n'est nécessaire :
+sans elles, la page prend ses valeurs par défaut.
+
+#table(columns: (1.2fr, 1.6fr), align: left,
+  [Clé], [Contenu],
+  [`nova_menu`, `nova_menu_garde` (+ suffixe `_modtool` ou `_p_<page>`)], [menu de l'enseignant : `complet` ou rien ; liste des entrées gardées (ou cachées, hors accueil)],
+  [`nova_menu_envoi`], [choix de menu en attente d'envoi au serveur, avec le prochain lien suivi],
+  [`nova_menu_replie`], [groupes du menu repliés],
+  [`nova-couleur|<structure>|<login>`], [couleur personnelle de l'élève, pour la poser avant l'affichage],
+  [`nova-avatar|<structure>|<login>`], [avatar de l'élève, pour la barre],
+  [`nova-trombinoscope`], [cases « Afficher » du trombinoscope],
+  [`nova_examtypes_<login>`], [types des pages de vérification d'un examen, pour la fenêtre de vérification],
+  [`nova-flyers-nom|<classe>`], [nom de la classe modifié pour les flyers à imprimer],
+  [`nova-fiche-avancees`], [options avancées d'une fiche de ressource ouvertes ou fermées],
+)
+`sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
+reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
+(`nova-reglages-enregistre`)… Ces clés peuvent changer sans précaution.
+
+== Repères posés dans la page <annexe-reperes>
+
+Classes posées sur `<html>` par le script de tête (`htmlheader.phtml`) ou par `nova.js`, sur lesquelles le CSS
+s'appuie ; et balises `<meta>` que `nova.js` lit.
+
+#table(columns: (auto, 1fr), align: left,
+  [Repère], [Sens],
+  [`html.nova-js`], [JavaScript tourne : les règles qui masquent en attendant `nova.js` ne valent que sous cette classe (@js)],
+  [`html.nova-role-eleve`, `html.nova-role-prof`], [rôle de la personne connectée, connu avant l'affichage],
+  [`html.nova-std-<r>`], [le réglage « thème standard » `<r>` est choisi (@standard)],
+  [`html.nova-sans-animation`], [animations coupées (@choix)],
+  [`html.nova-menu-simple`, `html.nova-menu-edition`], [menu de l'enseignant simplifié ; en cours de personnalisation (@menu)],
+  [`html.nova-sans-communication`, `html.nova-sans-liens`], [rubriques masquées aux élèves],
+  [`html.nova-fil-libre`], [fil d'Ariane non fixe],
+  [`html.nova-espace`], [mode « espacé » des préférences d'accessibilité de WIMS],
+  [`html.nova-page-reglages`], [la page Apparence est affichée comme « Réglages de Nova »],
+  [`html.nova-dominos`, `html.nova-tuiles`, `html.nova-assoc`], [type d'exercice à déplacer reconnu (@exercices)],
+  [`meta[name=nova-module]`, `nova-type`], [module de la page ; type de la classe (`class`, `course`, `portal`…)],
+  [`meta[name=nova-structure]`, `nova-classe`, `nova-utilisateur`], [numéros de la structure et de la classe ; identifiant connecté],
+  [`meta[name=nova-css]`], [empreinte des feuilles, pour recharger un `css.css` périmé],
+)
 
 = Glossaire <annexe-glossaire>
 

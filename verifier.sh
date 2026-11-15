@@ -133,13 +133,16 @@ if os.path.exists(guide):
     for k in sorted(set(re.findall(r'--nova-([a-z0-9-]+)\s*:', re.sub(r'/\*.*?\*/', '', bloc.group(1), flags=re.S)))) if bloc else []:
         if not k.startswith('std-') and '("%s", [' % k not in texte:
             ko('--nova-%s : réglage absent de l\'annexe des réglages du guide (liste reglages-doc de %s)' % (k, guide))
+    # PDF du guide DANS le dépôt (2026-11-15, utilisateur) : recompilé ici à chaque passage, donc toujours à jour ; sortie
+    # identique d'une compilation à l'autre (document(date: none)) : il ne change que si le source change, et livrer.sh
+    # refuse alors le dépôt tant qu'il n'est pas commité. L'archive garde sa propre compilation (commit et date en page de titre).
     if shutil.which('typst'):
-        import tempfile
-        with tempfile.TemporaryDirectory() as d:
-            r = subprocess.run(['typst', 'compile', guide, os.path.join(d, 'g.pdf')], capture_output=True, text=True)
-            if r.returncode: ko('Guide : la compilation échoue : ' + r.stderr.strip()[:600])
+        r = subprocess.run(['typst', 'compile', guide, 'guide-nova.pdf'], capture_output=True, text=True)
+        if r.returncode: ko('Guide : la compilation échoue : ' + r.stderr.strip()[:600])
+        elif subprocess.run(['git', 'status', '--porcelain', '--', 'guide-nova.pdf'], capture_output=True, text=True).stdout.strip():
+            print('! Guide : guide-nova.pdf recompilé (source modifié) : le commiter avec guide-nova.typ.')
     else:
-        print('(typst absent : compilation du guide non vérifiée)')
+        print('(typst absent : compilation du guide non vérifiée, guide-nova.pdf non mis à jour)')
     h = subprocess.run(['git', 'log', '-1', '--format=%H', '-G', 'revue de structure :', '--', guide], capture_output=True, text=True).stdout.strip()
     if h:
         n = int(subprocess.run(['git', 'rev-list', '--count', h + '..HEAD'], capture_output=True, text=True).stdout.strip() or 0)

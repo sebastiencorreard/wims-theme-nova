@@ -1,7 +1,8 @@
 // Guide pour modifier et maintenir le thème Nova (WIMS), à destination des humains.
 // Compiler (le guide lit les sources du thème pour ses annexes ; il est à la racine du thème pour que Typst y ait accès) :
 //   typst compile guide-nova.typ
-// livrer.sh le compile dans l'archive (si typst est installé) et verifier.sh contrôle qu'il nomme chaque fichier.
+// verifier.sh le recompile dans guide-nova.pdf (dans le dépôt, à commiter avec ce source) et contrôle qu'il nomme
+// chaque fichier ; livrer.sh en met une copie datée dans l'archive (si typst est installé).
 //
 // revue de structure : 2026-11-14 (première version). Changer cette ligne à chaque revue (@annexe-maintenir) :
 // verifier.sh compte les commits depuis la dernière modification de cette ligne.
@@ -10,7 +11,7 @@
 #let commit = sys.inputs.at("commit", default: "dépôt de développement")
 #let date-livraison = sys.inputs.at("date", default: none)
 
-#set document(title: "Modifier et maintenir Nova", author: "Contributeurs de Nova")
+#set document(title: "Modifier et maintenir Nova", author: "Contributeurs de Nova", date: none)
 #set text(lang: "fr", font: ("Fira Sans", "Noto Sans", "DejaVu Sans", "Libertinus Serif"), size: 10pt)
 #let hydra-titre() = context {
   // Le chapitre qui commence sur cette page, sinon le dernier commencé avant.
@@ -189,7 +190,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [Commande], [Lit WIMS ?], [Ce qu'elle fait],
   [`./construire-css.sh`], [oui], [Concatène les feuilles de `css.css.template` (celles de WIMS lues *dans le conteneur* ou dans `$WIMS_THEMES`, celles de Nova dans `_css/`), réduit, écrit `css.css` et l'empreinte (`_css/empreinte.css`, meta `nova-css`).],
   [`./construire-js.sh`], [non], [Assemble `js/src/*.js` dans l'ordre des noms, réduit par terser, écrit `js/nova.js` et son empreinte dans `htmlheader.phtml`. `NOVA_JS_LISIBLE=1` : sans réduction, pour déboguer.],
-  [`./verifier.sh`], [non], [Contrôles : assemblage à jour, syntaxe, ASCII dans le code, encodages, langues, chemins en dur, couverture de ce guide.],
+  [`./verifier.sh`], [non], [Contrôles : assemblage à jour, syntaxe, ASCII dans le code, encodages, langues, chemins en dur, couverture de ce guide ; recompile `guide-nova.pdf`.],
   [`./livrer.sh`], [oui], [Refuse un dépôt modifié ; lance `verifier.sh` et `construire-css.sh` ; produit `livraisons/nova-<date>-<commit>.tgz` (avec ce guide en PDF).],
 )
 
@@ -1728,7 +1729,8 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`construire-avatar.py`], [construit `js/avatar-extras.js` depuis `_avatar/`],
   [`maj-vacances.py`], [met à jour `_procs/vacances-zones.txt` (calendrier scolaire officiel)],
   [`VERSION`, `CHANGELOG.md`, `nouveautes.html`], [version, changements, page qui les affiche],
-  [`guide-nova.typ`], [ce guide (Typst ; PDF dans l'archive livrée)],
+  [`guide-nova.typ`], [ce guide (source Typst)],
+  [`guide-nova.pdf`], [ce guide compilé, tenu à jour par `verifier.sh` (l'archive livrée en a une copie datée, avec son commit)],
   [`LISEZMOI.md`, `INSTALLER.md`, `LICENSE`, `ORIGINES.sha256`, `.gitignore`], [documentation, licence, empreintes des originaux de WIMS],
 )
 

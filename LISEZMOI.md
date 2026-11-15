@@ -5,7 +5,7 @@ Nombreuses modifications de l'interface pour améliorer la clarté et la lisibil
 Pour les élèves : ludification de WIMS (badges, avatars, couleur personnalisée...)
 Pour les profs : suivi des élèves en direct, menu personnalisable, réglahes centralisés.
 . Installation : voir `INSTALLER.md`. Modifier ou maintenir le thème : `guide-nova.typ` (guide du développeur ;
-  en PDF dans l'archive livrée, ou `typst compile guide-nova.typ`).
+  en PDF : `guide-nova.pdf`, à côté de son source `guide-nova.typ`).
 
 ## Principes
 

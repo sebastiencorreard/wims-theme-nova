@@ -1252,13 +1252,14 @@ WIMS ; seule change la façon de le loger.
   [Ressources], [Image d'environ 1,8 Go (TeX surtout) ; Docker ou Podman à installer.], [Les mêmes paquets, sans Docker.],
 )
 
-*Conseil* : Docker si vous l'avez déjà ou si plusieurs personnes doivent avoir le même banc ; sans Docker si vous
+*Conseil* : Docker si vous l'avez déjà ou si plusieurs personnes doivent travailler sur le même serveur de test ; sans Docker si vous
 préférez lire et modifier WIMS lui-même, ou si votre machine de développement est déjà une machine virtuelle dédiée.
 
 == Ce qu'il faut dans les deux cas
 
-- Les sources de WIMS 4.32, `wims-4.32.tgz`, sur le site de WIMS (#link("https://wimsedu.info")[`wimsedu.info`],
-  rubrique téléchargement).
+- Les sources de WIMS 4.32, `wims-4.32.tgz`, sur la forge SourceSup de Renater, où WIMS est développé :
+  #link("https://sourcesup.renater.fr/projects/wimsdev/")[`sourcesup.renater.fr/projects/wimsdev`] (rubrique des
+  fichiers à télécharger).
 - Une Debian récente (ou Ubuntu) et ces paquets :
 
 ```sh

@@ -26,7 +26,7 @@
 #   ecrire 0|1, puis le nouveau contenu du fichier de l'eleve (2 lignes : choix, ouverts) ;
 #   enfin <note de reussite> <secondes> <max par jour> (pour les regles affichees a l'eleve) ;
 #   niveaux <cle>:<niveau atteint>:<badge propose 1|0> ... (fidelite, perseverance, echauffement, top) ;
-#   avec -v niveaux=1 et l'avatar coupe : « avatar off » puis cette ligne seule (trombinoscope de l'enseignant).
+#   avec -v niveaux=1 et l'avatar coupe : Â« avatar off Â» puis cette ligne seule (trombinoscope de l'enseignant).
 
 function jours(s,    y, m, d, era, yoe, doy, doe) {
   y = substr(s, 1, 4) + 0; m = substr(s, 5, 2) + 0; d = substr(s, 7, 2) + 0

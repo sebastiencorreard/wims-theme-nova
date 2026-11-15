@@ -1,15 +1,15 @@
-!! Nova : bouton Â« Examen en cours Â» dans la barre, sur les pages de la classe tant qu'une session
-!! d'examen est ouverte, c'est-Ã -dire tant que le verrou .parmreg/<Ã©lÃ¨ve>.exam existe (WIMS le pose
-!! au dÃ©but de la session et le retire quand l'Ã©lÃ¨ve la termine ; une session Ã©chue mais non
-!! terminÃ©e bloque les autres examens : le bouton mÃ¨ne justement lÃ  oÃ¹ on la termine).
-!! ($registered ne convient pas : WIMS ne le dÃ©finit que dans le module d'examen.)
-!! Champs du verrou : IP, session, fin (epoch), numÃ©ro d'examen (comme html/examclock.proc).
-!! Pas sur la page de l'examen : elle a son chronomÃ¨tre.
-!! Lien comme Â« Continuer cet examen Â» de WIMS (themes/_widgets/examsession.phtml) : la SESSION oÃ¹
-!! l'examen a Ã©tÃ© commencÃ© (2e champ du verrou) et job=student. Avec la session courante, aprÃ¨s une
-!! reconnexion, WIMS montre la prÃ©sentation (Â« plus de sessions possibles Â») : Ã©lÃ¨ve bloquÃ© (2026-10-03).
-!! Page d'un AUTRE examen (adm/class/exam, message Â« Vous avez dÃ©jÃ  commencÃ© un autre examen Â») : le bouton
-!! est posÃ© aussi, marquÃ© data-autre-examen ; nova.js (autreExamen) le place sous le message (demande de
+!! Nova : bouton « Examen en cours » dans la barre, sur les pages de la classe tant qu'une session
+!! d'examen est ouverte, c'est-à-dire tant que le verrou .parmreg/<élève>.exam existe (WIMS le pose
+!! au début de la session et le retire quand l'élève la termine ; une session échue mais non
+!! terminée bloque les autres examens : le bouton mène justement là où on la termine).
+!! ($registered ne convient pas : WIMS ne le définit que dans le module d'examen.)
+!! Champs du verrou : IP, session, fin (epoch), numéro d'examen (comme html/examclock.proc).
+!! Pas sur la page de l'examen : elle a son chronomètre.
+!! Lien comme « Continuer cet examen » de WIMS (themes/_widgets/examsession.phtml) : la SESSION où
+!! l'examen a été commencé (2e champ du verrou) et job=student. Avec la session courante, après une
+!! reconnexion, WIMS montre la présentation (« plus de sessions possibles ») : élève bloqué (2026-10-03).
+!! Page d'un AUTRE examen (adm/class/exam, message « Vous avez déjà commencé un autre examen ») : le bouton
+!! est posé aussi, marqué data-autre-examen ; nova.js (autreExamen) le place sous le message (demande de
 !! l'utilisateur, 2026-10-05). Sans JavaScript, il reste dans la barre.
 !! Variables : nova_examreg le verrou ; nova_examses, nova_examfin, nova_examnum ses champs 2 a 4 ; nova_autre attribut
 !! data-autre-examen ; nova_examclasse classes CSS du bouton.
@@ -30,8 +30,8 @@
   !default nova_examen_court=Exam
   !default nova_examen_a_terminer=Exam to finish
   !default nova_examen_a_terminer_court=Finish
-  !! Heure de fin dÃ©passÃ©e : la session reste ouverte (et bloque les autres examens) tant que
-  !! l'Ã©lÃ¨ve n'a pas cliquÃ© sur Â« Terminer Â» ; le bouton le dit.
+  !! Heure de fin dépassée : la session reste ouverte (et bloque les autres examens) tant que
+  !! l'élève n'a pas cliqué sur « Terminer » ; le bouton le dit.
   !set nova_examclasse=nova-examencours
   !if $nova_examfin!=$empty and $nova_examfin<$wims_nowseconds
     !set nova_examclasse=nova-examencours nova-examen-a-terminer

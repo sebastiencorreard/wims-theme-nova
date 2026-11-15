@@ -8,6 +8,11 @@
 !! Lu par tail.phtml, a la fin de la page : mkuserlist reprend des variables (c, u, N, user_...) que la page
 !! du module affiche peut-etre.
 !! Variables du module : processed (import lu), change et added (comptes modifies ou ajoutes).
+!! Variables (prefixe nova_pz_ : lu en fin de page, ne doit rien ecraser) : nova_pz_u comptes modifies ou ajoutes ;
+!!   nova_pz_t type de la structure (4 = portail) ; nova_pz_j fichier de liste (classes, courses, icourses), nova_pz_l
+!!   sa colonne de numeros ; nova_pz_n nombre de zones d'un groupement, nova_pz_i rang ; nova_pz_z toutes les zones ;
+!!   nova_pz_x un eleve, nova_pz_v ses inscriptions, nova_pz_p celles de tous ; nova_pz_c une zone ;
+!!   nova_pz_f zones a refaire.
 !if $wims_superclass=$empty
   !exit
 !endif

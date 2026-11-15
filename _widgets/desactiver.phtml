@@ -8,6 +8,10 @@
 !! Textes lus seulement quand ils servent (2026-11-12) : ce widget est lu sur TOUTES les pages de l'enseignant, et
 !! lang/enseignant (170 noms) a fait deborder le tampon des noms de la version imprimable d'une feuille (adm/sheet).
 !! Examen commence par des eleves (deactivate=score, partage ou non) : contourne aussi depuis le 2026-11-12 (utilisateur).
+!! Variables : nova_ft type (exam, sheet), nova_fn numero (chiffres seuls) ; nova_fs verdict de desactiver.sh verifier
+!! (ok..., reglage, autre) ; nova_fk cle des textes du titre (exam, exam_commence, sheet) ; sur l'accueil : nova_q la
+!! requete, nova_dv valeur de nova_desactiver, nova_fr resultat de desactiver.sh, nova_fm message, nova_fe etat
+!! (succes, erreur).
 !if ($module=adm/class/exam and $error=nodeactivate and (sharing isin $deactivate or score isin $deactivate) and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
   !read themes/$wims_theme/lang/enseignant.phtml.$lang
   !reset nova_fs

@@ -1,6 +1,10 @@
 !! Nova : page « Avatars des eleves » (lue par _widgets/avatars-entree.phtml). Grille des eleves de la zone courante,
 !! silhouette grisee sans avatar enregistre ; detail dans une fenetre (nova.js avatarsClasse). Donnees par
 !! _procs/avatars-classe.sh (avatar.awk pour chaque eleve, en simple lecture), ecrites dans la session puis lues ici.
+!! Variables (effacees a la fin) : nova_avb --nova-avatar (oui : avatar active) ; nova_avg --nova-badges ;
+!!   nova_avr --nova-std-menus ; nova_avh titre de la page ; nova_avk numeros de la classe (chiffres seuls, pour nova.js) ;
+!!   nova_avt type de zone (class, course...) ; nova_sid session, filtree ; nova_ak structure ou classe racine ;
+!!   nova_auj date du jour AAAAMMJJ ; nova_avn nombre d'eleves de la grille, puis d'eleves prepares au retour.
 !read themes/$wims_theme/lang/enseignant.phtml.$lang
 !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
 !! Badges seuls (2026-11-12, utilisateur) : la page s'ouvre aussi quand l'avatar est coupe et les badges actifs.

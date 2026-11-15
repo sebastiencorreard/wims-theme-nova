@@ -14,6 +14,7 @@ itemsep,0,$nova_menu_activites
 !read themes/_procs/classtools.proc
 
 !! Participants : gestion des comptes, puis bilan des évaluations (WIMS en fait deux groupes).
+!! nova_participants : 1 quand le titre Participants est deja pose (les deux procedures de WIMS vont sous le meme).
 !set nova_participants=0
 !if $wims_typename notwordof program and /0// notin $wims_class//
   !set wims_rm_0 = $wims_rm_0\

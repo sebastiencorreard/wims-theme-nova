@@ -3,6 +3,7 @@
 !! la barre (home ou class_home, sans nom) affiche « WIMS », précédé du logo de WIMS (cadre.css),
 !! au lieu de « Page d'accueil » et d'une maison. Son infobulle (wims_name_title_...) garde la
 !! destination. Les autres entrées ne changent pas.
+!! Variables : nova_cle cle de l'entree (home, class_home...), nova_reste son nom ; nova_nom_sauve libelle de WIMS, retabli apres.
 !for i_=1 to $wims_home_items_cnt
  !set 1_=!line $i_ of $wims_home_items
  !set wims_ref_class = !item 1 of $1_

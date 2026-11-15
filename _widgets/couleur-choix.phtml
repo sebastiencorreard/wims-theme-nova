@@ -3,6 +3,7 @@
 !! nova_couleur=<nom de la palette ou d'un dégradé> (« classe » : retour a la couleur de la classe), ecrite pour toute la structure
 !! (log/classes/<structure ou classe>/score/<login>.nova_couleur). Le droit de choisir (niveau du badge) est verifie par
 !! user.phtml, qui seul applique la couleur ; ici, seulement un nom de la palette.
+!! Variables : nova_q la requete ; nova_cv couleur recue ; nova_ck structure ou classe racine (dossier du fichier).
 !set nova_q=!sh printf '%s' "$$QUERY_STRING"
 !if nova_couleur isin $nova_q
   !set nova_q=!replace internal & by $ $ in $nova_q

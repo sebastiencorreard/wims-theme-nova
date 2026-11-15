@@ -7,6 +7,9 @@
 !if $wims_class=$empty or adm/ notin $module
   !exit
 !endif
+!! Variables (non effacees) : nova_sc palette de la classe (12 couleurs : notes 0 a 10, puis non passe), nova_np la
+!! couleur "non passe" ; nova_i rang, nova_c couleur, nova_n note, nova_l niveau Nova (zero, rouge, orange, jaune, vert),
+!! nova_b jeton de la bordure ; livret : nova_lo options, nova_lc palette.
 !set nova_sc=!defof class_scorecolor in wimshome/log/classes/$wims_class/.def
 !set nova_sc=!nonempty items $nova_sc
 !default nova_sc=#FF0000,#FF0000,#FF0000,#FF9922,#FF9922,#FF9922,#FFE338,#FFE338,#00B000,#008F00,#008F00,#FFFFFF

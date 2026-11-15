@@ -4,6 +4,12 @@
 !! seulement ($wims_ismanager=2, calcule par WIMS).
 !! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
 !! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
+!! Variables (valeurs de l'adresse, bornees avant d'etre ecrites) : nova_q la requete ; nova_reglages "enregistrer" ;
+!!   nova_animations, nova_entree_directe, nova_clavier_maths, nova_badges, nova_activite, nova_fil, nova_deco : oui/non ;
+!!   nova_mq_c, nova_mq_l cases Communication et Liens externes, nova_mq leur valeur ecrite ("communication liens",
+!!   aucune) ; nova_act_s, _o, _h, _n seuil, objectif, heures, notes de Mon activite ;
+!!   nova_k reglage standard (boucle), nova_kh son nom avec -, nova_sv sa valeur, nova_sd les declarations ecrites.
+!! Sortie : nova_app_fait=yes (lue par apparence.phtml : message "enregistre").
 !set nova_q=!sh printf '%s' "$$QUERY_STRING"
 !set nova_q=!replace internal & by $ $ in $nova_q
 !set nova_reglages=!getopt nova_reglages in $nova_q

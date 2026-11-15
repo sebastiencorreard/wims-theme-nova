@@ -9,6 +9,7 @@
 !! Titre de l'onglet du navigateur traduit (audit, 2026-11-13, utilisateur) : WIMS y met le titre anglais de l'index du
 !! module ($module_title2 : "Scores of the participants") ; ici title_<langue> de l'index, et le nom de la classe sur
 !! l'accueil d'une classe ("WWW Interactive Multipurpose Server" sinon). Pose par nova.js (titreOnglet).
+!! nova_to : titre de l'onglet.
 !set nova_to=!module title_$lang $module
 !if $module=home and $wims_classname!=$empty
   !set nova_to=$wims_classname
@@ -22,6 +23,7 @@
 !! Jeu d'icones Lucide de Nova (2026-11-11) : lien gifs/themes/Lucide vers icones/Lucide du theme, pour qu'il
 !! figure dans le choix "Jeu d'icones" de WIMS (pages de configuration seulement : un test par page).
 !if $module=adm/class/config or $module=adm/manage
+  !! nova_ji : sortie de jeu-icones.sh, ignoree.
   !set nova_ji=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/jeu-icones.sh "$wims_home" "$wims_theme"
   !reset nova_ji
 !endif
@@ -43,6 +45,7 @@
 !endif
 !! Lecture seulement la ou wimshome/log est lisible (module home et adm/...) ; ailleurs, nova.js reprend la
 !! derniere valeur lue (sessionStorage).
+!! nova_m : 4 premiers caracteres du module (adm/) ; nova_site : declarations --nova-... de log/nova.conf.
 !set nova_m=!char 1 to 4 of $module
 !if $module=home or $nova_m=adm/
   !! Seules les declarations --nova-..., sans < (audit du 2026-11-12, comme user.phtml).
@@ -137,6 +140,7 @@
 !! ouvre cette page dans la meme requete.
 !! Pas pour une classe a authentification CAS (lien different, laisse tel quel).
 !if $wims_class!=$empty and $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and $class_cas_auth=$empty
+  !! nova_entree : classe ou structure ou se reconnecter.
   !set nova_entree=$wims_superclass
   !default nova_entree=$wims_class
   !set wims_link_close=!replace internal cmd=close&module=adm/class/classes&type=participant by cmd=close&module=adm/class/classes&type=authparticipant&class=$nova_entree&auth_user=$wims_user in $wims_link_close
@@ -147,6 +151,8 @@
 !! nova.js (reconnexionCas) y renvoie l'eleve qui vient de terminer une session d'examen ; le CAS, qui le
 !! connait encore, le ramene dans la classe (demande de l'utilisateur, 2026-10-06).
 !if $module=adm/class/classes and $type=authparticipant and $wims_user=$empty and $class!=$empty
+  !! Variables : nova_ss structure ou classe racine ; nova_idp methode d'authentification ; nova_cas adresse du CAS ;
+  !! nova_cc classe, filtree, pour l'adresse de retour.
   !set nova_ss=!replace internal / by , in $class
   !set nova_ss=$(nova_ss[1])
   !set nova_idp=!defof class_authidp in wimshome/log/classes/$nova_ss/.def

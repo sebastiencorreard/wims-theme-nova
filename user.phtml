@@ -76,6 +76,20 @@
     !! remise entre-temps, l'emporte ; jamais perdus, annonces une seule fois). Une seule pastille « Badges » (maquette B,
 !! 2026-10-09), fenetre a onglets (nova.js fenetreBadges). Pas dans l'accueil d'un portail ou d'un groupement (le
 !! travail est dans ses zones), ni en examen.
+!! Variables de travail des badges (effacees apres les annonces, sauf nova_lh, nova_ld, nova_ho) :
+!!   nova_cl dossier log/classes ; nova_auj date du jour AAAAMMJJ ; nova_zk structure (portail, groupement) en liste ;
+!!   nova_xc numeros des examens commences ; nova_xs notes retenues de tous les examens (!examscore, sur 10) ;
+!!   nova_xn "n:note" des examens commences (Au top, transmis a badges.awk) ; nova_k, nova_i, nova_v : nombre, rang, note.
+!!   nova_bd sortie de _procs/badges.awk, une ligne par sujet, dans cet ordre : nova_lf fidelite (Regularite),
+!!   nova_lp perseverance, nova_lh echauffement, nova_lt top, nova_lu topdm, nova_ld dm, nova_lc encours,
+!!   nova_lr reglages, nova_le ecrire (1 : nova_st, le nouveau stock, est ecrit dans score/<eleve>.nova_badges).
+!!   Mots de chaque ligne : en-tete de badges.awk. nova_fo, nova_po, nova_ho, nova_to : on ou off pour chaque badge ;
+!!   nova_bdg on si au moins un badge est actif (lu aussi par lang/eleve-textes, data-bdg).
+!!   nova_cb badge qui debloque la couleur personnelle ; nova_ck structure ou classe du fichier de couleur ; nova_cv couleur.
+!!   Exercice en cours de Perseverance : nova_cx examen 1 ou feuille 0 (- : aucun), nova_cf son numero, nova_co l'exercice,
+!!   nova_cn les echecs ; nova_rec son enregistrement ; nova_ct "titre|echecs".
+!!   Pastille et annonces : nova_n niveau du badge, nova_i numero de l'image (au moins 1), nova_nv 1 = niveau nouveau,
+!!   nova_bnom nom du niveau, nova_bp nombre insere dans le message (%n), nova_bm message de l'annonce.
 !reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr nova_lt nova_lu nova_xn
 !if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session
   !ifval 0$class_type<2
@@ -418,6 +432,8 @@
 !! commence, lu dans score/<eleve>.exam (ligne << n 00 ... >> = debut de session), releve permanent : PAS
 !! dans l'historique (examlog), dont WIMS efface chaque nuit les sessions au-dela des 7 dernieres de
 !! l'eleve, tous examens confondus (bin/housekeep.daily, examlog_limit ; la pastille disparaissait, 2026-11-04).
+!! Variables : nova_ec numeros des examens commences ; nova_es notes retenues sur 10 (!examscore) ; nova_sm bareme des
+!! feuilles (sheets/.severity, 10 par defaut) ; nova_en "n:note" ramenee au bareme ; nova_k, nova_i, nova_v : nombre, rang, note.
 !set nova_ec=!sh f="$wims_home/log/classes/$wims_class/score/$wims_user.exam"; [ -f "$$f" ] && awk '$$2=="00" {print $$1}' "$$f" | sort -un | tr '\n' ' '
 !set nova_es=!examscore user=$wims_user
 !set nova_es=!line 1 of $nova_es

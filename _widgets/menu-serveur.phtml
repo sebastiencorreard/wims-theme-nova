@@ -6,6 +6,9 @@
 !! ces memes pages (#nova-menu-serveur). Valeur : simple ou complet, puis les entrees gardees, separees par des points.
 !! modtool (2026-11-04) : son propre fichier (.nova_menu_modtool_<login>), valeur prefixee par modtool- ; le compte
 !! developpeur (wims_developer) ne change rien : c'est toujours l'enseignant de la classe.
+!! Variables : nova_mk structure ou classe racine (lue aussi par replis-classes.phtml) ; nova_mf debut du nom des fichiers ;
+!! nova_q la requete ; nova_mv valeur recue, puis valeur gardee ; nova_mt la meme filtree (egale : valeur sure) ;
+!! nova_m1 son premier element (simple, complet...) ; nova_ms milieu du nom du fichier de la page (modtool_, p_..._).
 !set nova_mk=$wims_superclass
 !default nova_mk=!word 1 of $wims_class
 !set nova_mk=!replace internal / by , in $nova_mk

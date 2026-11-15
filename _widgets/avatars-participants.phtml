@@ -2,6 +2,8 @@
 !! tail.phtml. Memes donnees et meme fenetre que la page des avatars (avatars-classe.phtml, _procs/avatars-classe.sh) :
 !! grille cachee ; nova.js avatarsParticipants pose a gauche du nom un portrait (silhouette sans avatar) qui ouvre la fenetre.
 !! Seulement si l'avatar est active, dans une classe ou un cours, pour un enseignant.
+!! Variables : memes noms et meme sens que dans avatars-classe.phtml (nova_avb, nova_avt, nova_sid, nova_ak, nova_auj,
+!! nova_avk, nova_avn).
 !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
 !set nova_avt=!defof class_typename in wimshome/log/classes/$wims_class/.def
 !default nova_avt=class

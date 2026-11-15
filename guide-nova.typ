@@ -403,7 +403,11 @@ Un texte et une variable de travail de même nom s'écrasent : nommer les textes
 #ou[un nouveau widget `_widgets/<action>.phtml`, lu par `header.phtml` sous sa condition ; un script de
 `_procs/` s'il faut calculer (`awk`, `sh`).]
 
-+ Créer le widget ; en tête, un commentaire `!!` : qui le lit, quand, pourquoi.
++ Créer le widget ; en tête, un commentaire `!!` : qui le lit, quand, pourquoi. Puis un bloc `!! Variables :` qui
+  donne le sens de chaque variable de travail (`nova_q la requête ; nova_fn numéro, chiffres seuls…`) : leurs noms sont
+  courts (@tampon) et ne disent rien seuls. Dans un fichier à plusieurs blocs indépendants (`user.phtml`,
+  `local.phtml`, `header.phtml`), ce bloc est placé en tête du bloc qui les introduit. Une variable ajoutée = une
+  ligne dans ce bloc.
 + Dans `header.phtml`, le lire sous la condition la plus étroite :
   ```
   !if $module=adm/class/config and $wims_user=supervisor and $wims_class!=$empty
@@ -567,7 +571,7 @@ standard » (@standard). Côté serveur, sa valeur se lit par `!read themes/$wim
 === Lire `local.phtml`
 
 Ses variables de travail ont des noms courts (chaque nom compte dans le tampon de 32 Ko, @tampon) et sont effacées en
-fin de bloc. Elles ne sont décrites que par les commentaires `!!` placés au-dessus de leur première affectation.
+fin de bloc. Chacun des deux blocs les décrit en tête (`!! Variables`) ; le tableau ci-dessous reprend le premier.
 #table(columns: (0.6fr, 2fr), align: left,
   [Variable], [Sens],
   [`nova_avm`], [la page des avatars est-elle proposée ? `oui` (avatar activé), `badges` (avatar coupé, badges actifs), autre chose : non],
@@ -1964,7 +1968,7 @@ serveur ou dans le navigateur. Tout ce qui y figure est soumis à la règle de c
 ajoute, on ne renomme pas.
 
 N'y figurent pas, volontairement : les variables de travail des gabarits (`nova_sl`, `nova_br`… : locales à un
-bloc, décrites par le commentaire `!!` au-dessus de leur première affectation) et les textes (les fichiers de
+bloc, décrites par le bloc `!! Variables` en tête du fichier ou du bloc qui les introduit, @serveur) et les textes (les fichiers de
 `lang/` sont leur propre index, @textes).
 
 == Réglages `--nova-…` <annexe-reglages>

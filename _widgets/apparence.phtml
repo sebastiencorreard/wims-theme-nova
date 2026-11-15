@@ -1,6 +1,16 @@
 !! Nova : carte « Reglages de Nova » de la page Apparence (maintenance du site), lue par header.phtml pour le
 !! gestionnaire ; placee par js/nova.js (apparenceNova). Valeurs actuelles lues dans log/nova.conf.
 !! Valeurs par défaut de Nova (jetons.css) : animations non, entree directe oui, clavier non.
+!! Variables de travail (effacees a la fin) : nova_f contenu de log/nova.conf ; valeurs actuelles, oui ou non :
+!!   nova_a animations, nova_e entree directe, nova_k clavier mathematique, nova_b badges, nova_m communication des
+!!   eleves (ancien reglage), nova_v Mon activite, nova_fl fil d'Ariane fixe, nova_dc decorations de saison ;
+!!   nova_av les quatre nombres de Mon activite (awk), un par un : nova_as seuil, nova_ao objectif, nova_ah heures,
+!!   nova_an notes ; nova_ml valeur de --nova-masques-eleves ;
+!!   nova_checked_<lettre>_<oui|non>, nova_checked_mc, nova_checked_ml : "checked" pour le bouton ou la case a cocher ;
+!!   reglages de WIMS sans effet : nova_noms leurs noms, nova_lg langue de lang/confdata, nova_conf ce fichier,
+!!   nova_n son nombre d'enregistrements, nova_i rang, nova_l nom lu, nova_sans liste des champs conf_N a masquer,
+!!   nova_theme champ conf_N de ref_bgcolor (couleur du theme) ; ces deux-la passent a nova.js (lang/reglages-textes).
+!!   Parametres de apparence-standard.phtml : nova_std_nom, nova_std_sep, nova_std_site (decrits la-bas).
 !read themes/$wims_theme/lang/reglages.phtml.$lang
 !set nova_a=non
 !set nova_e=oui

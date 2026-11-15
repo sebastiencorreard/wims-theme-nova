@@ -1,5 +1,13 @@
 !! Hook natif des menus WIMS : suivi dans Participants, pour les profs/admins seulement, sur l'accueil seulement (2026-11-12).
 !! Pas sur une page d'aide (cmd=help, session _mhelp) : WIMS n'y met pas de menu, le suivi s'y affichait seul (2026-10-08).
+!! Variables de travail (effacees en fin de bloc ; tableau aussi dans le guide, chap. 4, Lire local.phtml) :
+!!   nova_avm page des avatars proposee : oui (avatar active), badges (avatar coupe, badges actifs), sinon non ;
+!!   nova_avr remplace quand l'entree prend la place du trombinoscope, oui quand --nova-std-menus l'interdit ;
+!!   nova_sc nombre de lignes du menu ($wims_rm_0), nova_si numero de la ligne lue, nova_sl la ligne (nom,type,titre...) ;
+!!   nova_sg ligne du dernier titre de groupe (itemsep) vu ; nova_sp ligne du titre du groupe Participants (0 : absent) ;
+!!   nova_ici 1 sur l'accueil (module home) ; nova_sn titre pose en tete quand le menu n'en a pas ;
+!!   nova_sr menu reecrit, recopie dans $wims_rm_0 a la fin.
+!! Textes (lang/name.phtml, repli anglais par !default) : nova_menu_participants, nova_avs_titre, nova_sv_titre.
 !if $wims_class!=$empty and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session and _mhelp notin $wims_session and $cmd!=help
   !if $wims_user=supervisor or yes isin $supervisable $user_supervisable or $wims_supervise!=$empty
     !if nova_suivi notin $wims_rm_0
@@ -109,6 +117,8 @@ nova_suivi,1,module=home&nova_suivi=1 to $nova_sr
 !! ou d'un groupement (2026-11-04 : << Badges Nova >> ; 2026-11-08, utilisateur : page de tous les reglages Nova, onglets) :
 !! c'est la page Apparence avec l'ancre que lit le script de tete (html.nova-page-reglages, nova.js apparenceClasse).
 !! Texte : lang/name.phtml (nova_rg_rubrique) ; icone : nova.js placerMenu.
+!! Variables : nova_bc nombre de lignes du menu, nova_bi numero de la ligne, nova_bl la ligne, nova_bn nom de l'entree
+!! (1er champ), nova_br menu reecrit.
 !if $module=adm/class/config and config_present isin $wims_rm_0 and nova_reglages notin $wims_rm_0
   !default nova_rg_rubrique=Nova settings
   !set wims_name_nova_reglages=$nova_rg_rubrique

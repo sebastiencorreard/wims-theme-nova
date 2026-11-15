@@ -20,6 +20,8 @@
 !! fenêtre de vérification, elle, tourne dans le module de l'exercice, qui n'y a pas accès) ;
 !! js/nova.js les garde dans le navigateur pour cette fenêtre (pagesExamen). « session:exo=q,r,...; »
 !if $module=adm/class/userscore and $job=examcheck and $checksession=$empty and $checksessions!=$empty
+  !! Variables : nova_s session, nova_x exercice ; nova_f son journal, nova_n nombre d'enregistrements, nova_k rang,
+  !! nova_r enregistrement, nova_c commande (3e ligne) ; nova_t types de l'exercice (q,r,...) ; nova_et resultat.
   !reset nova_et
   !for nova_s in $checksessions
     !for nova_x in $(exo$nova_s)

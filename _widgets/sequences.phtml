@@ -5,6 +5,8 @@
 !!   fenetre de confirmation d'" Effacer " (WIMS efface sans demander).
 !! - Tous : #nova-seq-numero si la classe a choisi le numero seul (ligne sequence_nova_numero de seq/.def).
 !! Valeurs de l'adresse : chiffres seulement, ou oui/non (audit du 2026-11-12).
+!! Variables : nova_q la requete ; nova_sd, nova_sv sequence deplacee et place visee ; nova_sr resultat de sequences.sh ;
+!! nova_sn option "numero seul" (recue oui/non, puis lue yes).
 !if $module=adm/class/sequence and $wims_user=supervisor
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q

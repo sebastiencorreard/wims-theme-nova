@@ -11,6 +11,8 @@
 !! Page d'un AUTRE examen (adm/class/exam, message « Vous avez déjà commencé un autre examen ») : le bouton
 !! est posé aussi, marqué data-autre-examen ; nova.js (autreExamen) le place sous le message (demande de
 !! l'utilisateur, 2026-10-05). Sans JavaScript, il reste dans la barre.
+!! Variables : nova_examreg le verrou ; nova_examses, nova_examfin, nova_examnum ses champs 2 a 4 ; nova_autre attribut
+!! data-autre-examen ; nova_examclasse classes CSS du bouton.
 !if $wims_user!=supervisor and $wims_user!=$empty and $wims_class!=$empty and ($module!=adm/class/exam or $exam!=$empty) and _exam notin $wims_session
   !set nova_examreg=!record 0 of wimshome/log/classes/$wims_class/.parmreg/$wims_user.exam
   !set nova_examnum=!word 4 of $nova_examreg

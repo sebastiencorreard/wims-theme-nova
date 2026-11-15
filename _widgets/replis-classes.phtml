@@ -4,6 +4,8 @@
 !! replies, separes par des points (n.1.3), envoyee par nova.js (replisClasses) a l'accueil avec nova_replis=.
 !! La regle #nova-replis-style masque d'emblee les classes repliees (pas de clignotement) ; nova.js la retire une fois
 !! les boutons poses. Sans JavaScript (html.nova-js absente), rien n'est masque.
+!! Variables : nova_q la requete ; nova_rv valeur (recue, puis gardee), nova_rt la meme filtree, nova_r1 son premier
+!! caractere, puis un niveau ; nova_rl liste des niveaux ; nova_rs selecteurs CSS des classes repliees.
 !set nova_q=!sh printf '%s' "$$QUERY_STRING"
 !if nova_replis isin $nova_q
   !set nova_q=!replace internal & by $ $ in $nova_q

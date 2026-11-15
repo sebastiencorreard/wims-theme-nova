@@ -4,6 +4,9 @@
 !! La feuille complete est aussi transmise : WIMS remplit cette zone par !record 0, qui coupe au premier « : »
 !! en debut de ligne (une feuille commencant par « :root » y apparaissait vide, et l'enregistrer l'effacait).
 !read themes/$wims_theme/lang/reglages.phtml.$lang
+!! Variables : nova_cf feuille de la classe, complete ; nova_vz dates de vacances des zones A, B, C ; nova_vs vacances
+!! de la structure (option "heritee") ; nova_k nombre de niveaux de Regularite, nova_i rang (listes de niveaux) ;
+!! nova_std_nom, nova_std_sep : parametres de apparence-standard.phtml.
 !set nova_cf=!sh if test -r $wims_home/log/classes/$wims_class/css; then cat $wims_home/log/classes/$wims_class/css; fi
 <script type="text/plain" id="nova-css-classe-complete">$nova_cf</script>
 !! Vacances de « Mon activite » (2026-11-07, utilisateur ; avant : page Badges Nova) : zone A, B, C (dates officielles

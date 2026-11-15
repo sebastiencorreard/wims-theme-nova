@@ -6,6 +6,7 @@
 !! Enseignant, hors examen et outil (2026-11-12, utilisateur) : seulement "CGU", Config / Maintenance (dans une classe ou
 !! une zone) et "Nous contacter" (courriel du gestionnaire du site, $wims_site_manager : par defaut wims@<nom du serveur>) ;
 !! pas d'Aide. Reglage "Menus du theme standard" : comme avant. Textes : nova_pied (name.phtml), "CGU,Nous contacter,Config / Maintenance".
+!! Variables : nova_pp 1 = pied de page de l'enseignant (CGU, Config, Nous contacter) ; nova_pq libelle d'un lien.
 !reset nova_pp
 !if ($wims_user=supervisor or yes isin $supervisable $user_supervisable) and _exam notin $wims_session and _tool notin $wims_session
   !read themes/$wims_theme/_widgets/std-menus.phtml

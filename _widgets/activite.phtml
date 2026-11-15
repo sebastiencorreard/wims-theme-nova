@@ -2,6 +2,21 @@
 !! semaine (jours de travail, seuil d'encouragement, objectif), temps de travail (seuil de pause), dernières notes.
 !! Calcul par _procs/activite.awk sur les réglages (site, structure, classe), log/ccaccount (sessions comptées par
 !! WIMS chaque nuit) et les journaux de notes de l'élève. Lu par _widgets/activite-entree.phtml.
+!! Variables de travail (effacees a la fin) :
+!!   nova_cl dossier log/classes ; nova_cc dossier log/ccaccount ; nova_auj date du jour AAAAMMJJ ;
+!!   nova_ad sortie de _procs/activite.awk (format en tete du script), nova_nl son nombre de lignes, nova_l la ligne lue ;
+!!   ligne reglages : nova_seuil seuil d'encouragement, nova_obj objectif (jours), nova_h repere d'heures ;
+!!   ligne jours : nova_n jours de travail de la semaine, nova_masque lundi..dimanche en 0/1, nova_jds aujourd'hui (0..6),
+!!   nova_vac 1 en vacances ;
+!!   ligne minutes : nova_m minutes de la semaine, nova_pc largeur de la barre en %, nova_tr 1 = trop, nova_hh et nova_mm
+!!   heures et minutes ; nova_d duree ecrite ;
+!!   lignes note : nova_ns note, nova_nv niveau 0..10, nova_ec ecart en jours, nova_js jour 0..6, nova_dt JJ/MM,
+!!   nova_fe feuille, nova_ex exercice, nova_rec son enregistrement, nova_tt son titre, nova_q date ecrite,
+!!   nova_cn couleur de la note (vert, jaune, orange, rouge, zero).
+!!   Affichage : nova_t texte compose ; nova_i rang ; nova_c chiffre du masque ; nova_lt lettre du jour ; nova_nm nom du
+!!   jour ; nova_cls classes CSS du jour ; nova_sr complement lu par les lecteurs d'ecran ; nova_reste jours manquants ;
+!!   nova_ty type du message (repos, bravo, encourage, bien) ; nova_bouton yes = lien vers les exercices ;
+!!   nova_trop classe CSS de la barre trop longue.
 !read themes/$wims_theme/lang/eleve.phtml.$lang
 !set nova_cl=$wims_home/log/classes
 !set nova_cc=$wims_home/log/ccaccount

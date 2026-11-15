@@ -3,6 +3,10 @@
 !! ses zones), etat de chaque element du catalogue. Fichier de l'eleve garde pour la structure, comme la couleur :
 !! log/classes/<structure ou classe>/score/<login>.nova_avatar (lignes "choix ..." et "ouverts ..."). L'editeur est construit
 !! par nova.js (avatarPage) d'apres #nova-avatar ; les dessins viennent de js/avatar.js (DiceBear, Avataaars).
+!! Variables : nova_av sortie de avatar.awk (lignes decrites en tete du script ; nova_ak, nova_cl, nova_auj : avatar.proc) ;
+!!   nova_l ligne 1, nova_on on si l'avatar est active ; nova_ae 1 = fichier de l'eleve a reecrire, nova_af son contenu ;
+!!   lignes recopiees pour nova.js (lang/eleve-textes) : nova_aj jetons, nova_am message, nova_ac choix, nova_ax elements,
+!!   nova_ar regles (enfin), nova_an niveaux des badges.
 !read themes/$wims_theme/lang/eleve.phtml.$lang
 !read themes/$wims_theme/_procs/avatar.proc
 !set nova_l=!line 1 of $nova_av

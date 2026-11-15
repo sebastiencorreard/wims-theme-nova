@@ -4,6 +4,7 @@
 !! élève, menu du compte réduit, fil d'Ariane masqué). WIMS le marque user_supervisable=yes dans sa
 !! fiche ; la variable est posée selon les modules (user_supervisable sur une page de module,
 !! supervisable sur l'accueil), sinon relue dans la fiche quand le module y a accès.
+!! Variable : nova_ens valeurs de user_supervisable trouvees (yes : enseignant).
 !reset nova_est_eleve
 !if $wims_user!=$empty and $wims_user!=supervisor and $wims_developer=$empty
   !set nova_ens=$user_supervisable $supervisable

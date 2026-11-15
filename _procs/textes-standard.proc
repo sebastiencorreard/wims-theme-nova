@@ -1,6 +1,7 @@
 !! Nova : reglage « Textes du theme standard » (--nova-std-textes, 2026-10-07), lu dans les feuilles du site, de la
 !! structure et de la classe (la derniere l'emporte) ; pose nova_std_textes=oui ou rien. A lire depuis un module de
 !! confiance (adm/...) : surcharges de traduction de lang/, qui s'arretent alors (!exit) et laissent les textes d'origine.
+!! Variables : nova_tc classe courante (premier mot) ; nova_tv derniere declaration --nova-std-textes trouvee.
 !reset nova_std_textes
 !set nova_tc=$wims_class
 !default nova_tc=$class

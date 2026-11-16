@@ -45,7 +45,7 @@
    * démarrage (évènements, minuteries), lecture directe. */
   var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
     'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
-    'dm-mots', 'dm-note-essais'];
+    'dm-mots', 'dm-note-essais', 'notes-moyenne'];
   var racineCache = null;
   var racineLecteur = {
     getPropertyValue: function (nom) {

@@ -78,10 +78,10 @@
 !set nova_std_tableaux_liste=<li>Una cella di tabella che contiene un solo link o pulsante non è più cliccabile per intero: bisogna cliccare sul link o sul pulsante, e la cella non si scurisce più al passaggio del mouse.</li><li>Pagina « Voti » dell'insegnante: voti di fogli ed esami (« -- », 0...) allineati a sinistra come li scrive WIMS, invece che centrati.</li><li>Messaggio di benvenuto: pulsanti di ogni studente così come sono, invece del menu «...».</li>
 !set nova_std_notes_eleve=Pagina dei voti dello studente standard
 !set nova_std_notes_eleve_aide=Tabelle di WIMS invece delle schede, per gli studenti.
-!set nova_std_notes_eleve_liste=<li>Pagina "I miei voti" dello studente: le tabelle di WIMS (una riga per esercizio, colonne Punti richiesti, Peso, Qualità, Riuscita, Ultimo risultato, Numero di tentativi, ordinabili) invece della media in grande con la sua barra, dei voti d'esame in distintivi e di una scheda pieghevole per foglio. Titolo di WIMS invece di "I miei voti".</li>
+!set nova_std_notes_eleve_liste=<li>Pagina "I miei voti" dello studente: le tabelle di WIMS (una riga per esercizio, colonne Punti richiesti, Peso, Qualità, Riuscita, Ultimo risultato, Numero di tentativi, ordinabili) invece della scheda della media, dei voti d'esame in distintivi e di una scheda pieghevole per foglio. Titolo di WIMS invece di "I miei voti".</li>
 !set nova_std_notes_enseignant=Dettaglio di uno studente e pagina Voti del docente standard
 !set nova_std_notes_enseignant_aide=Tabelle di WIMS invece delle schede, per il docente.
-!set nova_std_notes_enseignant_liste=<li>Dettaglio del lavoro di uno studente (nome cliccato nella pagina "Voti"): le tabelle di WIMS invece delle schede (media con la sua barra, esami, una scheda pieghevole per foglio).</li><li>Pagina "Voti": riga "Mostra" con i pulsanti di WIMS invece del selettore (scelta attuale a colori).</li>
+!set nova_std_notes_enseignant_liste=<li>Dettaglio del lavoro di uno studente (nome cliccato nella pagina "Voti"): le tabelle di WIMS invece delle schede (media, esami, una scheda pieghevole per foglio).</li><li>Pagina "Voti": riga "Mostra" con i pulsanti di WIMS invece del selettore (scelta attuale a colori).</li>
 !set nova_app_activite=Pagina «La mia attività» degli studenti
 !set nova_app_activite_aide=Sostituisce la pagina di WIMS con una pagina semplice: regolarità, tempo di lavoro, ultimi voti.
 !set nova_app_act_seuil=Incoraggiare gli studenti che lavorano meno di
@@ -139,6 +139,8 @@
 !set nova_bdg_reglages=Impostazioni
 !set nova_app_fil=Percorso di navigazione fisso
 !set nova_app_fil_aide=Docenti e amministratori, schermi grandi: il percorso di navigazione resta sotto la barra in alto quando la pagina scorre.
+!set nova_app_moy=Media generale in « I miei voti »
+!set nova_app_moy_aide=Mostra allo studente la sua media e quelle della classe (minimo, media, massimo). Vale anche per il dettaglio di uno studente visto dal docente.
 !set nova_app_deco=Decorazioni stagionali
 !set nova_app_deco_aide=Luci e fiocchi di neve sulla barra in alto a dicembre (arriveranno altre feste); mai durante un esame.
 !set nova_bdg_av_titre=Avatar degli studenti

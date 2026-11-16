@@ -78,10 +78,10 @@
 !set nova_std_tableaux_liste=<li>Una celda de tabla que contiene un solo enlace o botón ya no se puede pulsar entera: hay que pulsar el enlace o el botón, y la celda ya no se oscurece al pasar el ratón.</li><li>Página « Notas » del profesor: notas de hojas y exámenes (« -- », 0...) alineadas a la izquierda como las escribe WIMS, en lugar de centradas.</li><li>Mensaje de bienvenida: botones de cada alumno tal cual, en lugar del menú «...».</li>
 !set nova_std_notes_eleve=Página de notas del alumno estándar
 !set nova_std_notes_eleve_aide=Tablas de WIMS en lugar de tarjetas, para los alumnos.
-!set nova_std_notes_eleve_liste=<li>Página "Mis notas" del alumno: las tablas de WIMS (una fila por ejercicio, columnas Puntos requeridos, Peso, Calidad, Éxito, Último resultado, Número de intentos, ordenables) en lugar de la media en grande con su barra, las notas de examen en distintivos y una tarjeta plegable por hoja. Título de WIMS en lugar de "Mis notas".</li>
+!set nova_std_notes_eleve_liste=<li>Página "Mis notas" del alumno: las tablas de WIMS (una fila por ejercicio, columnas Puntos requeridos, Peso, Calidad, Éxito, Último resultado, Número de intentos, ordenables) en lugar de la tarjeta de la media, las notas de examen en distintivos y una tarjeta plegable por hoja. Título de WIMS en lugar de "Mis notas".</li>
 !set nova_std_notes_enseignant=Detalle de un alumno y página Notas del profesor estándar
 !set nova_std_notes_enseignant_aide=Tablas de WIMS en lugar de tarjetas, para el profesor.
-!set nova_std_notes_enseignant_liste=<li>Detalle del trabajo de un alumno (nombre pulsado en la página "Notas"): las tablas de WIMS en lugar de las tarjetas (media con su barra, exámenes, una tarjeta plegable por hoja).</li><li>Página "Notas": línea "Mostrar" con los botones de WIMS en lugar del selector (opción actual en color).</li>
+!set nova_std_notes_enseignant_liste=<li>Detalle del trabajo de un alumno (nombre pulsado en la página "Notas"): las tablas de WIMS en lugar de las tarjetas (media, exámenes, una tarjeta plegable por hoja).</li><li>Página "Notas": línea "Mostrar" con los botones de WIMS en lugar del selector (opción actual en color).</li>
 !set nova_app_activite=Página «Mi actividad» de los alumnos
 !set nova_app_activite_aide=Sustituye la página de WIMS por una página sencilla: regularidad, tiempo de trabajo, últimas notas.
 !set nova_app_act_seuil=Animar a los alumnos que trabajan menos de
@@ -139,6 +139,8 @@
 !set nova_bdg_reglages=Ajustes
 !set nova_app_fil=Ruta de navegación fija
 !set nova_app_fil_aide=Profesores y administradores, pantallas grandes: la ruta de navegación queda bajo la barra superior al desplazar la página.
+!set nova_app_moy=Media global en « Mis notas »
+!set nova_app_moy_aide=Muestra al alumno su media y las de la clase (mínimo, media, máximo). Vale también para el detalle de un alumno visto por el profesor.
 !set nova_app_deco=Decoraciones de temporada
 !set nova_app_deco_aide=Guirnalda y copos de nieve en la barra superior en diciembre (vendrán otras fiestas); nunca durante un examen.
 !set nova_bdg_av_titre=Avatar de los alumnos

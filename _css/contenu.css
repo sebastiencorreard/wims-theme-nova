@@ -947,21 +947,24 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 .wimsbody .nova-nd-carte { background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); box-shadow: var(--nova-ombre); margin: 0 0 var(--nova-e3); overflow: hidden; }
 .wimsbody .nova-nd-titre-sec { font-size: 1rem; font-weight: 800; margin: var(--nova-e5) 2px var(--nova-e2); padding: 0; border: 0; text-align: left; }
 .wimsbody .nova-nd-petit { font-size: var(--nova-petit); color: var(--nova-texte-2); }
-.wimsbody .nova-nd-moyenne { padding: var(--nova-e3) var(--nova-e4) var(--nova-e2); margin-top: var(--nova-e4); }
-.wimsbody .nova-nd-moy-haut { display: flex; align-items: center; gap: var(--nova-e4); }
-.wimsbody .nova-nd-grand { font-family: var(--nova-police-chiffres); font-weight: 700; font-size: 2rem; line-height: 1; color: var(--nova-accent); }
+.wimsbody .nova-nd-moyenne { display: flex; align-items: center; gap: var(--nova-e3); padding: var(--nova-e3) var(--nova-e4); margin-top: var(--nova-e4); }
+.wimsbody .nova-nd-carte.nova-nd-moyenne { margin-inline: auto; }
+.wimsbody .nova-nd-moy-texte { flex: 1; min-width: 0; }
 .wimsbody .nova-nd-moy-titre { font-weight: 700; }
-.wimsbody .nova-nd-echelle { position: relative; height: 8px; border-radius: 4px; background: var(--nova-note-np); margin: 30px 0 6px; }
-.wimsbody .nova-nd-plage { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: color-mix(in oklab, var(--nova-accent) 25%, var(--nova-surface)); }
-.wimsbody .nova-nd-moy-classe { position: absolute; top: -3px; width: 2px; height: 14px; margin-left: -1px; background: var(--nova-texte-2); }
-.wimsbody .nova-nd-moi { position: absolute; top: -6px; width: 4px; height: 20px; margin-left: -2px; border-radius: 2px; background: var(--nova-accent); }
-.wimsbody .nova-nd-moi::after { content: attr(data-texte); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--nova-accent); white-space: nowrap; }
-.wimsbody .nova-nd-legende { display: flex; justify-content: space-between; font-size: 12px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-pastille.nova-nd-pastille-grande { font-size: 1rem; padding: 5px 14px; }
 .wimsbody .nova-nd-pastille { flex: none; display: inline-block; min-width: 3.6em; padding: 3px 12px; border-radius: 999px; text-align: center; font-family: var(--nova-police-chiffres); font-weight: 700; font-size: var(--nova-petit); white-space: nowrap; background: var(--nova-accent); color: var(--nova-sur-accent); }
 .wimsbody .nova-nd-pastille.nova-nd-vide { background: var(--nova-note-np); color: var(--nova-texte-2); }
-.wimsbody .nova-nd-ligne, .wimsbody .nova-nd-ex { display: flex; align-items: center; gap: var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); }
-.wimsbody .nova-nd-carte > .nova-nd-ligne:first-child { border-top: 0; }
-.wimsbody .nova-nd-nom, .wimsbody .nova-nd-ex-corps { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.wimsbody .nova-nd-ligne { display: flex; align-items: center; gap: var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-nd-carte > :is(.nova-nd-ligne, .nova-nd-rang):first-child > summary, .wimsbody .nova-nd-carte > .nova-nd-ligne:first-child { border-top: 0; }
+/* Ligne qui s'ouvre au toucher (maquette D, 2026-11-16) : examen note, exercice fait ; le detail est sous la ligne. */
+/* Pas une carte (regle generale des details de .wimsbody) : une simple ligne de la carte qui la contient. */
+.wimsbody details.nova-nd-rang { margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: none; }
+.wimsbody .nova-nd-rang > summary { cursor: pointer; list-style: none; min-height: 44px; }
+.wimsbody .nova-nd-rang > summary::-webkit-details-marker { display: none; }
+.wimsbody .nova-nd-rang > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
+.wimsbody details.nova-nd-rang[open] { background: color-mix(in oklab, var(--nova-accent) 8%, var(--nova-surface)); }
+.wimsbody .nova-nd-rang-detail { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--nova-e4) 10px calc(var(--nova-e4) + 24px + var(--nova-e3)); font-size: 13px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-nom { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .wimsbody .nova-nd-num { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--nova-texte-2); background: var(--nova-fond); border: 1px solid var(--nova-bord); }
 .wimsbody .nova-nd-restants { border-top: 1px solid var(--nova-bord); }
 .wimsbody .nova-nd-restants > summary { padding: 10px var(--nova-e4); font-size: var(--nova-petit); color: var(--nova-texte-2); cursor: pointer; }
@@ -975,9 +978,7 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 .wimsbody .nova-nd-feuille[open] .nova-nd-chevron { transform: rotate(180deg); }
 .wimsbody .nova-nd-segments { display: flex; gap: 3px; margin: 10px 0 6px; }
 .wimsbody .nova-nd-segments > i { flex: 1; height: 8px; border-radius: 4px; }
-.wimsbody .nova-nd-ex-titre { line-height: 1.3; }
-.wimsbody .nova-nd-ex-infos { margin-top: 2px; font-size: 13px; color: var(--nova-texte-2); }
-.wimsbody .nova-nd-pas-fait .nova-nd-ex-titre { color: var(--nova-texte-2); }
+.wimsbody .nova-nd-pas-fait .nova-nd-nom { color: var(--nova-texte-2); }
 .wimsbody .nova-nd-essais { display: inline-flex; flex-wrap: wrap; gap: 2px; margin-left: 6px; vertical-align: middle; }
 .wimsbody .nova-nd-essais > i { width: 9px; height: 9px; border-radius: 3px; }
 .wimsbody .nova-nd-plus { font-size: 11px; line-height: 9px; }

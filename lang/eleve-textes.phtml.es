@@ -48,7 +48,7 @@
 
 :notes_detail
 !! _widgets/notes-detail.phtml (nova.js notesDetail)
-<template id="nova-notes-textes" data-titre="Mis notas" data-moi="tú" data-eleve="alumno" data-examen-restant="%1 examen aún no hecho" data-examens-restants="%1 exámenes aún no hechos" data-commence="%1 de %2 ejercicios empezado" data-commences="%1 de %2 ejercicios empezados" data-pas-commence="Aún no empezada" data-pas-fait="Aún no hecho" data-tous="(todos los ejercicios)" data-ouvrir="Abrir la hoja" data-feuilles="Hojas de ejercicios"></template>
+<template id="nova-notes-textes" data-titre="Mis notas" data-examen-restant="%1 examen aún no hecho" data-examens-restants="%1 exámenes aún no hechos" data-commence="%1 de %2 ejercicios empezado" data-commences="%1 de %2 ejercicios empezados" data-pas-commence="Aún no empezada" data-pas-fait="Aún no hecho" data-ouvrir="Abrir la hoja" data-feuilles="Hojas de ejercicios" data-retenue="Nota guardada: %1 (tu mejor sesión)" data-retenue-prof="Nota guardada: %1 (mejor sesión)" data-session="%1 sesión empezada" data-sessions="%1 sesiones empezadas" data-reste="quedan %1" data-reste-zero="no queda ninguna"></template>
 !exit
 
 :feuille

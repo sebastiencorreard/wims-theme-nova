@@ -370,6 +370,11 @@
    *   de WIMS), points requis et poids dits une fois s'ils sont communs, puis les infos de gauche de WIMS et le lien.
    * Colonnes lues par leur en-tête : un exercice pas fait a toujours nb_indic+1 cases « -- » (WIMS), même si l'en-tête en
    * a moins (en-tête sans « Réussite » au chapitre 2 du banc). Tableaux d'origine gardés, cachés (hidden).
+   * Maquette D (2026-11-16, utilisateur) : moyenne en carte compacte (titre, phrase de WIMS, note en pastille), retiree
+   * par le reglage --nova-notes-moyenne: non ; ligne d'examen note et ligne d'exercice fait = <details> : la ligne ne
+   * garde que numero, titre et note, le reste s'ouvre au toucher (examen : note retenue, sessions commencees et restantes,
+   * lues dans #nova-notes-sessions de _widgets/notes-detail.phtml ; exercice : indicateurs, essais, points requis, poids).
+   * Un exercice pas fait ne s'ouvre pas. Plusieurs lignes peuvent rester ouvertes.
    * Réglages « Mes notes de l'élève » / « Détail d'un élève (enseignant) » du thème standard : notes-eleve,
    * notes-enseignant (tableaux de WIMS). Avant nova.js, les tableaux sont cachés par le CSS (secours 3 s). */
   function notesDetail() {
@@ -450,39 +455,13 @@
       for (n = b.nextSibling; n && n !== petit; n = n.nextSibling) apres += n.textContent;
       var max = nombre(apres) || 20;
       var carteM = el('div', 'nova-nd-carte nova-nd-moyenne');
-      var haut = el('div', 'nova-nd-moy-haut');
-      haut.appendChild(el('span', 'nova-nd-grand', propre(b.textContent)));
       var lib = el('div', 'nova-nd-moy-texte');
-      lib.appendChild(el('div', 'nova-nd-moy-titre', propre(avant).replace(/\s*:\s*$/, '') + ' /' + max));
+      lib.appendChild(el('div', 'nova-nd-moy-titre', propre(avant).replace(/\s*:\s*$/, '')));
       if (petit) lib.appendChild(el('div', 'nova-nd-petit', propre(petit.textContent)));
-      haut.appendChild(lib);
-      carteM.appendChild(haut);
-      var vals = petit ? /([\d.,]+)\s*\/\s*([\d.,]+)\s*\/\s*([\d.,]+)\s*$/.exec(propre(petit.textContent)) : null;
-      var moi = nombre(b.textContent);
-      if (!isNaN(moi)) {
-        var pc = function (v) { return Math.max(0, Math.min(100, 100 * v / max)) + '%'; };
-        var ech = el('div', 'nova-nd-echelle');
-        ech.setAttribute('aria-hidden', 'true');
-        if (vals) {
-          var plage = el('span', 'nova-nd-plage');
-          plage.style.left = pc(nombre(vals[1]));
-          plage.style.right = 'calc(100% - ' + pc(nombre(vals[3])) + ')';
-          ech.appendChild(plage);
-          var mc = el('span', 'nova-nd-moy-classe');
-          mc.style.left = pc(nombre(vals[2]));
-          ech.appendChild(mc);
-        }
-        var m1 = el('span', 'nova-nd-moi');
-        m1.style.left = pc(moi);
-        m1.setAttribute('data-texte', prof ? texte('eleve', 'student') : texte('moi', 'you'));
-        ech.appendChild(m1);
-        carteM.appendChild(ech);
-        var leg = el('div', 'nova-nd-legende');
-        leg.setAttribute('aria-hidden', 'true');
-        [0, max / 2, max].forEach(function (v) { leg.appendChild(el('span', '', String(v))); });
-        carteM.appendChild(leg);
-      }
-      moy.parentNode.insertBefore(carteM, moy);
+      carteM.appendChild(lib);
+      carteM.appendChild(pastille(b.textContent, max, 'nova-nd-pastille-grande'));
+      // Reglage --nova-notes-moyenne: non (classe, structure ou site) : ni carte, ni phrase de WIMS.
+      if (racineStyle().getPropertyValue('--nova-notes-moyenne').replace(/["']/g, '').trim() !== 'non') moy.parentNode.insertBefore(carteM, moy);
       moy.hidden = true;
     }
 
@@ -494,14 +473,35 @@
       var bloc = el('section', 'nova-nd');
       bloc.appendChild(el('h2', 'nova-nd-titre-sec', propre(cap ? cap.textContent : '')));
       var carteE = el('div', 'nova-nd-carte'), restants = [];
+      // Sessions de chaque examen : mots "examen:commencees:permises" (_widgets/notes-detail.phtml).
+      var sessions = {}, srcS = document.getElementById('nova-notes-sessions');
+      ((srcS && srcS.getAttribute('data-sessions')) || '').trim().split(/\s+/).forEach(function (mot) {
+        var ms = /^(\d+):(\d+):(\d+)$/.exec(mot);
+        if (ms) sessions[ms[1]] = { faites: +ms[2], permises: +ms[3] };
+      });
       Array.prototype.forEach.call(examens.querySelectorAll('tbody > tr'), function (tr) {
         var td = tr.cells;
         if (td.length < 3 || tr.querySelector('th')) return;   // en-tête rangé dans tbody (<caption> dans <thead> chez WIMS)
-        var ligne = el('div', 'nova-nd-ligne');
+        var note = !isNaN(nombre(td[2].textContent));
+        var ligne = el(note ? 'summary' : 'div', 'nova-nd-ligne');
         ligne.appendChild(el('span', 'nova-nd-num', propre(td[0].textContent)));
         ligne.appendChild(el('span', 'nova-nd-nom', propre(td[1].textContent)));
-        ligne.appendChild(pastille(td[2].textContent, maxE));
-        if (isNaN(nombre(td[2].textContent))) restants.push(ligne); else carteE.appendChild(ligne);
+        var pe = pastille(td[2].textContent, maxE);
+        ligne.appendChild(pe);
+        if (!note) { restants.push(ligne); return; }
+        var rang = el('details', 'nova-nd-rang');
+        rang.appendChild(ligne);
+        var det = el('div', 'nova-nd-rang-detail');
+        det.appendChild(el('div', '', texte(prof ? 'retenue-prof' : 'retenue', 'Score kept: %1').replace('%1', pe.textContent)));
+        var se = sessions[propre(td[0].textContent)];
+        if (se) {
+          var reste = se.permises - se.faites;
+          var phrase = pluriel(se.faites, texte('session', '%1 session started'), texte('sessions', '%1 sessions started'));
+          if (se.permises > 0) phrase += POINT + (reste > 0 ? texte('reste', '%1 left').replace('%1', reste) : texte('reste-zero', 'none left'));
+          det.appendChild(el('div', '', phrase));
+        }
+        rang.appendChild(det);
+        carteE.appendChild(rang);
       });
       if (restants.length) {
         var rep = el('details', 'nova-nd-restants');
@@ -549,7 +549,7 @@
       bloc1.appendChild(el('span', 'nova-nd-chevron'));
       resume.appendChild(bloc1);
       // Exercices.
-      var lignes = [], communs = {}, faits = 0;
+      var lignes = [], faits = 0;
       var iQual = noms.length > 4 ? 4 : -1;
       Array.prototype.forEach.call(t.querySelectorAll('tbody > tr'), function (tr) {
         var td = Array.prototype.slice.call(tr.cells);
@@ -558,11 +558,6 @@
         var qual = fait ? nombre(td[iQual].textContent) : NaN;
         if (fait) faits++;
         var infos = [];
-        [2, 3].forEach(function (c) {
-          if (!td[c] || !noms[c]) return;
-          var v = propre(td[c].textContent);
-          if (!(c in communs)) communs[c] = v; else if (communs[c] !== v) communs[c] = null;
-        });
         var essais = null;
         if (fait) td.forEach(function (cel, c) {
           if (c < 5 || !noms[c]) return;
@@ -597,26 +592,28 @@
       resume.appendChild(el('div', 'nova-nd-petit', bas.join(POINT)));
       carte.appendChild(resume);
       lignes.forEach(function (l) {
-        var ex = el('div', 'nova-nd-ex' + (l.fait ? '' : ' nova-nd-pas-fait'));
-        ex.appendChild(el('span', 'nova-nd-num', propre(l.td[0].textContent)));
-        var corps = el('div', 'nova-nd-ex-corps');
-        corps.appendChild(el('div', 'nova-nd-ex-titre', propre(l.td[1].textContent)));
-        var infos = l.infos.slice();
-        [2, 3].forEach(function (c) { if (communs[c] === null && l.td[c]) infos.unshift(noms[c] + ' : ' + propre(l.td[c].textContent)); });
-        var d = el('div', 'nova-nd-ex-infos', l.fait ? infos.join(POINT) : texte('pas-fait', 'Not done yet'));
-        if (l.essais) d.appendChild(l.essais);
-        corps.appendChild(d);
-        ex.appendChild(corps);
+        var tete = el(l.fait ? 'summary' : 'div', 'nova-nd-ligne' + (l.fait ? '' : ' nova-nd-pas-fait'));
+        tete.appendChild(el('span', 'nova-nd-num', propre(l.td[0].textContent)));
+        tete.appendChild(el('span', 'nova-nd-nom', propre(l.td[1].textContent)));
         var q = el('span', 'nova-nd-qualite nova-nd-n-' + niveau(Math.ceil(l.qual)), l.fait ? propre(l.td[iQual].textContent) : TIRET);
-        if (l.fait && noms[iQual]) q.title = noms[iQual];
-        ex.appendChild(q);
+        if (noms[iQual]) q.title = l.fait ? noms[iQual] : texte('pas-fait', 'Not done yet');
+        tete.appendChild(q);
+        if (!l.fait) { carte.appendChild(tete); return; }
+        var ex = el('details', 'nova-nd-rang');
+        ex.appendChild(tete);
+        var d = el('div', 'nova-nd-rang-detail');
+        var l1 = el('div', '', l.infos.join(POINT));
+        if (l.essais) l1.appendChild(l.essais);
+        d.appendChild(l1);
+        var fixes = [];
+        [2, 3].forEach(function (c) { if (l.td[c] && noms[c]) fixes.push(noms[c] + ' : ' + propre(l.td[c].textContent)); });
+        if (fixes.length) d.appendChild(el('div', '', fixes.join(POINT)));
+        ex.appendChild(d);
         carte.appendChild(ex);
       });
-      // Pied : points requis et poids communs, infos de gauche de WIMS (état, poids, formule, min/moy/max), aide, lien.
-      var pied = el('div', 'nova-nd-pied'), morceaux = [];
-      [2, 3].forEach(function (c) { if (communs[c]) morceaux.push(noms[c] + ' : ' + communs[c]); });
+      // Pied : infos de gauche de WIMS (état, poids, formule, min/moy/max), aide, lien.
+      var pied = el('div', 'nova-nd-pied');
       var piedTexte = el('span', 'nova-nd-pied-texte');
-      if (morceaux.length) piedTexte.appendChild(el('span', '', morceaux.join(POINT) + ' ' + texte('tous', '(all exercises)')));
       // Infos de la feuille (état, poids de la feuille, formule, min/moy/max), précédées de « Chapitre 1 : » : le poids
       // de la feuille ne se confond pas avec celui des exercices.
       var infosF = [];

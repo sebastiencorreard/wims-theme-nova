@@ -826,7 +826,7 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
   [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],
   [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
-  [le détail des notes d'un élève], [`notesDetail` ; `_widgets/notes-detail.phtml` (textes)],
+  [le détail des notes d'un élève], [`notesDetail` ; `_widgets/notes-detail.phtml` (textes, sessions d'examen de l'élève) ; réglage `--nova-notes-moyenne` (carte de la moyenne) ; une ligne d'examen ou d'exercice est un `<details>` (`.nova-nd-rang`) dont le détail s'ouvre au toucher],
 )
 
 === Ajouter une information sur la carte d'un exercice
@@ -1145,7 +1145,7 @@ des cartes « Réglages de Nova » (`_widgets/version.phtml`, `_procs/version.sh
 Un site doit pouvoir installer une version de Nova, puis revenir à la précédente, sans que les élèves perdent rien.
 Cette règle a été rompue une fois, le 12 novembre 2026 ; le bouton « Préparer le retour » existe pour réparer cela.
 
-=== Ce qui a changé le 12 novembre 2026
+=== Ce qui a changé à la version 1.4
 
 #table(columns: (0.8fr, 1.3fr, 1.3fr), align: left,
   [Donnée de l'élève], [Avant (1.3 et premières livraisons de la 1.4)], [Depuis],
@@ -2012,6 +2012,7 @@ listes séparées par des espaces.
     ("clavier-maths", [Clavier mathématique tactile dans les champs de réponse.]),
     ("fil-fixe", [Fil d'Ariane de l'enseignant fixe sous la barre du haut, sur grand écran.]),
     ("decorations", [Décorations de saison de la barre.]),
+    ("notes-moyenne", [Carte « Moyenne globale » de « Mes notes » et du détail d'un élève vu par l'enseignant ; `non` la retire.]),
     ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen. Vérifié aussi côté serveur.]),
     ("masques-eleves", [Rubriques du menu masquées aux élèves : liste parmi `communication` et `liens`, ou `aucune`.]),
     ("communication-eleves", [Ancien réglage (rubrique Communication des élèves), gardé pour les classes qui l'ont posé ; remplacé par `masques-eleves`.]),

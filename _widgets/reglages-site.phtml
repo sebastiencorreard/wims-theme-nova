@@ -5,7 +5,8 @@
 !! Parametres inconnus du module : WIMS n'en fait pas des variables, et $httpd_QUERY_STRING est celui de la
 !! connexion (restitue par la session) : la requete en cours est lue dans l'environnement du processus.
 !! Variables (valeurs de l'adresse, bornees avant d'etre ecrites) : nova_q la requete ; nova_reglages "enregistrer" ;
-!!   nova_animations, nova_entree_directe, nova_clavier_maths, nova_badges, nova_activite, nova_fil, nova_deco : oui/non ;
+!!   nova_animations, nova_entree_directe, nova_clavier_maths, nova_badges, nova_activite, nova_fil, nova_deco,
+!!   nova_notes_moy : oui/non ;
 !!   nova_mq_c, nova_mq_l cases Communication et Liens externes, nova_mq leur valeur ecrite ("communication liens",
 !!   aucune) ; nova_act_s, _o, _h, _n seuil, objectif, heures, notes de Mon activite ;
 !!   nova_k reglage standard (boucle), nova_kh son nom avec -, nova_sv sa valeur, nova_sd les declarations ecrites.
@@ -22,6 +23,7 @@
 !set nova_activite=!getopt nova_activite in $nova_q
 !set nova_fil=!getopt nova_fil in $nova_q
 !set nova_deco=!getopt nova_deco in $nova_q
+!set nova_notes_moy=!getopt nova_notes_moy in $nova_q
 !set nova_act_s=!getopt nova_activite_seuil in $nova_q
 !set nova_act_o=!getopt nova_activite_objectif in $nova_q
 !set nova_act_h=!getopt nova_activite_heures in $nova_q
@@ -52,6 +54,7 @@
   !default nova_mq=aucune
   !bound nova_fil within oui,non default oui
   !bound nova_deco within oui,non default oui
+  !bound nova_notes_moy within oui,non default oui
   !writefile wimshome/log/nova.conf --nova-animations: $nova_animations;
   !appendfile wimshome/log/nova.conf --nova-entree-directe: $nova_entree_directe;
   !appendfile wimshome/log/nova.conf --nova-clavier-maths: $nova_clavier_maths;
@@ -59,6 +62,7 @@
   !appendfile wimshome/log/nova.conf --nova-masques-eleves: $nova_mq;
   !appendfile wimshome/log/nova.conf --nova-fil-fixe: $nova_fil;
   !appendfile wimshome/log/nova.conf --nova-decorations: $nova_deco;
+  !appendfile wimshome/log/nova.conf --nova-notes-moyenne: $nova_notes_moy;
   !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
   !bound nova_activite within oui,non default oui
   !bound nova_act_s between 1 and 7 default 2

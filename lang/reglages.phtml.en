@@ -78,10 +78,10 @@
 !set nova_std_tableaux_liste=<li>A table cell that contains a single link or button is no longer clickable as a whole: click the link or button itself; the cell no longer darkens on hover.</li><li>Teacher's Scores page: sheet and exam scores (« -- », 0...) left-aligned as WIMS writes them, instead of centred.</li><li>Welcome message: each student's buttons (Modify, Erase, Write an alert) as they are, instead of the "..." menu.</li>
 !set nova_std_notes_eleve=Standard student scores page
 !set nova_std_notes_eleve_aide=WIMS tables instead of cards, for students.
-!set nova_std_notes_eleve_liste=<li>The student's "My scores" page: WIMS tables (one row per exercise, columns Required points, Weight, Quality, Success, Last result, Number of tries, sortable) instead of the large average with its bar, exam score badges and one collapsible card per worksheet. WIMS title ("Detail of the work of ...") instead of "My scores".</li>
+!set nova_std_notes_eleve_liste=<li>The student's "My scores" page: WIMS tables (one row per exercise, columns Required points, Weight, Quality, Success, Last result, Number of tries, sortable) instead of the average card, exam score badges and one collapsible card per worksheet, whose rows open when tapped. WIMS title ("Detail of the work of ...") instead of "My scores".</li>
 !set nova_std_notes_enseignant=Standard student detail and teacher Scores page
 !set nova_std_notes_enseignant_aide=WIMS tables instead of cards, for teachers.
-!set nova_std_notes_enseignant_liste=<li>Detail of a student's work (name clicked on the "Scores" page): WIMS tables instead of cards (average with its bar, exams, one collapsible card per worksheet).</li><li>"Scores" page: "Show" line with WIMS buttons instead of the selector (current choice in colour).</li>
+!set nova_std_notes_enseignant_liste=<li>Detail of a student's work (name clicked on the "Scores" page): WIMS tables instead of cards (average, exams, one collapsible card per worksheet).</li><li>"Scores" page: "Show" line with WIMS buttons instead of the selector (current choice in colour).</li>
 !set nova_app_activite=Students' "My activity" page
 !set nova_app_activite_aide=Replaces the WIMS page with a simple one: regularity, working time, latest scores.
 !set nova_app_act_seuil=Encourage students who work fewer than
@@ -139,6 +139,8 @@
 !set nova_bdg_reglages=Settings
 !set nova_app_fil=Fixed breadcrumb
 !set nova_app_fil_aide=Teachers and admins, large screens: the breadcrumb stays under the top bar when the page scrolls.
+!set nova_app_moy=Overall average on "My scores"
+!set nova_app_moy_aide=Shows students their average and the class figures (minimum, average, maximum). Also applies to a student's detail seen by the teacher.
 !set nova_app_deco=Seasonal decorations
 !set nova_app_deco_aide=Lights and snowflakes on the top bar in December (more holidays to come); never during an exam.
 !set nova_bdg_av_titre=Students' avatar

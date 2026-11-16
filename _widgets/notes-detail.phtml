@@ -7,3 +7,22 @@
 !if $wims_user!=supervisor and $job=getuser
 <style id="nova-notes-titre">html.nova-js:not(.nova-std-notes-eleve) #wims_modu_title1 > h1.wims_title:not([data-nova-titre]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }</style>
 !endif
+!! Sessions d'examen de l'eleve affiche (maquette D, 2026-11-16, utilisateur) : detail d'une ligne d'examen (nova.js
+!! notesDetail). Lues dans score/<eleve>.exam (ligne << n 00 ... >> = debut de session, releve permanent) et exams/.exams
+!! (3e ligne d'un enregistrement = << duree essais >>). La note de chaque session n'est pas calculee ici (WIMS : Details des examens).
+!! Variables : nova_nu l'eleve (celui de la session, ou getuser de l'adresse, filtre : lettres, chiffres, _ - . @) ;
+!!   nova_ns mots "examen:sessions commencees:essais permis".
+!if $job=getuser
+  !set nova_nu=$wims_user
+  !if $wims_user=supervisor
+    !set nova_nu=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@ in $getuser
+    !if $nova_nu!=$getuser
+      !reset nova_nu
+    !endif
+  !endif
+  !reset nova_ns
+  !if $nova_nu!=$empty
+    !set nova_ns=!sh c="$wims_home/log/classes/$wims_class"; [ -f "$$c/score/$nova_nu.exam" ] && awk 'FNR==1 {f++} f==1 { if (substr($$0,1,1)==":") {n++; k=0} else {k++; if (k==2) t[n]=$$2} } f==2 && $$2=="00" {s[$$1]++} END { for (i=1;i<=n;i++) if (s[i]) printf "%d:%d:%d ", i, s[i], t[i] }' "$$c/exams/.exams" "$$c/score/$nova_nu.exam" 2>/dev/null
+  !endif
+<div id="nova-notes-sessions" hidden data-sessions="$nova_ns"></div>
+!endif

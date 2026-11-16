@@ -448,6 +448,11 @@ de notes de WIMS, qui ont une ligne par réponse envoyée. Le serveur a la varia
 `gawk` d'un poste de travail : pas de `{n}` dans les expressions régulières, pas de fonction de date `mktime`
 (`badges.awk` calcule les jours du calendrier lui-même). Essayer un script avec `mawk`, pas avec `gawk`.
 
+Les scripts en _Python_ du thème (`construire-avatar.py`, `maj-vacances.py`, `icones/construire-lucide.py` et sa table
+`icones/correspondance.py`, et les passages Python de `verifier.sh` et de `construire-css.sh`) ne sont *jamais* lancés par
+WIMS : ce sont des outils de fabrication, lancés à la main sur le poste du développeur, et seul le fichier qu'ils
+produisent est servi. Un serveur sans Python fait fonctionner Nova. Ne pas en appeler un depuis un gabarit ou `_procs/`.
+
 Où écrire :
 - `!writefile wimshome/…` ne marche que depuis un *module de confiance* (accueil `home`, `adm/…`) et *ne crée aucun
   dossier* (échec silencieux) : écrire dans un dossier qui existe.
@@ -1049,7 +1054,14 @@ erreur) : écrire `stroke='black'` ou `%23`.]
 Font_Awesome, ou Lucide fourni par Nova). Donner à l'entrée une classe que ces jeux connaissent (@menu). Pour changer
 l'icône Lucide d'une classe de WIMS, ou en donner une à une entrée de Nova : `icones/correspondance.py` (`G` : glyphe
 Font Awesome → icône Lucide ; `C` : classes de WIMS corrigées ; `E` : entrées propres à Nova), puis reconstruire
-`icones/Lucide/icon-min.css` par `icones/construire-lucide.py` (ses arguments sont décrits en tête du script).
+`icones/Lucide/icon-min.css` par `icones/construire-lucide.py`, sur le poste du développeur :
+```
+npm install lucide-static@1.61.0        # dans un dossier de travail, hors du thème
+icones/construire-lucide.py <icon-min.css de Font_Awesome> <node_modules/lucide-static/icons> [sortie]
+```
+Le premier argument est la feuille du jeu Font_Awesome de WIMS (`public_html/gifs/themes/Font_Awesome/icon-min.css`), dont
+le script reprend chaque sélecteur ; le second, le dossier `icons/` du paquet `lucide-static` (version : `LUCIDE_VERSION` en
+tête du script) ; le troisième, facultatif, le fichier écrit (par défaut `icones/Lucide/icon-min.css`).
 `_procs/jeu-icones.sh` crée le lien `gifs/themes/Lucide` à la première page de configuration.
 
 #verifier[avec le jeu `default` (aucune icône de WIMS), Font_Awesome et Lucide : pas de tiret devant l'entrée, pas

@@ -11,7 +11,8 @@
 !! Variables : nova_ft type (exam, sheet), nova_fn numero (chiffres seuls) ; nova_fs verdict de desactiver.sh verifier
 !! (ok..., reglage, autre) ; nova_fk cle des textes du titre (exam, exam_commence, sheet) ; sur l'accueil : nova_q la
 !! requete, nova_dv valeur de nova_desactiver, nova_fr resultat de desactiver.sh, nova_fm message, nova_fe etat
-!! (succes, erreur).
+!! (succes, erreur). Variables de adm/sheet/writeweights (s, scnt, ecnt, e, r, require, weight, tv_..., ..._) : posees
+!! seulement sur l'accueil qui vient de desactiver une feuille.
 !if ($module=adm/class/exam and $error=nodeactivate and (sharing isin $deactivate or score isin $deactivate) and $exam!=$empty) or ($module=adm/class/sheet and $error=sharing_sheet and $sheet!=$empty)
   !read themes/$wims_theme/lang/enseignant.phtml.$lang
   !reset nova_fs
@@ -57,6 +58,12 @@
         !set nova_fm=!replace internal %1 by $nova_fn in $(nova_desact_ok_$nova_ft)
         !set nova_fe=succes
         !set wims_class_log=deactivate $nova_ft $nova_fn (Nova, partage) by $wims_realuser
+        !! Index des feuilles (sheets/.require, .weight, .active, .vars) refaits comme par WIMS a la desactivation
+        !! (adm/class/sheet, var.proc.deactivate) : 2026-11-17. Ecrits par !appendfile wimshome/... : permis ici (accueil).
+        !! Sans .require, wimslogd ne compte aucun exercice dans les feuilles et ignore leurs notes.
+        !if $nova_ft=sheet
+          !readproc adm/sheet/writeweights
+        !endif
       !else
         !if $nova_fr notitemof statut,commence,reglage
           !set nova_fr=erreur

@@ -1395,6 +1395,20 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   relit ses fichiers ensuite.
 ]
 
+#piege[Les notes des feuilles d'une classe ne comptent pas][
+  Les réponses d'un élève sont bien dans `score/<login>`, mais ni « Mes notes » ni la page « Notes » de l'enseignant
+  ne montrent les feuilles ; seuls les examens comptent.
+][
+  Le démon de WIMS (wimslogd) compte les exercices des feuilles d'après l'index `sheets/.require` (avec `.weight`,
+  `.active`, `.vars`). Sans lui, la classe a zéro exercice de feuille et toute note de feuille est ignorée. WIMS ne
+  refait cet index qu'en activant ou désactivant une feuille (`adm/sheet/writeweights`) ou par « Actualiser les
+  index › Feuilles ». La taille de `score/<login>.bin` le trahit : 200 octets plus 1 232 par exercice compté.
+][
+  Toute action du thème qui change le statut d'une feuille relit `adm/sheet/writeweights` après (voir
+  `desactiver.phtml`), depuis l'accueil : ce script écrit par `!appendfile wimshome/…`. Pour réparer une classe :
+  « Actualiser les index › Feuilles ».
+]
+
 #piege[« Terminer » un examen déconnecte l'élève][
   L'élève qui termine un examen se retrouve déconnecté.
 ][

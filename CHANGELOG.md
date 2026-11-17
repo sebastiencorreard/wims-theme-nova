@@ -95,6 +95,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- **Désactiver quand même** une feuille : les index des feuilles de la classe sont refaits, comme quand WIMS désactive lui-même (avant : seul le statut changeait, et l'index des exercices actifs restait périmé).
 - Titres de page tous sur le même modèle : centrés, nom de la classe au-dessus en petites capitales ; plus de page sans titre (livret, export des notes).
 - Pages de l'élève plus légères pour le navigateur (recalcul de la mise en forme environ un tiers plus rapide sur un téléphone modeste) ; rien ne change à l'écran.
 - Champs de formulaire au style de Nova partout : listes déroulantes de 40 px avec chevron, listes à choix multiples aérées, cases et boutons radio de 18 px à la couleur de la classe, bouton « Parcourir » d'un envoi de fichier, curseur « Niveau » du moteur de recherche.

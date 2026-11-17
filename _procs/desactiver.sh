@@ -2,6 +2,7 @@
 # Nova : désactiver un examen ou une feuille que WIMS refuse de désactiver parce qu'ils sont PARTAGÉS avec d'autres
 # classes (demande de l'utilisateur, 2026-11-08 ; avant : sauvegarde de la classe, « :1 » changé en « :0 » dans le zip,
 # réimport). Seul le statut change (« :1 » → « :0 », examen ou feuille « En préparation ») ; les notes restent.
+# Feuille : les index (sheets/.require…) sont refaits ensuite par _widgets/desactiver.phtml (adm/sheet/writeweights).
 # Le partage relie les classes par lien symbolique (scripts/adm/class/addshare) : un seul fichier pour toutes.
 # Réservé aux classes qui l'ont permis (2026-11-08, utilisateur) : --nova-desactivation-forcee: oui dans la feuille de
 # style de la classe ou, à défaut, de la structure la plus proche (log/classes/<c>/css ; la plus proche décide).

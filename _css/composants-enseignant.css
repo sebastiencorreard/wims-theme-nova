@@ -662,6 +662,16 @@ html:not(.nova-std-listes) .wimsbody .nova-seq-aide { display: none; }
   .wimsbody .nova-seq-long { display: none; }
   .wimsbody .nova-seq-court { display: inline; }
 }
+/* Largeur des pages en cartes de l'enseignant (54rem, comme accès et liens de connexion ; 2026-11-19, utilisateur). */
+.wimsbody :is(.nova-seq-reglages, .nova-seq-reglages-envoi, .nova-seq-alerte, .nova-seq-outils, .wims_seq.nova-seq, .nova-seq-place) { box-sizing: border-box; max-width: 54rem; margin-left: auto; margin-right: auto; }
+.wimsbody .wims_seq.nova-seq.nova-seq-volant { max-width: none; }
+/* Envoi en cours (déplacement, plage, réglages) : sablier qui tourne (2026-11-19, utilisateur). Indicateur de travail,
+ * pas une décoration : il tourne même animations coupées (html.nova-sans-animation, contenu.css), arrêté seulement si
+ * l'appareil demande moins d'animations. */
+.wimsbody .nova-en-cours { display: flex; align-items: center; gap: 8px; }
+.wimsbody .nova-en-cours::before { content: ""; flex: none; box-sizing: border-box; width: 18px; height: 18px; border: 3px solid var(--nova-bord); border-top-color: var(--nova-accent); border-radius: 50%; animation: nova-tourne .8s linear infinite; }
+html.nova-sans-animation .wimsbody .nova-en-cours::before { animation-duration: .8s !important; animation-iteration-count: infinite !important; }
+@media (prefers-reduced-motion: reduce) { html .wimsbody .nova-en-cours::before { animation: none !important; border-color: var(--nova-accent); border-right-color: var(--nova-bord); } }
 /* Page Configurer : « Présenter dans l'ordre inverse » masqué partout (2026-11-19, utilisateur) ; la valeur reste et WIMS la lit. */
 html:not(.nova-std-listes) .wimsbody .field:has(input[name='seq_reverse']) { display: none; }
 

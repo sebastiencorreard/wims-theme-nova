@@ -301,6 +301,8 @@ variable change tout le thème. N'écrivez jamais une couleur en dur dans une au
   `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS.
 - *Police* : Atkinson Hyperlegible Next (Mono pour les chiffres), servie par le thème (`_css/polices.css`,
   `polices/`) : aucun appel externe.
+- *Animations* : coupées par défaut (`html.nova-sans-animation`) ; seule exception, l'indicateur de travail en cours
+  `.nova-en-cours` (un sablier qui tourne), arrêté seulement si l'appareil demande moins d'animations.
 - *Espaces* : `--nova-e1` (4 px) à `--nova-e7` (48 px) ; cible tactile `--nova-cible` (44 px).
 - *Réglages* : la seconde partie de `jetons.css` (`:where(:root) { … }`) donne les valeurs par défaut des réglages
   (@reglage).

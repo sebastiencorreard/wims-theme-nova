@@ -2185,6 +2185,8 @@
       if (m) plages[m[1]] = { mode: m[2], debut: m[3] || '', fin: m[4] || '', postes: m[5] === '1' };
     });
     var chiffres = function (v) { return (v || '').replace(/\D/g, ''); };
+    // Message d'envoi ; en cours : sablier qui tourne (2026-11-19, utilisateur), retiré pour une erreur.
+    var annoncer = function (e, texte, enCours) { if (!e) return; e.textContent = texte; e.classList.toggle('nova-en-cours', !!enCours); };
     var maintenant = rg ? chiffres(rg.getAttribute('data-maintenant')).slice(0, 12) : '';
     if (rg) barreReglages(cartes.length ? cartes[0] : null);
     if (!cartes.length) return;
@@ -2311,7 +2313,7 @@
     function enregistrerPlage(d, n, mode, deb, fin) {
       occupe = true;
       document.documentElement.classList.add('nova-occupe');
-      if (etatEnvoi) etatEnvoi.textContent = t('enregistrement');
+      annoncer(etatEnvoi, t('enregistrement'), true);
       var debut = Date.now();
       var relire = function (attente) {
         setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, attente);
@@ -2325,7 +2327,7 @@
           relire(Math.max(0, 1500 - (Date.now() - debut)));
         })
         .catch(function () {
-          if (etatEnvoi) etatEnvoi.textContent = t('plage-erreur');
+          annoncer(etatEnvoi, t('plage-erreur'));
           relire(2500);
         });
     }
@@ -2388,10 +2390,10 @@
         if (envoi || !window.fetch || !window.TextDecoder || !window.DOMParser) return;
         envoi = true;
         [c, champ, cn].forEach(function (x) { x.disabled = true; });
-        etat.textContent = t('enregistrement');
+        annoncer(etat, t('enregistrement'), true);
         var debut = Date.now();
         var echec = function () {
-          etat.textContent = t('reglage-erreur');
+          annoncer(etat, t('reglage-erreur'));
           setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, 2500);
         };
         fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=config'), { credentials: 'same-origin' })
@@ -2602,7 +2604,7 @@
     function enregistrer(d, de, vers) {
       occupe = true;
       document.documentElement.classList.add('nova-occupe');
-      etatEnvoi.textContent = t('enregistrement');
+      annoncer(etatEnvoi, t('enregistrement'), true);
       var nouveau = function (k) {
         if (k === de) return vers;
         if (de < vers && k > de && k <= vers) return k - 1;
@@ -2625,7 +2627,7 @@
           relire(1500);
         })
         .catch(function () {
-          etatEnvoi.textContent = t('erreur');
+          annoncer(etatEnvoi, t('erreur'));
           relire(Math.max(2500, 1500 - (Date.now() - debut)));
         });
     }

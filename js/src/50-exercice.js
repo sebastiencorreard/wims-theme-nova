@@ -940,6 +940,10 @@
     if (standard('dominos')) return;
     var script = Array.prototype.filter.call(document.scripts, function (sc) { return /f_objs/.test(sc.textContent); })[0];
     if (!script || /wimsborder/.test(script.textContent) || !document.getElementById('fillobj1')) return;
+    // Exercice qui place lui-même les repères de Dynapi (un autre script cite fillobj : étiquettes déplacées dans le
+    // texte, cases à sa taille ; module P7 « proportionnalité », signalé par l'utilisateur le 2026-11-18) : mise en page
+    // de l'auteur, Nova ne change ni les tailles ni l'aspect des tuiles (agrandies, elles débordaient de la ligne).
+    if (Array.prototype.some.call(document.scripts, function (sc) { return sc !== script && /fillobj/.test(sc.textContent); })) { caseVisee(); return; }
     var m = script.textContent.match(/stretchH:(\d+),stretchV:(\d+)/);
     if (!m) return;
     var sx = +m[1], sy = +m[2], racine = document.documentElement;

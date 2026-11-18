@@ -1611,6 +1611,15 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Créer l'évènement par `document.createEvent('MouseEvents')`.
 ]
 
+#piege[Étiquettes décalées dans un exercice qui les place lui-même][
+  Étiquettes à déplacer plus hautes que la ligne de texte où l'auteur les a mises (exercices « proportionnalité » d'un
+  collègue : repères `fillobjN` déplacés dans l'énoncé par un script de l'exercice).
+][
+  `tuiles` agrandit tuiles et cases à 44 px (cible du doigt) ; les places prévues par l'auteur restent à sa taille.
+][
+  `tuiles` ne touche à rien quand un autre script de la page cite `fillobj` : l'auteur gère sa mise en page.
+]
+
 #piege[Un sélecteur qui attrape trop][
   `el.querySelectorAll('ul a')` renvoie aussi des liens hors de `el`, ou une règle masque des alertes sans rapport.
 ][

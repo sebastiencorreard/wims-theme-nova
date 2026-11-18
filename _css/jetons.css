@@ -83,6 +83,7 @@
   --nova-fil-fixe: oui;
   --nova-notes-moyenne: oui;   /* carte « Moyenne globale » de Mes notes et du détail d'un élève ; non : retirée (2026-11-16) */
   --nova-decorations: oui;   /* decorations de saison de la barre (_css/decorations.css), 2026-11-11 */
+  --nova-travail-individualise: non;   /* carte « Travail individualisé » de la page de présentation d'une feuille (2026-11-18, utilisateur) */
   --nova-desactivation-forcee: non;   /* « Désactiver quand même » (partage) : oui sur la page Apparence de la classe (2026-11-08) */
   --nova-activite-seuil: 2;
   --nova-activite-objectif: 3;

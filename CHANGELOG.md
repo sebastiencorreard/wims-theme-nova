@@ -25,6 +25,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Réglage **Travail individualisé** (onglet Élèves des Réglages de Nova : site, structure, classe), désactivé par défaut : sans lui, pas de carte dans la page de présentation d'une feuille (les pages déjà écrites restent).
 - **Travail individualisé** (page de présentation d'une feuille) : les exercices nommés « Fractions * », « Fractions ** »… sont regroupés par type de tâche, un niveau par nombre d'étoiles ; l'élève voit une carte par type de tâche avec son parcours de niveaux (réussis, à faire, encore fermés en mode entraînement ; tous ouverts en mode évaluation) ; toucher une étape affiche son action (Refaire, S'entraîner ou Commencer, ou le niveau à réussir d'abord), l'étape à faire est ouverte d'avance. Carte de réglage dans l'onglet « Page de présentation » : mode, seuil de réussite, ordre des types de tâche (glisser ou flèches), alertes sur les titres. La page reste lisible avec le thème standard.
 - Liaison tableur en cartes et pastilles lisibles (« Feuille 3 » au lieu de « sheet3 »), zone de dépôt du fichier ; Message d'accueil : un menu « ⋯ » par élève ; listes à choix multiples en cases avec « Tout cocher » ; livret et variables techniques vides : une carte avec le bouton qui les remplit.
 - Accueil de la classe en cartes, comme la configuration : une carte pour la bienvenue et les participants connectés, une pour les feuilles et examens.
@@ -96,6 +97,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Accueil d'un portail ou d'un groupement : les boutons « Replier les classes » et le menu personnalisé disparaissaient après un passage dans l'outil de développement de modules (modtool).
 - Exercice d'une feuille ouvert par un élève dans un navigateur qui a aussi servi à un enseignant : sa note n'était pas enregistrée (un paramètre du menu de l'enseignant était ajouté au lien de l'exercice) ; « Revenir à la liste » menait à la liste des feuilles.
 - **Désactiver quand même** une feuille : les index des feuilles de la classe sont refaits, comme quand WIMS désactive lui-même (avant : seul le statut changeait, et l'index des exercices actifs restait périmé).
 - Titres de page tous sur le même modèle : centrés, nom de la classe au-dessus en petites capitales ; plus de page sans titre (livret, export des notes).

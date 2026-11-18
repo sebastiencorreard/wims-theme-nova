@@ -141,6 +141,8 @@
 !set nova_app_fil_aide=Docenti e amministratori, schermi grandi: il percorso di navigazione resta sotto la barra in alto quando la pagina scorre.
 !set nova_app_moy=Media generale in « I miei voti »
 !set nova_app_moy_aide=Mostra allo studente la sua media e quelle della classe (minimo, media, massimo). Vale anche per il dettaglio di uno studente visto dal docente.
+!set nova_app_ti=Lavoro individualizzato
+!set nova_app_ti_aide=Scheda della linguetta « Pagina di presentazione » di un foglio: raggruppa gli esercizi per tipo di compito e livello (titoli con stelle) e scrive una pagina a tappe per gli alunni. Le pagine già scritte restano visibili.
 !set nova_app_deco=Decorazioni stagionali
 !set nova_app_deco_aide=Luci e fiocchi di neve sulla barra in alto a dicembre (arriveranno altre feste); mai durante un esame.
 !set nova_bdg_av_titre=Avatar degli studenti

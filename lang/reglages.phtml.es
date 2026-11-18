@@ -141,6 +141,8 @@
 !set nova_app_fil_aide=Profesores y administradores, pantallas grandes: la ruta de navegación queda bajo la barra superior al desplazar la página.
 !set nova_app_moy=Media global en « Mis notas »
 !set nova_app_moy_aide=Muestra al alumno su media y las de la clase (mínimo, media, máximo). Vale también para el detalle de un alumno visto por el profesor.
+!set nova_app_ti=Trabajo individualizado
+!set nova_app_ti_aide=Tarjeta de la pestaña « Página de presentación » de una hoja: agrupa los ejercicios por tipo de tarea y nivel (títulos con estrellas) y escribe una página por etapas para los alumnos. Las páginas ya escritas se siguen mostrando.
 !set nova_app_deco=Decoraciones de temporada
 !set nova_app_deco_aide=Guirnalda y copos de nieve en la barra superior en diciembre (vendrán otras fiestas); nunca durante un examen.
 !set nova_bdg_av_titre=Avatar de los alumnos

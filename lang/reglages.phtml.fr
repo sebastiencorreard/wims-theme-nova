@@ -141,6 +141,8 @@
 !set nova_app_fil_aide=Profs et admins, grand écran : le fil d'Ariane reste sous la barre du haut quand la page défile.
 !set nova_app_moy=Moyenne globale sur « Mes notes »
 !set nova_app_moy_aide=Montre à l'élève sa moyenne et celles de la classe (minimum, moyenne, maximum). Vaut aussi pour le détail d'un élève vu par l'enseignant.
+!set nova_app_ti=Travail individualisé
+!set nova_app_ti_aide=Carte de l'onglet « Page de présentation » d'une feuille : regroupe les exercices par type de tâche et par niveau (titres à étoiles) et écrit une page en parcours pour les élèves. Les pages déjà écrites restent affichées.
 !set nova_app_deco=Décorations de saison
 !set nova_app_deco_aide=Guirlande et flocons sous la barre du haut en décembre (d'autres fêtes viendront) ; jamais pendant un examen.
 !set nova_bdg_av_titre=Avatar des élèves

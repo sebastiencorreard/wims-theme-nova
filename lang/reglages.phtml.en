@@ -141,6 +141,8 @@
 !set nova_app_fil_aide=Teachers and admins, large screens: the breadcrumb stays under the top bar when the page scrolls.
 !set nova_app_moy=Overall average on "My scores"
 !set nova_app_moy_aide=Shows students their average and the class figures (minimum, average, maximum). Also applies to a student's detail seen by the teacher.
+!set nova_app_ti=Individualised work
+!set nova_app_ti_aide=Card in a sheet's "Presentation page" tab: groups exercises by task type and level (titles ending in stars) and writes a step-by-step page for students. Pages already written are still shown.
 !set nova_app_deco=Seasonal decorations
 !set nova_app_deco_aide=Lights and snowflakes on the top bar in December (more holidays to come); never during an exam.
 !set nova_bdg_av_titre=Students' avatar

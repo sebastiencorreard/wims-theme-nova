@@ -1011,7 +1011,8 @@ actif et désactivé si la page a une zone de texte ; à 390 px.]
 
 La page que voit l'élève est une *page de présentation* de WIMS (`sheets/sheetN.src`), écrite une fois pour toutes :
 elle relit les titres des exercices à chaque affichage (« Fractions \* », « Fractions \*\* »… : même nom = même type
-de tâche, nombre d'étoiles = niveau) et marche sans Nova. Trois fichiers :
+de tâche, nombre d'étoiles = niveau) et marche sans Nova. La carte de l'enseignant n'apparaît que si le réglage
+`--nova-travail-individualise` vaut `oui` (désactivé par défaut). Trois fichiers :
 
 - `ti/construire-moteur.py` produit `ti/moteur-ti.src` (latin-1) : le modifier, relancer `python3 ti/construire-moteur.py`,
   et *augmenter le numéro de version* de la première ligne quand la page change pour l'élève (la carte annonce alors
@@ -2096,6 +2097,7 @@ listes séparées par des espaces.
     ("clavier-maths", [Clavier mathématique tactile dans les champs de réponse.]),
     ("fil-fixe", [Fil d'Ariane de l'enseignant fixe sous la barre du haut, sur grand écran.]),
     ("decorations", [Décorations de saison de la barre.]),
+    ("travail-individualise", [Carte « Travail individualisé » de l'onglet « Page de présentation » d'une feuille (`travailIndividualise`) ; `non` par défaut, `oui` la montre. Les pages déjà écrites restent affichées aux élèves.]),
     ("notes-moyenne", [Carte « Moyenne globale » de « Mes notes » et du détail d'un élève vu par l'enseignant ; `non` la retire.]),
     ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen. Vérifié aussi côté serveur.]),
     ("masques-eleves", [Rubriques du menu masquées aux élèves : liste parmi `communication` et `liens`, ou `aucune`.]),

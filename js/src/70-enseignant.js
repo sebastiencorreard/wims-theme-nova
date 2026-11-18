@@ -3129,6 +3129,8 @@
     var panneau = document.getElementById('prpage');
     var zone = panneau && panneau.querySelector('textarea[name="wims_deposit"]');
     if (!tx || !src || !zone || !zone.form) return;
+    // Réglage « Travail individualisé » (site, structure ou classe ; 2026-11-18, utilisateur) : désactivé par défaut.
+    if (racineStyle().getPropertyValue('--nova-travail-individualise').replace(/["']/g, '').trim() !== 'oui') return;
     var t = function (k, a, b, c) {
       return (tx.getAttribute('data-' + k) || '').replace('%1', a == null ? '' : a).replace('%2', b == null ? '' : b).replace('%3', c == null ? '' : c);
     };

@@ -105,7 +105,9 @@
 !endif
 !! Choix gardes sur le serveur : menu personnalise et classes repliees de l'enseignant (_widgets/menu-serveur.phtml,
 !! replis-classes.phtml), couleur personnelle de l'eleve (_widgets/couleur-choix.phtml).
-!if ($module=home or $nova_m=adm/) and $wims_user!=$empty and $wims_class!=$empty and ($wims_developer=$empty or $module=adm/modtool)
+!! Compte developpeur ouvert dans modtool depuis la classe ($wims_developer garde pour toute la session) : toujours
+!! l'enseignant de la classe, ses choix restent (2026-11-18 : replis disparus apres une restauration de module).
+!if ($module=home or $nova_m=adm/) and $wims_user!=$empty and $wims_class!=$empty
   !read themes/$wims_theme/_procs/eleve.proc
   !if $nova_est_eleve!=yes
     !read themes/$wims_theme/_widgets/menu-serveur.phtml

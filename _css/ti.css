@@ -1,7 +1,10 @@
 /* Travail individualisé (TI) : habillage de la page de présentation écrite par le moteur TI (variante 1 des maquettes,
    2026-11-17, utilisateur). La page porte ses propres styles EN LIGNE (pour rester lisible sans Nova) : chaque propriété
    qu'elle pose est reprise ici avec !important, seulement sous .nova-ti. Balisage : voir le moteur (.nova-ti-groupe,
-   .nova-ti-niveau[data-etat=valide|ouvert|ferme|libre], .nova-ti-symbole, .nova-ti-action, .nova-ti-refaire). */
+   .nova-ti-niveau[data-etat=valide|ouvert|ferme|libre], .nova-ti-symbole, .nova-ti-action, .nova-ti-refaire).
+   Version 2 du moteur (2026-11-18, maquette C « parcours », utilisateur) : une étape = details.nova-ti-niveau dans
+   .nova-ti-parcours, son action (.nova-ti-detail) s'affiche dans un bandeau sous le parcours, place réservée par nova.js
+   (tiParcours, --nova-ti-reserve). Les règles de la liste (ul.nova-ti-niveaux, version 1 et « Autres exercices ») restent. */
 
 .nova-ti { max-width: 760px; margin-inline: auto; }
 .nova-ti .nova-ti-titre { text-wrap: balance; }
@@ -26,21 +29,57 @@
 }
 .nova-ti .nova-ti-complet .nova-ti-compte { background: color-mix(in oklab, var(--nova-succes) 12%, white); color: var(--nova-succes); }
 
-/* Un niveau = une marche. */
+/* Version 1 (liste) et « Autres exercices » : un niveau = une marche. */
 .nova-ti .nova-ti-niveaux { display: grid; gap: 6px; }
-.nova-ti .nova-ti-niveau {
+.nova-ti li.nova-ti-niveau {
   display: flex !important; flex-wrap: wrap; align-items: center; gap: 6px 10px !important;
   padding: 8px 10px !important; border: 1px solid var(--nova-bord) !important; border-radius: var(--nova-rayon) !important;
   min-height: var(--nova-cible);
 }
-.nova-ti .nova-ti-niveau[data-etat="valide"] { background: color-mix(in oklab, var(--nova-succes) 9%, white); border-color: transparent !important; }
-.nova-ti .nova-ti-niveau[data-etat="ouvert"] { border: 2px solid var(--nova-accent) !important; }
-.nova-ti .nova-ti-niveau[data-etat="ferme"] { background: var(--nova-surface-2); border-color: transparent !important; }
+.nova-ti li.nova-ti-niveau[data-etat="valide"] { background: color-mix(in oklab, var(--nova-succes) 9%, white); border-color: transparent !important; }
+.nova-ti li.nova-ti-niveau[data-etat="ouvert"] { border: 2px solid var(--nova-accent) !important; }
+.nova-ti li.nova-ti-niveau[data-etat="ferme"] { background: var(--nova-surface-2); border-color: transparent !important; }
 
 .nova-ti .nova-ti-etoiles { color: var(--nova-accent) !important; font-size: 1.05rem; letter-spacing: 1px; }
 .nova-ti .nova-ti-niveau[data-etat="ferme"] .nova-ti-etoiles { color: var(--nova-bord-fort) !important; }
 .nova-ti .nova-ti-info { color: var(--nova-texte-2) !important; font-weight: 400 !important; font-size: var(--nova-petit); min-width: 0; }
 .nova-ti .nova-ti-niveau[data-etat="valide"] .nova-ti-info { color: var(--nova-succes) !important; font-weight: 600 !important; }
+
+/* Version 2 : le parcours. Étapes en pastilles reliées ; l'étape ouverte montre son action dans un bandeau dessous. */
+.nova-ti .nova-ti-parcours {
+  position: relative; display: flex !important; flex-wrap: wrap; align-items: center !important; gap: 10px 0 !important;
+}
+.nova-ti .nova-ti-parcours:has(> .nova-ti-pas > details[open]) { padding-bottom: var(--nova-ti-reserve, 76px); }
+.nova-ti .nova-ti-pas { display: inline-flex !important; align-items: center !important; }
+.nova-ti .nova-ti-trait { display: block; flex: none; width: 20px; height: 2px; background: var(--nova-bord); }
+.nova-ti .nova-ti-pas:has(> details[data-etat="valide"]) > .nova-ti-trait { background: var(--nova-succes); }
+/* Les règles générales de Nova sur details (carte : ombre, marge, summary en marges négatives) ne valent pas ici. */
+.wimsbody .nova-ti details.nova-ti-niveau { border: 0 !important; padding: 0 !important; margin: 0 !important; background: none !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important; }
+.wimsbody .nova-ti details.nova-ti-niveau > .nova-ti-pastille { margin: 0 !important; }
+.nova-ti .nova-ti-pastille {
+  position: relative; display: inline-flex; align-items: center; gap: 5px; list-style: none; cursor: pointer; user-select: none;
+  min-height: 38px; padding: 5px 12px; border-radius: 999px; border: 2px solid transparent;
+  background: var(--nova-surface-2); color: var(--nova-texte-2); font-weight: 700;
+}
+.nova-ti .nova-ti-pastille::-webkit-details-marker { display: none; }
+.nova-ti .nova-ti-pastille::marker { content: none; }
+.nova-ti .nova-ti-pastille:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
+.nova-ti .nova-ti-pastille .nova-ti-etoiles { font-size: 1rem; }
+.nova-ti details[data-etat="valide"] > .nova-ti-pastille { background: color-mix(in oklab, var(--nova-succes) 11%, white); color: var(--nova-succes); }
+.nova-ti details[data-etat="valide"] > .nova-ti-pastille .nova-ti-etoiles { color: var(--nova-succes) !important; }
+.nova-ti details[data-etat="ouvert"] > .nova-ti-pastille { background: var(--nova-surface); border-color: var(--nova-accent); color: var(--nova-accent); }
+.nova-ti details[open] > .nova-ti-pastille { box-shadow: 0 0 0 3px color-mix(in oklab, var(--nova-accent) 22%, transparent); }
+.nova-ti details[open] > .nova-ti-pastille::after {
+  content: ""; position: absolute; left: 50%; bottom: -15px; transform: translateX(-50%);
+  border: 7px solid transparent; border-bottom-color: color-mix(in oklab, var(--nova-accent) 8%, var(--nova-surface));
+}
+.nova-ti .nova-ti-detail {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  padding: 10px 12px !important; border-radius: var(--nova-rayon); background: color-mix(in oklab, var(--nova-accent) 8%, var(--nova-surface));
+}
+.nova-ti .nova-ti-detail .nova-ti-info { flex: 1 1 170px; }
+.nova-ti .nova-ti-detail .nova-ti-info b { color: var(--nova-texte); }
+.nova-ti .nova-ti-fini { margin: 10px 0 0 !important; color: var(--nova-succes) !important; font-weight: 600 !important; font-size: var(--nova-petit); }
 
 /* Symboles du texte (coche, cadenas) remplacés par des icônes Lucide. */
 .nova-ti .nova-ti-symbole {
@@ -66,9 +105,14 @@
 .nova-ti .nova-ti-action a:hover { background: var(--nova-lien-survol); color: var(--nova-sur-accent); }
 .nova-ti .nova-ti-action a:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
 .nova-ti .nova-ti-refaire a { font-size: var(--nova-petit); color: var(--nova-lien); }
+.nova-ti .nova-ti-detail .nova-ti-refaire a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 6px 16px; border-radius: 999px; font-size: 0.95rem;
+  font-weight: 600; text-decoration: none; color: var(--nova-accent); box-shadow: inset 0 0 0 1.5px var(--nova-accent);
+}
+.nova-ti .nova-ti-detail .nova-ti-refaire a:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
 
 /* Exercices sans étoile. */
-.nova-ti .nova-ti-niveau[data-etat="libre"] .nova-ti-info a { font-weight: 600; color: var(--nova-lien); }
+.nova-ti li.nova-ti-niveau[data-etat="libre"] .nova-ti-info a { font-weight: 600; color: var(--nova-lien); }
 .nova-ti .nova-ti-score { font-size: var(--nova-petit); color: var(--nova-texte-2); }
 
 /* Consigne du mode évaluation. */

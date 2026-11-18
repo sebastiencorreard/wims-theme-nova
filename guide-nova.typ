@@ -1020,13 +1020,24 @@ de tâche, nombre d'étoiles = niveau) et marche sans Nova. Trois fichiers :
   (`adm/class/sheet`, `#prpage`). Elle relit le moteur sur le serveur (`#nova-ti-moteur`, header.phtml), y remplace
   les trois lignes `ti_mode`, `ti_seuil`, `ti_ordre`, garde les lignes `tx_` de la page en place (textes modifiés à la
   main par l'enseignant) et envoie le formulaire de WIMS ;
-- `_css/ti.css` : l'habillage de la page de l'élève (classes `nova-ti-…` du moteur) et de la carte.
+- `_css/ti.css` : l'habillage de la page de l'élève (classes `nova-ti-…` du moteur) et de la carte ;
+- `js/src/40-feuilles-notes.js`, `tiParcours` : sur la page de l'élève, la place du bandeau sous le parcours et une seule
+  étape ouverte à la fois.
+
+Depuis la version 2 du moteur, chaque type de tâche est un *parcours* : une étape par niveau, en `<details>` (son
+`<summary>` est la pastille, son contenu l'action : Refaire, S'entraîner ou Commencer, ou le niveau à réussir d'abord).
+L'étape à faire est ouverte d'avance ; l'attribut `name` n'en laisse qu'une ouverte, sans script. `ti.css` pose l'action
+en position absolue sous le parcours et lui réserve la place (`--nova-ti-reserve`, mesurée par `tiParcours`, 76 px sans
+JavaScript). Les règles de l'ancienne liste (`ul.nova-ti-niveaux`, version 1 et « Autres exercices ») restent : une page
+écrite avant garde son aspect jusqu'à ce que l'enseignant la réécrive (la carte le propose). Les règles générales de Nova
+sur `details` (carte, ombre, marges) sont annulées pour les étapes.
 
 Le moteur ne peut contenir ni `<style>` ni `$`, `!`, `:` actifs : `msg2wims` les échappe (@pieges). Ses styles sont
 en ligne (rendu sans Nova) ; `ti.css` les remplace avec `!important`. Le regroupement fait par la carte (alertes)
 doit rester celui du moteur : virgules et étoiles retirées du nom, niveau en double rangé dans « Autres exercices ».
 
-#verifier[`banc-nova/ti-banc.sh poser`, `node ti-carte-test.mjs` (carte, glisser, écriture, vue de l'élève), puis
+#verifier[`banc-nova/ti-banc.sh poser`, `node ti-carte-test.mjs` (carte, glisser, écriture, vue de l'élève),
+`node ti-parcours-test.mjs` (étapes touchées, bandeau, avec Nova puis en thème standard), puis
 `ti-banc.sh retirer` ; rendu sans Nova : thème de la classe changé dans le `.def` ; une page de présentation qui n'est
 pas celle de Nova (question avant de la remplacer).]
 

@@ -1,7 +1,7 @@
 import sys
 import os
 out=sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), 'moteur-ti.src')
-reglages = r"""\comment{=== Travail individualise (theme Nova) - version 1 ===}
+reglages = r"""\comment{=== Travail individualise (theme Nova) - version 2 ===}
 \comment{Exercices de la feuille titres "type de tache *", "type de tache **"... : meme nom = meme groupe, nombre d'etoiles = niveau.}
 \comment{Les virgules d'un titre sont ignorees dans le nom du type de tache. Page ecrite par la carte de Nova (theme Nova, ti/).}
 \comment{--- Reglages (modifiables a la main) ---}
@@ -17,7 +17,10 @@ reglages = r"""\comment{=== Travail individualise (theme Nova) - version 1 ===}
 \def{text tx_meilleur=Meilleur score}
 \def{text tx_faut=il faut}
 \def{text tx_jamais=Pas encore essayé}
-\def{text tx_apres=Réussis d'abord le niveau}
+\def{text tx_apres=Réussis le niveau}
+\def{text tx_debloque=pour débloquer celui-ci.}
+\def{text tx_niveau=Niveau}
+\def{text tx_fini=Tous les niveaux sont réussis. Touche une étape pour la refaire.}
 \def{text tx_commencer=Commencer}
 \def{text tx_continuer=S'entraîner}
 \def{text tx_refaire=Refaire}
@@ -35,6 +38,13 @@ moteur = r"""
 \def{text st_carte=border:1px solid #c8c3cc;border-radius:12px;padding:10px 12px;margin:0 0 12px}
 \def{text st_tete=display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 6px}
 \def{text st_liste=list-style:none;margin:0;padding:0}
+\def{text st_parcours=display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px}
+\def{text st_pas=display:inline-flex;align-items:flex-start}
+\def{text st_etape=border:1px solid #bbb;border-radius:14px;padding:3px 10px;background:#f4f4f4}
+\def{text st_valide=background:#e3f3e6;border-color:#9c9}
+\def{text st_ouvert=border:2px solid #7A3B69}
+\def{text st_pastille=cursor:pointer}
+\def{text st_action=padding:4px 0 2px}
 \def{text st_ligne=display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:6px 0;border-top:1px dotted #c8c3cc}
 \def{text st_etoiles=color:#b07d00;letter-spacing:1px;white-space:nowrap}
 \def{text st_info=flex:1 1 10em}
@@ -128,7 +138,9 @@ moteur = r"""
 \if{\nv=\n}{\def{text cl=nova-ti-complet}}
 <section class="nova-ti-groupe \cl" style="\st_carte">
 <div class="nova-ti-tete" style="\st_tete"><h3 style="margin:0">\g</h3><span class="nova-ti-compte">\nv / \n</span></div>
-<ul class="nova-ti-niveaux" style="\st_liste">
+<div class="nova-ti-parcours" style="\st_parcours">
+\def{integer n0=0}
+\def{integer ouv=0}
 \for{lv=1 to \ti_M}{
 \def{text q=wims(positionof item \g~\lv in \ti_K)}
 \def{integer nq=wims(itemcnt \q)}
@@ -139,23 +151,28 @@ moteur = r"""
 \def{text et=}
 \for{j=1 to \lv}{\def{text et=\et&#9733;}}
 \def{text etat=ferme}
-\if{\lv<=\h}{\def{text etat=valide}}{\if{\ti_mode=evaluation or \prev<=\h}{\def{text etat=ouvert}}}
-<li class="nova-ti-niveau" data-etat="\etat" data-niveau="\lv" data-score="\p" data-essais="\e" style="\st_ligne">
-<span class="nova-ti-etoiles" style="\st_etoiles" aria-label="niveau \lv">\et</span>
+\def{text se=}
+\if{\lv<=\h}{\def{text etat=valide}\def{text se=\st_valide}}{\if{\ti_mode=evaluation or \prev<=\h}{\def{text etat=ouvert}\def{text se=\st_ouvert}}}
+\def{text op=}
+\if{\etat=ouvert and \ouv=0}{\def{text op=open}\def{integer ouv=1}}
+<span class="nova-ti-pas" style="\st_pas">\if{\n0>0}{<span class="nova-ti-trait" aria-hidden="true"></span>}<details class="nova-ti-niveau" name="nova-ti-\i" data-etat="\etat" data-niveau="\lv" data-score="\p" data-essais="\e" style="\st_etape;\se" \op><summary class="nova-ti-pastille" style="\st_pastille"><span class="nova-ti-etoiles" style="\st_etoiles" aria-label="\tx_niveau \lv">\et</span>\if{\etat=valide}{ <span class="nova-ti-symbole" aria-hidden="true">&#10003;</span>}\if{\etat=ferme}{ <span class="nova-ti-symbole" aria-hidden="true">&#128274;</span>}</summary><div class="nova-ti-detail" style="\st_action">
 \if{\etat=valide}{
-\if{\p>=\ti_seuil}{<span class="nova-ti-info" style="\st_info;\st_ok"><span class="nova-ti-symbole" aria-hidden="true">&#10003;</span> \tx_reussi, \p&nbsp;%</span>}{<span class="nova-ti-info" style="\st_info;\st_ok"><span class="nova-ti-symbole" aria-hidden="true">&#10003;</span> \tx_valide</span>}
-\if{\ti_mode!=evaluation}{<span class="nova-ti-lien nova-ti-refaire">\exercise{\sheet/\kk}{\tx_refaire}</span>}
+\if{\p>=\ti_seuil}{<span class="nova-ti-info" style="\st_ok"><span class="nova-ti-symbole" aria-hidden="true">&#10003;</span> \tx_reussi, \p&nbsp;%</span>}{<span class="nova-ti-info" style="\st_ok"><span class="nova-ti-symbole" aria-hidden="true">&#10003;</span> \tx_valide</span>}
+\if{\ti_mode!=evaluation}{ <span class="nova-ti-lien nova-ti-refaire">\exercise{\sheet/\kk}{\tx_refaire}</span>}
 }
 \if{\etat=ouvert}{
-\if{\e>0}{<span class="nova-ti-info" style="\st_info">\tx_meilleur \p&nbsp;%, \tx_faut \ti_seuil&nbsp;%</span>}{<span class="nova-ti-info" style="\st_info">\tx_jamais</span>}
+<span class="nova-ti-info"><b>\tx_niveau \et</b> &middot; \if{\e>0}{\tx_meilleur \p&nbsp;%, \tx_faut \ti_seuil&nbsp;%}{\tx_jamais}</span>
 <b class="nova-ti-lien nova-ti-action">\if{\e>0}{\exercise{\sheet/\kk}{\tx_continuer &#8250;}}{\exercise{\sheet/\kk}{\tx_commencer &#8250;}}</b>
 }
-\if{\etat=ferme}{<span class="nova-ti-info" style="\st_info;\st_ferme"><span class="nova-ti-symbole" aria-hidden="true">&#128274;</span> \tx_apres \pet</span>}
+\if{\etat=ferme}{<span class="nova-ti-info" style="\st_ferme"><span class="nova-ti-symbole" aria-hidden="true">&#128274;</span> \tx_apres <b>\pet</b> \tx_debloque</span>}
+</div></details></span>
+\def{integer n0=\n0+1}
 \def{integer prev=\lv}
 \def{text pet=\et}
 }
 }
-</ul>
+</div>
+\if{\nv=\n}{<p class="nova-ti-fini" style="\st_ok;margin:6px 0 0">&#10003; \tx_fini</p>}
 </section>
 }
 \comment{Exercices sans etoile, ou niveau en double : en fin de page.}

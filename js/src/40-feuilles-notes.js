@@ -749,3 +749,30 @@
       racine.classList.add('nova-feuille-prete');
     }
   }
+
+  /* Travail individualisé, page de l'élève (moteur ti/moteur-ti.src version 2, maquette C « parcours », 2026-11-18,
+   * utilisateur) : chaque étape est un <details> ; son action (.nova-ti-detail) est placée par ti.css dans un bandeau
+   * sous le parcours, en position absolue. Ici : la place du bandeau ouvert (--nova-ti-reserve, sinon 76 px de ti.css)
+   * et une seule étape ouverte par parcours, pour les navigateurs qui ignorent l'attribut name de <details>.
+   * Sans JavaScript, la page reste utilisable (place fixe). */
+  function tiParcours() {
+    var parcours = document.querySelectorAll('.nova-ti .nova-ti-parcours');
+    if (!parcours.length) return;
+    var reserver = function (pc) {
+      var d = pc.querySelector(':scope > .nova-ti-pas > details[open] > .nova-ti-detail');
+      if (d) pc.style.setProperty('--nova-ti-reserve', (d.offsetHeight + 14) + 'px');
+      else pc.style.removeProperty('--nova-ti-reserve');
+    };
+    Array.prototype.forEach.call(parcours, function (pc) {
+      pc.addEventListener('toggle', function (ev) {
+        var d = ev.target;
+        if (d.open) Array.prototype.forEach.call(pc.querySelectorAll(':scope > .nova-ti-pas > details[open]'), function (x) { if (x !== d) x.open = false; });
+        reserver(pc);
+      }, true);
+      reserver(pc);
+    });
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { Array.prototype.forEach.call(parcours, reserver); });
+      Array.prototype.forEach.call(parcours, function (pc) { ro.observe(pc.parentNode); });
+    }
+  }

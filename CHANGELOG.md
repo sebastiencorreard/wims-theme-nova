@@ -97,6 +97,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
+- Accueil de l'élève (et vue élève de l'enseignant) : les feuilles et les examens sont de nouveau des cartes blanches cliquables en entier, comme les documents, au lieu de pastilles colorées ; au téléphone, le titre passe sous « Feuille 1. » et la note.
 - Exercices qui placent eux-mêmes leurs étiquettes dans le texte : les étiquettes ne débordent plus de la ligne (Nova ne les agrandit plus).
 - Accueil d'un portail ou d'un groupement : les boutons « Replier les classes » et le menu personnalisé disparaissaient après un passage dans l'outil de développement de modules (modtool).
 - Exercice d'une feuille ouvert par un élève dans un navigateur qui a aussi servi à un enseignant : sa note n'était pas enregistrée (un paramètre du menu de l'enseignant était ajouté au lien de l'exercice) ; « Revenir à la liste » menait à la liste des feuilles.

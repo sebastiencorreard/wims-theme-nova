@@ -240,6 +240,35 @@
   font-variant-numeric: tabular-nums;
 }
 :where(html:not(.nova-std-listes)) li.wims_sheet_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_exam_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_doc_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_vote_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_tool_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_glossary_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty, :where(html:not(.nova-std-listes)) li.wims_freework_item :is(.wims_sheet_desc, .wims_exam_desc, .wims_user_info, .wims_sheet_info, .wims_user_exam_expire):empty{ display: none; }
+/* Accueil de l'élève (themes/_widgets/usersheet.phtml, userexam.phtml ; 2026-11-18, utilisateur : « non cliquables ») :
+ * le lien n'est pas enfant direct du li mais dans span.wims_user_sheet_title / span.wims_user_exam_desc, précédé de
+ * « Feuille 1. » / « Examen 1. ». Les deux forment le titre de la carte (au-dessus du saut de ligne), le lien s'étend à
+ * toute la carte comme celui des documents. Sélecteurs (0,3,3) : plus forts que « autres liens au-dessus » (0,2,3). */
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > :is(span.wims_user_sheet_type, span.wims_user_exam_type) {
+  order: 0; margin-top: 0; flex: 0 0 auto; color: var(--nova-texte-2); font-weight: 600;
+}
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > :is(span.wims_user_sheet_title, span.wims_user_exam_desc) {
+  order: 0; margin-top: 0; flex: 1 1 12rem; min-width: 0;
+}
+:where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> div.wims_user_info .wims_sheet_score) > span.wims_user_sheet_title,
+:where(html:not(.nova-std-listes)) li.wims_exam_item:has(> div.nova-note-examen) > span.wims_user_exam_desc { flex-basis: 0; }
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > :is(span.wims_user_sheet_title, span.wims_user_exam_desc) > a:first-child {
+  position: static; color: var(--nova-texte); font-weight: 600; text-decoration: none; outline: none;
+}
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > :is(span.wims_user_sheet_title, span.wims_user_exam_desc) > a:first-child::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+}
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item):has(> :is(span.wims_user_sheet_title, span.wims_user_exam_desc) > a:focus-visible) {
+  outline: 3px solid var(--nova-accent); outline-offset: 2px;
+}
+/* Écran étroit : « Feuille 1. » et la note sur la première ligne, le titre en entier dessous. */
+@media (max-width: 640px) {
+  :where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > :is(span.wims_user_sheet_type, span.wims_user_exam_type, div.wims_user_info, div.nova-note-examen) { order: -1; }
+  :where(html:not(.nova-std-listes)) li.wims_sheet_item > span.wims_user_sheet_title,
+  :where(html:not(.nova-std-listes)) li.wims_exam_item > span.wims_user_exam_desc,
+  :where(html:not(.nova-std-listes)) li.wims_sheet_item:has(> div.wims_user_info .wims_sheet_score) > span.wims_user_sheet_title,
+  :where(html:not(.nova-std-listes)) li.wims_exam_item:has(> div.nova-note-examen) > span.wims_user_exam_desc { flex: 1 1 100%; }
+}
 
 
 /* ---------- Rien de plus large que la place disponible ---------- */
@@ -387,8 +416,9 @@ tt.e { color: color-mix(in oklab, #48D1CC 45%, black); }
 
 /* Types absents de l'onglet affiché : retirés de la légende (js/nova.js, legendeTypes). */
 .wimsbody .nova-legende-absente { display: none !important; }
-/* Légende (étiquettes sans lien, ul.inline) : pastilles compactes, pas des cartes. */
-li.wims_sheet_item:not(:has(> a)), li.wims_exam_item:not(:has(> a)), li.wims_doc_item:not(:has(> a)), li.wims_vote_item:not(:has(> a)), li.wims_tool_item:not(:has(> a)), li.wims_glossary_item:not(:has(> a)), li.wims_freework_item:not(:has(> a)) {
+/* Légende (étiquettes sans lien, ul.inline) : pastilles compactes, pas des cartes. Sans AUCUN lien (pas seulement sans
+ * lien direct) : sur l'accueil de l'élève, le lien d'une feuille ou d'un examen est dans un span (2026-11-18). */
+li.wims_sheet_item:not(:has(a)), li.wims_exam_item:not(:has(a)), li.wims_doc_item:not(:has(a)), li.wims_vote_item:not(:has(a)), li.wims_tool_item:not(:has(a)), li.wims_glossary_item:not(:has(a)), li.wims_freework_item:not(:has(a)) {
   display: inline-flex !important;
   align-items: center;
   gap: 6px;
@@ -402,14 +432,14 @@ li.wims_sheet_item:not(:has(> a)), li.wims_exam_item:not(:has(> a)), li.wims_doc
   font-size: var(--nova-petit);
   transform: none;
 }
-li.wims_sheet_item:not(:has(> a))::before, li.wims_exam_item:not(:has(> a))::before, li.wims_doc_item:not(:has(> a))::before, li.wims_vote_item:not(:has(> a))::before, li.wims_tool_item:not(:has(> a))::before, li.wims_glossary_item:not(:has(> a))::before, li.wims_freework_item:not(:has(> a))::before {
+li.wims_sheet_item:not(:has(a))::before, li.wims_exam_item:not(:has(a))::before, li.wims_doc_item:not(:has(a))::before, li.wims_vote_item:not(:has(a))::before, li.wims_tool_item:not(:has(a))::before, li.wims_glossary_item:not(:has(a))::before, li.wims_freework_item:not(:has(a))::before {
   display: inline-block;
   width: 24px;
   height: 24px;
   border-radius: 999px;
   background-size: 16px;
 }
-li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover, li.wims_doc_item:not(:has(> a)):hover, li.wims_vote_item:not(:has(> a)):hover, li.wims_tool_item:not(:has(> a)):hover, li.wims_glossary_item:not(:has(> a)):hover, li.wims_freework_item:not(:has(> a)):hover {
+li.wims_sheet_item:not(:has(a)):hover, li.wims_exam_item:not(:has(a)):hover, li.wims_doc_item:not(:has(a)):hover, li.wims_vote_item:not(:has(a)):hover, li.wims_tool_item:not(:has(a)):hover, li.wims_glossary_item:not(:has(a)):hover, li.wims_freework_item:not(:has(a)):hover {
   border-color: transparent;
   box-shadow: none;
   transform: none;
@@ -508,7 +538,7 @@ li.wims_sheet_item:not(:has(> a)):hover, li.wims_exam_item:not(:has(> a)):hover,
  * retiré. « html body » : ces cartes ne sont pas toujours dans .wimsbody. */
 html:where(:not(.nova-std-listes)) body li.wims_sheet_item, html:where(:not(.nova-std-listes)) body li.wims_exam_item, html:where(:not(.nova-std-listes)) body li.wims_doc_item, html:where(:not(.nova-std-listes)) body li.wims_vote_item, html:where(:not(.nova-std-listes)) body li.wims_tool_item, html:where(:not(.nova-std-listes)) body li.wims_glossary_item, html:where(:not(.nova-std-listes)) body li.wims_freework_item{ border-left-color: var(--nova-bord); }
 html:where(:not(.nova-std-listes)) body li.wims_sheet_item:hover, html:where(:not(.nova-std-listes)) body li.wims_exam_item:hover, html:where(:not(.nova-std-listes)) body li.wims_doc_item:hover, html:where(:not(.nova-std-listes)) body li.wims_vote_item:hover, html:where(:not(.nova-std-listes)) body li.wims_tool_item:hover, html:where(:not(.nova-std-listes)) body li.wims_glossary_item:hover, html:where(:not(.nova-std-listes)) body li.wims_freework_item:hover{ border-color: var(--nova-accent); }
-html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_exam_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_doc_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_vote_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_tool_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_glossary_item:not(:has(> a)), html:where(:not(.nova-std-listes)) body li.wims_freework_item:not(:has(> a)){ border-color: transparent; }
+html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_exam_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_doc_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_vote_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_tool_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_glossary_item:not(:has(a)), html:where(:not(.nova-std-listes)) body li.wims_freework_item:not(:has(a)){ border-color: transparent; }
 
 /* Feuille d'exercices, vue de l'élève (adm/sheet : ol.wims_sheet_list > li.wims_exo_item) — demande de
  * l'utilisateur, 2026-10-03 : cartes blanches arrondies, cliquables en entier, numéro en pastille,

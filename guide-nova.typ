@@ -1529,6 +1529,19 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == CSS
 
+#piege[Feuilles et examens de l'accueil de l'élève en pastilles colorées, non cliquables][
+  Sur l'accueil de l'élève (et la vue élève de l'enseignant), les feuilles et examens avaient l'aspect des étiquettes de
+  légende (fond de couleur, arrondi complet), alors que les documents étaient des cartes blanches cliquables.
+][
+  Les cartes supposent le lien principal enfant direct du `li` (`> a:first-of-type`) ; la légende était reconnue par
+  `li:not(:has(> a))`. Or `themes/_widgets/usersheet.phtml` et `userexam.phtml` placent ce lien dans
+  `span.wims_user_sheet_title` / `span.wims_user_exam_desc`.
+][
+  Légende = `li` sans AUCUN lien (`:not(:has(a))`, comme `legendeTypes` de `nova.js`) ; règles propres à ces spans dans
+  `_css/contenu.css` (titre de carte, lien étendu à toute la carte). Toujours regarder la structure de WIMS par page avant de
+  croire qu'une règle commune s'applique.
+]
+
 #piege[Une règle de Nova sans effet][
   La règle est bien dans `_css/`, `css.css` est reconstruit, mais l'élément ne change pas.
 ][

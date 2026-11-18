@@ -148,6 +148,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [Gabarits, côté serveur], [`*.phtml`, `_widgets/`, `_procs/`, `lang/`], [— (lus tels quels par WIMS)],
   [Styles], [`_css/*.css`, ordre dans `css.css.template`], [`css.css` (par `./construire-css.sh`)],
   [Comportements], [`js/src/*.js`], [`js/nova.js` (par `./construire-js.sh`, réduit par terser)],
+  [Éditeur de code], [`js/cm6/*.js` (CodeMirror 6 + langue des documents)], [`js/cm6.js` (par `./construire-cm6.sh`, esbuild)],
 )
 
 == Arborescence
@@ -162,6 +163,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [`lang/`], [Textes, en latin-1, en quatre langues au moins (fr, en, es, it).],
   [`_css/`], [Feuilles sources ; `css.css.template` fixe leur ordre.],
   [`js/src/`], [Sources de `nova.js`, par domaine (@annexe-js). Autres scripts de `js/` : chargés à la demande.],
+  [`js/cm6/`], [Sources de `js/cm6.js` (éditeur de code des documents, @editeur) : `entree.js`, `langue-documents.js`, `LICENSE-CodeMirror` (MIT).],
   [`icones/`], [Jeu d'icônes Lucide pour WIMS et ses outils de construction.],
   [`img/`, `polices/`, `_avatar/`], [Images (logos, badges), polices (Atkinson Hyperlegible), dessins de l'avatar.],
   [`guide-nova.typ`], [Ce guide (à la racine : Typst ne lit les sources que sous le dossier du fichier compilé).],
@@ -180,7 +182,8 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   `WIMS_THEMES` (ex. `export WIMS_THEMES=/home/wims/public_html/themes`) ; avec Docker, dans le conteneur nommé par
   `CONTENEUR` (par défaut `wims432`).
 - *Node.js* et *terser 5* : `construire-js.sh` le cherche dans `$NOVA_TERSER`, puis dans `../../outils-js/node_modules/.bin`, puis dans le `PATH`
-  (`npm install terser@5.36.0` dans un dossier `outils-js` à côté du projet).
+  (`npm install terser@5.36.0` dans un dossier `outils-js` à côté du projet). Pour l'éditeur de code (@editeur), dans le même
+  dossier : `esbuild@0.21.5` et les paquets CodeMirror (versions exactes en tête de `construire-cm6.sh`).
 - *Python 3* (contrôles, outils d'icônes et d'avatar), *typst* (ce guide), *Playwright* (captures et tests, conseillé).
 - Un navigateur avec un mode « téléphone » (390 px de large) : Nova se vérifie toujours aussi au téléphone.
 
@@ -190,6 +193,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [Commande], [Lit WIMS ?], [Ce qu'elle fait],
   [`./construire-css.sh`], [oui], [Concatène les feuilles de `css.css.template` (celles de WIMS lues *dans le conteneur* ou dans `$WIMS_THEMES`, celles de Nova dans `_css/`), réduit, écrit `css.css` et l'empreinte (`_css/empreinte.css`, meta `nova-css`).],
   [`./construire-js.sh`], [non], [Assemble `js/src/*.js` dans l'ordre des noms, réduit par terser, écrit `js/nova.js` et son empreinte dans `htmlheader.phtml`. `NOVA_JS_LISIBLE=1` : sans réduction, pour déboguer.],
+  [`./construire-cm6.sh`], [non], [Assemble `js/cm6/` et CodeMirror 6 par esbuild (ASCII seul), écrit `js/cm6.js` et son empreinte (meta `nova-cm6` de `htmlheader.phtml`). Seulement après une modification de `js/cm6/` ou un changement de version.],
   [`./verifier.sh`], [non], [Contrôles : assemblage à jour, syntaxe, ASCII dans le code, encodages, langues, chemins en dur, couverture de ce guide ; recompile `guide-nova.pdf`.],
   [`./livrer.sh`], [oui], [Refuse un dépôt modifié ; lance `verifier.sh` et `construire-css.sh` ; produit `livraisons/nova-<date>-<commit>.tgz` (avec ce guide en PDF).],
 )
@@ -319,7 +323,7 @@ variable change tout le thème. N'écrivez jamais une couleur en dur dans une au
   [`composants-reglages-badges.css`], [cartes « Réglages de Nova », badges],
   [`composants-enseignant.css`], [pages de l'enseignant (configuration, fiches, séquences, export…)],
   [`composants-dominos.css`], [exercices à étiquettes (dominos, tuiles, éléments à associer)],
-  [`accueil.css`, `activite.css`, `avatar.css`, `couleur.css`, `chrono.css`, `decorations.css`, `suivi.css`, `ti.css`], [une page ou une fonction chacune (leur nom ; `ti.css` : Travail individualisé)],
+  [`accueil.css`, `activite.css`, `avatar.css`, `couleur.css`, `chrono.css`, `decorations.css`, `editeur.css`, `suivi.css`, `ti.css`], [une page ou une fonction chacune (leur nom ; `editeur.css` : éditeur de code des documents ; `ti.css` : Travail individualisé)],
   [`foundation-min.css`], [le peu de Foundation 6 que WIMS utilise encore],
 )
 
@@ -1006,6 +1010,23 @@ reconnaît la page, et son texte. La classe `.nova-vide` est déjà prise (elle 
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
+
+=== L'éditeur de code des documents (CodeMirror 6) <editeur>
+
+Sur la page de présentation d'une feuille (`adm/class/sheet`, `#prpage`) et dans les documents de la classe (`adm/doc`,
+`#doc_content`), `editeurDocuments` (`js/src/70-enseignant.js`) charge `js/cm6.js` (adresse tirée de celle de `nova.js`,
+empreinte lue dans la meta `nova-cm6`) et pose l'éditeur après la zone de texte de WIMS. Cette zone reste dans le
+formulaire, cachée (`nova-editeur-zone`) et recopiée à chaque modification : sans JavaScript, ou avec le réglage
+standard « textes », rien ne change. Pas au téléphone pour l'instant (aucun pointeur fin).
+
+- *La langue des documents* : `js/cm6/langue-documents.js`, analyse ligne à ligne (`StreamLanguage`) : listes de mots
+  (contrôle, commandes de document, variables d'une page de présentation, types, fonctions, conditions), `\comment{…}` à
+  accolades imbriquées, `\( … \)`, HTML. Couleurs par classes `nova-cm-…` dans `_css/editeur.css`.
+- *Les textes de l'interface* (recherche, remplacement) : étiquette `:editeur` de `lang/enseignant-textes.phtml.<l>`
+  (attributs `data-…`, convertis en « phrases » de CodeMirror par la table `PHRASES` de `editeurDocuments`).
+- *Après une modification de `js/cm6/`* : `./construire-cm6.sh`, puis `./verifier.sh`. Changer de version de CodeMirror :
+  `npm install --prefix ../../outils-js --save-exact …` (une seule copie de `@codemirror/state`, sinon l'éditeur casse :
+  `npm ls @codemirror/state`), puis la même commande.
 
 === Le Travail individualisé (page de présentation d'une feuille) <ti>
 

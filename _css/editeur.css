@@ -1,0 +1,47 @@
+/* Nova : éditeur de code des documents (CodeMirror 6, js/cm6.js ; nova.js editeurDocuments ; 2026-11-18, utilisateur,
+   maquette B). Page de présentation d'une feuille et documents de la classe. La zone de texte de WIMS reste dans le
+   formulaire, cachée (nova-editeur-zone) ; couleurs de la langue des documents par classes (js/cm6/langue-documents.js). */
+.nova-editeur-zone { display: none !important; }
+.nova-editeur {
+  --nova-cm-controle: var(--nova-accent); --nova-cm-type: #8a5a00; --nova-cm-commande: #0b6e6e; --nova-cm-predefinie: #a2521b;
+  --nova-cm-variable: #2b5fb3; --nova-cm-fonction: #6b4bb3; --nova-cm-balise: #5f6b73; --nova-cm-attribut: #5f6b2f;
+  --nova-cm-chaine: #2f7d4f; --nova-cm-commentaire: #6f7680; --nova-cm-nombre: #b33c1f; --nova-cm-accolade: #9b6b8f;
+  border: 1px solid var(--nova-bord-fort); border-radius: 10px; background: var(--nova-surface); color: var(--nova-texte);
+  font-size: 14px; text-align: left; margin: 8px 0; max-height: 75vh; overflow: hidden;
+}
+.nova-editeur.cm-focused { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+.nova-editeur .cm-scroller { font-family: var(--nova-police-chiffres); line-height: 1.55; min-height: 16em; max-height: 75vh; overflow: auto; }
+.nova-editeur .cm-gutters { background: var(--nova-surface-2); color: #8a919b; border-right: 1px solid var(--nova-bord); border-radius: 10px 0 0 10px; }
+.nova-editeur .cm-activeLine { background: color-mix(in srgb, var(--nova-accent) 5%, transparent); }
+.nova-editeur .cm-activeLineGutter { background: color-mix(in srgb, var(--nova-accent) 10%, transparent); color: var(--nova-texte); }
+.nova-editeur .cm-matchingBracket { background: color-mix(in srgb, var(--nova-accent) 18%, transparent); outline: 1px solid var(--nova-accent); border-radius: 2px; }
+.nova-editeur .cm-nonmatchingBracket { background: #fde2e1; outline: 1px solid #c0392b; }
+.nova-editeur .cm-selectionBackground, .nova-editeur.cm-focused .cm-selectionBackground { background: color-mix(in srgb, var(--nova-accent) 22%, transparent) !important; }
+.nova-editeur .cm-searchMatch { background: #fff1b8; outline: 1px solid #e0b400; }
+.nova-editeur .cm-searchMatch-selected { background: #ffd54a; }
+.nova-editeur .cm-selectionMatch { background: color-mix(in srgb, var(--nova-accent) 10%, transparent); }
+/* Panneau de recherche et de remplacement (en haut) */
+.nova-editeur .cm-panels { background: var(--nova-surface-2); color: var(--nova-texte); border-color: var(--nova-bord); }
+.nova-editeur .cm-panels-top { border-bottom: 1px solid var(--nova-bord); border-radius: 10px 10px 0 0; }
+.nova-editeur .cm-search { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 36px 8px 10px; font-family: var(--nova-police); font-size: 14px; }
+.nova-editeur .cm-search br { flex-basis: 100%; content: ""; }
+.nova-editeur .cm-search .cm-textfield { font: inherit; padding: 4px 8px; border: 1px solid var(--nova-bord-fort); border-radius: 6px; background: var(--nova-surface); color: var(--nova-texte); min-width: 12em; margin: 0; }
+.nova-editeur .cm-search .cm-button { font: inherit; padding: 4px 10px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); background-image: none; color: var(--nova-texte); cursor: pointer; margin: 0; }
+.nova-editeur .cm-search .cm-button:hover { border-color: var(--nova-accent); color: var(--nova-accent); }
+.nova-editeur .cm-search label { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; margin: 0; }
+.nova-editeur .cm-search input[type=checkbox] { margin: 0; accent-color: var(--nova-accent); }
+.nova-editeur .cm-search button[name=close] { font-size: 20px; top: 6px; right: 8px; color: var(--nova-texte); }
+/* Langue des documents */
+.nova-cm-controle { color: var(--nova-cm-controle); font-weight: 700; }
+.nova-cm-commande { color: var(--nova-cm-commande); font-weight: 700; }
+.nova-cm-predefinie { color: var(--nova-cm-predefinie); }
+.nova-cm-variable { color: var(--nova-cm-variable); }
+.nova-cm-type { color: var(--nova-cm-type); }
+.nova-cm-fonction { color: var(--nova-cm-fonction); }
+.nova-cm-condition { color: var(--nova-cm-controle); }
+.nova-cm-balise { color: var(--nova-cm-balise); }
+.nova-cm-attribut { color: var(--nova-cm-attribut); }
+.nova-cm-chaine, .nova-cm-maths { color: var(--nova-cm-chaine); }
+.nova-cm-commentaire { color: var(--nova-cm-commentaire); font-style: italic; }
+.nova-cm-nombre { color: var(--nova-cm-nombre); }
+.nova-cm-accolade { color: var(--nova-cm-accolade); }

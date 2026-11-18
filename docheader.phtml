@@ -1,5 +1,10 @@
 <!-- begin of standard/docheader.phtml -->
 !read themes/$wims_theme/_widgets/accent.phtml
+!! Editeur de code des documents (js/cm6.js ; nova.js editeurDocuments ; 2026-11-18) : textes de son interface, quand le
+!! document est en edition (job=edit : zone #doc_content de adm/doc).
+!if $module=adm/doc and $job=edit and $wims_user!=$empty
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang editeur
+!endif
 
 !! document menu
 !nocache

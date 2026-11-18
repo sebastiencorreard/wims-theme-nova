@@ -10,9 +10,12 @@ def ko(m): err.append(m)
 # 1. js/nova.js = assemblage de js/src, empreinte à jour dans htmlheader.phtml.
 r = subprocess.run(['./construire-js.sh', '--verifier'], capture_output=True, text=True)
 if r.returncode: ko(r.stderr.strip())
+# 1 bis. js/cm6.js (éditeur de code des documents) = assemblage de js/cm6, empreinte à jour (2026-11-18).
+r = subprocess.run(['./construire-cm6.sh', '--verifier'], capture_output=True, text=True)
+if r.returncode: ko(r.stderr.strip())
 
 # 2. Syntaxe des scripts écrits par Nova.
-scripts = ['js/nova.js', 'js/suivi.js', 'js/flyers.js']
+scripts = ['js/nova.js', 'js/suivi.js', 'js/flyers.js', 'js/cm6.js']
 if shutil.which('node'):
     for f in scripts:
         r = subprocess.run(['node', '--check', f], capture_output=True, text=True)

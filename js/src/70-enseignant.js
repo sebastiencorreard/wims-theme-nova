@@ -3423,3 +3423,32 @@
       if (onglet) setTimeout(function () { onglet.click(); }, 0);
     }
   }
+
+  /* Éditeur de code des documents (2026-11-18, utilisateur, maquette B) : page de présentation d'une feuille (adm/class/sheet,
+   * #prpage) et documents de la classe (adm/doc, #doc_content). CodeMirror 6 et la langue des documents (js/cm6.js, construit
+   * par construire-cm6.sh) chargés ici seulement ; la zone de WIMS reste dans le formulaire, cachée et tenue à jour. Textes de
+   * l'interface (recherche, remplacement) : #nova-editeur-textes. Pas au téléphone pour l'instant (pas de pointeur fin ;
+   * utilisateur) ; réglage « textes » : zone de WIMS seule. */
+  function editeurDocuments() {
+    var zone = document.querySelector('#prpage textarea[name="wims_deposit"], textarea#doc_content');
+    var tx = document.getElementById('nova-editeur-textes');
+    var meta = document.querySelector('meta[name="nova-cm6"]');
+    var moi = document.querySelector('script[src*="/js/nova.js"]');
+    if (!zone || !tx || !meta || !moi || zone.readOnly || standard('textes')) return;
+    if (window.matchMedia && !window.matchMedia('(any-pointer: fine)').matches) return;
+    var PHRASES = { 'find': 'Find', 'replace': 'Replace', 'next': 'next', 'previous': 'previous', 'all': 'all',
+      'match-case': 'match case', 'regexp': 'regexp', 'by-word': 'by word', 'replace-1': 'replace', 'replace-all': 'replace all',
+      'close': 'close', 'current-match': 'current match', 'replaced': 'replaced $ matches', 'replaced-line': 'replaced match on line $',
+      'on-line': 'on line', 'go-to-line': 'Go to line', 'go': 'go', 'source': 'Source', 'control-character': 'Control character' };
+    var textes = {};
+    Object.keys(PHRASES).forEach(function (k) { var v = tx.getAttribute('data-' + k); if (v) textes[PHRASES[k]] = v; });
+    var lancer = function () {
+      if (!window.NovaEditeur || zone.classList.contains('nova-editeur-zone')) return;
+      try { window.NovaEditeur.creer(zone, textes); } catch (e) { zone.classList.remove('nova-editeur-zone'); }
+    };
+    if (window.NovaEditeur) { lancer(); return; }
+    var sc = document.createElement('script');
+    sc.src = moi.src.replace(/nova\.js(\?.*)?$/, 'cm6.js?v=' + encodeURIComponent(meta.getAttribute('content') || ''));
+    sc.onload = lancer;
+    document.head.appendChild(sc);
+  }

@@ -286,11 +286,11 @@
 .wimsbody input[type="image"] { max-width: none; }
 /* Sur ces pages seulement, c'est le cadre de l'exercice qui défile, pas toute la page. */
 .wimsbody:has(input[type="image"]) { overflow-x: auto; }
-/* Loupe (2026-11-18, utilisateur ; nova.js imagesCliquables) : image plus large que la page réduite à sa largeur
+/* Loupe (2026-11-18, utilisateur ; nova.js imagesCliquables ; pas de curseur loupe : Chrome ne le change qu'au
+ * mouvement suivant, il paraissait au clic et restait dans la loupe, signalé le 2026-11-18) : image plus large que la page réduite à sa largeur
  * (classe posée par nova.js seulement, la page sans JavaScript garde la taille réelle) ; au doigt ou si elle perd plus
  * de 40 %, un toucher ouvre la zone en taille réelle dans un panneau, la réponse part par « Valider ce point ». Pas de loupe avec html.nova-std-reponse. */
 .wimsbody input[type="image"].nova-image-reduite { width: 100%; max-width: 100%; height: auto; }
-.wimsbody input[type="image"].nova-loupe-image { cursor: zoom-in; }
 .nova-loupe-aide { display: flex; gap: var(--nova-e2); align-items: flex-start; margin: var(--nova-e2) 0 0; color: var(--nova-texte-2);
   font-size: .9rem; text-align: left; }
 .nova-loupe-aide::before { content: ""; flex: none; width: 1.1em; height: 1.1em; margin-top: .15em; background: currentColor;

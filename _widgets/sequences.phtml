@@ -47,6 +47,12 @@
 <span id="nova-seq-plage-fait" hidden data-resultat="$nova_sr"></span>
   !endif
   !if $job=show or $job=$empty
+    !! Texte d'aide de WIMS en tete de page (show.phtml) : entoure, masque par le CSS sauf reglage std-listes (2026-11-19).
+    !for nova_sm in 1,1c,2,3
+      !if $(name_show$nova_sm)!=$empty
+        !set name_show$nova_sm=<span class="nova-seq-aide">$(name_show$nova_sm)</span>
+      !endif
+    !next nova_sm
     !set nova_sp=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plages
     !set nova_sp=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sp
     !set nova_mo=!defof sequence_Title in wimshome/log/classes/$wims_class/seq/.def

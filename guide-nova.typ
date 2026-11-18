@@ -295,6 +295,8 @@ variable change tout le thème. N'écrivez jamais une couleur en dur dans une au
 - *Accent* : une seule couleur, celle du site ou de la classe (`$wims_ref_bgcolor`, posée par
   `_widgets/accent.phtml`) ; si elle est restée au gris par défaut de WIMS (`#676767`), la prune Nova `#7A3B69`.
   Ses nuances (`--nova-accent-doux`, `--nova-lien`…) en sont dérivées par `color-mix`.
+- *États* : vert `--nova-succes`, orange `--nova-attention`, rouge `--nova-erreur`, bleu `--nova-info` (« À venir »),
+  chacun avec sa variante `-fond`. Ce sont des couleurs d'état, pas des accents.
 - *Notes* : `--nova-note-*` (palette rouge, orange, jaune, vert sur la note /10), reprises par
   `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS.
 - *Police* : Atkinson Hyperlegible Next (Mono pour les chiffres), servie par le thème (`_css/polices.css`,

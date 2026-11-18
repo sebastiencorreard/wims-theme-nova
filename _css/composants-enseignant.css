@@ -630,7 +630,9 @@ html.nova-sans-animation .wimsbody .nova-seq-inter input, html.nova-sans-animati
 .wimsbody .nova-seq-alerte p { margin: 0; }
 .wimsbody .nova-seq-alerte .nova-etat-ico { width: 18px; height: 18px; }
 html.nova-seq-eteint .wimsbody .nova-seq:not(.nova-seq-souleve) { opacity: .6; }
-.wimsbody .nova-etat-venir { background: var(--nova-accent-doux); color: var(--nova-lien); }
+.wimsbody .nova-etat-venir { background: var(--nova-info-fond); color: var(--nova-info); }
+/* Texte d'aide de WIMS en tête de la liste (name_show1, 1c, 2, 3), entouré par _widgets/sequences.phtml : masqué (2026-11-19, utilisateur). */
+html:not(.nova-std-listes) .wimsbody .nova-seq-aide { display: none; }
 .wimsbody .nova-seq-etat .nova-etat-nom { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wimsbody .nova-seq-court { display: none; }
 .nova-etat-menu button.nova-etat-action { width: 100%; border: 0; background: none; box-shadow: none; font-family: inherit; font-size: .9rem; font-weight: 700; line-height: 1.3; text-align: left; text-transform: none; letter-spacing: normal; }

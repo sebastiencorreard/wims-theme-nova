@@ -2155,7 +2155,13 @@
    * Nova, pas moveup). Replis gardés par navigateur et par classe (localStorage). Glisser-déposer par la poignée : carte
    * repliée qui suit le pointeur, silhouette à sa place, les autres s'écartent ; requête en arrière-plan (nova_seq_de,
    * nova_seq_vers : _widgets/sequences.phtml, _procs/sequences.sh), puis la page est relue (numéros et liens de WIMS),
-   * même position à l'écran. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes. */
+   * même position à l'écran. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes.
+   * Réglages sur la page (2026-11-19, utilisateur, maquette sequences-reglages) : barre au-dessus de la liste (variante A :
+   * présentation en séquences, mot générique, numéro seul, Ajouter), enregistrée par le formulaire Configurer de WIMS
+   * (lu en arrière-plan, recopié dans la page et envoyé par le navigateur : accents en windows-1252) ; une seule pastille
+   * par séquence (variante B) = ce que voient les élèves aujourd'hui, d'après le statut de WIMS et la plage d'affichage
+   * (#nova-seq-reglages, fichier .S<n>) ; son menu : Activer ou Désactiver, Affichage aux élèves (fenêtre : toujours,
+   * jamais, entre deux dates ; nova_seq_plage, _procs/sequences.sh), Effacer. */
   function sequencesEnseignant() {
     var tx = document.getElementById('nova-seq-textes');
     if (!tx || standard('listes')) return;
@@ -2172,10 +2178,267 @@
     var cartes = Array.prototype.filter.call(document.querySelectorAll('.wimsbody div.wims_seq[id^="wims_seq_"]'), function (d) {
       return d.querySelector(':scope > .wims_content_seq > .wims_seq_actions') && d.querySelector(':scope > h2.wims_title_seq');
     });
+    var rg = document.getElementById('nova-seq-reglages');
+    var plages = {};
+    if (rg) (rg.getAttribute('data-plages') || '').split(';').forEach(function (x) {
+      var m = /^(\d+):([a-z]+)(?:,(\d*),(\d*),(\d))?$/.exec(x);
+      if (m) plages[m[1]] = { mode: m[2], debut: m[3] || '', fin: m[4] || '', postes: m[5] === '1' };
+    });
+    var chiffres = function (v) { return (v || '').replace(/\D/g, ''); };
+    var maintenant = rg ? chiffres(rg.getAttribute('data-maintenant')).slice(0, 12) : '';
+    if (rg) barreReglages(cartes.length ? cartes[0] : null);
     if (!cartes.length) return;
     var numero = function (d) { return +d.id.replace('wims_seq_', ''); };
     var plis = lire(clePlis, localStorage) || [];
     var menus = menusEtat(), occupe = false;
+
+    // Date AAAAMMJJHHMM (heure du serveur) : objet Date local, et texte court (« 30 nov. », heure si elle compte).
+    function enDate(v) { return new Date(+v.slice(0, 4), +v.slice(4, 6) - 1, +v.slice(6, 8), +v.slice(8, 10), +v.slice(10, 12)); }
+    function texteDate(v, heureSansSens, jour, court) {
+      var d = enDate(v), o = { day: 'numeric', month: 'short' };
+      if (jour) o.weekday = 'short';
+      if (v.slice(0, 4) !== maintenant.slice(0, 4)) o.year = 'numeric';
+      var x;
+      try { x = d.toLocaleDateString(racineLangue(), o); } catch (e) { x = d.toLocaleDateString(); }
+      if (!court && v.slice(8, 12) !== heureSansSens) {
+        try { x += ', ' + d.toLocaleTimeString(racineLangue(), { hour: 'numeric', minute: '2-digit' }); } catch (e) { /* sans heure */ }
+      }
+      return x;
+    }
+    // Ce que voient les élèves aujourd'hui : statut de WIMS (0 = désactivée), puis la plage (.S<n>).
+    function vueEleves(etat, p) {
+      var r = function (genre, icone, long, court, detail) { return { genre: genre, icone: icone, long: long, court: court || long, detail: detail || '' }; };
+      if (etat !== 1) return r('neutre', 'pause', t('desactivee'));
+      if (!p || p.mode === 'tous') return r('ok', 'coche', t('visible'));
+      if (p.mode === 'cachee') return r('neutre', 'oeil-barre', t('cachee'));
+      if (p.mode === 'technique') return r('attention', 'curseurs', t('technique'));
+      var postes = p.postes ? t('postes') : '';
+      if (!p.debut && !p.fin) return r('attention', 'ecran', t('postes'));
+      if (p.debut && maintenant && maintenant < p.debut) return r('venir', 'horloge', t('a-venir', texteDate(p.debut, '0000', true)), t('des', texteDate(p.debut, '0000', false, true)), postes);
+      if (p.fin && maintenant && maintenant > p.fin) return r('neutre', 'horloge', t('terminee', texteDate(p.fin, '2359')), t('terminee-court', texteDate(p.fin, '2359', false, true)), postes);
+      if (p.fin) return r('ok', 'oeil', t('visible-jusqu', texteDate(p.fin, '2359')), t('jusqu', texteDate(p.fin, '2359', false, true)), postes);
+      return r('ok', 'oeil', t('visible'), '', postes);
+    }
+
+    // Fenêtre « Affichage aux élèves » d'une séquence : toujours, jamais, entre deux dates (heure du serveur).
+    var fenetre = null;
+    function fenetrePlage(n, d, titre, modifier) {
+      var p = plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
+      if (fenetre) fenetre.remove();
+      var f = fenetre = el('dialog', 'nova-dialogue nova-seq-plage');
+      var h = el('h1', '', t('plage-titre'));
+      h.id = 'nova-seq-plage-titre';
+      f.setAttribute('aria-labelledby', h.id);
+      f.appendChild(h);
+      f.appendChild(el('p', 'nova-seq-plage-seq', titre));
+      var form = el('form', 'nova-seq-plage-form');
+      form.method = 'dialog';
+      f.appendChild(form);
+      var choix = el('div', 'nova-seq-plage-choix');
+      form.appendChild(choix);
+      // Postes seuls (sans dates) : « toujours » (les postes sont gardés à l'enregistrement).
+      var actuel = p.mode === 'plage' && !p.debut && !p.fin ? 'tous' : p.mode;
+      var radio = function (v, texte) {
+        var l = el('label'), r = el('input');
+        r.type = 'radio'; r.name = 'nova-seq-mode'; r.value = v;
+        r.checked = v === actuel;
+        l.appendChild(r); l.appendChild(document.createTextNode(' ' + texte));
+        choix.appendChild(l);
+        return r;
+      };
+      var rTous = radio('tous', t('toujours')), rCache = radio('cachee', t('jamais')), rPlage = radio('plage', t('entre'));
+      var dates = el('div', 'nova-seq-plage-dates');
+      var champ = function (type, val, lab) {
+        var c = el('input'); c.type = type; if (val) c.value = val;
+        c.setAttribute('aria-label', lab);
+        if (type === 'date' && rg) {
+          var a = chiffres(rg.getAttribute('data-creation')), b = chiffres(rg.getAttribute('data-expiration'));
+          if (a.length === 8) c.min = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8);
+          if (b.length === 8) c.max = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8);
+        }
+        return c;
+      };
+      var iso = function (v) { return v ? v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6, 8) : ''; };
+      var hm = function (v, def) { return v ? v.slice(8, 10) + ':' + v.slice(10, 12) : def; };
+      var dDeb = champ('date', iso(p.debut), t('du')), hDeb = champ('time', hm(p.debut, '00:00'), t('du'));
+      var dFin = champ('date', iso(p.fin), t('au')), hFin = champ('time', hm(p.fin, '23:59'), t('au'));
+      dates.appendChild(el('span', '', t('du'))); dates.appendChild(dDeb); dates.appendChild(hDeb);
+      dates.appendChild(el('span', '', t('au'))); dates.appendChild(dFin); dates.appendChild(hFin);
+      choix.appendChild(dates);
+      var suivre = function () { [dDeb, hDeb, dFin, hFin].forEach(function (c) { c.disabled = !rPlage.checked; }); };
+      [rTous, rCache, rPlage].forEach(function (r) { r.addEventListener('change', suivre); });
+      [dDeb, dFin].forEach(function (c) { c.addEventListener('input', function () { if (c.value) { rPlage.checked = true; suivre(); } }); });
+      var note = el('p', 'nova-seq-plage-note', t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
+      form.appendChild(note);
+      var erreur = el('p', 'nova-seq-plage-erreur');
+      erreur.setAttribute('role', 'alert');
+      form.appendChild(erreur);
+      var boutons = el('div', 'wimscenter');
+      var annuler = el('button', 'wims_button wims_secondary_button', t('annuler'));
+      annuler.type = 'button';
+      annuler.addEventListener('click', function () { f.close(); });
+      boutons.appendChild(annuler);
+      if (p.mode === 'technique') {
+        [rTous, rCache, rPlage].forEach(function (r) { r.disabled = true; });
+        if (modifier) { var m = el('a', 'wims_button', t('modifier')); m.href = modifier.href; boutons.appendChild(m); }
+      } else {
+        var ok = el('button', 'wims_button', t('enregistrer'));
+        ok.type = 'submit';
+        boutons.appendChild(ok);
+      }
+      form.appendChild(boutons);
+      suivre();
+      form.addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        if (p.mode === 'technique') return;
+        var mode = rTous.checked ? 'tous' : rCache.checked ? 'cachee' : rPlage.checked ? 'plage' : '';
+        if (!mode) return;
+        var deb = '', fin = '';
+        if (mode === 'plage') {
+          if (dDeb.value) deb = chiffres(dDeb.value) + chiffres(hDeb.value || '00:00');
+          if (dFin.value) fin = chiffres(dFin.value) + chiffres(hFin.value || '23:59');
+          if (!deb && !fin) { erreur.textContent = t('date-manque'); return; }
+          if (deb && fin && deb >= fin) { erreur.textContent = t('date-ordre'); return; }
+        }
+        f.close();
+        enregistrerPlage(d, n, mode, deb, fin);
+      });
+      f.addEventListener('click', function (e) { if (e.target === f) f.close(); });
+      document.body.appendChild(f);
+      f.showModal();
+      (choix.querySelector('input:checked') || rTous).focus();
+    }
+    function enregistrerPlage(d, n, mode, deb, fin) {
+      occupe = true;
+      document.documentElement.classList.add('nova-occupe');
+      if (etatEnvoi) etatEnvoi.textContent = t('enregistrement');
+      var debut = Date.now();
+      var relire = function (attente) {
+        setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, attente);
+      };
+      fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show&nova_seq_plage=' + n + '&nova_seq_mode=' + mode +
+        '&nova_seq_debut=' + deb + '&nova_seq_fin=' + fin), { credentials: 'same-origin' })
+        .then(function (r) { return r.text(); })
+        .then(function (texte) {
+          if (!/id="nova-seq-plage-fait"[^>]*data-resultat="ok"/.test(texte)) throw new Error('refus');
+          garderVue(d, n);
+          relire(Math.max(0, 1500 - (Date.now() - debut)));
+        })
+        .catch(function () {
+          if (etatEnvoi) etatEnvoi.textContent = t('plage-erreur');
+          relire(2500);
+        });
+    }
+
+    // Barre de réglages au-dessus de la liste (variante A) : présentation en séquences, mot générique, numéro seul,
+    // Ajouter une séquence. Enregistrement : formulaire Configurer de WIMS lu en arrière-plan, recopié ici, envoyé.
+    function barreReglages(avant) {
+      var corps = document.querySelector('.wimsbody');
+      if (!corps) return;
+      var barre = el('div', 'nova-seq-reglages');
+      var inter = el('label', 'nova-seq-inter');
+      var c = el('input');
+      c.type = 'checkbox'; c.id = 'nova-seq-ouvert'; c.setAttribute('role', 'switch');
+      c.checked = rg.getAttribute('data-ouvert') === 'yes';
+      inter.appendChild(c);
+      inter.appendChild(el('span', '', t('ouvert')));
+      barre.appendChild(inter);
+      var mot = el('span', 'nova-seq-mot');
+      var lm = el('label', '', t('mot'));
+      lm.htmlFor = 'nova-seq-mot';
+      var champ = el('input');
+      champ.type = 'text'; champ.id = 'nova-seq-mot'; champ.maxLength = 50;
+      champ.value = rg.getAttribute('data-mot') || '';
+      var seul = !!document.getElementById('nova-seq-numero');
+      var ln = el('label', 'nova-seq-num-choix');
+      var cn = el('input');
+      cn.type = 'checkbox'; cn.id = 'nova-seq-num-seul'; cn.checked = seul;
+      ln.appendChild(cn);
+      ln.appendChild(document.createTextNode(' ' + t('numero-court')));
+      champ.readOnly = seul;
+      mot.appendChild(lm); mot.appendChild(champ); mot.appendChild(ln);
+      barre.appendChild(mot);
+      var lienAjout = document.querySelector('#wimsmenumodubox a[href*="job=addseq"]');
+      var ajout = el('a', 'wims_button nova-seq-ajouter', t('ajouter'));
+      ajout.href = lienAjout ? lienAjout.href : lienSession('&cmd=renew&module=adm%2Fclass%2Fsequence&job=addseq');
+      ajout.insertBefore(icone('plus'), ajout.firstChild);
+      barre.appendChild(ajout);
+      var alerte = el('div', 'nova-seq-alerte');
+      alerte.setAttribute('role', 'status');
+      alerte.appendChild(icone('oeil-barre'));
+      alerte.appendChild(el('p', '', t('ouvert-non')));
+      var etat = el('p', 'nova-seq-reglages-envoi');
+      etat.setAttribute('role', 'status');
+      var suivre = function () {
+        alerte.hidden = c.checked;
+        document.documentElement.classList.toggle('nova-seq-eteint', !c.checked);
+      };
+      suivre();
+      if (avant) avant.parentNode.insertBefore(barre, avant);
+      else {
+        var x = corps.querySelector('#wims_class');
+        var y = x ? x.nextElementSibling : null;
+        if (y) y.parentNode.insertBefore(barre, y); else if (x) x.parentNode.appendChild(barre); else corps.appendChild(barre);
+      }
+      barre.parentNode.insertBefore(etat, barre.nextSibling);
+      barre.parentNode.insertBefore(alerte, etat.nextSibling);
+
+      var envoi = false;
+      function envoyer() {
+        if (envoi || !window.fetch || !window.TextDecoder || !window.DOMParser) return;
+        envoi = true;
+        [c, champ, cn].forEach(function (x) { x.disabled = true; });
+        etat.textContent = t('enregistrement');
+        var debut = Date.now();
+        var echec = function () {
+          etat.textContent = t('reglage-erreur');
+          setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, 2500);
+        };
+        fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=config'), { credentials: 'same-origin' })
+          .then(function (r) { return r.arrayBuffer(); })
+          .then(function (buf) {
+            var doc = new DOMParser().parseFromString(new TextDecoder('windows-1252').decode(buf), 'text/html');
+            var t0 = doc.querySelector('input[name="seq_Title"]'), f0 = t0 && t0.closest('form');
+            if (!f0) throw new Error('formulaire');
+            var f = document.createElement('form');
+            f.method = 'get';
+            f.action = f0.getAttribute('action') || 'wims.cgi';
+            f.hidden = true;
+            var ajouter = function (nom, val) { var i = document.createElement('input'); i.type = 'hidden'; i.name = nom; i.value = val; f.appendChild(i); };
+            Array.prototype.forEach.call(f0.elements, function (x) {
+              if (!x.name || x.name === 'seq_abandon' || x.name === 'seq_set' || x.name === 'nova_seq_numero') return;
+              if ((x.type === 'radio' || x.type === 'checkbox') && !x.checked) return;
+              if (x.type === 'submit' || x.type === 'button') return;
+              if (x.name === 'seq_open' || x.name === 'seq_Title') return;
+              ajouter(x.name, x.value);
+            });
+            ajouter('seq_open', c.checked ? 'yes' : 'no');
+            ajouter('seq_Title', champ.value.trim() || (rg.getAttribute('data-mot') || ''));
+            ajouter('seq_set', '1');
+            ajouter('nova_seq_numero', cn.checked ? 'oui' : 'non');
+            // WIMS répond par la page Configurer : envoi dans un cadre caché, puis la liste est relue.
+            var cadre = document.createElement('iframe');
+            cadre.name = 'nova-seq-cadre';
+            cadre.hidden = true;
+            cadre.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(cadre);
+            f.target = cadre.name;
+            document.body.appendChild(f);
+            // Écouteur posé à l'envoi : un cadre vide signale déjà un « load » en entrant dans la page.
+            setTimeout(function () {
+              cadre.addEventListener('load', function () {
+                setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, 1500);
+              });
+              f.submit();
+            }, Math.max(0, 1500 - (Date.now() - debut)));
+          })
+          .catch(echec);
+      }
+      c.addEventListener('change', function () { suivre(); envoyer(); });
+      champ.addEventListener('change', envoyer);
+      champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); champ.blur(); } });
+      cn.addEventListener('change', function () { champ.readOnly = cn.checked; envoyer(); });
+    }
 
     function plier(d, oui) {
       var b = d.querySelector('.nova-seq-plier'), c = d.querySelector(':scope > .wims_content_seq');
@@ -2217,12 +2480,17 @@
 
       if (statut) {
         var etat = +((/wims_status_(\d)/.exec(statut.className) || [])[1] || 0);
-        var pastille = el(bascule || effacer ? 'button' : 'span', 'nova-etat nova-etat-' + (etat === 1 ? 'ok' : 'neutre'));
-        pastille.appendChild(icone(etat === 1 ? 'coche' : 'crayon'));
-        pastille.appendChild(el('span', 'nova-etat-nom', propre(statut.textContent)));
+        var vu = vueEleves(etat, plages[n]);
+        var pastille = el(bascule || effacer || rg ? 'button' : 'span', 'nova-etat nova-seq-etat nova-etat-' + vu.genre);
+        pastille.appendChild(icone(vu.icone));
+        var nom = el('span', 'nova-etat-nom');
+        nom.appendChild(el('span', 'nova-seq-long', vu.long));
+        nom.appendChild(el('span', 'nova-seq-court', vu.court));
+        pastille.appendChild(nom);
+        if (vu.detail) pastille.title = vu.detail;
         statut.parentNode.removeChild(statut);
         tete.appendChild(pastille);
-        if (bascule || effacer) {
+        if (bascule || effacer || rg) {
           pastille.type = 'button';
           pastille.appendChild(el('span', 'nova-etat-chevron'));
           var menu = el('div', 'nova-etat-menu');
@@ -2246,7 +2514,15 @@
             var activer = /[?&]option=1/.test(bascule.getAttribute('href'));
             action(bascule, activer ? 'lecture' : 'oeil-barre', t(activer ? 'activer' : 'desactiver'));
           }
-          if (bascule && effacer) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
+          if (rg) {
+            var b = el('button', '', t('affichage'));
+            b.type = 'button';
+            action(b, 'calendrier', t('affichage-effet'));
+            (function (seq, d0, ttr, mod) {
+              b.addEventListener('click', function () { menus.fermer(false); fenetrePlage(seq, d0, ttr, mod); });
+            })(n, d, titre, modifier);
+          }
+          if ((bascule || rg) && effacer) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
           if (effacer) action(effacer, 'corbeille', t('effacer'), true);
           menus.brancher(pastille, menu);
         }

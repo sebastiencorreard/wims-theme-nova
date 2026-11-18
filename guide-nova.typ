@@ -1505,6 +1505,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   relit ses fichiers ensuite.
 ]
 
+#piege[Enregistrer un formulaire de WIMS depuis une autre page][
+  Nova veut enregistrer un réglage d'une autre page (la page Configurer des séquences, depuis la liste) : en
+  `fetch`, les accents arrivent abîmés ; envoyé tel quel, WIMS répond par la page du formulaire, pas par la liste.
+][
+  `fetch` et `FormData` envoient de l'UTF-8 ; WIMS lit le windows-1252 de ses pages. Seul un formulaire envoyé par le
+  navigateur depuis une page de WIMS est encodé comme il faut.
+][
+  Lire la page du formulaire en arrière-plan, recopier ses champs dans un `<form>` de la page courante, l'envoyer dans
+  un `<iframe>` caché, puis relire la page voulue 1,5 s après (modèle : `barreReglages` dans `sequencesEnseignant`).
+  Poser l'écouteur `load` du cadre au moment de l'envoi : un cadre vide en signale déjà un en entrant dans la page.
+]
+
 #piege[Les notes des feuilles d'une classe ne comptent pas][
   Les réponses d'un élève sont bien dans `score/<login>`, mais ni « Mes notes » ni la page « Notes » de l'enseignant
   ne montrent les feuilles ; seuls les examens comptent.
@@ -2299,6 +2311,7 @@ action, pour qu'un rechargement ne la rejoue pas.
   [`nova_propager=<quoi>`], [recopie des réglages vers les zones dépendantes], [`propager.phtml`],
   [`nova_desactiver=<type>…`], [désactive une ressource malgré un refus de WIMS], [`desactiver.phtml`],
   [`nova_seq_de`, `nova_seq_vers`, `nova_seq_numero`], [déplace une séquence (chiffres) ; choisit d'afficher le numéro seul (`oui`, `non`)], [`sequences.phtml`],
+  [`nova_seq_plage`, `nova_seq_mode`, `nova_seq_debut`, `nova_seq_fin`], [plage d'affichage d'une séquence : numéro, `tous`, `cachee` ou `plage`, dates `AAAAMMJJHHMM` (chiffres)], [`sequences.phtml`],
   [`nova_reglages=1` et un paramètre par réglage], [enregistre les réglages du site (formulaire de la page Apparence du gestionnaire)], [`reglages-site.phtml`],
 )
 
@@ -2314,6 +2327,7 @@ action, pour qu'un rechargement ne la rejoue pas.
   [`classes/<c>/.nova_menu_<login>`, `.nova_menu_modtool_<login>`, `.nova_menu_p_<module>_<login>`], [choix de menu de l'enseignant : accueil, modtool, une page donnée],
   [`classes/<c>/.nova_replis_<login>`], [classes repliées par l'enseignant sur l'accueil d'une structure],
   [`classes/<c>/seq/.def`], [ligne `sequence_nova_numero` ajoutée par Nova (la classe affiche le numéro seul des séquences)],
+  [`classes/<c>/.S<n>`], [plage d'affichage de la séquence `n` (fichier de WIMS, même format) : Nova l'écrit aussi, depuis la fenêtre « Affichage aux élèves » de la page des séquences],
 )
 Les fichiers de `score/` sont sauvegardés, restaurés et effacés par WIMS avec les notes de l'élève. Ceux de la racine
 d'une classe (`.nova_menu_…`, `.nova_replis_…`) ne sont pas dans la sauvegarde : ce ne sont que des préférences

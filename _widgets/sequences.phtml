@@ -4,9 +4,14 @@
 !!   la page Configurer (nova_seq_numero=oui|non dans l'adresse du formulaire), textes de nova.js (sequencesEnseignant),
 !!   fenetre de confirmation d'" Effacer " (WIMS efface sans demander).
 !! - Tous : #nova-seq-numero si la classe a choisi le numero seul (ligne sequence_nova_numero de seq/.def).
-!! Valeurs de l'adresse : chiffres seulement, ou oui/non (audit du 2026-11-12).
+!! - Enseignant, adm/class/sequence (2026-11-19, utilisateur) : plage d'affichage d'une sequence (nova_seq_plage=N,
+!!   nova_seq_mode=tous|cachee|plage, nova_seq_debut, nova_seq_fin = AAAAMMJJHHMM ; _procs/sequences.sh plage) ; sur
+!!   job=show, #nova-seq-reglages : plages de toutes les sequences, heure du serveur, dates de la classe, presentation en
+!!   sequences (sequence_open), mot generique (barre de reglages et pastilles de nova.js, sequencesEnseignant).
+!! Valeurs de l'adresse : chiffres seulement, ou oui/non, ou une liste (audit du 2026-11-12).
 !! Variables : nova_q la requete ; nova_sd, nova_sv sequence deplacee et place visee ; nova_sr resultat de sequences.sh ;
-!! nova_sn option "numero seul" (recue oui/non, puis lue yes).
+!! nova_sn option "numero seul" (recue oui/non, puis lue yes) ; nova_sp sequence dont la plage change, puis les plages
+!! lues ; nova_sm mode de la plage ; nova_s1, nova_s2 debut et fin ; nova_mo mot generique ; nova_ov sequence_open.
 !if $module=adm/class/sequence and $wims_user=supervisor
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
@@ -26,6 +31,30 @@
   !if $nova_sn isitemof oui,non
     !set nova_sr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" numero "$nova_sn"
   !endif
+  !set nova_sp=!getopt nova_seq_plage in $nova_q
+  !set nova_sp=!text select 0123456789 in $nova_sp
+  !set nova_sm=!getopt nova_seq_mode in $nova_q
+  !if $nova_sp!=$empty and $nova_sm isitemof tous,cachee,plage
+    !set nova_s1=!getopt nova_seq_debut in $nova_q
+    !set nova_s2=!getopt nova_seq_fin in $nova_q
+    !set nova_s1=!text select 0123456789 in $nova_s1
+    !set nova_s2=!text select 0123456789 in $nova_s2
+    !set nova_sr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plage "$nova_sp" "$nova_sm" "$nova_s1" "$nova_s2"
+    !set nova_sr=!text select abcdefghijklmnopqrstuvwxyz in $nova_sr
+    !if $nova_sr=ok
+      !set wims_class_log=sequence $nova_sp allow $nova_sm (Nova) by $wims_realuser
+    !endif
+<span id="nova-seq-plage-fait" hidden data-resultat="$nova_sr"></span>
+  !endif
+  !if $job=show or $job=$empty
+    !set nova_sp=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plages
+    !set nova_sp=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sp
+    !set nova_mo=!defof sequence_Title in wimshome/log/classes/$wims_class/seq/.def
+    !set nova_mo=!replace internal " by &quot; in $nova_mo
+    !set nova_mo=!replace internal < by &lt; in $nova_mo
+    !set nova_ov=!defof sequence_open in wimshome/log/classes/$wims_class/seq/.def
+<span id="nova-seq-reglages" hidden data-plages="$nova_sp" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration" data-ouvert="$nova_ov" data-mot="$nova_mo"></span>
+  !endif
 !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang sequences
   !read themes/$wims_theme/_widgets/confirmations.phtml
 !endif
@@ -33,4 +62,4 @@
 !if $nova_sn=yes
 <span id="nova-seq-numero" hidden></span>
 !endif
-!reset nova_q nova_sd nova_sv nova_sr nova_sn
+!reset nova_q nova_sd nova_sv nova_sr nova_sn nova_sp nova_sm nova_s1 nova_s2 nova_mo nova_ov

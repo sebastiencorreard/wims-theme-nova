@@ -65,7 +65,10 @@
   !appendfile wimshome/log/nova.conf --nova-fil-fixe: $nova_fil;
   !appendfile wimshome/log/nova.conf --nova-decorations: $nova_deco;
   !appendfile wimshome/log/nova.conf --nova-notes-moyenne: $nova_notes_moy;
-  !appendfile wimshome/log/nova.conf --nova-travail-individualise: $nova_ti;
+  !! TI suspendu (2026-11-18) : sans son bouton, rien d'ecrit (le defaut non de jetons.css vaut).
+  !if $nova_ti!=$empty and nova_ti= isin $nova_q
+    !appendfile wimshome/log/nova.conf --nova-travail-individualise: $nova_ti;
+  !endif
   !! Page « Mon activite » (2026-10-08) : objectif au moins egal au seuil d'encouragement.
   !bound nova_activite within oui,non default oui
   !bound nova_act_s between 1 and 7 default 2

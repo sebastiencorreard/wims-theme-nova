@@ -75,7 +75,8 @@
 --- Nova/_css/avatar.css ---
 --- Nova/_css/couleur.css ---
 --- Nova/_css/decorations.css ---
---- Nova/_css/ti.css ---
+# Travail individualise SUSPENDU (2026-11-18, utilisateur) : remettre la ligne suivante sans « # » pour le rallumer.
+# --- Nova/_css/ti.css ---
 #
 # 5. Empreinte des sources (écrite par construire-css.sh, lue par nova.js feuilleAJour) : en dernier.
 --- Nova/_css/empreinte.css ---

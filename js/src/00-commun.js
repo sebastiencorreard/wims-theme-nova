@@ -43,6 +43,9 @@
    * fois, ensemble, et gardés ; racineChangee() les fait relire quand Nova change une variable de la racine (couleur de
    * l'élève, réglages de la structure). Les classes posées par nova.js ne changent aucune de ces variables. Hors du
    * démarrage (évènements, minuteries), lecture directe. */
+  // Travail individualisé (TI) SUSPENDU le 2026-11-18 (utilisateur) : code gardé ; true le rallume (carte de l'enseignant,
+  // parcours de l'élève, réglage de la carte d'une classe). Aussi : gabarits (!if oui=non), ti.css dans css.css.template.
+  var TI_ACTIF = false;
   var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
     'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
     'dm-mots', 'dm-note-essais', 'notes-moyenne', 'travail-individualise'];

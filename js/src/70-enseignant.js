@@ -3124,6 +3124,7 @@
    * l'élève refait le regroupement elle-même à chaque affichage : la carte n'est qu'une aide. Textes :
    * lang/enseignant-textes.phtml (:ti) ; adresse du moteur : #nova-ti-moteur (header.phtml). */
   function travailIndividualise() {
+    if (!TI_ACTIF) return;
     var tx = document.getElementById('nova-ti-textes');
     var src = document.getElementById('nova-ti-moteur');
     var panneau = document.getElementById('prpage');

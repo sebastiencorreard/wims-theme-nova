@@ -59,10 +59,12 @@ for f in sorted(glob.glob('js/src/*.js')) + ['js/suivi.js', 'js/flyers.js']:
 # 4. Feuilles : celles du modèle existent, celles de _css/ sont dans le modèle.
 modele = open('css.css.template', encoding='utf-8', errors='replace').read()
 citees = set(re.findall(r'^--- Nova/(_css/[^ ]+) ---$', modele, re.M))
+# Feuille suspendue : ligne du modèle mise en commentaire (« # --- Nova/… --- »), gardée pour plus tard.
+suspendues = set(re.findall(r'^# --- Nova/(_css/[^ ]+) ---$', modele, re.M))
 for f in sorted(citees):
     if not os.path.exists(f): ko('css.css.template cite %s, absent' % f)
 for f in sorted(glob.glob('_css/*.css')):
-    if f not in citees: ko('%s n\'est pas dans css.css.template (feuille sans effet)' % f)
+    if f not in citees and f not in suspendues: ko('%s n\'est pas dans css.css.template (feuille sans effet)' % f)
 
 # 5. Gabarits et textes lus par WIMS en latin-1 : un fichier enregistré en UTF-8 afficherait « Ã© ».
 for f in sorted(glob.glob('*.phtml') + glob.glob('_widgets/*.phtml') + glob.glob('lang/*') + glob.glob('_procs/*.proc')):

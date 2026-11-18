@@ -189,7 +189,7 @@
 
   // Bloc « Nova : reglages de la page Apparence » : champs nova_c_… (affichage, élèves, interrupteur des badges, avancés).
   function reglagesApparence(carte, zone, modele) {
-    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'decorations', 'desactivation-forcee', 'notes-moyenne', 'travail-individualise'].concat(CLES_STANDARD.map(function (k) { return 'std-' + k; }));
+    var cles = ['animations', 'entree-directe', 'clavier-maths', 'badges', 'activite', 'fil-fixe', 'decorations', 'desactivation-forcee', 'notes-moyenne'].concat(TI_ACTIF ? ['travail-individualise'] : [], CLES_STANDARD.map(function (k) { return 'std-' + k; }));
     // Nombres (page « Mon activité », 2026-10-08) : champ vide = valeur héritée (portail, groupement, site).
     var nombres = ['activite-seuil', 'activite-objectif', 'activite-heures', 'activite-notes'];
     var marque = '/* Nova : reglages de la page Apparence */';

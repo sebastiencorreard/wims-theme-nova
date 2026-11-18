@@ -756,6 +756,7 @@
    * et une seule étape ouverte par parcours, pour les navigateurs qui ignorent l'attribut name de <details>.
    * Sans JavaScript, la page reste utilisable (place fixe). */
   function tiParcours() {
+    if (!TI_ACTIF) return;
     var parcours = document.querySelectorAll('.nova-ti .nova-ti-parcours');
     if (!parcours.length) return;
     var reserver = function (pc) {

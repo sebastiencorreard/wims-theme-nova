@@ -1009,6 +1009,10 @@ actif et désactivé si la page a une zone de texte ; à 390 px.]
 
 === Le Travail individualisé (page de présentation d'une feuille) <ti>
 
+#attention[*Suspendu* depuis le 2026-11-18 : `TI_ACTIF = false` (`js/src/00-commun.js`), blocs `!if oui=non` dans
+`header.phtml`, `_widgets/apparence.phtml` et `apparence-classe.phtml`, ligne de `ti.css` en commentaire dans
+`css.css.template`. Pour le rallumer, inverser ces quatre interrupteurs.]
+
 La page que voit l'élève est une *page de présentation* de WIMS (`sheets/sheetN.src`), écrite une fois pour toutes :
 elle relit les titres des exercices à chaque affichage (« Fractions \* », « Fractions \*\* »… : même nom = même type
 de tâche, nombre d'étoiles = niveau) et marche sans Nova. La carte de l'enseignant n'apparaît que si le réglage

@@ -64,6 +64,8 @@
             <label><input type="radio" name="nova_c_decorations" value="non"> $nova_app_non</label>
           </span>
         </div>
+        !! Travail individualise SUSPENDU (2026-11-18, utilisateur) : oui=non -> oui=oui pour le rallumer (voir TI_ACTIF, nova.js).
+        !if oui=non
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c-ti">$nova_app_ti<span class="nova-app-aide">$nova_app_ti_aide</span></span>
           <span class="nova-app-choix" role="radiogroup" aria-labelledby="nova-app-c-ti">
@@ -71,6 +73,7 @@
             <label><input type="radio" name="nova_c_travail-individualise" value="non"> $nova_app_non</label>
           </span>
         </div>
+        !endif
         !set nova_std_nom=nova_c_std-
         !set nova_std_sep=-
         !reset nova_std_site

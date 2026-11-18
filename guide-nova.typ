@@ -729,7 +729,7 @@ ressource ; à 390 px.]
 
 Les exercices OEF sont le terrain le plus fragile : beaucoup d'éléments y sont créés par *Dynapi* (bibliothèque de
 WIMS) après le chargement, en positions absolues. Lire les pièges « Exercices » du @pieges avant d'y toucher.
-Règles d'or : ne jamais réduire une image cliquable (le clic serait mal placé) ; ne jamais changer `f_cut` ;
+Règles d'or : une image cliquable réduite doit voir son clic converti (`imagesCliquables`) ; ne jamais changer `f_cut` ;
 reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer.
 
 #table(columns: (1fr, 1.6fr), align: left,
@@ -741,7 +741,7 @@ reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer
   [les étiquettes à déplacer au doigt], [`glisserTactile`, `tuiles`, `tuilesCorrigees`, `caseVisee`],
   [les dominos], [`dominos` ; règles en fin de `composants-dominos.css` ; réglage `dominos`],
   [les éléments à associer], [`associations`],
-  [une image où l'on clique], [`imagesCliquables`],
+  [une image où l'on clique (réduite, loupe au doigt, « Valider ce point »)], [`imagesCliquables` ; réglage `reponse`],
 )
 
 === Corriger un exercice mal affiché
@@ -1704,8 +1704,10 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   `<input type="image">` envoie la position du clic en pixels *affichés*, que WIMS lit en pixels de l'image : toute
   réduction de l'image (au téléphone) décale la réponse.
 ][
-  Ne jamais réduire ces images (`max-width: none`, la zone défile) ; `nova.js` (`imagesCliquables`) convertit les
-  coordonnées en secours.
+  Sans `nova.js`, ces images gardent leur taille réelle (`max-width: none`, la zone défile). `nova.js`
+  (`imagesCliquables`) les réduit à la largeur de la page (classe `nova-image-reduite`) et ramène le clic aux pixels de
+  l'image ; au doigt, ou si l'image perd plus de 40 %, un toucher ouvre une loupe en taille réelle (`nova-loupe-image`,
+  panneau `.nova-loupe`) et la réponse part par « Valider ce point ». Réglage `reponse` : taille réelle, sans loupe.
 ]
 
 #piege[Des cases ou des étiquettes décalées dans un exercice à glisser][

@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- **Droites graduées et images où l'on clique** : au téléphone, l'image entière tient dans l'écran ; la toucher ouvre une loupe en taille réelle autour du point, où l'on touche le point exact puis « Valider ce point ». Réglage « Réponse du thème standard » pour garder l'image en taille réelle.
 - Page d'une feuille : progression d'abord (« 2 exercices réussis sur 10 »), un état par exercice (Réussi, En cours, À faire) et ses points ; « Suspendre l'enregistrement » devient l'interrupteur « Mode entraînement », expliqué.
 - **Mes notes** en cartes : moyenne dans une carte compacte (note en pastille, minimum, moyenne et maximum de la classe), examens notés en pastilles (les autres repliés), une carte repliable par feuille avec sa note et une barre colorée par exercice. Une ligne d'examen ou d'exercice ne montre que son titre et sa note ; la toucher ouvre le détail (examen : note retenue, sessions commencées et restantes ; exercice : réussite, dernier résultat, essais en petits carrés, points requis, poids). La page s'intitule « Mes notes », comme le bouton de l'accueil. Réglage « Mes notes de l'élève du thème standard » pour garder les tableaux et le titre de WIMS.
 - Portail, groupement : l'avatar et la couleur de l'élève sont recopiés dans chacun de ses cours ; la sauvegarde d'un seul cours les emporte.

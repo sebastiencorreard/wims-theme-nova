@@ -732,15 +732,141 @@
    * réduit les champs à la largeur de la page (max-width: 100 %) : sur un écran étroit ou zoomé, le point partait
    * ailleurs (signalé par un collègue de l'utilisateur, 2026-10-07, H2/number/OEFevalwimsnbrel.fr ; pas avec Pion3,
    * qui laisse l'image déborder). La position est ramenée à l'image d'origine avant l'envoi. Clavier (Entrée) :
-   * envoi ordinaire. */
+   * envoi ordinaire. Depuis le 2026-11-18 (utilisateur) : une image plus large que la page est réduite à sa largeur
+   * (classe nova-image-reduite, recalculée à chaque changement de largeur) ; au doigt, ou si elle perd plus de 40 %,
+   * un toucher ouvre une loupe en taille réelle (nova-loupe-image) et la réponse part par « Valider ce point ». Réglage « Réponse du thème standard » : image en taille réelle. */
   function imagesCliquables() {
-    if (!document.querySelector('.wimsbody input[type="image"]')) return;
+    var images = Array.prototype.slice.call(document.querySelectorAll('.wimsbody input[type="image"]'));
+    if (!images.length) return;
     var tailles = {};
-    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody input[type="image"]'), function (i) {
+    var textes = document.getElementById('nova-textes');
+    var texte = function (cle, defaut) { return (textes && textes.getAttribute('data-' + cle)) || defaut; };
+    var avecLoupe = !standard('reponse');
+    var tactile = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    // Envoi de la position (pixels de l'image) : deux champs cachés <nom>.x / <nom>.y, comme le navigateur.
+    function envoyer(i, x, y) {
+      var t = tailles[i.src];
+      x = Math.max(0, Math.min(t[0] - 1, Math.round(x)));
+      y = Math.max(0, Math.min(t[1] - 1, Math.round(y)));
+      var nom = i.name ? i.name + '.' : '';
+      Array.prototype.forEach.call(i.form.querySelectorAll('input.nova-clic-image'), function (h) { h.remove(); });
+      [['x', x], ['y', y]].forEach(function (v) {
+        var h = document.createElement('input');
+        h.type = 'hidden'; h.className = 'nova-clic-image'; h.name = nom + v[0]; h.value = v[1];
+        i.form.appendChild(h);
+      });
+      if (typeof i.form.requestSubmit === 'function') i.form.requestSubmit(); else i.form.submit();
+    }
+    // Loupe (demande de l'utilisateur, 2026-11-18) : une image plus large que la page est réduite à sa largeur ;
+    // un toucher ouvre la zone touchée en taille réelle, l'élève y touche le point exact puis « Valider ce point ».
+    function ajuster(i) {
+      var t = tailles[i.src];
+      if (!t || !avecLoupe) return;
+      var bloc = i.parentNode;
+      while (bloc && bloc !== document.body && !bloc.clientWidth) bloc = bloc.parentNode;
+      var place = bloc ? bloc.clientWidth : 0;
+      var reduite = !!place && t[0] > place + 1;
+      i.classList.toggle('nova-image-reduite', reduite);
+      // Loupe au doigt, ou si l'image perd plus de 40 % ; à la souris, une légère réduction se clique directement.
+      i.classList.toggle('nova-loupe-image', reduite && (tactile || place / t[0] < 0.6));
+      var aide = i.nextElementSibling && i.nextElementSibling.classList.contains('nova-loupe-aide') ? i.nextElementSibling : null;
+      if (i.classList.contains('nova-loupe-image') && !aide) {
+        aide = document.createElement('p');
+        aide.className = 'nova-loupe-aide';
+        aide.textContent = texte('loupe-aide', 'Touch the picture near the point: it gets bigger so you can choose the exact point.');
+        i.parentNode.insertBefore(aide, i.nextSibling);
+      } else if (!i.classList.contains('nova-loupe-image') && aide) aide.remove();
+    }
+    function ouvrirLoupe(i, xImage, yImage) {
+      var t = tailles[i.src];
+      var fond = document.createElement('div');
+      fond.className = 'nova-loupe';
+      var p = document.createElement('div');
+      p.className = 'nova-loupe-panneau';
+      p.setAttribute('role', 'dialog');
+      p.setAttribute('aria-modal', 'true');
+      var titre = document.createElement('p');
+      titre.className = 'nova-loupe-titre';
+      titre.id = 'nova-loupe-titre';
+      titre.textContent = texte('loupe-titre', 'Touch the exact point');
+      p.setAttribute('aria-labelledby', titre.id);
+      var zone = document.createElement('div');
+      zone.className = 'nova-loupe-zone';
+      var img = document.createElement('img');
+      img.src = i.src; img.alt = i.alt || '';
+      img.style.width = t[0] + 'px'; img.style.height = t[1] + 'px';
+      zone.appendChild(img);
+      var repere = document.createElement('span');
+      repere.className = 'nova-loupe-repere';
+      repere.hidden = true;
+      zone.appendChild(repere);
+      var jauge = document.createElement('div');
+      jauge.className = 'nova-loupe-jauge';
+      jauge.setAttribute('aria-hidden', 'true');
+      var vue = document.createElement('span');
+      jauge.appendChild(vue);
+      var boutons = document.createElement('div');
+      boutons.className = 'nova-loupe-boutons';
+      var annuler = document.createElement('button');
+      annuler.type = 'button'; annuler.className = 'nova-loupe-annuler';
+      annuler.textContent = texte('loupe-annuler', 'Cancel');
+      var valider = document.createElement('button');
+      valider.type = 'button'; valider.className = 'nova-loupe-valider';
+      valider.textContent = texte('loupe-valider', 'Submit this point');
+      valider.disabled = true;
+      boutons.appendChild(annuler); boutons.appendChild(valider);
+      [titre, zone, jauge, boutons].forEach(function (e) { p.appendChild(e); });
+      fond.appendChild(p);
+      document.body.appendChild(fond);
+      document.documentElement.classList.add('nova-loupe-ouverte');
+      var choix = null;
+      function majJauge() {
+        vue.style.left = (zone.scrollLeft / t[0] * 100) + '%';
+        vue.style.width = Math.min(100, zone.clientWidth / t[0] * 100) + '%';
+      }
+      // Panneau à la hauteur de l'image (la consigne au-dessus reste lisible), zone touchée au centre.
+      var r = i.getBoundingClientRect();
+      var haut = Math.max(8, Math.min(r.top - 8, window.innerHeight - p.offsetHeight - 8));
+      p.style.marginTop = haut + 'px';
+      zone.scrollLeft = xImage - zone.clientWidth / 2;
+      zone.scrollTop = yImage - zone.clientHeight / 2;
+      jauge.hidden = zone.scrollWidth <= zone.clientWidth + 1;
+      majJauge();
+      zone.addEventListener('scroll', majJauge, { passive: true });
+      function fermer() {
+        fond.remove();
+        document.documentElement.classList.remove('nova-loupe-ouverte');
+        document.removeEventListener('keydown', clavier, true);
+        i.focus({ preventScroll: true });
+      }
+      function clavier(e) { if (e.key === 'Escape') { e.preventDefault(); fermer(); } }
+      document.addEventListener('keydown', clavier, true);
+      zone.addEventListener('click', function (e) {
+        var ri = img.getBoundingClientRect();
+        choix = [(e.clientX - ri.left) * t[0] / ri.width, (e.clientY - ri.top) * t[1] / ri.height];
+        if (choix[0] < 0 || choix[1] < 0 || choix[0] > t[0] || choix[1] > t[1]) { choix = null; return; }
+        repere.style.left = choix[0] + 'px'; repere.style.top = choix[1] + 'px';
+        repere.hidden = false;
+        valider.disabled = false;
+      });
+      fond.addEventListener('click', function (e) { if (e.target === fond) fermer(); });
+      annuler.addEventListener('click', fermer);
+      valider.addEventListener('click', function () {
+        if (!choix) return;
+        valider.disabled = true; annuler.disabled = true;
+        envoyer(i, choix[0], choix[1]);
+      });
+      annuler.focus({ preventScroll: true });
+    }
+    images.forEach(function (i) {
       var im = new Image();
-      im.onload = function () { tailles[i.src] = [im.naturalWidth, im.naturalHeight]; };
+      im.onload = function () { tailles[i.src] = [im.naturalWidth, im.naturalHeight]; ajuster(i); };
       im.src = i.src;
     });
+    if (avecLoupe && typeof ResizeObserver === 'function') {
+      var ro = new ResizeObserver(function () { images.forEach(ajuster); });
+      images.forEach(function (i) { ro.observe(i.parentNode); });
+    }
     document.addEventListener('click', function (e) {
       var i = e.target;
       if (!i || i.tagName !== 'INPUT' || i.type !== 'image' || !i.form || !i.closest('.wimsbody') || e.detail === 0) return;
@@ -751,20 +877,12 @@
       var haut = r.top + parseFloat(c.borderTopWidth) + parseFloat(c.paddingTop);
       var largeur = r.width - parseFloat(c.borderLeftWidth) - parseFloat(c.borderRightWidth) - parseFloat(c.paddingLeft) - parseFloat(c.paddingRight);
       var hauteur = r.height - parseFloat(c.borderTopWidth) - parseFloat(c.borderBottomWidth) - parseFloat(c.paddingTop) - parseFloat(c.paddingBottom);
-      if (!t || !largeur || !hauteur || (Math.abs(largeur - t[0]) < 0.5 && Math.abs(hauteur - t[1]) < 0.5 && Math.abs(gauche - r.left) < 0.5 && Math.abs(haut - r.top) < 0.5)) return;   // taille réelle : rien à corriger
+      if (!t || !largeur || !hauteur) return;
+      var x = (e.clientX - gauche) * t[0] / largeur, y = (e.clientY - haut) * t[1] / hauteur;
+      if (i.classList.contains('nova-loupe-image')) { e.preventDefault(); ouvrirLoupe(i, x, y); return; }
+      if (Math.abs(largeur - t[0]) < 0.5 && Math.abs(hauteur - t[1]) < 0.5 && Math.abs(gauche - r.left) < 0.5 && Math.abs(haut - r.top) < 0.5) return;   // taille réelle : rien à corriger
       e.preventDefault();
-      var x = Math.round((e.clientX - gauche) * t[0] / largeur);
-      var y = Math.round((e.clientY - haut) * t[1] / hauteur);
-      x = Math.max(0, Math.min(t[0] - 1, x));
-      y = Math.max(0, Math.min(t[1] - 1, y));
-      var nom = i.name ? i.name + '.' : '';
-      Array.prototype.forEach.call(i.form.querySelectorAll('input.nova-clic-image'), function (h) { h.remove(); });
-      [['x', x], ['y', y]].forEach(function (v) {
-        var h = document.createElement('input');
-        h.type = 'hidden'; h.className = 'nova-clic-image'; h.name = nom + v[0]; h.value = v[1];
-        i.form.appendChild(h);
-      });
-      if (typeof i.form.requestSubmit === 'function') i.form.requestSubmit(); else i.form.submit();
+      envoyer(i, x, y);
     }, true);
   }
 

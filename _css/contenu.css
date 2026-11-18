@@ -281,12 +281,39 @@
 .wimsbody img, .wimsbody canvas, .wimsbody video { height: auto; }
 .wimsbody .tox-tinymce { max-width: 100%; }
 /* Exception : les images cliquables des exercices (<input type="image">, réponses « coord » : droites graduées…)
- * gardent leur taille réelle, même au téléphone, comme avec Pion3 ; en portrait, l'élève tourne son téléphone ou
- * fait défiler (demande de l'utilisateur, 2026-10-07). nova.js (imagesCliquables) corrige le clic si une autre
- * règle venait à les réduire. */
+ * gardent leur taille réelle sans nova.js (2026-10-07) : le clic serait mal placé. nova.js (imagesCliquables) les
+ * réduit lui-même et convertit le clic (loupe ci-dessous, 2026-11-18). */
 .wimsbody input[type="image"] { max-width: none; }
 /* Sur ces pages seulement, c'est le cadre de l'exercice qui défile, pas toute la page. */
 .wimsbody:has(input[type="image"]) { overflow-x: auto; }
+/* Loupe (2026-11-18, utilisateur ; nova.js imagesCliquables) : image plus large que la page réduite à sa largeur
+ * (classe posée par nova.js seulement, la page sans JavaScript garde la taille réelle) ; au doigt ou si elle perd plus
+ * de 40 %, un toucher ouvre la zone en taille réelle dans un panneau, la réponse part par « Valider ce point ». Pas de loupe avec html.nova-std-reponse. */
+.wimsbody input[type="image"].nova-image-reduite { width: 100%; max-width: 100%; height: auto; }
+.wimsbody input[type="image"].nova-loupe-image { cursor: zoom-in; }
+.nova-loupe-aide { display: flex; gap: var(--nova-e2); align-items: flex-start; margin: var(--nova-e2) 0 0; color: var(--nova-texte-2);
+  font-size: .9rem; text-align: left; }
+.nova-loupe-aide::before { content: ""; flex: none; width: 1.1em; height: 1.1em; margin-top: .15em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' x2='16.65' y1='21' y2='16.65'/%3E%3Cline x1='11' x2='11' y1='8' y2='14'/%3E%3Cline x1='8' x2='14' y1='11' y2='11'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' x2='16.65' y1='21' y2='16.65'/%3E%3Cline x1='11' x2='11' y1='8' y2='14'/%3E%3Cline x1='8' x2='14' y1='11' y2='11'/%3E%3C/svg%3E") center / contain no-repeat; }
+html.nova-loupe-ouverte { overflow: hidden; }
+.nova-loupe { position: fixed; inset: 0; z-index: 10000; background: rgb(0 0 0 / 45%); overflow: auto; }
+.nova-loupe-panneau { background: var(--nova-surface); padding: var(--nova-e3) 0; box-shadow: 0 8px 30px rgb(0 0 0 / 30%); }
+.nova-loupe-titre { margin: 0 var(--nova-e4) var(--nova-e2); font-weight: 700; }
+.nova-loupe-zone { position: relative; overflow: auto; max-height: 60vh; overscroll-behavior: contain; cursor: crosshair; }
+.nova-loupe-zone img { display: block; max-width: none; }
+.nova-loupe-repere { position: absolute; width: 28px; height: 28px; transform: translate(-50%, -50%); box-sizing: border-box;
+  border: 3px solid var(--nova-accent); border-radius: 50%; box-shadow: 0 0 0 3px rgb(255 255 255 / 85%); pointer-events: none; }
+.nova-loupe-repere[hidden] { display: none; }
+.nova-loupe-jauge { position: relative; height: 8px; margin: var(--nova-e3) var(--nova-e4) 0; background: var(--nova-bord); border-radius: 4px; }
+.nova-loupe-jauge[hidden] { display: none; }
+.nova-loupe-jauge span { position: absolute; top: 0; bottom: 0; background: var(--nova-accent); border-radius: 4px; opacity: .7; }
+.nova-loupe-boutons { display: flex; gap: var(--nova-e2); margin: var(--nova-e3) var(--nova-e4) 0; }
+.nova-loupe-boutons button { flex: 1; min-height: var(--nova-cible); border-radius: var(--nova-rayon); font: inherit; font-weight: 700;
+  border: 1px solid var(--nova-accent); cursor: pointer; }
+.nova-loupe-annuler { background: var(--nova-surface); color: var(--nova-lien); }
+.nova-loupe-valider { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.nova-loupe-valider:disabled { opacity: .45; cursor: default; }
 .wimsbody .tox .tox-toolbar__group { flex-wrap: wrap; }
 /* Code : revient à la ligne partout, fenêtres d'aide (#wimsmhelp) comprises. */
 pre, pre .tt, .wimsbody .tt { white-space: pre-wrap; overflow-wrap: anywhere; }

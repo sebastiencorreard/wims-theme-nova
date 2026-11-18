@@ -1276,6 +1276,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == Fichiers, encodages et langage de WIMS
 
+#piege[Une note d'exercice qui ne s'enregistre pas, avec Nova seulement][
+  L'élève fait la série, aucune ligne n'apparaît dans `score/<login>` (même pas `new`) ; « Revenir à la liste » mène à la
+  liste des feuilles.
+][
+  WIMS reconnaît l'exercice d'une feuille à ses paramètres. Un paramètre ajouté au lien par `nova.js` (ici `nova_menu`,
+  choix de menu de l'enseignant en attente, gardé dans `localStorage`, commun à tous les rôles d'un navigateur) en fait un
+  exercice hors feuille.
+][
+  N'ajouter un paramètre qu'aux liens `adm/…` et `home`, et seulement sur les pages du rôle concerné (`menuServeur`).
+  Relire `QUERY_STRING` dans `sessions/<session>/var` pour voir l'adresse reçue.
+]
+
 #piege[Une page de présentation de feuille (`sheetN.src`) dont le style ou les calculs ne marchent pas][
   Un bloc `<style>` est sans effet, un `wims(…)` s'affiche tel quel, un `$` devient du texte.
 ][

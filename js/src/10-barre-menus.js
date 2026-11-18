@@ -288,11 +288,18 @@
       var styleSuivi = document.getElementById('nova-menu-style');
       if (styleSuivi) styleSuivi.textContent = nm.style(nm.garde);
     });
-    // Envoi d'un changement en attente avec le prochain lien de WIMS (même session).
+    // Envoi d'un changement en attente avec le prochain lien de WIMS (même session). Seulement sur une page de
+    // l'enseignant (menu de Nova présent, pas une page d'élève : un même navigateur peut servir aux deux rôles,
+    // localStorage est commun) et vers un module d'administration ou le même module : ajouté au lien d'un exercice,
+    // le paramètre en change les paramètres, WIMS ne reconnaît plus l'exercice de la feuille et n'enregistre pas
+    // la note (vécu, 2026-11-18, eleve3 sur la page du Travail individualisé).
+    if (!nm || racine.classList.contains('nova-role-eleve')) return;
     document.addEventListener('click', function (e) {
       var v = lire('nova_menu_envoi');
       var a = v && e.target.closest && e.target.closest('a[href*="wims.cgi"]');
       if (!a || a.target === '_blank' || !/[?&+]session=/.test(a.href) || /wims_window=new/.test(a.href) || /[?&]nova_menu=/.test(a.href)) return;
+      var mod = /[?&]\+?module=([^&#]*)/.exec(a.href);
+      if (mod && !/^(adm|home)(%2F|\/|$)/i.test(mod[1])) return;
       var parts = a.href.split('#');
       a.href = parts[0] + '&nova_menu=' + v + (parts.length > 1 ? '#' + parts.slice(1).join('#') : '');
     }, true);

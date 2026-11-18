@@ -77,6 +77,12 @@
 !if ($module=adm/class/sheet or $module=adm/class/exam) and $wims_user!=$empty
   !read themes/$wims_theme/_widgets/fiche-ressource.phtml
 !endif
+!! Travail individualise : carte de l'onglet Page de presentation d'une feuille (js/nova.js, travailIndividualise ;
+!! 2026-11-18). Le moteur (ti/moteur-ti.src) est relu par nova.js au moment d'ecrire la page.
+!if $module=adm/class/sheet and $wims_user=supervisor
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang ti
+  <template id="nova-ti-moteur" data-src="themes/$wims_theme/ti/moteur-ti.src"></template>
+!endif
 !! Message d'accueil : confirmation de "Effacer" (js/nova.js, confirmationsRessources ; audit C8, 2026-11-14).
 !if $module=adm/class/motd and $wims_user=supervisor
   !read themes/$wims_theme/_widgets/confirmations.phtml

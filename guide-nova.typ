@@ -319,7 +319,7 @@ variable change tout le thème. N'écrivez jamais une couleur en dur dans une au
   [`composants-reglages-badges.css`], [cartes « Réglages de Nova », badges],
   [`composants-enseignant.css`], [pages de l'enseignant (configuration, fiches, séquences, export…)],
   [`composants-dominos.css`], [exercices à étiquettes (dominos, tuiles, éléments à associer)],
-  [`accueil.css`, `activite.css`, `avatar.css`, `couleur.css`, `chrono.css`, `decorations.css`, `suivi.css`], [une page ou une fonction chacune (leur nom)],
+  [`accueil.css`, `activite.css`, `avatar.css`, `couleur.css`, `chrono.css`, `decorations.css`, `suivi.css`, `ti.css`], [une page ou une fonction chacune (leur nom ; `ti.css` : Travail individualisé)],
   [`foundation-min.css`], [le peu de Foundation 6 que WIMS utilise encore],
 )
 
@@ -1007,6 +1007,29 @@ reconnaît la page, et son texte. La classe `.nova-vide` est déjà prise (elle 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
 
+=== Le Travail individualisé (page de présentation d'une feuille) <ti>
+
+La page que voit l'élève est une *page de présentation* de WIMS (`sheets/sheetN.src`), écrite une fois pour toutes :
+elle relit les titres des exercices à chaque affichage (« Fractions \* », « Fractions \*\* »… : même nom = même type
+de tâche, nombre d'étoiles = niveau) et marche sans Nova. Trois fichiers :
+
+- `ti/construire-moteur.py` produit `ti/moteur-ti.src` (latin-1) : le modifier, relancer `python3 ti/construire-moteur.py`,
+  et *augmenter le numéro de version* de la première ligne quand la page change pour l'élève (la carte annonce alors
+  « Elle sera mise à jour ») ;
+- `js/src/70-enseignant.js`, `travailIndividualise` : la carte de l'onglet « Page de présentation »
+  (`adm/class/sheet`, `#prpage`). Elle relit le moteur sur le serveur (`#nova-ti-moteur`, header.phtml), y remplace
+  les trois lignes `ti_mode`, `ti_seuil`, `ti_ordre`, garde les lignes `tx_` de la page en place (textes modifiés à la
+  main par l'enseignant) et envoie le formulaire de WIMS ;
+- `_css/ti.css` : l'habillage de la page de l'élève (classes `nova-ti-…` du moteur) et de la carte.
+
+Le moteur ne peut contenir ni `<style>` ni `$`, `!`, `:` actifs : `msg2wims` les échappe (@pieges). Ses styles sont
+en ligne (rendu sans Nova) ; `ti.css` les remplace avec `!important`. Le regroupement fait par la carte (alertes)
+doit rester celui du moteur : virgules et étoiles retirées du nom, niveau en double rangé dans « Autres exercices ».
+
+#verifier[`banc-nova/ti-banc.sh poser`, `node ti-carte-test.mjs` (carte, glisser, écriture, vue de l'élève), puis
+`ti-banc.sh retirer` ; rendu sans Nova : thème de la classe changé dans le `.def` ; une page de présentation qui n'est
+pas celle de Nova (question avant de la remplacer).]
+
 == Ajouter une information au suivi en direct <suivi>
 
 #ou[`_widgets/suivi-entree.phtml` (accès : sessions autorisées par WIMS seulement), `suivi.phtml`,
@@ -1241,6 +1264,17 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 ]
 
 == Fichiers, encodages et langage de WIMS
+
+#piege[Une page de présentation de feuille (`sheetN.src`) dont le style ou les calculs ne marchent pas][
+  Un bloc `<style>` est sans effet, un `wims(…)` s'affiche tel quel, un `$` devient du texte.
+][
+  À l'enregistrement, `msg2wims` compile le `.src` en `.def` et échappe `$`, `!` et `:` partout (`&#36;`, `&#33;`,
+  `&#58;`), y compris dans `<style>` ; `wims(…)` n'est évalué que dans un `\def` ; la page ne lit rien sous
+  `wimshome/log`.
+][
+  Styles en ligne (les entités sont décodées dans un attribut) ; calculs dans des `\def` ; `replace` plutôt que
+  `translate … to $`. Voir le moteur du Travail individualisé (@ti).
+]
 
 #piege[Des accents cassés (« Ã© ») dans une page ou un texte][
   Un « é » s'affiche « Ã© », ou un texte de `lang/` apparaît vide ou tronqué.
@@ -1807,6 +1841,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`lang/eleve`, `eleve-textes`, `enseignant`, `enseignant-textes`, `reglages`, `reglages-textes`, `suivi`, `suivi-textes`], [textes par page (@textes)],
   [`lang/adm_class_*`], [surcharges de textes de modules de WIMS],
   [`icones/construire-lucide.py`, `icones/correspondance.py`, `icones/Lucide/`], [jeu d'icônes Lucide pour WIMS],
+  [`ti/construire-moteur.py`, `ti/moteur-ti.src`], [page de présentation « Travail individualisé » (@ti) : générateur et page produite, relue par `nova.js`],
 )
 
 = Maintenir ce guide <annexe-maintenir>
@@ -2202,7 +2237,7 @@ sans elles, la page prend ses valeurs par défaut.
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
-(`nova-reglages-enregistre`)… Ces clés peuvent changer sans précaution.
+(`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé)… Ces clés peuvent changer sans précaution.
 
 == Repères posés dans la page <annexe-reperes>
 

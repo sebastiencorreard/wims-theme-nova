@@ -75,6 +75,7 @@
 --- Nova/_css/avatar.css ---
 --- Nova/_css/couleur.css ---
 --- Nova/_css/decorations.css ---
+--- Nova/_css/ti.css ---
 #
 # 5. Empreinte des sources (écrite par construire-css.sh, lue par nova.js feuilleAJour) : en dernier.
 --- Nova/_css/empreinte.css ---

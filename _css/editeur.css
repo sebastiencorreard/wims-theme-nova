@@ -8,6 +8,8 @@
   --nova-cm-chaine: #2f7d4f; --nova-cm-commentaire: #6f7680; --nova-cm-nombre: #b33c1f; --nova-cm-accolade: #9b6b8f;
   border: 1px solid var(--nova-bord-fort); border-radius: 10px; background: var(--nova-surface); color: var(--nova-texte);
   font-size: 14px; text-align: left; margin: 8px 0; max-height: 75vh; overflow: hidden;
+  /* largeur de la zone de WIMS : le contenu (une ligne longue) ne l'agrandit pas */
+  width: 100%; max-width: 100%; box-sizing: border-box; contain: inline-size;
 }
 .nova-editeur.cm-focused { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
 .nova-editeur .cm-scroller { font-family: var(--nova-police-chiffres); line-height: 1.55; min-height: 16em; max-height: 75vh; overflow: auto; }
@@ -20,17 +22,18 @@
 .nova-editeur .cm-searchMatch { background: #fff1b8; outline: 1px solid #e0b400; }
 .nova-editeur .cm-searchMatch-selected { background: #ffd54a; }
 .nova-editeur .cm-selectionMatch { background: color-mix(in srgb, var(--nova-accent) 10%, transparent); }
-/* Panneau de recherche et de remplacement (en haut) */
+/* Barre de recherche et de remplacement (js/cm6/entree.js barreRecherche), toujours ouverte au-dessus du texte */
 .nova-editeur .cm-panels { background: var(--nova-surface-2); color: var(--nova-texte); border-color: var(--nova-bord); }
 .nova-editeur .cm-panels-top { border-bottom: 1px solid var(--nova-bord); border-radius: 10px 10px 0 0; }
-.nova-editeur .cm-search { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 36px 8px 10px; font-family: var(--nova-police); font-size: 14px; }
-.nova-editeur .cm-search br { flex-basis: 100%; content: ""; }
-.nova-editeur .cm-search .cm-textfield { font: inherit; padding: 4px 8px; border: 1px solid var(--nova-bord-fort); border-radius: 6px; background: var(--nova-surface); color: var(--nova-texte); min-width: 12em; margin: 0; }
-.nova-editeur .cm-search .cm-button { font: inherit; padding: 4px 10px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); background-image: none; color: var(--nova-texte); cursor: pointer; margin: 0; }
-.nova-editeur .cm-search .cm-button:hover { border-color: var(--nova-accent); color: var(--nova-accent); }
-.nova-editeur .cm-search label { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; margin: 0; }
-.nova-editeur .cm-search input[type=checkbox] { margin: 0; accent-color: var(--nova-accent); }
-.nova-editeur .cm-search button[name=close] { font-size: 20px; top: 6px; right: 8px; color: var(--nova-texte); }
+.nova-cm-barre { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 6px 8px; font-family: var(--nova-police); font-size: 13px; }
+.nova-cm-groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+/* .nova-editeur … input : plus fort que les règles de WIMS et de Nova sur les champs de texte (largeur 100 %) */
+.nova-editeur .nova-cm-barre input.cm-textfield { font: inherit; font-size: 14px; width: 15em; max-width: 100%; flex: 0 1 15em; padding: 3px 8px; border: 1px solid var(--nova-bord-fort); border-radius: 6px; background: var(--nova-surface); color: var(--nova-texte); margin: 0; box-shadow: none; height: auto; }
+.nova-editeur .nova-cm-barre input.cm-textfield:focus { outline: 2px solid var(--nova-accent); outline-offset: 0; border-color: var(--nova-accent); }
+.nova-cm-barre .cm-button { font: inherit; padding: 3px 10px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); background-image: none; color: var(--nova-texte); cursor: pointer; margin: 0; line-height: 1.4; min-height: 0; }
+.nova-cm-barre .cm-button:hover, .nova-cm-barre .cm-button:focus-visible { border-color: var(--nova-accent); color: var(--nova-accent); }
+.nova-editeur .nova-cm-barre label { font-weight: 400; display: inline-flex; align-items: center; gap: 4px; margin: 0; font-size: 13px; color: var(--nova-texte-2); cursor: pointer; white-space: nowrap; }
+.nova-cm-barre input[type=checkbox] { margin: 0; accent-color: var(--nova-accent); }
 /* Langue des documents */
 .nova-cm-controle { color: var(--nova-cm-controle); font-weight: 700; }
 .nova-cm-commande { color: var(--nova-cm-commande); font-weight: 700; }

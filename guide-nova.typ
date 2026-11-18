@@ -1019,6 +1019,12 @@ empreinte lue dans la meta `nova-cm6`) et pose l'éditeur après la zone de text
 formulaire, cachée (`nova-editeur-zone`) et recopiée à chaque modification : sans JavaScript, ou avec le réglage
 standard « textes », rien ne change. Pas au téléphone pour l'instant (aucun pointeur fin).
 
+- *La barre de recherche et de remplacement* : `barreRecherche` (`js/cm6/entree.js`), panneau de recherche de CodeMirror
+  redessiné (`createPanel`), ouvert à la création et jamais fermé (Échap retiré de `searchKeymap`). Elle est DANS le
+  formulaire de WIMS : aucun nom sur ses champs (sinon ils partent avec le formulaire), boutons `type="button"`, Entrée
+  interceptée (sinon envoi du formulaire).
+- *La largeur* : lignes repliées (`EditorView.lineWrapping`) et `contain: inline-size` : une ligne longue n'élargit plus l'éditeur.
+
 - *La langue des documents* : `js/cm6/langue-documents.js`, analyse ligne à ligne (`StreamLanguage`) : listes de mots
   (contrôle, commandes de document, variables d'une page de présentation, types, fonctions, conditions), `\comment{…}` à
   accolades imbriquées, `\( … \)`, HTML. Couleurs par classes `nova-cm-…` dans `_css/editeur.css`.

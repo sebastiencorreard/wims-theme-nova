@@ -1,40 +1,87 @@
-/* Nova : éditeur de code des documents (CodeMirror 6, js/cm6.js ; nova.js editeurDocuments ; 2026-11-18, utilisateur,
-   maquette B). Page de présentation d'une feuille et documents de la classe. La zone de texte de WIMS reste dans le
-   formulaire, cachée (nova-editeur-zone) ; couleurs de la langue des documents par classes (js/cm6/langue-documents.js). */
+/* Nova : éditeur de code (CodeMirror 6, js/cm6.js ; nova.js editeursCode ; 2026-11-18, utilisateur, maquettes
+   coloration-documents et editeur-barre). Documents, page de présentation d'une feuille, et partout où WIMS lançait
+   EditArea. La zone de texte de WIMS reste dans le formulaire, cachée (nova-editeur-zone). Structure :
+   .nova-editeur-cadre > .nova-editeur-barre (annuler, refaire, rechercher, taille, plein écran, coloration)
+                       > .cm-editor.nova-editeur (panneau de recherche .nova-cm-recherche, en haut à droite). */
 .nova-editeur-zone { display: none !important; }
-.nova-editeur {
+.nova-editeur-cadre {
   --nova-cm-controle: var(--nova-accent); --nova-cm-type: #8a5a00; --nova-cm-commande: #0b6e6e; --nova-cm-predefinie: #a2521b;
   --nova-cm-variable: #2b5fb3; --nova-cm-fonction: #6b4bb3; --nova-cm-balise: #5f6b73; --nova-cm-attribut: #5f6b2f;
   --nova-cm-chaine: #2f7d4f; --nova-cm-commentaire: #6f7680; --nova-cm-nombre: #b33c1f; --nova-cm-accolade: #9b6b8f;
-  border: 1px solid var(--nova-bord-fort); border-radius: 10px; background: var(--nova-surface); color: var(--nova-texte);
-  font-size: 14px; text-align: left; margin: 8px 0; max-height: 75vh; overflow: hidden;
+  position: relative; border: 1px solid var(--nova-bord-fort); border-radius: 10px; background: var(--nova-surface);
+  color: var(--nova-texte); text-align: left; margin: 8px 0;
   /* largeur de la zone de WIMS : le contenu (une ligne longue) ne l'agrandit pas */
   width: 100%; max-width: 100%; box-sizing: border-box; contain: inline-size;
 }
-.nova-editeur.cm-focused { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+.nova-editeur-cadre:focus-within { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+.nova-editeur { font-size: var(--nova-editeur-taille, 14px); max-height: 75vh; border-radius: 0 0 10px 10px; background: var(--nova-surface); }
+.nova-editeur.cm-focused { outline: none; }
 .nova-editeur .cm-scroller { font-family: var(--nova-police-chiffres); line-height: 1.55; min-height: 16em; max-height: 75vh; overflow: auto; }
-.nova-editeur .cm-gutters { background: var(--nova-surface-2); color: #8a919b; border-right: 1px solid var(--nova-bord); border-radius: 10px 0 0 10px; }
+.nova-editeur-lecture .nova-editeur .cm-scroller { min-height: 0; }
+.nova-editeur .cm-gutters { background: var(--nova-surface-2); color: #8a919b; border-right: 1px solid var(--nova-bord); border-radius: 0 0 0 10px; }
 .nova-editeur .cm-activeLine { background: color-mix(in srgb, var(--nova-accent) 5%, transparent); }
 .nova-editeur .cm-activeLineGutter { background: color-mix(in srgb, var(--nova-accent) 10%, transparent); color: var(--nova-texte); }
+.nova-editeur-lecture .cm-activeLine, .nova-editeur-lecture .cm-activeLineGutter { background: none; }
 .nova-editeur .cm-matchingBracket { background: color-mix(in srgb, var(--nova-accent) 18%, transparent); outline: 1px solid var(--nova-accent); border-radius: 2px; }
 .nova-editeur .cm-nonmatchingBracket { background: #fde2e1; outline: 1px solid #c0392b; }
 .nova-editeur .cm-selectionBackground, .nova-editeur.cm-focused .cm-selectionBackground { background: color-mix(in srgb, var(--nova-accent) 22%, transparent) !important; }
 .nova-editeur .cm-searchMatch { background: #fff1b8; outline: 1px solid #e0b400; }
 .nova-editeur .cm-searchMatch-selected { background: #ffd54a; }
 .nova-editeur .cm-selectionMatch { background: color-mix(in srgb, var(--nova-accent) 10%, transparent); }
-/* Barre de recherche et de remplacement (js/cm6/entree.js barreRecherche), toujours ouverte au-dessus du texte */
-.nova-editeur .cm-panels { background: var(--nova-surface-2); color: var(--nova-texte); border-color: var(--nova-bord); }
-.nova-editeur .cm-panels-top { border-bottom: 1px solid var(--nova-bord); border-radius: 10px 10px 0 0; }
-.nova-cm-barre { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 6px 8px; font-family: var(--nova-police); font-size: 13px; }
-.nova-cm-groupe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
-/* .nova-editeur … input : plus fort que les règles de WIMS et de Nova sur les champs de texte (largeur 100 %) */
-.nova-editeur .nova-cm-barre input.cm-textfield { font: inherit; font-size: 14px; width: 15em; max-width: 100%; flex: 0 1 15em; padding: 3px 8px; border: 1px solid var(--nova-bord-fort); border-radius: 6px; background: var(--nova-surface); color: var(--nova-texte); margin: 0; box-shadow: none; height: auto; }
-.nova-editeur .nova-cm-barre input.cm-textfield:focus { outline: 2px solid var(--nova-accent); outline-offset: 0; border-color: var(--nova-accent); }
-.nova-cm-barre .cm-button { font: inherit; padding: 3px 10px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); background-image: none; color: var(--nova-texte); cursor: pointer; margin: 0; line-height: 1.4; min-height: 0; }
-.nova-cm-barre .cm-button:hover, .nova-cm-barre .cm-button:focus-visible { border-color: var(--nova-accent); color: var(--nova-accent); }
-.nova-editeur .nova-cm-barre label { font-weight: 400; display: inline-flex; align-items: center; gap: 4px; margin: 0; font-size: 13px; color: var(--nova-texte-2); cursor: pointer; white-space: nowrap; }
-.nova-cm-barre input[type=checkbox] { margin: 0; accent-color: var(--nova-accent); }
-/* Langue des documents */
+
+/* Barre : une ligne fine (32 px) */
+.nova-editeur-barre { display: flex; align-items: center; flex-wrap: wrap; gap: 2px; min-height: 32px; box-sizing: border-box; padding: 3px 6px;
+  background: var(--nova-surface-2); border-bottom: 1px solid var(--nova-bord); border-radius: 10px 10px 0 0;
+  font-family: var(--nova-police); font-size: 13px; }
+.nova-editeur-cadre button.nova-cm-bouton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 26px; min-width: 26px;
+  min-height: 0; margin: 0; padding: 0 5px; border: 0; border-radius: 6px; background: none; box-shadow: none; color: var(--nova-texte);
+  font: inherit; font-size: 13px; line-height: 1; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.nova-editeur-cadre button.nova-cm-bouton:hover, .nova-editeur-cadre button.nova-cm-bouton[aria-pressed="true"],
+.nova-editeur-cadre button.nova-cm-bouton[aria-expanded="true"]:not(.nova-cm-bascule) { background: color-mix(in srgb, var(--nova-accent) 12%, transparent); color: var(--nova-accent); }
+.nova-editeur-cadre button.nova-cm-bouton:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 0; }
+.nova-editeur-cadre button.nova-cm-bouton:disabled { opacity: .4; cursor: default; background: none; color: var(--nova-texte); }
+.nova-cm-icone { display: inline-flex; }
+.nova-editeur-barre kbd { font: 11px var(--nova-police-chiffres); color: var(--nova-texte-2); border: 1px solid var(--nova-bord); border-radius: 4px; padding: 0 4px; background: var(--nova-surface); }
+.nova-cm-sep { width: 1px; height: 18px; background: var(--nova-bord-fort); margin: 0 4px; }
+.nova-cm-espace { flex: 1; }
+.nova-cm-choix { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; font-weight: 400; color: var(--nova-texte-2); }
+.nova-editeur-cadre .nova-editeur-barre .nova-cm-choix select { font: inherit; font-size: 13px; width: auto; height: 26px; min-height: 0; line-height: 1.2; margin: 0; padding: 0 24px 0 6px; background-position: right 4px center;
+  border: 1px solid var(--nova-bord-fort); border-radius: 6px; background-color: var(--nova-surface); color: var(--nova-texte); }
+
+/* Taille du texte : bulle sous son bouton */
+.nova-cm-ancre { position: relative; display: inline-flex; }
+.nova-cm-bulle { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+  background: var(--nova-surface); border: 1px solid var(--nova-bord-fort); border-radius: 10px; box-shadow: 0 6px 24px rgba(20, 20, 40, .18); white-space: nowrap; }
+.nova-cm-bulle[hidden] { display: none; }
+.nova-editeur-cadre .nova-cm-bulle button.nova-cm-bouton { border: 1px solid var(--nova-bord-fort); border-radius: 999px; padding: 0 9px; }
+.nova-cm-taille-valeur { min-width: 3.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.nova-editeur-cadre button.nova-cm-lien { border: 0; background: none; padding: 0 2px; margin: 0; font: inherit; font-size: 13px; color: var(--nova-lien, var(--nova-accent)); text-decoration: underline; cursor: pointer; box-shadow: none; min-height: 0; }
+
+/* Fenêtre de recherche et de remplacement (variante A) : dans le coin de l'éditeur, par-dessus le texte */
+.nova-editeur .cm-panels.cm-panels-top { position: absolute; top: 8px; right: 14px; left: auto; z-index: 15; border: 0; background: none; }
+.nova-cm-recherche { display: flex; flex-direction: column; gap: 4px; padding: 5px 6px; background: var(--nova-surface); color: var(--nova-texte);
+  border: 1px solid var(--nova-bord-fort); border-radius: 10px; box-shadow: 0 6px 24px rgba(20, 20, 40, .18); font-family: var(--nova-police); font-size: 13px; max-width: calc(100vw - 48px); }
+.nova-cm-ligne { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.nova-cm-ligne[hidden] { display: none; }
+.nova-cm-remplacement { padding-left: 28px; }
+.nova-editeur .nova-cm-recherche input.nova-cm-champ { font: inherit; font-size: 13px; width: 13em; max-width: 100%; height: auto; margin: 0 4px 0 0; padding: 3px 7px;
+  border: 1px solid var(--nova-bord-fort); border-radius: 6px; background: var(--nova-surface); color: var(--nova-texte); box-shadow: none; }
+.nova-editeur .nova-cm-recherche input.nova-cm-champ:focus { outline: 2px solid var(--nova-accent); outline-offset: 0; border-color: var(--nova-accent); }
+.nova-editeur-cadre .nova-cm-recherche button.nova-cm-bouton { height: 24px; min-width: 24px; padding: 0 3px; }
+.nova-editeur-cadre .nova-cm-recherche button.nova-cm-bouton[aria-pressed="true"] { outline: 1px solid var(--nova-accent); }
+.nova-cm-compteur { color: var(--nova-texte-2); font-size: 12px; margin: 0 6px; white-space: nowrap; min-width: 4.5em; text-align: center; }
+.nova-cm-compteur.nova-cm-aucun { color: #b3261e; }
+
+/* Plein écran : l'éditeur couvre la fenêtre du navigateur */
+html.nova-editeur-ouvert, html.nova-editeur-ouvert body { overflow: hidden; }
+.nova-editeur-cadre.nova-editeur-plein { position: fixed; inset: 0; z-index: 10000; margin: 0; border: 0; border-radius: 0; display: flex; flex-direction: column; contain: none; }
+.nova-editeur-plein:focus-within { outline: none; }
+.nova-editeur-plein .nova-editeur-barre { border-radius: 0; }
+.nova-editeur-plein .nova-editeur { flex: 1; min-height: 0; max-height: none; border-radius: 0; }
+.nova-editeur-plein .nova-editeur .cm-scroller { max-height: none; }
+.nova-editeur-plein .cm-gutters { border-radius: 0; }
+
+/* Couleurs des langues */
 .nova-cm-controle { color: var(--nova-cm-controle); font-weight: 700; }
 .nova-cm-commande { color: var(--nova-cm-commande); font-weight: 700; }
 .nova-cm-predefinie { color: var(--nova-cm-predefinie); }
@@ -48,3 +95,7 @@
 .nova-cm-commentaire { color: var(--nova-cm-commentaire); font-style: italic; }
 .nova-cm-nombre { color: var(--nova-cm-nombre); }
 .nova-cm-accolade { color: var(--nova-cm-accolade); }
+.nova-cm-entete { color: var(--nova-cm-controle); font-weight: 700; }
+.nova-cm-supprime { color: #9f1d1d; background: #fde8e8; }
+.nova-cm-insere { color: #17633a; background: #e3f5ea; }
+.nova-cm-invalide { color: #b3261e; text-decoration: underline wavy; }

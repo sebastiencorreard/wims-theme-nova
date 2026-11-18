@@ -148,7 +148,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [Gabarits, côté serveur], [`*.phtml`, `_widgets/`, `_procs/`, `lang/`], [— (lus tels quels par WIMS)],
   [Styles], [`_css/*.css`, ordre dans `css.css.template`], [`css.css` (par `./construire-css.sh`)],
   [Comportements], [`js/src/*.js`], [`js/nova.js` (par `./construire-js.sh`, réduit par terser)],
-  [Éditeur de code], [`js/cm6/*.js` (CodeMirror 6 + langue des documents)], [`js/cm6.js` (par `./construire-cm6.sh`, esbuild)],
+  [Éditeur de code], [`js/cm6/*.js` (CodeMirror 6, barre, langues de WIMS)], [`js/cm6.js`, `cm6-wims.js`, `cm6-web.js`, `cm6-python.js` (par `./construire-cm6.sh`, esbuild)],
 )
 
 == Arborescence
@@ -163,7 +163,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [`lang/`], [Textes, en latin-1, en quatre langues au moins (fr, en, es, it).],
   [`_css/`], [Feuilles sources ; `css.css.template` fixe leur ordre.],
   [`js/src/`], [Sources de `nova.js`, par domaine (@annexe-js). Autres scripts de `js/` : chargés à la demande.],
-  [`js/cm6/`], [Sources de `js/cm6.js` (éditeur de code des documents, @editeur) : `entree.js`, `langue-documents.js`, `LICENSE-CodeMirror` (MIT).],
+  [`js/cm6/`], [Sources de l'éditeur de code (@editeur) : `entree.js` (éditeur, barre, recherche), `langue-documents.js` (documents, fabrique commune avec OEF), `langues-wims.js`, `langues-web.js`, `langues-python.js` (fichiers chargés à la demande), `etiquettes.js` (étiquettes de coloration partagées), `mots-wims.js` (listes de mots reprises d'EditArea), `icones.js` (Lucide), `construire.mjs` (assemblage), `LICENSE-CodeMirror` (MIT).],
   [`icones/`], [Jeu d'icônes Lucide pour WIMS et ses outils de construction.],
   [`img/`, `polices/`, `_avatar/`], [Images (logos, badges), polices (Atkinson Hyperlegible), dessins de l'avatar.],
   [`guide-nova.typ`], [Ce guide (à la racine : Typst ne lit les sources que sous le dossier du fichier compilé).],
@@ -193,7 +193,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [Commande], [Lit WIMS ?], [Ce qu'elle fait],
   [`./construire-css.sh`], [oui], [Concatène les feuilles de `css.css.template` (celles de WIMS lues *dans le conteneur* ou dans `$WIMS_THEMES`, celles de Nova dans `_css/`), réduit, écrit `css.css` et l'empreinte (`_css/empreinte.css`, meta `nova-css`).],
   [`./construire-js.sh`], [non], [Assemble `js/src/*.js` dans l'ordre des noms, réduit par terser, écrit `js/nova.js` et son empreinte dans `htmlheader.phtml`. `NOVA_JS_LISIBLE=1` : sans réduction, pour déboguer.],
-  [`./construire-cm6.sh`], [non], [Assemble `js/cm6/` et CodeMirror 6 par esbuild (ASCII seul), écrit `js/cm6.js` et son empreinte (meta `nova-cm6` de `htmlheader.phtml`). Seulement après une modification de `js/cm6/` ou un changement de version.],
+  [`./construire-cm6.sh`], [non], [Assemble `js/cm6/` et CodeMirror 6 par esbuild (`js/cm6/construire.mjs`, ASCII seul) : `js/cm6.js` et les fichiers de langues `cm6-wims.js`, `cm6-web.js`, `cm6-python.js` ; écrit leur empreinte (meta `nova-cm6` de `htmlheader.phtml`). Seulement après une modification de `js/cm6/` ou un changement de version.],
   [`./verifier.sh`], [non], [Contrôles : assemblage à jour, syntaxe, ASCII dans le code, encodages, langues, chemins en dur, couverture de ce guide ; recompile `guide-nova.pdf`.],
   [`./livrer.sh`], [oui], [Refuse un dépôt modifié ; lance `verifier.sh` et `construire-css.sh` ; produit `livraisons/nova-<date>-<commit>.tgz` (avec ce guide en PDF).],
 )
@@ -1011,28 +1011,49 @@ reconnaît la page, et son texte. La classe `.nova-vide` est déjà prise (elle 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
 
-=== L'éditeur de code des documents (CodeMirror 6) <editeur>
+=== L'éditeur de code (CodeMirror 6) <editeur>
 
-Sur la page de présentation d'une feuille (`adm/class/sheet`, `#prpage`) et dans les documents de la classe (`adm/doc`,
-`#doc_content`), `editeurDocuments` (`js/src/70-enseignant.js`) charge `js/cm6.js` (adresse tirée de celle de `nova.js`,
-empreinte lue dans la meta `nova-cm6`) et pose l'éditeur après la zone de texte de WIMS. Cette zone reste dans le
-formulaire, cachée (`nova-editeur-zone`) et recopiée à chaque modification : sans JavaScript, ou avec le réglage
-standard « textes », rien ne change. Pas au téléphone pour l'instant (aucun pointeur fin).
+`editeursCode` (`js/src/20-composants.js`) pose l'éditeur après une zone de texte de WIMS, qui reste dans le formulaire,
+cachée (`nova-editeur-zone`) et recopiée à chaque modification : sans JavaScript, au téléphone (pas encore : aucun
+pointeur fin) ou avec le réglage standard « textes », WIMS reste tel quel. Il charge `js/cm6.js` (adresse tirée de celle
+de `nova.js`, empreinte lue dans la meta `nova-cm6`). Zones visées :
 
-- *La barre de recherche et de remplacement* : `barreRecherche` (`js/cm6/entree.js`), panneau de recherche de CodeMirror
-  redessiné (`createPanel`), ouvert à la création et jamais fermé (Échap retiré de `searchKeymap`). Elle est DANS le
-  formulaire de WIMS : aucun nom sur ses champs (sinon ils partent avec le formulaire), boutons `type="button"`, Entrée
-  interceptée (sinon envoi du formulaire).
-- *La largeur* : lignes repliées (`EditorView.lineWrapping`) et `contain: inline-size` : une ligne longue n'élargit plus l'éditeur.
+- page de présentation d'une feuille (`adm/class/sheet`, `#prpage`) et documents de la classe (`adm/doc`, `#doc_content`) :
+  langue des documents ;
+- *partout où WIMS lance EditArea* (`scripts/js/edit_area.phtml` : Modtool, aide de `createxo`, `classes/fr`, modules qui
+  montrent du code) : `editAreaLoader.init` s'exécute dans l'en-tête et n'inscrit l'éditeur que dans `window.editAreas` ;
+  EditArea ne se construit qu'au chargement de la page (`eAL.start`, rappelé par minuterie), après `nova.js`. On reprend
+  ses réglages (syntaxe, `is_editable`, choix de syntaxe), on retire l'inscription et on enveloppe `start` pour qu'il
+  ignore ces zones. Dans Modtool, un fichier que WIMS marque `wimsdata` ou `wimsoef` prend la langue de son extension
+  (`.css`, `.js`, `.html`, `.py`, `.gp`…) ;
+- `\special{editarea}` d'un exercice : `textarea#wims_show` en lecture seule (EditArea n'y démarre pas : l'en-tête est
+  déjà écrit), en OEF, ou dans la syntaxe que le module a demandée.
 
-- *La langue des documents* : `js/cm6/langue-documents.js`, analyse ligne à ligne (`StreamLanguage`) : listes de mots
-  (contrôle, commandes de document, variables d'une page de présentation, types, fonctions, conditions), `\comment{…}` à
-  accolades imbriquées, `\( … \)`, HTML. Couleurs par classes `nova-cm-…` dans `_css/editeur.css`.
-- *Les textes de l'interface* (recherche, remplacement) : étiquette `:editeur` de `lang/enseignant-textes.phtml.<l>`
-  (attributs `data-…`, convertis en « phrases » de CodeMirror par la table `PHRASES` de `editeurDocuments`).
+La barre (une ligne) : annuler, refaire (Ctrl+Z, Ctrl+Y), rechercher (fenêtre dans le coin de l'éditeur, Ctrl+F), taille
+du texte (bulle ; `localStorage` `nova-editeur-taille`, @annexe-navigateur), plein écran (classe `nova-editeur-plein` :
+couvre la fenêtre ; Échap en sort, en priorité sur « désélectionner »), et le menu « Coloration » là où WIMS proposait le
+choix de syntaxe. En lecture seule : ni annuler ni remplacer.
+
+- *La fenêtre de recherche* : `fenetreRecherche` (`js/cm6/entree.js`), panneau de recherche de CodeMirror redessiné
+  (`createPanel`), placé par `_css/editeur.css` en position absolue. Elle est DANS le formulaire de WIMS : aucun nom sur ses
+  champs (sinon ils partent avec le formulaire), boutons `type="button"`, Entrée interceptée (sinon envoi). Ses touches
+  (Échap…) passent par `runScopeHandlers(vue, ev, 'search-panel')`.
+- *La largeur* : lignes repliées (`EditorView.lineWrapping`) et `contain: inline-size` : une ligne longue n'élargit pas l'éditeur.
+- *Les langues* : documents dans `cm6.js` ; OEF, WIMS, WIMS data, Flydraw, Pari/GP, Octave et diff dans `cm6-wims.js` ;
+  HTML, CSS et JavaScript dans `cm6-web.js` ; Python dans `cm6-python.js`, chargés à la première demande. Les langues de
+  WIMS sont écrites pour Nova (`StreamLanguage`), avec les listes de mots d'EditArea (`mots-wims.js`, extraites des
+  `reg_syntax` de WIMS) ; HTML, CSS, JavaScript et Python sont les paquets officiels, Octave le mode de `legacy-modes`.
+  Les fichiers de langues prennent dans `window.NovaEditeur.modules` les modules que CodeMirror veut uniques (état, vue,
+  langage, `@lezer/common`, `@lezer/highlight`, étiquettes) : `construire.mjs` les remplace par un renvoi. Une seconde
+  copie de `@lezer/common` casserait l'appariement des accolades, une seconde copie des étiquettes les couleurs.
+- *Les couleurs* : étiquettes de Nova (`etiquettes.js`) et étiquettes standard, en classes `nova-cm-…` (`couleurs` de
+  `entree.js`, `_css/editeur.css`).
+- *Les textes* : étiquette `:editeur` de `lang/enseignant-textes.phtml.<l>`, lue par `header.phtml` (page d'une feuille),
+  `docheader.phtml` (documents) et `tail.phtml` (pages où `edit_area` figure dans `$wims_html_header`) ; attributs `data-…`
+  convertis en « phrases » de CodeMirror par la table `PHRASES` de `editeursCode`.
 - *Après une modification de `js/cm6/`* : `./construire-cm6.sh`, puis `./verifier.sh`. Changer de version de CodeMirror :
-  `npm install --prefix ../../outils-js --save-exact …` (une seule copie de `@codemirror/state`, sinon l'éditeur casse :
-  `npm ls @codemirror/state`), puis la même commande.
+  `npm install --prefix ../../outils-js --save-exact …` (une seule copie de `@codemirror/state`, `view`, `language`,
+  `@lezer/common` et `@lezer/highlight` : `npm ls`), puis la même commande.
 
 === Le Travail individualisé (page de présentation d'une feuille) <ti>
 
@@ -2298,6 +2319,7 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova-trombinoscope`], [cases « Afficher » du trombinoscope],
   [`nova_examtypes_<login>`], [types des pages de vérification d'un examen, pour la fenêtre de vérification],
   [`nova-flyers-nom|<classe>`], [nom de la classe modifié pour les flyers à imprimer],
+  [`nova-editeur-taille`], [taille du texte de l'éditeur de code, en px (absente : 14)],
   [`nova-fiche-avancees`], [options avancées d'une fiche de ressource ouvertes ou fermées],
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message

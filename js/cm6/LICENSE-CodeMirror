@@ -1,6 +1,8 @@
-Licence de CodeMirror 6 et de ses dependances, assemblees dans js/cm6.js par construire-cm6.sh :
-@codemirror/state, view, commands, language, search ; @lezer/common, @lezer/highlight ; style-mod, w3c-keyname, crelt
-(memes auteur et licence MIT ; https://codemirror.net).
+Licence de CodeMirror 6 et de ses dependances, assemblees dans js/cm6.js, cm6-wims.js, cm6-web.js et cm6-python.js
+par construire-cm6.sh : @codemirror/state, view, commands, language, search, autocomplete, lint, lang-html, lang-css,
+lang-javascript, lang-python, legacy-modes ; @lezer/common, highlight, lr, html, css, javascript, python ; style-mod,
+w3c-keyname, crelt (memes auteur et licence MIT ; https://codemirror.net). Icones de la barre (js/cm6/icones.js) :
+Lucide, licence ISC (icones/Lucide/LICENSE).
 
 MIT License
 

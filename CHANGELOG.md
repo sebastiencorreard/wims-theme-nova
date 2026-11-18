@@ -25,7 +25,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
-- **Éditeur de code** pour la page de présentation d'une feuille et les documents de la classe : coloration de la langue des documents (commandes, variables, types, fonctions, HTML, commentaires), accolades appariées, numéros de ligne, barre de recherche et de remplacement toujours visible ; les lignes longues sont repliées, l'éditeur garde la largeur de la zone de texte. Sur ordinateur ; au téléphone, la zone de texte reste simple.
+- **Éditeur de code** (CodeMirror 6) à la place d'EditArea, partout où WIMS l'utilisait (Modtool, aide de createxo, exercices qui montrent du code), et pour la page de présentation d'une feuille et les documents de la classe. Coloration OEF, WIMS, WIMS data, HTML, CSS, JavaScript, Pari/GP, Octave, Flydraw, Doc, Python et diff ; barre d'une ligne : annuler, refaire (Ctrl+Z, Ctrl+Y), rechercher et remplacer dans une petite fenêtre (Ctrl+F), taille du texte, plein écran. Sur ordinateur ; au téléphone, rien ne change pour l'instant.
 - Liaison tableur en cartes et pastilles lisibles (« Feuille 3 » au lieu de « sheet3 »), zone de dépôt du fichier ; Message d'accueil : un menu « ⋯ » par élève ; listes à choix multiples en cases avec « Tout cocher » ; livret et variables techniques vides : une carte avec le bouton qui les remplit.
 - Accueil de la classe en cartes, comme la configuration : une carte pour la bienvenue et les participants connectés, une pour les feuilles et examens.
 - Boutons « Effacer » en contour rouge, comme « Désactiver » ; le Message d'accueil demande confirmation avant d'effacer.
@@ -82,7 +82,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu « Profil » : « Conditions générales d'utilisation » n'y figure plus ; le lien reste en pied de page, sur toutes les pages.
 
 ### Installation
-- Nouveau fichier `js/cm6.js` (CodeMirror 6, licence MIT, `js/cm6/LICENSE-CodeMirror`), chargé seulement sur les deux pages d'édition ; se reconstruit par `construire-cm6.sh`.
+- Nouveaux fichiers `js/cm6.js`, `cm6-wims.js`, `cm6-web.js`, `cm6-python.js` (CodeMirror 6, licence MIT, `js/cm6/LICENSE-CodeMirror`), chargés seulement par les pages qui ont un éditeur ; se reconstruisent par `construire-cm6.sh`.
 - Guide du développeur (`guide-nova.typ`, PDF dans l'archive) : quels fichiers modifier selon son objectif, choix faits, pièges.
 - Développer Nova sans Docker : `construire-css.sh` et `livrer.sh` lisent les feuilles de WIMS dans `WIMS_THEMES` ; le guide du développeur explique comment installer WIMS avec ou sans Docker (annexe F).
 - Guide du développeur : glossaire des mots de WIMS et de Nova (annexe G).

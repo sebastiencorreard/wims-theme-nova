@@ -481,3 +481,76 @@
       if (lien.matches('input[type="checkbox"], input[type="radio"]')) lien.focus();
     });
   }
+
+
+  /* Éditeur de code (CodeMirror 6, js/cm6.js ; 2026-11-18, utilisateur) : page de présentation d'une feuille
+   * (adm/class/sheet, #prpage) et documents de la classe (adm/doc, #doc_content) en langue des documents ; et PARTOUT où
+   * WIMS lançait EditArea (scripts/js/edit_area.phtml : Modtool, createxo, classes/fr, oefpython…) : editAreaLoader.init
+   * s'exécute dans l'en-tête et n'inscrit l'éditeur que dans window.editAreas ; il ne se construit qu'au chargement de la
+   * page (eAL.start, rappelé par minuterie), après nova.js. On reprend ses réglages (syntaxe, lecture seule, choix de
+   * syntaxe), on retire l'inscription et on fait taire start pour ces zones. \special{editarea} d'un exercice : textarea
+   * #wims_show en lecture seule (EditArea n'y démarre pas : identifiant différent, en-tête déjà écrit). Fichiers de Modtool
+   * marqués wimsdata ou wimsoef par WIMS : langue d'après l'extension (.css, .js, .html, .py, .gp…).
+   * Textes : #nova-editeur-textes (header.phtml, docheader.phtml, tail.phtml). Pas au téléphone pour l'instant (pas de
+   * pointeur fin ; utilisateur) : EditArea ou la zone de WIMS restent ; réglage standard « textes » : idem. */
+  function editeursCode() {
+    var meta = document.querySelector('meta[name="nova-cm6"]');
+    var moi = document.querySelector('script[src*="/js/nova.js"]');
+    if (!meta || !moi || standard('textes')) return;
+    if (window.matchMedia && !window.matchMedia('(any-pointer: fine)').matches) return;
+    var cibles = [], pris = {};
+    var deja = function (z) { return cibles.some(function (c) { return c.zone === z; }); };
+    var doc = document.querySelector('#prpage textarea[name="wims_deposit"], textarea#doc_content');
+    if (doc && !doc.readOnly) cibles.push({ zone: doc, langue: 'wimsdoc' });
+    var eal = window.editAreaLoader, eas = window.editAreas;
+    if (eal && eas && typeof eal.start === 'function') {
+      var fichier = document.querySelector('input[type="hidden"][name="fname"]');
+      var ext = fichier ? (fichier.value.match(/\.(\w+)$/) || [])[1] : '';
+      var PAR_EXT = { css: 'css', js: 'js', mjs: 'js', json: 'js', html: 'html', htm: 'html', svg: 'html', xml: 'html', py: 'python',
+        gp: 'gp', m: 'octave', flydraw: 'flydraw', phtml: 'wims', proc: 'wims', oef: 'wimsoef', diff: 'diff' };
+      Object.keys(eas).forEach(function (id) {
+        var z = document.getElementById(id), r = (eas[id] && eas[id].settings) || {};
+        if (!z || z.tagName !== 'TEXTAREA' || deja(z)) return;
+        var langue = r.syntax || 'wimsoef';
+        if ((langue === 'wimsdata' || langue === 'wimsoef') && ext && PAR_EXT[ext.toLowerCase()]) langue = PAR_EXT[ext.toLowerCase()];
+        pris[id] = true;
+        cibles.push({ zone: z, langue: langue, lecture: r.is_editable === false || z.readOnly,
+          choix: /syntax_selection/.test(String(r.toolbar)) ? String(r.syntax_selection_allow || '').split(/\s*,\s*/).concat(['diff']) : null });
+        delete eas[id];
+      });
+      if (Object.keys(pris).length) {
+        var depart = eal.start;
+        eal.start = function (id) { if (!pris[id]) return depart.apply(this, arguments); };
+      }
+    }
+    document.querySelectorAll('textarea[id^="wims_show"][readonly]').forEach(function (z) {
+      if (!deja(z)) cibles.push({ zone: z, langue: 'wimsoef', lecture: true });
+    });
+    if (!cibles.length) return;
+    var tx = document.getElementById('nova-editeur-textes');
+    var PHRASES = { 'find': 'Find', 'replace': 'Replace', 'next': 'next', 'previous': 'previous', 'match-case': 'match case',
+      'regexp': 'regexp', 'by-word': 'by word', 'replace-1': 'replace', 'replace-all': 'replace all', 'close': 'close',
+      'go-to-line': 'Go to line', 'go': 'go', 'source': 'Source', 'control-character': 'Control character', 'undo': 'Undo',
+      'redo': 'Redo', 'text-size': 'Text size', 'smaller': 'Smaller text', 'larger': 'Larger text', 'default': 'Default',
+      'full-screen': 'Full screen', 'exit-full-screen': 'Exit full screen', 'syntax': 'Syntax', 'of': 'of',
+      'no-results': 'No results', 'show-replace': 'Show replace', 'all': 'all', 'current-match': 'current match',
+      'replaced': 'replaced $ matches', 'replaced-line': 'replaced match on line $', 'on-line': 'on line' };
+    var textes = {};
+    if (tx) Object.keys(PHRASES).forEach(function (k) { var v = tx.getAttribute('data-' + k); if (v) textes[PHRASES[k]] = v; });
+    var base = moi.src.replace(/nova\.js(\?.*)?$/, ''), v = encodeURIComponent(meta.getAttribute('content') || '');
+    var adresse = function (f) { return base + 'cm6-' + f + '.js?v=' + v; };
+    var lancer = function () {
+      if (!window.NovaEditeur) return;
+      cibles.forEach(function (c) {
+        if (c.zone.classList.contains('nova-editeur-zone')) return;
+        try {
+          window.NovaEditeur.creer(c.zone, { textes: textes, langue: c.langue, choix: c.choix, lecture: c.lecture, adresse: adresse });
+        } catch (x) { c.zone.classList.remove('nova-editeur-zone'); }
+      });
+    };
+    if (window.NovaEditeur) { lancer(); return; }
+    var sc = document.createElement('script');
+    sc.src = base + 'cm6.js?v=' + v;
+    sc.onload = lancer;
+    document.head.appendChild(sc);
+  }

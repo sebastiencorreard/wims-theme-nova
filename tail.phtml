@@ -8,6 +8,12 @@
  <br class="clearall spacer">
 </div><!--end of wimspagebox-->
 !read themes/_widgets/topback.phtml
+!! Editeur de code (js/cm6.js, nova.js editeursCode ; 2026-11-18, utilisateur) : textes de sa barre sur les pages ou WIMS
+!! a demande EditArea (scripts/js/edit_area.phtml l'ajoute a wims_html_header, meme trop tard pour l'en-tete :
+!! \special{editarea} d'un exercice). Lu ici, en fin de page : nova.js (differe) le trouve.
+!if edit_area isin $wims_html_header
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang editeur
+!endif
 !! Avatars dans la liste des participants (2026-11-12, utilisateur) : enseignant, hors outil et examen.
 !if $module=adm/class/usermanage and $job=userlist and $wims_class!=$empty and _tool notin $wims_session and _exam notin $wims_session
   !if $wims_user=supervisor or yes isin $supervisable $user_supervisable

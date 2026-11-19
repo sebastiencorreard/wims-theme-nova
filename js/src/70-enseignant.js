@@ -2256,10 +2256,8 @@
 
     // Fenêtre « Affichage aux élèves » d'une séquence : toujours, jamais, entre deux dates (heure du serveur).
     var fenetre = null;
-    // o (page Modifier, 2026-11-19) : { plage, ips, technique (choix possible), valider(r) } ; sans o, la liste (enregistrement
-    // immédiat, nova_seq_plage).
-    function fenetrePlage(n, d, titre, modifier, o) {
-      var p = o ? o.plage : plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
+    function fenetrePlage(n, d, titre, modifier) {
+      var p = plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
       if (fenetre) fenetre.remove();
       var f = fenetre = el('dialog', 'nova-dialogue nova-seq-plage');
       var h = el('h1', '', t('plage-titre'));
@@ -2273,7 +2271,7 @@
       var choix = el('div', 'nova-seq-plage-choix');
       form.appendChild(choix);
       // Postes seuls (sans dates) : « toujours » (les postes sont gardés à l'enregistrement).
-      var actuel = p.mode === 'plage' && !p.debut && !p.fin && !o ? 'tous' : p.mode;
+      var actuel = p.mode === 'plage' && !p.debut && !p.fin ? 'tous' : p.mode;
       var radio = function (v, texte) {
         var l = el('label'), r = el('input');
         r.type = 'radio'; r.name = 'nova-seq-mode'; r.value = v;
@@ -2283,7 +2281,6 @@
         return r;
       };
       var rTous = radio('tous', t('toujours')), rCache = radio('cachee', t('jamais')), rPlage = radio('plage', t('entre'));
-      var rTech = null, champIp = null;
       var dates = el('div', 'nova-seq-plage-dates');
       var champ = function (type, val, lab) {
         var c = el('input'); c.type = type; if (val) c.value = val;
@@ -2302,25 +2299,16 @@
       dates.appendChild(el('span', '', t('du'))); dates.appendChild(dDeb); dates.appendChild(hDeb);
       dates.appendChild(el('span', '', t('au'))); dates.appendChild(dFin); dates.appendChild(hFin);
       choix.appendChild(dates);
-      // Page Modifier : postes (adresses IP, champ IPscore de WIMS) et variable technique, si la classe en a.
-      if (o) {
-        var lip = el('label', 'nova-seq-plage-ip');
-        lip.appendChild(el('span', '', t('postes-champ')));
-        champIp = el('input'); champIp.type = 'text'; champIp.value = o.ips || ''; champIp.autocomplete = 'off';
-        lip.appendChild(champIp);
-        choix.appendChild(lip);
-        if (o.technique) rTech = radio('technique', t('technique-choix'));
-      }
-      var suivre = function () { [dDeb, hDeb, dFin, hFin].concat(champIp ? [champIp] : []).forEach(function (c) { c.disabled = !rPlage.checked; }); };
-      [rTous, rCache, rPlage].concat(rTech ? [rTech] : []).forEach(function (r) { r.addEventListener('change', suivre); });
+      var suivre = function () { [dDeb, hDeb, dFin, hFin].forEach(function (c) { c.disabled = !rPlage.checked; }); };
+      [rTous, rCache, rPlage].forEach(function (r) { r.addEventListener('change', suivre); });
       [dDeb, dFin].forEach(function (c) { c.addEventListener('input', function () { if (c.value) { rPlage.checked = true; suivre(); } }); });
       // Classes en partage : interrupteur allumé à l'ouverture (2026-11-19, utilisateur ; case auparavant).
       var casePartage = null;
-      if (partage.length && (p.mode !== 'technique' || o)) {
+      if (partage.length && p.mode !== 'technique') {
         var bloc = el('div', 'nova-seq-plage-partage');
         var lp = el('label', 'nova-seq-inter');
         casePartage = el('input');
-        casePartage.type = 'checkbox'; casePartage.checked = o && o.partage != null ? o.partage : true; casePartage.id = 'nova-seq-plage-partage';
+        casePartage.type = 'checkbox'; casePartage.checked = true; casePartage.id = 'nova-seq-plage-partage';
         casePartage.setAttribute('role', 'switch');
         lp.appendChild(casePartage);
         lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
@@ -2328,8 +2316,8 @@
         bloc.appendChild(el('small', '', partage.map(function (x) { return x.nom; }).join(', ') + '. ' + t(partage.length === 1 ? 'partage-remplace-1' : 'partage-remplace')));
         form.appendChild(bloc);
       }
-      var note = el('p', 'nova-seq-plage-note', o ? (o.technique ? t('technique-dessous') : '') : t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
-      if (note.textContent) form.appendChild(note);
+      var note = el('p', 'nova-seq-plage-note', t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
+      form.appendChild(note);
       var erreur = el('p', 'nova-seq-plage-erreur');
       erreur.setAttribute('role', 'alert');
       form.appendChild(erreur);
@@ -2338,11 +2326,11 @@
       annuler.type = 'button';
       annuler.addEventListener('click', function () { f.close(); });
       boutons.appendChild(annuler);
-      if (p.mode === 'technique' && !o) {
+      if (p.mode === 'technique') {
         [rTous, rCache, rPlage].forEach(function (r) { r.disabled = true; });
         if (modifier) { var m = el('a', 'wims_button', t('modifier')); m.href = modifier.href; boutons.appendChild(m); }
       } else {
-        var ok = el('button', 'wims_button', t(o ? 'valider' : 'enregistrer'));
+        var ok = el('button', 'wims_button', t('enregistrer'));
         ok.type = 'submit';
         boutons.appendChild(ok);
       }
@@ -2350,18 +2338,17 @@
       suivre();
       form.addEventListener('submit', function (ev) {
         ev.preventDefault();
-        if (p.mode === 'technique' && !o) return;
-        var mode = rTous.checked ? 'tous' : rCache.checked ? 'cachee' : rPlage.checked ? 'plage' : rTech && rTech.checked ? 'technique' : '';
+        if (p.mode === 'technique') return;
+        var mode = rTous.checked ? 'tous' : rCache.checked ? 'cachee' : rPlage.checked ? 'plage' : '';
         if (!mode) return;
-        var deb = '', fin = '', ips = champIp ? champIp.value.replace(/\s+/g, ' ').trim() : '';
+        var deb = '', fin = '';
         if (mode === 'plage') {
           if (dDeb.value) deb = chiffres(dDeb.value) + chiffres(hDeb.value || '00:00');
           if (dFin.value) fin = chiffres(dFin.value) + chiffres(hFin.value || '23:59');
-          if (!deb && !fin && !ips) { erreur.textContent = t(o ? 'date-ou-postes' : 'date-manque'); return; }
+          if (!deb && !fin) { erreur.textContent = t('date-manque'); return; }
           if (deb && fin && deb >= fin) { erreur.textContent = t('date-ordre'); return; }
         }
         f.close();
-        if (o) { o.valider({ mode: mode, debut: deb, fin: fin, ips: ips, partage: !!(casePartage && casePartage.checked) }); return; }
         enregistrerPlage(d, n, mode, deb, fin, !!(casePartage && casePartage.checked));
       });
       f.addEventListener('click', function (e) { if (e.target === f) f.close(); });
@@ -2370,23 +2357,26 @@
       (choix.querySelector('input:checked') || rTous).focus();
     }
     /* Page Modifier d'une séquence, onglet Informations générales (2026-11-19, utilisateur, maquette
-     * maquettes/sequence-modifier-2026-11-19.html) : UNE pastille comme dans la liste (statut + affichage aux élèves), son menu
-     * (Activer ou Désactiver, Affichage aux élèves) et la même fenêtre que la liste, complétée des postes et de la variable
-     * technique ; interrupteur des classes en partage dans la fenêtre. Les listes Statut et Affichage de WIMS restent dans le
-     * formulaire, masquées, remplies par la pastille : rien n'est enregistré avant « Enregistrer ». Classes en partage : champ
-     * nova_seq_partage=1 ajouté au formulaire (GET), la plage enregistrée par WIMS est recopiée par _widgets/sequences.phtml
-     * (la question « pour toutes les classes en partage » de WIMS, qui suit le partage des feuilles, reste à Non, masquée).
-     * Description : éditeur à la hauteur du texte, comme un examen (editeurAjuste). */
+     * maquettes/sequence-modifier-2026-11-19.html) : UNE pastille comme dans la liste (statut + affichage aux élèves) ; son menu :
+     * Activer ou Désactiver, puis les choix d'affichage de WIMS (tous, personne, dates ou postes, variable technique si la classe
+     * en a). Restrictions SUR LA PAGE, sous la pastille (utilisateur, pas de fenêtre) : les champs de WIMS eux-mêmes (dates,
+     * heures, adresses IP ; tableau de la variable technique), déplacés et restylés ; WIMS les montre ou les cache selon sa liste
+     * (toggle_allowtype). Listes Statut et Affichage de WIMS masquées, gardées dans le formulaire : rien n'est enregistré avant
+     * « Enregistrer ». Classes en partage : interrupteur allumé ; le champ nova_seq_partage=1 n'est envoyé que si l'affichage a
+     * changé ou diffère d'une classe en partage (sinon modifier la description écraserait leur réglage) ; la plage enregistrée
+     * par WIMS est recopiée par _widgets/sequences.phtml (la question « pour toutes les classes en partage » de WIMS, qui suit le
+     * partage des feuilles, reste à Non, masquée). Description : éditeur à la hauteur du texte, comme un examen. */
     function modifierSequence() {
       var visible = document.getElementById('visible'), type = document.getElementById('allowtype');
       var titreSeq = document.getElementById('seq_title'), cadre = titreSeq && titreSeq.closest('fieldset');
       if (!visible || !type || !cadre || !visible.form) return;
       var form = visible.form, champ = function (id) { return document.getElementById(id); };
       var numeroSeq = (/[?&]seq=(\d+)/.exec(location.search) || [])[1] || '';
-      var techOk = Array.prototype.some.call(type.options, function (x) { return x.value === 'techvar'; });
-      var copier = null, menus = menusEtat();
-      var iso = function (v) { return v ? v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6, 8) : ''; };
-      var hm = function (v) { return v ? v.slice(8, 10) + ':' + v.slice(10, 12) : ''; };
+      var menus = menusEtat();
+      var temps = champ('js_restricted_time'), techvar = champ('js_restricted_techvar');
+      var CHAMPS = ['allowtype', 'begindscore', 'begintscore', 'enddscore', 'endtscore', 'IPscore', 'allowtechvar'];
+      var releve = function () { return CHAMPS.map(function (id) { var c = champ(id); return c ? c.value : ''; }).join('|'); };
+      var depart = releve();
       function plageForm() {
         if (type.value === 'all') return { mode: 'tous', debut: '', fin: '', postes: false };
         if (type.value === 'none') return { mode: 'cachee', debut: '', fin: '', postes: false };
@@ -2399,8 +2389,7 @@
           postes: !!(ip && ip.value.trim())
         };
       }
-      // Champs de WIMS masqués (restent dans le formulaire) ; le tableau de la variable technique reste visible.
-      [visible.closest('.field') || visible.parentNode, type, form.querySelector('label[for="allowtype"]'), champ('js_restricted_time'),
+      [visible.closest('.field') || visible.parentNode, type, form.querySelector('label[for="allowtype"]'),
         type.parentNode.querySelector('.wims_button_help'), form.querySelector('label[for="allowshare"]')].forEach(function (e) {
         if (!e) return;
         if (e.matches('label[for="allowshare"]')) e = e.parentNode;
@@ -2410,6 +2399,7 @@
       if (share) share.value = '0';
 
       var zone = el('div', 'nova-seq-modif-etat');
+      var ligne = el('div', 'nova-seq-modif-ligne');
       var pastille = el('button', 'nova-etat nova-seq-etat');
       pastille.type = 'button';
       var menu = el('div', 'nova-etat-menu');
@@ -2418,23 +2408,64 @@
       menu.hidden = true;
       var avis = el('p', 'nova-seq-modif-avis', t('a-enregistrer'));
       avis.hidden = true;
-      zone.appendChild(pastille);
-      zone.appendChild(avis);
+      ligne.appendChild(pastille);
+      ligne.appendChild(avis);
+      zone.appendChild(ligne);
+      // Champs de WIMS sous la pastille : dates et IP (libellé des IP en clair), tableau de la variable technique.
+      if (temps) {
+        temps.classList.add('nova-seq-modif-temps');
+        var lip = temps.querySelector('label[for="IPscore"]');
+        if (lip) lip.textContent = t('postes-champ');
+        zone.appendChild(temps);
+      }
+      if (techvar) { techvar.classList.add('nova-seq-modif-technique'); zone.appendChild(techvar); }
+      // Interrupteur des classes en partage, et ce qu'elles montrent aujourd'hui.
+      var inter = null;
+      if (partage.length) {
+        var bloc = el('div', 'nova-seq-plage-partage nova-seq-modif-partage');
+        var lp = el('label', 'nova-seq-inter');
+        inter = el('input');
+        inter.type = 'checkbox'; inter.checked = true; inter.id = 'nova-seq-modif-partage';
+        inter.setAttribute('role', 'switch');
+        lp.appendChild(inter);
+        lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
+        bloc.appendChild(lp);
+        var etat0 = visible.value === '1' ? 1 : 0, ici = brut[numeroSeq] || numeroSeq + ':tous';
+        partage.forEach(function (x) {
+          var r = x.plages[numeroSeq] || numeroSeq + ':tous', l = el('small', '', x.nom + ' : ');
+          if (r === ici) l.appendChild(document.createTextNode(t('partage-pareil')));
+          else { x.diff = true; l.appendChild(el('strong', '', vueEleves(etat0, lirePlage(r)).long)); }
+          bloc.appendChild(l);
+        });
+        zone.appendChild(bloc);
+      }
       cadre.classList.add('nova-fiche');
       var legende = cadre.querySelector(':scope > legend');
       cadre.insertBefore(zone, legende ? legende.nextSibling : cadre.firstChild);
-      var item = function (texte, ico, effet, faire) {
+
+      var item = function (texte, ico, effet, faire, coche) {
         var b = el('button', 'nova-etat-action');
         b.type = 'button';
-        b.setAttribute('role', 'menuitem');
+        b.setAttribute('role', coche == null ? 'menuitem' : 'menuitemradio');
+        if (coche != null) b.setAttribute('aria-checked', coche ? 'true' : 'false');
         b.setAttribute('tabindex', '-1');
         b.appendChild(icone(ico));
         var tt = el('span', 'nova-etat-texte', texte);
-        tt.appendChild(el('small', '', effet));
+        if (effet) tt.appendChild(el('small', '', effet));
         b.appendChild(tt);
         b.addEventListener('click', function () { menus.fermer(false); faire(); });
         menu.appendChild(b);
-        return b;
+      };
+      var choisir = function (v) {
+        return function () {
+          if (type.value === v) return;
+          type.value = v;
+          // onchange de WIMS (toggle_allowtype) : montre ou cache les dates et le tableau de la variable technique.
+          type.dispatchEvent(new Event('change', { bubbles: true }));
+          suivre();
+          var premier = v === 'select' && temps && temps.querySelector('input');
+          if (premier) premier.focus();
+        };
       };
       function dessiner() {
         var etat = visible.value === '1' ? 1 : 0, vu = vueEleves(etat, plageForm());
@@ -2449,35 +2480,23 @@
         pastille.appendChild(el('span', 'nova-etat-chevron'));
         menu.textContent = '';
         var commun = partage.length ? ' ' + nombre('partage-commun', partage.length) : '';
-        if (etat === 1) item(t('b-desactiver'), 'oeil-barre', t('desactiver') + commun, function () { changer(function () { visible.value = '0'; }); });
-        else item(t('b-activer'), 'lecture', t('activer') + commun, function () { changer(function () { visible.value = '1'; }); });
-        item(t('affichage'), 'calendrier', t('affichage-effet'), function () {
-          var ip = champ('IPscore');
-          fenetrePlage(numeroSeq, null, titreSeq.value, null, {
-            plage: plageForm(), ips: ip ? ip.value : '', technique: techOk, partage: copier,
-            valider: function (r) { changer(function () { ecrire(r); }); }
-          });
-        });
+        if (etat === 1) item(t('b-desactiver'), 'oeil-barre', t('desactiver') + commun, function () { visible.value = '0'; suivre(); });
+        else item(t('b-activer'), 'lecture', t('activer') + commun, function () { visible.value = '1'; suivre(); });
+        var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr);
+        item(t('toujours'), 'oeil', '', choisir('all'), type.value === 'all');
+        item(t('jamais'), 'oeil-barre', '', choisir('none'), type.value === 'none');
+        item(t('restreinte'), 'calendrier', '', choisir('select'), type.value === 'select');
+        if (Array.prototype.some.call(type.options, function (x) { return x.value === 'techvar'; }))
+          item(t('technique-choix'), 'curseurs', '', choisir('techvar'), type.value === 'techvar');
       }
-      function changer(faire) { faire(); avis.hidden = false; dessiner(); }
-      function ecrire(r) {
-        var avant = type.value;
-        type.value = { tous: 'all', cachee: 'none', plage: 'select', technique: 'techvar' }[r.mode];
-        if (r.mode === 'plage') {
-          var mettre = function (id, v) { var c = champ(id); if (c) c.value = v; };
-          mettre('begindscore', iso(r.debut)); mettre('begintscore', hm(r.debut) || '00:00');
-          mettre('enddscore', iso(r.fin)); mettre('endtscore', hm(r.fin) || '23:59');
-          mettre('IPscore', r.ips);
-        }
-        // onchange de WIMS (toggle_allowtype) : affiche le tableau de la variable technique.
-        if (avant !== type.value) type.dispatchEvent(new Event('change', { bubbles: true }));
-        copier = partage.length ? r.partage : null;
-      }
+      function suivre() { avis.hidden = releve() === depart && visible.value === visible.defaultValue; dessiner(); }
+      if (temps) { temps.addEventListener('input', suivre); temps.addEventListener('change', suivre); }
       menus.brancher(pastille, menu);
       dessiner();
       form.addEventListener('formdata', function (e) {
         if (share) e.formData.set('allowshare', '0');
-        if (copier) e.formData.set('nova_seq_partage', '1');
+        var diff = partage.some(function (x) { return x.diff; });
+        if (inter && inter.checked && (releve() !== depart || diff)) e.formData.set('nova_seq_partage', '1');
       });
       editeurAjuste('seq_desc');
       var desc = champ('seq_desc'), cd = desc && (desc.closest('.field') || desc.parentNode);
@@ -2489,6 +2508,7 @@
         tete.appendChild(aide);
       }
     }
+
     function enregistrerPlage(d, n, mode, deb, fin, aussiPartage) {
       occupe = true;
       document.documentElement.classList.add('nova-occupe');

@@ -16,7 +16,8 @@
 !! liste, nova_sv l'une d'elles, nova_s1 leurs plages, nova_s2 leurs noms (separes par |), nova_sr une valeur lue.
 !! nova_seq_partage=1 dans l'adresse : la plage est aussi ecrite dans ces classes (interrupteur de la fenetre de nova.js) ;
 !! depuis la page Modifier (job=addseq, champ du formulaire), recopiee apres l'enregistrement de WIMS (save lu dans la requete, $seq).
-!! #nova-seq-modifier (job=addseq) : heure du serveur, dates de la classe, classes en partage et leurs noms.
+!! #nova-seq-modifier (job=addseq) : plages de la classe, heure du serveur, dates de la classe, classes en partage, leurs plages
+!! et leurs noms (interrupteur : ce qu'elles montrent aujourd'hui).
 !if $module=adm/class/sequence and $wims_user=supervisor
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
@@ -89,7 +90,9 @@
     !next nova_sv
   !endif
   !if $job=addseq
-<span id="nova-seq-modifier" hidden data-partage="$nova_sd" data-partage-noms="$nova_s2" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration"></span>
+    !set nova_sp=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plages
+    !set nova_sp=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sp
+<span id="nova-seq-modifier" hidden data-plages="$nova_sp" data-partage="$nova_sd" data-partage-plages="$nova_s1" data-partage-noms="$nova_s2" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration"></span>
   !endif
   !if $job=show or $job=$empty
     !! Texte d'aide de WIMS en tete de page (show.phtml) : entoure, masque par le CSS sauf reglage std-listes (2026-11-19).

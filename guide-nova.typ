@@ -1554,7 +1554,7 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 ][
   `sequences.sh partage` liste les classes de `sharable_seq` (vérifiées par leur `sharing_seq`) ; `plage … partage`
   y écrit la plage, `deplacer` y fait suivre les `.S<n>`, `copier N` y recopie la plage enregistrée par la page
-  Modifier (le widget lit `save` dans la requête, WIMS l'ayant vidé, et `$seq`, gardé en session : il n'est pas dans le
+  Modifier (envoyé seulement si l'affichage a changé ou diffère d'une classe en partage) (le widget lit `save` dans la requête, WIMS l'ayant vidé, et `$seq`, gardé en session : il n'est pas dans le
   formulaire). Essai : `banc-nova/sequences-partage-test.mjs`, partage posé
   à la main (liens et fichiers `neighbors`), à défaire après.
 ]

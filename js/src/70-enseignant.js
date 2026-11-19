@@ -1535,6 +1535,7 @@
     ficheEditeurs(cadre, tx);
   }
   function ficheStatut(etat, tx, type) {
+    if (type === 'e' && document.getElementById('nova-statuts-textes')) { fichePastille(etat, tx); return; }
     var champ = etat.closest('.field');
     var m = /wims_status_(\d)/.exec(etat.className);
     var n = m ? m[1] : '0';
@@ -1566,6 +1567,41 @@
     champ.classList.add('nova-statut-champ');
     bandeau.appendChild(ico); bandeau.appendChild(texte); bandeau.appendChild(actions);
     champ.appendChild(bandeau);
+    champ.appendChild(etat);
+  }
+  /* Statut d'un examen sur sa page de préparation (2026-11-19, utilisateur : « tranche avec les choix faits ailleurs ») :
+   * pastille colorée et son menu, comme sur l'accueil de l'enseignant (etatMenu), au lieu du bandeau ; la phrase qui dit ce
+   * que voient les élèves (#nova-fiche-textes) à côté. Menu marqué data-nova-fiche : après une action confirmée, retour à
+   * la page de l'examen (confirmationsRessources). */
+  function fichePastille(etat, tx) {
+    var st = document.getElementById('nova-statuts-textes');
+    var t = function (c) { return st.getAttribute('data-' + c) || ''; };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var champ = etat.closest('.field');
+    var m = /wims_status_(\d)/.exec(etat.className), n = m ? +m[1] : 0;
+    var mot = Array.prototype.filter.call(champ.childNodes, function (c) { return c !== etat && !(c.nodeType === 1 && c.tagName === 'A'); })
+      .map(function (c) { return c.textContent; }).join(' ').replace(/\s+/g, ' ').trim().replace(/\s*:$/, '');
+    var liens = Array.prototype.slice.call(champ.querySelectorAll('a.wims_button[href]'));
+    var texte = etat.textContent.replace(/\s+/g, ' ').trim();
+    if (n === 3) texte = texte.split('+')[0].trim();
+    texte = texte.charAt(0).toUpperCase() + texte.slice(1);
+    var ton = n === 0 ? 'neutre' : (n === 1 ? 'ok' : 'attention');
+    var pastille = el('button', 'nova-etat nova-etat-' + ton);
+    pastille.appendChild(icone(['crayon', 'coche', 'horloge', 'oeil-barre'][n] || 'crayon'));
+    pastille.appendChild(el('span', 'nova-etat-nom', texte));
+    var titre = document.querySelector('.wimsbody input#title');
+    var menu = etatMenu(pastille, liens, 'exam', n, t, titre ? titre.value : '', menusEtat());
+    menu.setAttribute('data-nova-fiche', '');
+    etat.hidden = true;
+    champ.textContent = '';
+    champ.classList.add('nova-statut-champ', 'nova-fiche-etat-champ');
+    if (mot) champ.appendChild(el('span', 'nova-fiche-etat-mot', mot));
+    var ligne = el('div', 'nova-fiche-etat');
+    ligne.appendChild(pastille);
+    var phrase = tx.getAttribute('data-e' + n);
+    if (phrase) ligne.appendChild(el('span', 'nova-fiche-etat-expl', phrase));
+    champ.appendChild(ligne);
     champ.appendChild(etat);
   }
   function ficheTuiles(cadre, tx) {
@@ -2000,6 +2036,67 @@
     return menusEtatPartages;
   }
 
+  /* Menu d'une pastille d'état de feuille, d'examen ou de devoir (accueil de l'enseignant, etatsRessources ; page de
+   * préparation d'un examen, ficheStatut, 2026-11-19) : liens de WIMS déplacés tels quels (GET, avec leurs confirmations,
+   * confirmationsRessources), chacun avec icône et effet (#nova-statuts-textes) ; groupes séparés (actions, archiver,
+   * désactiver ou effacer). Feuille ou examen en préparation sans exercice : « Activer » grisé (WIMS ne le propose pas). */
+  var etatMenuNumero = 0;
+  function etatAction(a, type, etat, t) {
+    var LETTRE = { sheet: 'f', exam: 'e', freework: 'd' };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
+    var job = (/[?&]\+?job=([a-z_]+)/.exec(a.getAttribute('href') || '') || [])[1] || '';
+    var k = LETTRE[type], libelle = a.textContent.trim(), ico = 'crayon', effet = '', groupe = 0;
+    if (job === 'prep_activate') { ico = 'lecture'; effet = t('activer-' + k); }
+    else if (job === 'expire' && etat === 3) { ico = 'oeil'; effet = t('montrer'); }
+    else if (job === 'expire') { ico = 'horloge'; effet = t('expirer-' + k); }
+    else if (job === 'hide') { ico = 'oeil-barre'; effet = t('cacher'); }
+    else if (job === 'reactivate') { ico = 'retour'; libelle = t('reactiver') || libelle; effet = t(type === 'freework' ? 'reactiver-d' : 'reactiver-n'); }
+    else if (job === 'chstatus') { ico = etat === 1 ? 'oeil-barre' : 'oeil'; effet = t(etat === 1 ? 'cacher' : 'montrer'); }
+    else if (job === 'archive') { ico = 'archive'; effet = t('archiver'); groupe = 1; }
+    else if (job === 'deactivate') { ico = 'marche'; effet = t('desactiver'); groupe = 2; }
+    else if (job === 'prep_erase' || job === 'deldoc') { ico = 'corbeille'; effet = t('effacer'); groupe = 2; }
+    a.className = 'nova-etat-action' + (groupe === 2 ? ' nova-etat-danger' : '');
+    a.setAttribute('role', 'menuitem');
+    a.setAttribute('tabindex', '-1');
+    a.textContent = '';
+    a.appendChild(icone(ico));
+    var texte = el('span', 'nova-etat-texte', libelle);
+    if (effet) texte.appendChild(el('small', '', effet));
+    a.appendChild(texte);
+    return { noeud: a, groupe: groupe };
+  }
+  function etatMenu(pastille, liens, type, etat, t, nom, menus) {
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var icone = function (n) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', n); return s; };
+    pastille.type = 'button';
+    pastille.appendChild(el('span', 'nova-etat-chevron'));
+    var menu = el('div', 'nova-etat-menu');
+    menu.id = 'nova-etat-menu-' + (++etatMenuNumero);
+    menu.setAttribute('role', 'menu');
+    menu.hidden = true;
+    if (nom) menu.setAttribute('aria-label', nom);
+    var faits = liens.map(function (a) { return etatAction(a, type, etat, t); });
+    if ((type === 'sheet' || type === 'exam') && etat === 0 && !liens.some(function (a) { return /job=prep_activate/.test(a.href); })) {
+      var vide = el('span', 'nova-etat-action');
+      vide.setAttribute('role', 'menuitem');
+      vide.setAttribute('aria-disabled', 'true');
+      vide.appendChild(icone('lecture'));
+      var tv = el('span', 'nova-etat-texte', t('activer'));
+      tv.appendChild(el('small', '', t('vide')));
+      vide.appendChild(tv);
+      faits.unshift({ noeud: vide, groupe: 0 });
+    }
+    [0, 1, 2].forEach(function (g) {
+      var du = faits.filter(function (f) { return f.groupe === g; });
+      if (!du.length) return;
+      if (g > 0 && menu.childNodes.length && !menu.querySelector(':scope > hr')) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
+      du.forEach(function (f) { menu.appendChild(f.noeud); });
+    });
+    menus.brancher(pastille, menu);
+    return menu;
+  }
+
   /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
    * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
    * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :
@@ -2011,35 +2108,10 @@
     if (!tx || standard('listes')) return;
     var t = function (c) { return tx.getAttribute('data-' + c) || ''; };
     var TYPES = ['sheet', 'exam', 'freework', 'vote', 'tool', 'glossary', 'doc'];
-    var LETTRE = { sheet: 'f', exam: 'e', freework: 'd' };
     var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
     var icone = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('aria-hidden', 'true'); s.setAttribute('data-icone', nom); return s; };
     var majuscule = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
-    var numero = 0, menus = menusEtat();
-
-    // Une action du menu : le lien de WIMS, avec icône, libellé et effet.
-    function action(a, type, etat) {
-      var job = (/[?&]\+?job=([a-z_]+)/.exec(a.getAttribute('href') || '') || [])[1] || '';
-      var k = LETTRE[type], libelle = a.textContent.trim(), ico = 'crayon', effet = '', groupe = 0;
-      if (job === 'prep_activate') { ico = 'lecture'; effet = t('activer-' + k); }
-      else if (job === 'expire' && etat === 3) { ico = 'oeil'; effet = t('montrer'); }
-      else if (job === 'expire') { ico = 'horloge'; effet = t('expirer-' + k); }
-      else if (job === 'hide') { ico = 'oeil-barre'; effet = t('cacher'); }
-      else if (job === 'reactivate') { ico = 'retour'; libelle = t('reactiver') || libelle; effet = t(type === 'freework' ? 'reactiver-d' : 'reactiver-n'); }
-      else if (job === 'chstatus') { ico = etat === 1 ? 'oeil-barre' : 'oeil'; effet = t(etat === 1 ? 'cacher' : 'montrer'); }
-      else if (job === 'archive') { ico = 'archive'; effet = t('archiver'); groupe = 1; }
-      else if (job === 'deactivate') { ico = 'marche'; effet = t('desactiver'); groupe = 2; }
-      else if (job === 'prep_erase' || job === 'deldoc') { ico = 'corbeille'; effet = t('effacer'); groupe = 2; }
-      a.className = 'nova-etat-action' + (groupe === 2 ? ' nova-etat-danger' : '');
-      a.setAttribute('role', 'menuitem');
-      a.setAttribute('tabindex', '-1');
-      a.textContent = '';
-      a.appendChild(icone(ico));
-      var texte = el('span', 'nova-etat-texte', libelle);
-      if (effet) texte.appendChild(el('small', '', effet));
-      a.appendChild(texte);
-      return { noeud: a, groupe: groupe };
-    }
+    var menus = menusEtat();
 
     function ligne(tr) {
       var cellules = tr.querySelectorAll(':scope > td');
@@ -2078,33 +2150,8 @@
       if (sansMenu) {
         liens.forEach(function (a) { a.className = 'nova-etat-modifier'; a.insertBefore(icone('crayon'), a.firstChild); contenu.appendChild(a); });
       } else {
-        pastille.type = 'button';
-        pastille.appendChild(el('span', 'nova-etat-chevron'));
-        var menu = el('div', 'nova-etat-menu');
-        menu.id = 'nova-etat-menu-' + (++numero);
-        menu.setAttribute('role', 'menu');
-        menu.hidden = true;
         var titre = l.tr.querySelector(':scope > td:nth-child(2)');
-        if (titre) menu.setAttribute('aria-label', titre.textContent.replace(/\s+/g, ' ').trim());
-        var faits = liens.map(function (a) { return action(a, type, etat); });
-        // Feuille ou examen en préparation sans exercice : WIMS ne propose pas « Activer » ; Nova le montre grisé.
-        if ((type === 'sheet' || type === 'exam') && etat === 0 && !liens.some(function (a) { return /job=prep_activate/.test(a.href); })) {
-          var vide = el('span', 'nova-etat-action');
-          vide.setAttribute('role', 'menuitem');
-          vide.setAttribute('aria-disabled', 'true');
-          vide.appendChild(icone('lecture'));
-          var tv = el('span', 'nova-etat-texte', t('activer'));
-          tv.appendChild(el('small', '', t('vide')));
-          vide.appendChild(tv);
-          faits.unshift({ noeud: vide, groupe: 0 });
-        }
-        [0, 1, 2].forEach(function (g) {
-          var du = faits.filter(function (f) { return f.groupe === g; });
-          if (!du.length) return;
-          if (g > 0 && menu.childNodes.length && !menu.querySelector(':scope > hr')) { var hr = el('hr'); hr.setAttribute('role', 'separator'); menu.appendChild(hr); }
-          du.forEach(function (f) { menu.appendChild(f.noeud); });
-        });
-        menus.brancher(pastille, menu);
+        etatMenu(pastille, liens, type, etat, t, titre ? titre.textContent.replace(/\s+/g, ' ').trim() : '', menus);
       }
       l.cellule.textContent = '';
       l.cellule.appendChild(contenu);
@@ -2175,7 +2222,7 @@
         return !!m;
       });
       var menu = a.closest('.nova-etat-menu');
-      if (menu) { c.accueil = true; c.titre = menu.getAttribute('aria-label') || ''; }
+      if (menu) { c.accueil = !menu.hasAttribute('data-nova-fiche'); c.titre = menu.getAttribute('aria-label') || ''; }
       if (!c.type) {
         var mod = document.querySelector('.wimsbody form input[name="module"]');
         var mm = mod && /adm\/class\/(sheet|exam)$/.exec(mod.value);

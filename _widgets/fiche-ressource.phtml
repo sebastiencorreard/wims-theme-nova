@@ -2,4 +2,8 @@
 !! utilisateur : bandeau d'etat, maquette 2 ; reglages en tuiles, maquette 4 ; poids, regle de calcul et individualisation
 !! derriere « Options avancees »). nova.js ficheRessource. Textes en clair : lang/enseignant-textes.phtml.<lang>.
 !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang fiche_ressource
+!! Examen : statut en pastille avec menu, comme sur l'accueil (2026-11-19) : textes des actions.
+!if $module=adm/class/exam
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang statuts_ressources
+!endif
 !read themes/$wims_theme/_widgets/confirmations.phtml

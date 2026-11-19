@@ -14,6 +14,8 @@
 !! lues ; nova_sm mode de la plage ; nova_s1, nova_s2 debut et fin ; nova_mo mot generique ; nova_ov sequence_open.
 !! Classes en partage des sequences (2026-11-19, utilisateur ; sur job=show, memes variables reprises) : nova_sd leur
 !! liste, nova_sv l'une d'elles, nova_s1 leurs plages, nova_s2 leurs noms (separes par |), nova_sr une valeur lue.
+!! nova_ct (job=addseq) : titres et ressources de toutes les sequences (sequences.sh contenus) ; nova_sq : numero de la
+!! sequence modifiee ($seq, garde en session ; le lien de WIMS ecrit « &+seq=N », que nova.js ne doit pas lire).
 !! nova_seq_partage=1 dans l'adresse : la plage est aussi ecrite dans ces classes (interrupteur de la fenetre de nova.js) ;
 !! depuis la page Modifier (job=addseq, champ du formulaire), recopiee apres l'enregistrement de WIMS (save lu dans la requete, $seq).
 !! #nova-seq-modifier (job=addseq) : plages de la classe, heure du serveur, dates de la classe, classes en partage, leurs plages
@@ -92,14 +94,15 @@
   !if $job=addseq
     !set nova_sp=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plages
     !set nova_sp=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sp
-    !! Onglet Contenu (2026-11-19, utilisateur, maquette A) : titres et ressources de toutes les sequences (nova_s1 reutilise),
-    !! mot generique (nova_mo).
-    !set nova_s1=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" contenus | tr '\n' ';' | tr -d '<"'
+    !! Onglet Contenu (2026-11-19, utilisateur, maquette A) : titres et ressources de toutes les sequences (nova_ct), mot
+    !! generique (nova_mo). PAS nova_s1 : il porte encore les plages des classes en partage, ecrites plus bas.
+    !set nova_ct=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" contenus | tr '\n' ';' | tr -d '<"'
     !set nova_mo=!defof sequence_Title in wimshome/log/classes/$wims_class/seq/.def
     !set nova_mo=!replace internal " by &quot; in $nova_mo
     !set nova_mo=!replace internal < by &lt; in $nova_mo
-<span id="nova-seq-contenus" hidden data-contenus="$nova_s1" data-mot="$nova_mo"></span>
-<span id="nova-seq-modifier" hidden data-plages="$nova_sp" data-partage="$nova_sd" data-partage-plages="$nova_s1" data-partage-noms="$nova_s2" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration"></span>
+<span id="nova-seq-contenus" hidden data-contenus="$nova_ct" data-mot="$nova_mo"></span>
+    !set nova_sq=!text select 0123456789 in $seq
+<span id="nova-seq-modifier" hidden data-seq="$nova_sq" data-plages="$nova_sp" data-partage="$nova_sd" data-partage-plages="$nova_s1" data-partage-noms="$nova_s2" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration"></span>
   !endif
   !if $job=show or $job=$empty
     !! Texte d'aide de WIMS en tete de page (show.phtml) : entoure, masque par le CSS sauf reglage std-listes (2026-11-19).
@@ -123,4 +126,4 @@
 !if $nova_sn=yes
 <span id="nova-seq-numero" hidden></span>
 !endif
-!reset nova_q nova_sd nova_sv nova_sr nova_sn nova_sp nova_sm nova_s1 nova_s2 nova_mo nova_ov
+!reset nova_q nova_sd nova_sv nova_sr nova_sn nova_sp nova_sm nova_s1 nova_s2 nova_mo nova_ov nova_ct nova_sq

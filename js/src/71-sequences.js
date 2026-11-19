@@ -255,7 +255,8 @@
       var titreSeq = document.getElementById('seq_title'), cadre = titreSeq && titreSeq.closest('fieldset');
       if (!visible || !type || !cadre || !visible.form) return;
       var form = visible.form, champ = function (id) { return document.getElementById(id); };
-      var numeroSeq = (/[?&]seq=(\d+)/.exec(location.search) || [])[1] || '';
+      // Numéro donné par le serveur : le lien « Modifier » de WIMS écrit « &+seq=N » et adresseNette raccourcit l'adresse.
+      var numeroSeq = (rm && rm.getAttribute('data-seq')) || (/[?&]\+?seq=(\d+)/.exec(location.search) || [])[1] || '';
       var menus = menusEtat();
       var temps = champ('js_restricted_time'), techvar = champ('js_restricted_techvar');
       var CHAMPS = ['allowtype', 'begindscore', 'begintscore', 'enddscore', 'endtscore', 'IPscore', 'allowtechvar'];

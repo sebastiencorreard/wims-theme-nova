@@ -1696,6 +1696,16 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == JavaScript
 
+#piege[Un paramètre de l'adresse que `nova.js` ne trouve pas sur la vraie page][
+  Le test, qui ouvre la page par une adresse écrite à la main, passe ; la page ouverte par un lien de WIMS se comporte
+  comme si le paramètre manquait.
+][
+  WIMS écrit ses liens `&+seq=2` (avec un « + »), et `adresseNette` raccourcit ensuite l'adresse affichée.
+][
+  Ne pas lire `location.search` : le widget écrit la valeur dans un attribut (`data-seq` de `#nova-seq-modifier`). Tester en
+  suivant le lien de WIMS.
+]
+
 #piege[L'élément d'origine apparaît une fraction de seconde][
   Au chargement, la page de WIMS s'affiche brièvement telle quelle, puis Nova la transforme (« clignotement »).
 ][

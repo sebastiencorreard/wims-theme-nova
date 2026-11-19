@@ -633,8 +633,24 @@
       texte.hidden = true;
       texte.setAttribute('role', 'status');
       bloc.insertBefore(texte, bouton);
+      // Titre, description, champs de WIMS (2026-11-19, utilisateur : « je ne vois pas le texte » après avoir changé le titre ou la
+      // description) : tout changement compte, sauf la recherche et les filtres de l'onglet Contenu et l'interrupteur des classes
+      // en partage (le contenu et l'affichage ont leur propre avis). Description sous TinyMCE : éditeur « sale » (isDirty).
+      var touche = false;
+      var marquer = function () { if (touche) return; touche = true; document.dispatchEvent(new Event('nova-seq-modifie')); };
+      var surChamp = function (e) { if (!e.target.closest('.nova-seq-contenu, .nova-seq-modif-partage')) marquer(); };
+      form.addEventListener('input', surChamp);
+      form.addEventListener('change', surChamp);
+      var suivreEditeur = function (ed) {
+        if (!ed || ed.id !== 'seq_desc') return;
+        ed.on('input change undo redo ExecCommand', function () { if (ed.isDirty()) marquer(); });
+      };
+      if (window.tinymce && typeof window.tinymce.on === 'function') {
+        window.tinymce.on('AddEditor', function (e) { suivreEditeur(e.editor); });
+        if (window.tinymce.get) suivreEditeur(window.tinymce.get('seq_desc'));
+      }
       document.addEventListener('nova-seq-modifie', function () {
-        var modifie = Array.prototype.some.call(document.querySelectorAll('.wimsbody .nova-seq-modif-avis'), function (a) { return !a.hidden; });
+        var modifie = touche || Array.prototype.some.call(document.querySelectorAll('.wimsbody .nova-seq-modif-avis'), function (a) { return !a.hidden; });
         texte.hidden = !modifie;
         bloc.classList.toggle('nova-seq-enreg-modifie', modifie);
       });

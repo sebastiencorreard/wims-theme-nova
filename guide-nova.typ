@@ -692,7 +692,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant`) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `aidesOef`)],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant`) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`)],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -971,7 +971,8 @@ export…), `71-sequences.js` (séquences pédagogiques : liste, page Modifier),
 (contenu d'un examen en deux listes, aperçu d'un exercice), `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
 `config-globale.phtml`, `capacite.phtml`, `acces-classe.phtml`, `confirmations.phtml`) et d'action
 (`desactiver.phtml` + `_procs/desactiver.sh`, `propager.phtml` + `_procs/propager.sh`, `ecarts-zones.phtml`,
-`sequences.phtml` + `_procs/sequences.sh`, `examen-contenu.phtml` + `_procs/examen.sh`, `participants-zones.phtml`).
+`sequences.phtml` + `_procs/sequences.sh`, `examen-contenu.phtml` + `_procs/examen.sh`, `participants-zones.phtml`,
+`serie-exos.phtml` + `_procs/serie-exos.sh` : titres des exercices du module et ligne des paramètres pour l'éditeur d'une série).
 Bouton « Enregistrer » collant d'une page : `barreEnregistrer(bloc, ref, avis)` (`20-composants.js`), qui renvoie
 `regler(modifie)` pour montrer ou cacher la pastille « Modifié ».]
 
@@ -2020,6 +2021,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`activite.awk`, `vacances-zones.txt`], [« Mon activité », vacances des zones A, B, C],
   [`avatar.awk`, `avatar.proc`, `avatar-catalogue.txt`, `avatar-zones.sh`, `avatars-classe.sh`, `avatars-retour.sh`], [avatar],
   [`propager.sh`, `desactiver.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant],
+  [`serie-exos.sh`], [titres des exercices d'un module OEF (fichier `Extitles`), éditeur des paramètres d'une série],
   [`jeu-icones.sh`], [lien du jeu Lucide dans `gifs/themes`],
   [`suivi.pl`], [relevé du suivi en direct],
   [`version.sh`], [ligne de version],

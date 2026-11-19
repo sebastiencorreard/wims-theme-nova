@@ -30,6 +30,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 ### Enseignants
 - Contenu d'une feuille : une carte par série, qu'on déplace en glissant ou avec les flèches (enregistré tout de suite) ; pastille « Modifier » avec son menu (modifier, paramètres des exercices, essayer, effacer avec confirmation).
 - Modifier une série : description à la hauteur de son texte, commentaires repliés, paramètres des exercices résumés en clair.
+- Modifier une série : paramètres (exercices, nombre par série, ordre, chronomètre, essais, aides, note, QCM) réglés sur la page même, enregistrés avec elle (feuille en préparation) ;
 - Paramètres d'un exercice : tous les choix en boutons (nombre d'exercices, essais, surpénalisation, aides, QCM…) ; « après l'expiration » du feedback et de l'indication coche enfin le bon choix (défaut de WIMS) ; mots-clés en pastilles.
 - Désactiver malgré le partage : la sauvegarde de la classe est désormais obligatoire (plus de case à cocher ni de désactivation sans sauvegarde).
 - Désactiver malgré le partage : « Annuler » est le bouton principal, à droite ; la désactivation n'est plus qu'un lien rouge.

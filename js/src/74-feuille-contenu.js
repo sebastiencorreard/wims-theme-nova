@@ -334,6 +334,22 @@
     champ.id = 'nova-parametres';
     champ.classList.add('nova-serie-param');
     var lignes = pre.textContent.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    // Feuille en préparation, module OEF : éditeur des paramètres (serieEditeur) ; texte brut de WIMS dépliable sous lui.
+    var modele = document.getElementById('nova-serie-exos');
+    if (modele && cadre.form && modele.getAttribute('data-parm')) {
+      var brut = el('details', 'nova-serie-brut');
+      brut.appendChild(el('summary', '', t('p-brut')));
+      pre.parentNode.insertBefore(brut, pre);
+      brut.appendChild(el('p', 'nova-serie-module', lignes[0] || ''));
+      brut.appendChild(pre);
+      var bas0 = el('div', 'nova-serie-bas');
+      champ.insertBefore(bas0, brut);
+      bas0.appendChild(brut);
+      var wims = champ.querySelector(':scope > a.wims_button');
+      if (wims) wims.classList.add('nova-fc-masque');
+      serieEditeur(champ, modele, cadre.form, t, el);
+      return;
+    }
     var p = {}, exos = {};
     (lignes[1] || '').split(';').forEach(function (x) {
       var i = x.indexOf('=');
@@ -410,6 +426,425 @@
     if (location.hash === '#nova-parametres') {
       champ.classList.add('nova-serie-param-vise');
       setTimeout(function () { champ.scrollIntoView({ block: 'center' }); if (bouton) bouton.focus({ preventScroll: true }); }, 300);
+    }
+  }
+
+  /* Éditeur des paramètres d'une série, sur la page « Modification de la série » (2026-11-19, utilisateur, maquette
+   * serie-parametres : « Note et QCM » et liste des exercices du module repliés par défaut). Feuille en préparation, module
+   * OEF (_widgets/serie-exos.phtml écrit #nova-serie-exos : titres du module, ligne des paramètres, feuille, série).
+   * Valeurs de départ lues comme WIMS les lit (scripts/oef/exo.init, get_presentgood.proc : intro_check=3 ou qcmlevel pour la
+   * bonne réponse, intro_check=4 pour l'indication, intro_presentsol pour la solution). Paramètres réécrits comme le
+   * formulaire de WIMS les envoie (expert : intro_*, sans qcmlevel ; simplifié : qcmlevel) ; ceux que Nova ne connaît pas
+   * (confparm…, lang_choice) gardés ; exotrymax laissé à WIMS (chseries.proc le reprend de l'enregistrement).
+   * Enregistrement, seulement si un paramètre a changé : le formulaire de la page part d'abord dans un cadre caché (job=modify,
+   * qui travaille sur les anciens paramètres : tableau d'ordre de WIMS masqué, laissé tel quel), puis la requête du lien
+   * « Remplacer dans la feuille » de WIMS (job=chseries, iniparm) ouvre la page de la feuille. */
+  function serieEditeur(champ, modele, form, t, el) {
+    var bouton = champ.querySelector(':scope > a.wims_button');
+    var paires = [];
+    (modele.getAttribute('data-parm') || '').split('&').forEach(function (x) {
+      var i = x.indexOf('=');
+      if (i > 0) paires.push([x.slice(0, i).trim(), x.slice(i + 1).trim()]);
+    });
+    var val = function (k) { for (var i = paires.length - 1; i >= 0; i--) if (paires[i][0] === k) return paires[i][1]; return null; };
+    var tous = function (k) { return paires.filter(function (q) { return q[0] === k; }).map(function (q) { return q[1]; }); };
+    var ent = function (v, def, min, max) { v = parseInt(v, 10); return isNaN(v) ? def : Math.max(min, Math.min(max, v)); };
+    var titres = {}, module = [];
+    Array.prototype.forEach.call(modele.content.querySelectorAll('i[data-n]'), function (i) {
+      var n = i.getAttribute('data-n');
+      if (!(n in titres)) module.push(n);
+      titres[n] = i.getAttribute('data-t') || n;
+    });
+    var titre = function (n) { return titres[n] || n; };
+
+    // ---- Valeurs de départ
+    var exos = [];
+    tous('exo').forEach(function (v) { v.split(',').forEach(function (e) { e = e.trim(); if (e && e !== '0' && exos.indexOf(e) < 0) exos.push(e); }); });
+    var check = tous('intro_check').join(',').split(',');
+    var coche = function (c) { return check.indexOf(c) >= 0; };
+    var expert = val('intro_expert') === 'yes', niveau = ent(val('qcmlevel'), 1, 1, 9), s = niveau - 1;
+    var d = (val('scoredelay') || '').split(',').map(function (x) { return parseInt(x, 10) || 0; });
+    var parmi = function (v, liste, def) { return liste.indexOf(v) >= 0 ? v : def; };
+    var depart = { exos: exos, qnum: ent(val('qnum'), 1, 1, 9), fixe: val('random') === '0', chrono: d[0] > 0, d1: d[0] > 0 ? String(d[0]) : '',
+      d2: d[1] > d[0] ? String(d[1]) : '', seed: ent(val('seedrepeat'), 0, 0, 6), expert: expert, niveau: niveau };
+    if (expert) {
+      var good = val('intro_good') == null ? 1 : ent(val('intro_good'), 1, -1, 6);
+      if (coche('3')) good = 1;
+      if (val('qcmlevel') != null) good = SEVERITE.bonne[s];
+      depart.good = good;
+      depart.sol = val('intro_presentsol') != null && val('intro_presentsol') !== '' ? ent(+val('intro_presentsol') - 1, 1, -1, 6) : ent(val('intro_sol'), 1, -1, 6);
+      depart.feed = ent(val('intro_feed'), 1, -2, 6);
+      depart.hint = coche('4') ? -1 : ent(val('intro_hint'), 1, -2, 6);
+      depart.expow = parmi(val('intro_expow'), ['1', '1.5', '2'], '1');
+      depart.sepow = parmi(val('intro_sepow'), ['1', '1.5', '2'], '1');
+      depart.precw = parmi(val('intro_precw'), ['0.9', '0.5', '0.2'], '0.9');
+      depart.qcm = ent(val('intro_qcmpresent'), 4, 2, 8);
+      depart.bonne = coche('1');
+      depart.penal = coche('2');
+      depart.calc = parmi(val('intro_calc'), ['0', '1', '2'], '0');
+    } else {
+      // Passage au réglage expert : on part de ce que la sévérité donnait.
+      depart.good = SEVERITE.bonne[s]; depart.sol = SEVERITE.sol[s]; depart.feed = 1; depart.hint = SEVERITE.hint[s];
+      depart.expow = '1'; depart.sepow = '1'; depart.precw = '0.9'; depart.qcm = SEVERITE.qcm[s];
+      depart.bonne = !!SEVERITE.qcmbonne[s]; depart.penal = !!SEVERITE.penal[s]; depart.calc = '0';
+    }
+    var st = JSON.parse(JSON.stringify(depart));
+
+    var GERES = /^(exo|qnum|random|scoredelay|seedrepeat|qcmlevel|exotrymax|intro_(expert|expow|sepow|precw|good|sol|feed|hint|calc|qcmpresent|check|presentsol))$/;
+    function parametres(e) {
+      var o = e.exos.map(function (x) { return 'exo=' + x; });
+      var d1 = parseInt(e.d1, 10) || 0, d2 = parseInt(e.d2, 10) || 0;
+      o.push('qnum=' + e.qnum, 'scoredelay=' + (e.chrono && d1 > 0 ? d1 + (d2 > d1 ? ',' + d2 : '') : ''), 'seedrepeat=' + e.seed);
+      if (e.expert) {
+        o.push('intro_expert=yes', 'intro_qcmpresent=' + e.qcm, 'intro_good=' + e.good, 'intro_sol=' + e.sol, 'intro_feed=' + e.feed,
+          'intro_hint=' + e.hint, 'intro_expow=' + e.expow, 'intro_sepow=' + e.sepow, 'intro_precw=' + e.precw, 'intro_calc=' + e.calc);
+        if (e.bonne) o.push('intro_check=1');
+        if (e.penal) o.push('intro_check=2');
+      } else o.push('qcmlevel=' + e.niveau);
+      if (e.fixe) o.push('random=0');
+      paires.forEach(function (q) { if (!GERES.test(q[0])) o.push(q[0] + '=' + q[1]); });
+      return o.join('&');
+    }
+    var initial = parametres(depart);
+
+    // ---- Briques : boutons à choix unique, bascule, ligne
+    var majs = [];
+    function choix(options, lire, ecrire, classe, nom) {
+      var g = el('span', 'nova-app-choix ' + (classe || 'nova-param-choix'));
+      g.setAttribute('role', 'radiogroup');
+      if (nom) g.setAttribute('aria-label', nom);
+      var bs = options.map(function (o) {
+        var b = el('button', 'nova-param-option', o[1]);
+        b.type = 'button';
+        b.setAttribute('role', 'radio');
+        b.addEventListener('click', function () { ecrire(o[0]); change(); });
+        g.appendChild(b);
+        return b;
+      });
+      g.addEventListener('keydown', function (ev) {
+        var k = bs.indexOf(document.activeElement), dd = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowUp' ? -1 : 0;
+        if (!dd || k < 0) return;
+        ev.preventDefault();
+        k = Math.max(0, Math.min(bs.length - 1, k + dd));
+        bs[k].click();
+        bs[k].focus();
+      });
+      majs.push(function () {
+        var v = String(lire()), un = false;
+        bs.forEach(function (b, k) { var oui = String(options[k][0]) === v; b.setAttribute('aria-checked', oui ? 'true' : 'false'); b.tabIndex = oui ? 0 : -1; un = un || oui; });
+        if (!un && bs[0]) bs[0].tabIndex = 0;
+      });
+      return g;
+    }
+    function bascule(texte, lire, ecrire) {
+      var g = el('span', 'nova-app-choix nova-param-cases');
+      var lab = el('label', 'nova-param-case');
+      var c = el('input');
+      c.type = 'checkbox';
+      lab.appendChild(c);
+      lab.appendChild(document.createTextNode(texte));
+      c.addEventListener('change', function () { ecrire(c.checked); change(); });
+      majs.push(function () { c.checked = !!lire(); });
+      g.appendChild(lab);
+      return g;
+    }
+    function ligne(nom, sous) {
+      var l = el('div', 'nova-sp-ligne'), n = el('div', 'nova-sp-nom', nom), v = el('div', 'nova-sp-val');
+      if (sous) n.appendChild(el('small', '', sous));
+      l.appendChild(n);
+      l.appendChild(v);
+      return l;
+    }
+    var rang = function () { return el('div', 'nova-sp-rang'); };
+    var nombres = function (de, a) { var o = []; for (var i = de; i <= a; i++) o.push([i, String(i)]); return o; };
+    var majuscule = function (x) { return x.charAt(0).toUpperCase() + x.slice(1); };
+
+    var ed = el('div', 'nova-sp nova-params');
+
+    // ---- Exercices
+    var lExos = ligne(t('p-exos'));
+    var compte = el('small', '');
+    lExos.firstChild.appendChild(compte);
+    var choisis = el('ol', 'nova-sp-choisis');
+    var alerte = el('p', 'nova-sp-alerte', t('sp-aucun'));
+    lExos.lastChild.appendChild(choisis);
+    lExos.lastChild.appendChild(alerte);
+    var cases = {};
+    if (module.length) {
+      var det = el('details', 'nova-sp-exos');
+      det.appendChild(el('summary', '', t('sp-choisir', module.length)));
+      var cherche = el('input', 'nova-sp-cherche');
+      cherche.type = 'search';
+      cherche.placeholder = t('sp-chercher');
+      cherche.setAttribute('aria-label', t('sp-chercher'));
+      cherche.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+      var liste = el('div', 'nova-sp-exos-liste');
+      var m = /session=([^&.]+)/.exec(lienSession('')), session = m ? decodeURIComponent(m[1]) : '';
+      module.forEach(function (n) {
+        var l = el('div', 'nova-sp-exo');
+        var lab = el('label');
+        var c = el('input');
+        c.type = 'checkbox';
+        c.addEventListener('change', function () {
+          var i = st.exos.indexOf(n);
+          if (c.checked && i < 0) st.exos.push(n); else if (!c.checked && i >= 0) st.exos.splice(i, 1);
+          change();
+        });
+        cases[n] = c;
+        lab.appendChild(c);
+        lab.appendChild(el('span', '', titre(n)));
+        l.appendChild(lab);
+        if (session) {
+          var a = el('a', 'nova-sp-essayer', t('essayer'));
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.addEventListener('click', function () {
+            a.href = 'wims.cgi?wims_window=new&session=' + encodeURIComponent(session + '_new') + '.' + (Date.now() % 100000) + '&lang=' +
+              encodeURIComponent(racineLangue()) + '&module=' + encodeURIComponent(modele.getAttribute('data-module')) + '&cmd=new&exo=' + encodeURIComponent(n);
+          });
+          a.href = '#';
+          l.appendChild(a);
+        }
+        l.setAttribute('data-cherche', (titre(n) + ' ' + n).toLowerCase());
+        liste.appendChild(l);
+      });
+      cherche.addEventListener('input', function () {
+        var q = cherche.value.trim().toLowerCase();
+        Array.prototype.forEach.call(liste.children, function (l) { l.hidden = !!q && l.getAttribute('data-cherche').indexOf(q) < 0; });
+      });
+      var corps = el('div', 'nova-sp-exos-corps');
+      corps.appendChild(cherche);
+      corps.appendChild(liste);
+      det.appendChild(corps);
+      lExos.lastChild.appendChild(det);
+    }
+    majs.push(function () {
+      compte.textContent = st.exos.length === 1 ? t('sp-choisis-1', '', module.length || 1) : t('sp-choisis', st.exos.length, Math.max(module.length, st.exos.length));
+      if (!module.length) compte.textContent = st.exos.length === 1 ? t('p-exos-1') : t('p-exos-v', st.exos.length);
+      alerte.hidden = st.exos.length > 0;
+      Object.keys(cases).forEach(function (n) { cases[n].checked = st.exos.indexOf(n) >= 0; });
+      choisis.classList.toggle('nova-sp-ordre', st.fixe);
+      choisis.textContent = '';
+      st.exos.forEach(function (n, i) {
+        var li = el('li', 'nova-sp-choisi');
+        li.appendChild(el('span', 'nova-sp-choisi-titre', titre(n)));
+        var fl = function (ico, texte, dd, inactif) {
+          var b = el('button', 'nova-seq-contenu-btn');
+          b.type = 'button';
+          b.title = texte;
+          b.setAttribute('aria-label', texte + ' : ' + titre(n));
+          var ic = el('span', 'nova-etat-ico');
+          ic.setAttribute('aria-hidden', 'true');
+          ic.setAttribute('data-icone', ico);
+          b.appendChild(ic);
+          if (inactif) b.disabled = true;
+          else b.addEventListener('click', function () { st.exos.splice(i, 1); st.exos.splice(i + dd, 0, n); change(); var x = choisis.children[i + dd]; if (x) x.querySelector('button[title="' + texte + '"]').focus(); });
+          return b;
+        };
+        if (st.fixe && st.exos.length > 1) {
+          li.appendChild(fl('fleche-haut', t('monter'), -1, i === 0));
+          li.appendChild(fl('fleche-bas', t('descendre'), 1, i === st.exos.length - 1));
+        }
+        var x = el('button', 'nova-sp-retirer', String.fromCharCode(0xD7));
+        x.type = 'button';
+        x.title = t('sp-retirer');
+        x.setAttribute('aria-label', t('sp-retirer') + ' : ' + titre(n));
+        x.addEventListener('click', function () { st.exos.splice(i, 1); change(); });
+        li.appendChild(x);
+        choisis.appendChild(li);
+      });
+    });
+    ed.appendChild(lExos);
+
+    // ---- Par série, ordre
+    var lSerie = ligne(t('p-serie'), t('sp-serie-aide'));
+    var r1 = rang();
+    r1.appendChild(choix(nombres(1, 9), function () { return st.qnum; }, function (v) { st.qnum = v; }, 'nova-param-versions', t('p-serie')));
+    lSerie.lastChild.appendChild(r1);
+    var r2 = rang();
+    r2.appendChild(bascule(t('sp-ordre'), function () { return st.fixe; }, function (v) { st.fixe = v; }));
+    r2.appendChild(el('span', 'nova-sp-petit', t('sp-ordre-aide')));
+    lSerie.lastChild.appendChild(r2);
+    ed.appendChild(lSerie);
+
+    // ---- Chronomètre : « Note réduite après [d1] s, nulle après [d2] s. »
+    var lChrono = ligne(t('p-chrono'));
+    var r3 = rang();
+    r3.appendChild(bascule(t('sp-chrono-case'), function () { return st.chrono; }, function (v) { st.chrono = v; if (v && !st.d1) st.d1 = '60'; }));
+    lChrono.lastChild.appendChild(r3);
+    var phrase = el('div', 'nova-sp-rang nova-sp-petit nova-sp-temps');
+    var champs = {};
+    t('sp-chrono-phrase', '%1', '%2').split(/(%[12])/).forEach(function (morceau) {
+      if (morceau === '%1' || morceau === '%2') {
+        var k = morceau === '%1' ? 'd1' : 'd2', c = el('input', 'nova-sp-nombre');
+        c.type = 'number';
+        c.min = '1';
+        c.inputMode = 'numeric';
+        c.setAttribute('aria-label', t('p-chrono') + ' ' + morceau.slice(1));
+        c.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+        c.addEventListener('input', function () { st[k] = c.value.replace(/[^0-9]/g, ''); change(true); });
+        champs[k] = c;
+        phrase.appendChild(c);
+      } else if (morceau) phrase.appendChild(document.createTextNode(morceau));
+    });
+    var erreurTemps = el('p', 'nova-sp-alerte', t('sp-chrono-erreur'));
+    lChrono.lastChild.appendChild(phrase);
+    lChrono.lastChild.appendChild(erreurTemps);
+    majs.push(function (frappe) {
+      phrase.hidden = !st.chrono;
+      if (!frappe) { champs.d1.value = st.d1; champs.d2.value = st.d2; }
+      erreurTemps.hidden = !st.chrono || !st.d2 || (parseInt(st.d2, 10) || 0) > (parseInt(st.d1, 10) || 0);
+    });
+    ed.appendChild(lChrono);
+
+    // ---- Nouvel essai
+    var lSeed = ligne(t('p-version-nom'), t('sp-essai-sous'));
+    var r4 = rang();
+    r4.appendChild(choix(nombres(0, 6), function () { return st.seed; }, function (v) { st.seed = v; }, 'nova-param-versions', t('p-version-nom')));
+    lSeed.lastChild.appendChild(r4);
+    lSeed.lastChild.appendChild(el('p', 'nova-sp-petit', t('sp-essai-aide')));
+    ed.appendChild(lSeed);
+
+    // ---- Réglage
+    var lReg = ligne(t('p-reglage'));
+    var r5 = rang();
+    r5.appendChild(choix([[0, t('sp-simple')], [1, t('sp-expert')]], function () { return st.expert ? 1 : 0; }, function (v) { st.expert = !!v; }, '', t('p-reglage')));
+    lReg.lastChild.appendChild(r5);
+    ed.appendChild(lReg);
+
+    // Simplifié : sévérité
+    var lSev = ligne(t('sp-severite'));
+    var r6 = rang();
+    r6.appendChild(choix(nombres(1, 9), function () { return st.niveau; }, function (v) { st.niveau = v; }, 'nova-param-versions', t('sp-severite')));
+    lSev.lastChild.appendChild(r6);
+    var effet = el('p', 'nova-sp-petit');
+    lSev.lastChild.appendChild(effet);
+    lSev.lastChild.appendChild(el('p', 'nova-sp-petit', t('sp-severite-aide')));
+    ed.appendChild(lSev);
+    majs.push(function () {
+      var k = st.niveau - 1, on = function (x) { return x ? t('p-oui') : t('p-non'); };
+      var q = [t('p-qcm-v', SEVERITE.qcm[k])];
+      if (SEVERITE.qcmbonne[k]) q.push(t('p-qcm-bonne'));
+      if (SEVERITE.penal[k]) q.push(t('p-qcm-penal'));
+      effet.textContent = majuscule(t('p-bonne')) + ' : ' + on(SEVERITE.bonne[k]) + ' ; ' + t('p-sol') + ' : ' + on(SEVERITE.sol[k]) + ' ; ' +
+        t('p-hint') + ' : ' + on(SEVERITE.hint[k]) + '. ' + t('p-qcm') + ' : ' + q.join(', ') + '.';
+      lSev.hidden = st.expert;
+    });
+
+    // Expert : aides
+    var lAides = ligne(t('p-aides'));
+    [['good', t('p-bonne'), false], ['sol', t('p-sol'), false], ['feed', t('p-feed'), true], ['hint', t('p-hint'), true]].forEach(function (a) {
+      var r = el('div', 'nova-sp-rang nova-sp-aide');
+      r.appendChild(el('span', 'nova-sp-aide-nom', majuscule(a[1])));
+      var quand = [[0, t('p-jamais')]];
+      if (a[2]) quand.push([-1, t('p-toujours')], [-2, t('p-expire')]); else quand.push([-1, t('p-expire')]);
+      var lire = function () { return st[a[0]]; }, ecrire = function (v) { st[a[0]] = v; };
+      r.appendChild(choix(quand, lire, ecrire, '', majuscule(a[1])));
+      var bloc = el('span', 'nova-param-bloc-versions');
+      bloc.appendChild(el('span', 'nova-param-lien', t('sp-des')));
+      bloc.appendChild(choix(nombres(1, 6), lire, ecrire, 'nova-param-versions', majuscule(a[1]) + ' : ' + t('sp-des')));
+      r.appendChild(bloc);
+      lAides.lastChild.appendChild(r);
+    });
+    ed.appendChild(lAides);
+
+    // Expert : note et QCM, repliés
+    var nq = el('details', 'nova-sp-repli');
+    nq.appendChild(el('summary', '', t('sp-noteqcm')));
+    var pow = [['1', t('sp-aucune')], ['1.5', t('sp-faible')], ['2', t('sp-forte')]];
+    var lEx = ligne(t('sp-expow'));
+    lEx.lastChild.appendChild(choix(pow, function () { return st.expow; }, function (v) { st.expow = v; }, '', t('sp-expow')));
+    nq.appendChild(lEx);
+    var lSe = ligne(t('sp-sepow'));
+    lSe.lastChild.appendChild(choix(pow, function () { return st.sepow; }, function (v) { st.sepow = v; }, '', t('sp-sepow')));
+    nq.appendChild(lSe);
+    var lPr = ligne(t('sp-precw'));
+    lPr.lastChild.appendChild(choix([['0.9', '0.9'], ['0.5', '0.5'], ['0.2', '0.2']], function () { return st.precw; }, function (v) { st.precw = v; }, '', t('sp-precw')));
+    nq.appendChild(lPr);
+    var lQ = ligne(t('p-qcm'));
+    var r7 = rang();
+    r7.appendChild(choix(nombres(2, 8), function () { return st.qcm; }, function (v) { st.qcm = v; }, 'nova-param-versions', t('p-qcm')));
+    r7.appendChild(el('span', 'nova-sp-petit', t('sp-qcm-choix')));
+    lQ.lastChild.appendChild(r7);
+    var r8 = rang();
+    r8.appendChild(bascule(majuscule(t('p-qcm-bonne')), function () { return st.bonne; }, function (v) { st.bonne = v; }));
+    r8.appendChild(bascule(majuscule(t('p-qcm-penal')), function () { return st.penal; }, function (v) { st.penal = v; }));
+    lQ.lastChild.appendChild(r8);
+    nq.appendChild(lQ);
+    var lC = ligne(t('p-calc'));
+    lC.lastChild.appendChild(choix([['0', t('p-non')], ['1', t('p-calc-1')], ['2', t('p-calc-2')]], function () { return st.calc; }, function (v) { st.calc = v; }, '', t('p-calc')));
+    nq.appendChild(lC);
+    ed.appendChild(nq);
+    majs.push(function () { lAides.hidden = nq.hidden = !st.expert; lSe.hidden = st.qnum < 2; });
+
+    // ---- Pied : page de WIMS, annuler
+    var bas = el('div', 'nova-sp-bas');
+    if (bouton) {
+      var w = el('a', 'nova-sp-wims', t('sp-wims'));
+      w.href = bouton.href;
+      bas.appendChild(w);
+    }
+    bas.appendChild(el('span', 'nova-sp-petit', t('sp-gardes')));
+    var annuler = el('button', 'wims_button wims_secondary_button nova-sp-annuler', t('sp-annuler'));
+    annuler.type = 'button';
+    annuler.addEventListener('click', function () { st = JSON.parse(JSON.stringify(depart)); change(); });
+    bas.appendChild(annuler);
+    ed.appendChild(bas);
+
+    // ---- État modifié, à côté du bouton d'envoi de la page
+    var envoi = form.querySelector('button[type="submit"], input[type="submit"]');
+    var marque = el('span', 'nova-sp-modifie', t('sp-modifie'));
+    marque.setAttribute('role', 'status');
+    if (envoi) envoi.insertAdjacentElement('afterend', marque); else ed.appendChild(marque);
+    var valide = function () { return st.exos.length > 0 && erreurTemps.hidden; };
+    function change(frappe) {
+      majs.forEach(function (f) { f(frappe); });
+      var modifie = parametres(st) !== initial;
+      marque.hidden = !modifie;
+      annuler.hidden = !modifie;
+      ed.classList.toggle('nova-sp-modifiee', modifie);
+    }
+
+    // Tableau d'ordre de WIMS (exo_order.phtml, ordre fixé) : l'ordre se règle dans la liste des choisis.
+    var ordreWims = form.querySelector('input[name^="update_ex"]');
+    if (ordreWims && ordreWims.closest('.field')) ordreWims.closest('.field').classList.add('nova-fc-masque');
+
+    // ---- Enregistrement
+    var parti = false;
+    form.addEventListener('submit', function (ev) {
+      if (parti || parametres(st) === initial) return;
+      ev.preventDefault();
+      if (!valide()) { change(); (st.exos.length ? champs.d1 : ed).scrollIntoView({ block: 'center' }); return; }
+      parti = true;
+      var nouveau = parametres(st);
+      marque.textContent = t('sp-enreg');
+      marque.hidden = false;
+      var cible = el('iframe', 'nova-fc-masque');
+      cible.hidden = true;
+      cible.style.display = 'none';
+      cible.name = 'nova-sp-envoi';
+      cible.title = t('sp-enreg');
+      document.body.appendChild(cible);
+      var avant = form.target;
+      form.target = cible.name;
+      var suite = lienSession('&cmd=reply&module=adm%2Fclass%2Fsheet&job=chseries&num=' + encodeURIComponent(modele.getAttribute('data-feuille') + ',' +
+        modele.getAttribute('data-serie')) + '&iniparm=' + encodeURIComponent(nouveau));
+      setTimeout(function () {
+        cible.addEventListener('load', function () {
+          var ok = false;
+          try { ok = !cible.contentDocument.querySelector('input[name="job"][value="modify"]'); } catch (x) { ok = false; }
+          if (!ok) { parti = false; form.target = avant; marque.textContent = t('sp-erreur'); return; }
+          setTimeout(function () { location.href = suite; }, 1500);
+        }, { once: true });
+        if (form.requestSubmit) form.requestSubmit(ev.submitter && ev.submitter.form === form ? ev.submitter : undefined); else form.submit();
+      }, 0);
+    });
+
+    champ.insertBefore(ed, champ.querySelector(':scope > .nova-serie-bas') || null);
+    change();
+    if (location.hash === '#nova-parametres') {
+      champ.classList.add('nova-serie-param-vise');
+      setTimeout(function () { champ.scrollIntoView({ block: 'start' }); }, 300);
     }
   }
 

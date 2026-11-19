@@ -7,5 +7,9 @@
 !! Feuille : contenu en liste (js/src/74-feuille-contenu.js, 2026-11-19).
 !if $module=adm/class/sheet
   !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang feuille_contenu
+  !! Modification d'une serie : exercices du module pour l'editeur des parametres (2026-11-19).
+  !if $job=prep_modify
+    !read themes/$wims_theme/_widgets/serie-exos.phtml
+  !endif
 !endif
 !read themes/$wims_theme/_widgets/confirmations.phtml

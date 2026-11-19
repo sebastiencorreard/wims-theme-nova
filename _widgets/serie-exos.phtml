@@ -1,0 +1,20 @@
+!! Nova : exercices du module d'une serie, pour l'editeur des parametres (2026-11-19, utilisateur, maquette serie-parametres ;
+!! js/src/74-feuille-contenu.js, serieEditeur). Lu par fiche-ressource.phtml (adm/class/sheet, job=prep_modify). Seulement
+!! pour une feuille en preparation : WIMS (chseries.proc) refuse de changer les parametres d'une feuille active.
+!! Variables : nova_sd module de la serie (ligne 1 de l'enregistrement $modif de sheets/.sheet$sheet), filtre ; nova_sp ligne 2
+!! (parametres, "exo=a&qnum=1&..."), echappee pour un attribut.
+!set nova_sd=!text select 0123456789 in $sheet$modif
+!if $activetest=0 and $nova_sd!=$empty and $modif>0
+  !set nova_sd=!record $modif of wimshome/log/classes/$wims_class/sheets/.sheet$sheet
+  !set nova_sp=!line 2 of $nova_sd
+  !set nova_sp=!replace internal & by &amp; in $nova_sp
+  !set nova_sp=!replace internal " by &quot; in $nova_sp
+  !set nova_sp=!replace internal < by &lt; in $nova_sp
+  !set nova_sd=!line 1 of $nova_sd
+  !set nova_sd=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/._- in $nova_sd
+  !if $nova_sd!=$empty and .. notin $nova_sd
+    <template id="nova-serie-exos" data-module="$nova_sd" data-feuille="$sheet" data-serie="$modif" data-parm="$nova_sp">
+    !sh sh $wims_home/public_html/themes/$wims_theme/_procs/serie-exos.sh "$wims_home" "$wims_class" "$nova_sd"
+    </template>
+  !endif
+!endif

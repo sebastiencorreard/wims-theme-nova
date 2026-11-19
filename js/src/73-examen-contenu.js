@@ -74,7 +74,9 @@
       var avisLecture = el('p', 'nova-ex-lecture-avis');
       avisLecture.appendChild(icone('cadenas'));
       avisLecture.appendChild(el('span', '', t('lecture')));
-      zone.insertBefore(avisLecture, gauche.carte);
+      // Hors de la grille des listes : sur toute sa largeur (1 / -1), il gardait ouverte une 3e colonne vide d'auto-fit et
+      // les listes rétrécissaient sur écran large (signalé par l'utilisateur, 2026-11-19).
+      panneau.insertBefore(avisLecture, zone);
     }
     var liste = el('ol', 'nova-ex-cartes');
     liste.setAttribute('aria-label', t('titre-gauche'));

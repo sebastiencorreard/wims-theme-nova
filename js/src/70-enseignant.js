@@ -2258,18 +2258,26 @@
     var fenetre = null;
     // Classes en partage sous l'interrupteur (2026-11-19, utilisateur) : leurs noms à la suite ; celles dont l'affichage diffère
     // en orange, la différence dans une infobulle (survol, clavier ou toucher : data-ouvert). x.diff noté pour l'envoi.
-    function classesPartage(n, etat) {
-      var ici = brut[n] || n + ':tous', liste = el('div', 'nova-seq-classes');
+    // ici (facultatif) : affichage de cette classe tel qu'il est en train d'être réglé (page Modifier) ; sinon celui enregistré.
+    function classesPartage(n, etat, ici) {
+      var brutIci = brut[n] || n + ':tous', liste = el('div', 'nova-seq-classes');
       partage.forEach(function (x) {
         var r = x.plages[n] || n + ':tous';
-        x.diff = r !== ici;
+        x.diff = r !== brutIci;
         var c = el(x.diff ? 'button' : 'span', 'nova-seq-classe' + (x.diff ? ' nova-seq-classe-diff' : ''), x.nom);
         if (x.diff) {
-          var detail = x.nom + ' : ' + vueEleves(etat, lirePlage(r)).long;
+          var detailler = function () {
+            var la = vueEleves(etat, lirePlage(r)).long, moi = ici ? ici() : vueEleves(etat, lirePlage(brutIci)).long;
+            var detail = t(la === moi ? 'partage-ecart-aligne' : 'partage-ecart', '%1').replace('%1', x.nom).replace('%2', la).replace('%3', moi);
+            c.setAttribute('data-detail', detail);
+            c.setAttribute('aria-label', detail);
+          };
+          detailler();
           c.type = 'button';
-          c.setAttribute('data-detail', detail);
-          c.setAttribute('aria-label', detail);
+          c.addEventListener('mouseenter', detailler);
+          c.addEventListener('focus', detailler);
           c.addEventListener('click', function () {
+            detailler();
             var o = c.hasAttribute('data-ouvert');
             liste.querySelectorAll('[data-ouvert]').forEach(function (e) { e.removeAttribute('data-ouvert'); });
             if (!o) c.setAttribute('data-ouvert', '');
@@ -2456,7 +2464,9 @@
         lp.appendChild(inter);
         lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
         bloc.appendChild(lp);
-        bloc.appendChild(classesPartage(numeroSeq, visible.value === '1' ? 1 : 0));
+        bloc.appendChild(classesPartage(numeroSeq, visible.value === '1' ? 1 : 0, function () {
+          return vueEleves(visible.value === '1' ? 1 : 0, plageForm()).long;
+        }));
         zone.appendChild(bloc);
       }
       cadre.classList.add('nova-fiche');

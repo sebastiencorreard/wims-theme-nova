@@ -2256,6 +2256,31 @@
 
     // Fenêtre « Affichage aux élèves » d'une séquence : toujours, jamais, entre deux dates (heure du serveur).
     var fenetre = null;
+    // Classes en partage sous l'interrupteur (2026-11-19, utilisateur) : leurs noms à la suite ; celles dont l'affichage diffère
+    // en orange, la différence dans une infobulle (survol, clavier ou toucher : data-ouvert). x.diff noté pour l'envoi.
+    function classesPartage(n, etat) {
+      var ici = brut[n] || n + ':tous', liste = el('div', 'nova-seq-classes');
+      partage.forEach(function (x) {
+        var r = x.plages[n] || n + ':tous';
+        x.diff = r !== ici;
+        var c = el(x.diff ? 'button' : 'span', 'nova-seq-classe' + (x.diff ? ' nova-seq-classe-diff' : ''), x.nom);
+        if (x.diff) {
+          var detail = x.nom + ' : ' + vueEleves(etat, lirePlage(r)).long;
+          c.type = 'button';
+          c.setAttribute('data-detail', detail);
+          c.setAttribute('aria-label', detail);
+          c.addEventListener('click', function () {
+            var o = c.hasAttribute('data-ouvert');
+            liste.querySelectorAll('[data-ouvert]').forEach(function (e) { e.removeAttribute('data-ouvert'); });
+            if (!o) c.setAttribute('data-ouvert', '');
+          });
+          c.addEventListener('blur', function () { c.removeAttribute('data-ouvert'); });
+        }
+        liste.appendChild(c);
+      });
+      return liste;
+    }
+
     function fenetrePlage(n, d, titre, modifier) {
       var p = plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
       if (fenetre) fenetre.remove();
@@ -2313,7 +2338,8 @@
         lp.appendChild(casePartage);
         lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
         bloc.appendChild(lp);
-        bloc.appendChild(el('small', '', partage.map(function (x) { return x.nom; }).join(', ') + '. ' + t(partage.length === 1 ? 'partage-remplace-1' : 'partage-remplace')));
+        var st = d && d.querySelector('h2 .wims_status');
+        bloc.appendChild(classesPartage(n, st ? +((/wims_status_(\d)/.exec(st.className) || [])[1] || 0) : 1));
         form.appendChild(bloc);
       }
       var note = el('p', 'nova-seq-plage-note', t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
@@ -2430,13 +2456,7 @@
         lp.appendChild(inter);
         lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
         bloc.appendChild(lp);
-        var etat0 = visible.value === '1' ? 1 : 0, ici = brut[numeroSeq] || numeroSeq + ':tous';
-        partage.forEach(function (x) {
-          var r = x.plages[numeroSeq] || numeroSeq + ':tous', l = el('small', '', x.nom + ' : ');
-          if (r === ici) l.appendChild(document.createTextNode(t('partage-pareil')));
-          else { x.diff = true; l.appendChild(el('strong', '', vueEleves(etat0, lirePlage(r)).long)); }
-          bloc.appendChild(l);
-        });
+        bloc.appendChild(classesPartage(numeroSeq, visible.value === '1' ? 1 : 0));
         zone.appendChild(bloc);
       }
       cadre.classList.add('nova-fiche');

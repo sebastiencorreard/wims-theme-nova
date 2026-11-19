@@ -856,3 +856,86 @@ html.nova-sans-animation .nova-seq-plage-partage .nova-seq-inter input::after { 
 .wimsbody .nova-seq-enreg.nova-seq-enreg-fixe input[type='submit'] { box-shadow: 0 2px 6px rgb(0 0 0 / 14%), 0 8px 20px rgb(0 0 0 / 18%); }
 .wimsbody .nova-seq-enreg.nova-seq-enreg-fixe .nova-seq-enreg-avis { padding: 4px 12px; border-radius: 999px; background: var(--nova-attention-fond); box-shadow: 0 1px 4px rgb(0 0 0 / 14%), 0 6px 16px rgb(0 0 0 / 12%); }
 html.nova-clavier-ouvert .nova-seq-enreg-fixe { display: none !important; }
+/* Contenu d'un examen en deux listes (2026-11-19, utilisateur, maquette examen-contenu ; nova.js examenContenu). Grille, cartes
+ * de liste, recherche et boutons : ceux du contenu d'une séquence (.nova-seq-contenu…). */
+.wimsbody .nova-ex-resultat { margin: 0; padding: 6px 10px; border-radius: var(--nova-rayon-petit); background: var(--nova-succes-fond, #E3F4EA); color: var(--nova-succes, #1E7A45); font-size: var(--nova-petit); font-weight: 700; }
+.wimsbody .nova-ex-resultat-refus { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.wimsbody .nova-ex-lecture-avis { margin: 0; color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.wimsbody ol.nova-ex-cartes { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.wimsbody ol.nova-ex-cartes > li { margin: 0; }
+.wimsbody ol.nova-ex-cartes > li::before { content: none; }
+.wimsbody li.nova-ex-carte { display: grid; gap: 8px; padding: 10px 12px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); }
+.wimsbody li.nova-ex-carte.nova-ex-vise, .wimsbody li.nova-ex-nouveau.nova-ex-vise { border: 2px solid var(--nova-accent); background: var(--nova-accent-doux); }
+.wimsbody li.nova-ex-carte.nova-ex-vise-avant { box-shadow: 0 -4px 0 var(--nova-accent); }
+.wimsbody li.nova-ex-carte.nova-ex-glisse { opacity: .45; }
+.wimsbody .nova-ex-carte-tete { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+.wimsbody .nova-ex-lecture .nova-ex-carte-tete { grid-template-columns: auto minmax(0, 1fr); }
+.wimsbody .nova-ex-poignee { display: inline-flex; color: var(--nova-texte-2); cursor: grab; }
+.wimsbody .nova-ex-num { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 0 4px; border-radius: 8px; background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; font-size: .8rem; }
+.wimsbody input.nova-ex-titre { box-sizing: border-box; width: 100%; min-width: 0; max-width: none; min-height: 34px; margin: 0; padding: 0 8px; border: 1px solid transparent; border-bottom-color: var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); background: none; font: inherit; font-weight: 700; box-shadow: none; }
+.wimsbody input.nova-ex-titre:hover:not([readonly]), .wimsbody input.nova-ex-titre:focus { border-color: var(--nova-bord-fort); background: var(--nova-surface); }
+.wimsbody input.nova-ex-titre[readonly] { border-color: transparent; }
+.wimsbody .nova-ex-actions { display: flex; gap: 2px; }
+.wimsbody .nova-ex-pastilles { display: flex; flex-wrap: wrap; gap: 6px; }
+.wimsbody .nova-ex-pastille { display: inline-flex; align-items: center; gap: 2px; max-width: 100%; padding: 0 4px 0 2px; border-radius: 999px; background: var(--nova-info-fond, #E5EEF9); color: var(--nova-info, #1F4E86); }
+.wimsbody .nova-ex-pastille[draggable='true'] { cursor: grab; }
+.wimsbody .nova-ex-pastille-inconnue { background: var(--nova-fond); color: var(--nova-texte-2); }
+.wimsbody button.nova-ex-voir { min-width: 0; min-height: 30px; margin: 0; padding: 2px 8px; border: 0; border-radius: 999px; background: none; color: inherit; font: inherit; font-size: .84rem; text-align: left; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; cursor: pointer; box-shadow: none; overflow-wrap: anywhere; }
+.wimsbody button.nova-ex-voir:hover:not(:disabled) { text-decoration-color: currentColor; }
+.wimsbody button.nova-ex-voir:disabled { text-decoration: none; cursor: default; }
+.wimsbody button.nova-ex-voir b { font-weight: 700; opacity: .75; }
+.wimsbody button.nova-ex-ote { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 50%; background: rgb(255 255 255 / 65%); color: inherit; font-size: .72rem; cursor: pointer; box-shadow: none; }
+.wimsbody button.nova-ex-ote:hover { background: var(--nova-surface); }
+.wimsbody .nova-ex-hasard, .wimsbody .nova-ex-deposer { margin: 0; color: var(--nova-texte-2); font-size: .8rem; }
+.wimsbody .nova-ex-deposer { padding: 8px; border: 2px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); text-align: center; }
+.wimsbody .nova-ex-carte-pied { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.wimsbody label.nova-ex-poids { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--nova-texte-2); font-size: .82rem; font-weight: 400; }
+.wimsbody label.nova-ex-poids input { width: 4.5rem; min-height: 30px; margin: 0; padding: 0 6px; }
+.wimsbody button.nova-ex-plus { min-height: 30px; margin: 0; padding: 0 4px; border: 0; background: none; color: var(--nova-lien, var(--nova-accent)); font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; box-shadow: none; }
+.wimsbody button.nova-ex-plus::after { content: " \25BE"; }
+.wimsbody button.nova-ex-plus[aria-expanded='true']::after { content: " \25B4"; }
+.wimsbody .nova-ex-reglages { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 8px; padding-top: 8px; border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-ex-reglages[hidden] { display: none; }
+.wimsbody .nova-ex-champ { display: grid; gap: 3px; margin: 0; color: var(--nova-texte-2); font-size: .8rem; font-weight: 400; }
+.wimsbody .nova-ex-champ:last-child { grid-column: 1 / -1; }
+.wimsbody .nova-ex-champ input[type='text'] { box-sizing: border-box; width: 100%; max-width: none; min-height: 34px; margin: 0; }
+.wimsbody label.nova-ex-option { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; margin: 0; color: var(--nova-texte); font-weight: 400; }
+.wimsbody li.nova-ex-nouveau { padding: 12px; border: 2px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon); background: var(--nova-accent-doux); color: var(--nova-texte-2); font-size: .84rem; text-align: center; }
+.wimsbody .nova-ex-feuilles { display: grid; gap: 8px; }
+.wimsbody details.nova-ex-feuille { border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); }
+.wimsbody summary.nova-ex-feuille-tete { display: flex; align-items: baseline; gap: 8px; padding: 9px 12px; font-weight: 700; font-size: .9rem; cursor: pointer; }
+.wimsbody .nova-ex-feuille-titre { flex: 1; min-width: 0; }
+.wimsbody ul.nova-ex-exos { display: grid; gap: 6px; margin: 0; padding: 0 8px 8px; list-style: none; }
+.wimsbody ul.nova-ex-exos > li { margin: 0; }
+.wimsbody ul.nova-ex-exos > li::before { content: none; }
+.wimsbody li.nova-ex-exo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 4px 6px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); }
+.wimsbody .nova-ex-lecture li.nova-ex-exo { grid-template-columns: minmax(0, 1fr); }
+.wimsbody li.nova-ex-exo[draggable='true'] { cursor: grab; }
+.wimsbody li.nova-ex-exo.nova-ex-glisse { opacity: .45; }
+.wimsbody .nova-ex-exo-corps { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; min-width: 0; }
+.wimsbody .nova-ex-exo-corps .nova-seq-ress-autre { font-size: .76rem; }
+.wimsbody li.nova-ex-exo button.nova-seq-contenu-btn { border-color: var(--nova-bord); color: var(--nova-accent); }
+.wimsbody .nova-ex-aucun { margin: 0; color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.wimsbody .nova-ex-enreg { margin-top: var(--nova-e4, 16px); }
+@media (hover: none) { .wimsbody .nova-ex-poignee { display: none; } }
+/* Menu de « + » (posé dans <body>, position fixe). */
+.nova-ex-menu { position: fixed; z-index: 60; display: grid; min-width: 14rem; max-width: min(22rem, calc(100vw - 16px)); max-height: 60vh; overflow: auto; padding: 6px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); box-shadow: 0 12px 34px rgb(0 0 0 / 22%); }
+.nova-ex-menu-titre { margin: 0; padding: 4px 10px 2px; color: var(--nova-texte-2); font-size: .76rem; font-weight: 700; }
+button.nova-ex-menu-item { min-height: 36px; margin: 0; padding: 6px 10px; border: 0; border-radius: var(--nova-rayon-petit); background: none; color: var(--nova-texte); font: inherit; font-size: .88rem; text-align: left; cursor: pointer; box-shadow: none; }
+button.nova-ex-menu-item:hover:not(:disabled), button.nova-ex-menu-item:focus-visible { background: var(--nova-accent-doux); outline: none; }
+button.nova-ex-menu-item:disabled { opacity: .45; cursor: default; }
+/* Aperçu d'un exercice : le vrai exercice dans un cadre (session _new de WIMS). */
+.nova-dialogue.nova-ex-apercu { display: none; width: min(60rem, calc(100vw - 32px)); height: min(52rem, calc(100vh - 32px)); padding: 0; overflow: hidden; }
+.nova-dialogue.nova-ex-apercu[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.nova-ex-apercu-tete { position: relative; display: flex; align-items: flex-start; gap: 10px; padding: 12px 56px 10px 16px; border-bottom: 1px solid var(--nova-bord); }
+.nova-ex-apercu-tete h1 { margin: 0; font-size: 1.05rem; }
+.nova-ex-apercu-sous { margin: 2px 0 0; color: var(--nova-texte-2); font-size: .8rem; }
+.nova-ex-apercu-cadre { width: 100%; height: 100%; border: 0; background: var(--nova-fond); }
+.nova-ex-apercu-pied { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--nova-bord); }
+.nova-ex-apercu-pied .wims_button { margin: 0; }
+.nova-ex-apercu-espace { flex: 1; }
+@media (max-width: 639.98px) { .nova-dialogue.nova-ex-apercu { width: 100vw; height: 100dvh; max-width: none; max-height: none; border-radius: 0; } }
+/* Page de l'exercice dans l'aperçu (classe posée par la page de l'examen, examenContenu) : sans barre, fil d'Ariane ni menu. */
+html.nova-apercu-exo #wimstopbox, html.nova-apercu-exo body > nav:has(> .breadcrumbs), html.nova-apercu-exo #wimsmenumodubox, html.nova-apercu-exo .wims_topback { display: none !important; }
+html.nova-apercu-exo #wimsbodybox { margin-left: 0 !important; padding-top: 0 !important; }
+@media (hover: none) { .wimsbody li.nova-ex-exo { grid-template-columns: minmax(0, 1fr) auto; } }

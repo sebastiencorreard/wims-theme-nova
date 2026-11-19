@@ -1,0 +1,39 @@
+!! Nova : contenu d'un examen en deux listes (2026-11-19, utilisateur, maquette examen-contenu). Lu par header.phtml
+!! (adm/class/exam, enseignant). Cartes des exercices de l'examen, feuilles actives et leurs exercices, apercu (js/nova.js,
+!! examenContenu) ; enregistrement par l'adresse (nova_ex_n = numero de l'examen, nova_ex_contenu = contenu en hexadecimal,
+!! _procs/examen.sh ecrire), seulement pour un examen en preparation. Apres l'ecriture, exocnt est relu : le gabarit de
+!! WIMS (main.phtml, lu apres ce widget) montre le nouveau contenu.
+!! Valeurs de l'adresse : chiffres seulement, ou chiffres hexadecimaux (audit du 2026-11-12).
+!! Variables : nova_q la requete ; nova_xe examen recu ; nova_xc contenu recu ; nova_xr resultat de examen.sh ecrire ;
+!! nova_xa feuilles actives filtrees ; nova_xf une feuille ; nova_xh feuilles citees par l'examen hors des actives. Donnees
+!! pour nova.js ecrites dans la page par !sh, une feuille par appel (examen.sh examen, feuille).
+!set nova_xa=!text select 0123456789, in $asheets
+!set nova_q=!sh printf '%s' "$$QUERY_STRING"
+!set nova_q=!replace internal & by $ $ in $nova_q
+!set nova_xe=!getopt nova_ex_n in $nova_q
+!set nova_xe=!text select 0123456789 in $nova_xe
+!set nova_xr=
+!if $nova_xe!=$empty and $nova_xe=$exam and $activetest=0
+  !set nova_xc=!getopt nova_ex_contenu in $nova_q
+  !set nova_xc=!text select 0123456789abcdef in $nova_xc
+  !set nova_xr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/examen.sh "$wims_home" "$wims_class" ecrire "$exam" "$nova_xa" "$nova_xc"
+  !set nova_xr=!text select abcdefghijklmnopqrstuvwxyz0123456789 in $nova_xr
+  !set exocnt=!recordcnt wimshome/log/classes/$wims_class/exams/.exam$exam
+  !reset nova_xc
+!endif
+!set nova_xe=!text select 0123456789 in $exam
+!if $nova_xe!=$empty and $activetest>=0
+  <div id="nova-ex-contenu" hidden data-examen="$nova_xe" data-etat="$activetest" data-mode="$exam_mode" data-resultat="$nova_xr">
+  !sh sh $wims_home/public_html/themes/$wims_theme/_procs/examen.sh "$wims_home" "$wims_class" examen "$nova_xe"
+  !for nova_xf in $nova_xa
+    !sh sh $wims_home/public_html/themes/$wims_theme/_procs/examen.sh "$wims_home" "$wims_class" feuille "$nova_xf"
+  !next nova_xf
+  !set nova_xh=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/examen.sh "$wims_home" "$wims_class" citees "$nova_xe" "$nova_xa"
+  !set nova_xh=!text select 0123456789, in $nova_xh
+  !for nova_xf in $nova_xh
+    !sh sh $wims_home/public_html/themes/$wims_theme/_procs/examen.sh "$wims_home" "$wims_class" feuille "$nova_xf" hors
+  !next nova_xf
+  </div>
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang examens
+!endif
+!reset nova_q nova_xe nova_xr nova_xa nova_xf nova_xh

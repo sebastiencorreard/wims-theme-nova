@@ -354,6 +354,65 @@
     });
   }
 
+  /* Bouton « Enregistrer » collant (2026-11-19, utilisateur ; page Modifier d'une séquence, contenu d'un examen) : <bloc> (le
+   * bouton et ce qui l'entoure) est fixé en bas de l'écran, à la largeur de <ref>, tant que sa place est plus bas ; arrivé à sa
+   * place, il la reprend. Sans cadre (« bouton seul ») : le bouton avec une ombre et, quand c'est modifié, <avis> en pastille.
+   * Même principe que boutonsCollants (repère après le bloc, cale à sa place), pas de position sticky (.wimsbody défile en x).
+   * <ref> masqué (onglet fermé) : rien de fixé. Renvoie regler(modifie). */
+  function barreEnregistrer(bloc, ref, avis) {
+    bloc.classList.add('nova-seq-enreg');
+    var texte = document.createElement('span');
+    texte.className = 'nova-seq-enreg-avis';
+    texte.textContent = avis;
+    texte.hidden = true;
+    texte.setAttribute('role', 'status');
+    bloc.insertBefore(texte, bloc.firstChild);
+    var regler = function (modifie) {
+      texte.hidden = !modifie;
+      bloc.classList.toggle('nova-seq-enreg-modifie', !!modifie);
+    };
+    if (!window.IntersectionObserver) return regler;
+    var repere = document.createElement('span');
+    repere.className = 'nova-collant-repere';
+    repere.setAttribute('aria-hidden', 'true');
+    bloc.parentNode.insertBefore(repere, bloc.nextSibling);
+    var cale = document.createElement('div');
+    cale.className = 'nova-collant-cale';
+    cale.setAttribute('aria-hidden', 'true');
+    var dessous = false;
+    var placer = function () {
+      if (!bloc.classList.contains('nova-seq-enreg-fixe')) return;
+      var r = (cale.parentNode ? cale : ref).getBoundingClientRect();
+      bloc.style.left = Math.max(8, r.left) + 'px';
+      bloc.style.width = Math.min(r.width, document.documentElement.clientWidth - 16) + 'px';
+    };
+    var appliquer = function () {
+      var fixer = dessous && ref.getClientRects().length > 0;
+      if (fixer === bloc.classList.contains('nova-seq-enreg-fixe')) return;
+      if (fixer) {
+        cale.style.height = bloc.offsetHeight + 'px';
+        bloc.parentNode.insertBefore(cale, bloc);
+        bloc.classList.add('nova-seq-enreg-fixe');
+        placer();
+      } else {
+        bloc.classList.remove('nova-seq-enreg-fixe');
+        bloc.style.left = bloc.style.width = '';
+        if (cale.parentNode) cale.parentNode.removeChild(cale);
+      }
+      document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant, .nova-seq-enreg-fixe'));
+    };
+    new IntersectionObserver(function (entrees) {
+      var e = entrees[entrees.length - 1];
+      dessous = !e.isIntersecting && e.boundingClientRect.top > 0;
+      appliquer();
+    }).observe(repere);
+    // <ref> qui apparaît (onglet ouvert après le chargement) : l'observateur du repère ne se redéclenche pas tant que le repère
+    // reste hors de l'écran (vu le 2026-11-19, contenu d'un examen au téléphone) ; la taille de <ref> change, elle.
+    if (window.ResizeObserver) new ResizeObserver(function () { appliquer(); placer(); }).observe(ref);
+    window.addEventListener('resize', placer);
+    return regler;
+  }
+
   /* Mot de passe : un œil dans le champ pour vérifier ce qu'on a tapé (demande de l'utilisateur,
    * 2026-10-05). Tous les champs de mot de passe de la page (connexion, changement de mot de passe…). Le
    * champ redevient masqué à l'envoi du formulaire. */

@@ -95,7 +95,11 @@
    * site) : retirees de la barre d'adresse une fois la page lue, pour qu'Actualiser ou Precedent ne rejoue pas l'action
    * (audit du 2026-11-12). Appelee en dernier par demarrer(). */
   function adresseNette() {
-    var net = location.search.replace(/([?&])nova_(desactiver|propager|reglages|couleur|avatar_ouvrir|avatar_choix|avatars_retour)=[^&]*&?/g, '$1').replace(/[?&]$/, '');
+    // Repasser tant que ça change : deux paramètres qui se suivent partagent le « & » que la première prise consomme (vu le
+    // 2026-11-19 : nova_ex_contenu restait après nova_ex_n).
+    var re = /([?&])nova_(desactiver|propager|reglages|couleur|avatar_ouvrir|avatar_choix|avatars_retour|ex_n|ex_contenu)=[^&]*&?/g, net = location.search, avant;
+    do { avant = net; net = net.replace(re, '$1'); } while (net !== avant);
+    net = net.replace(/[?&]$/, '');
     if (net === location.search || !history.replaceState) return;
     try { history.replaceState(history.state, '', location.pathname + net + location.hash); } catch (e) { /* adresse gardee */ }
   }

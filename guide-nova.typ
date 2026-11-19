@@ -967,10 +967,13 @@ s'affiche ; élément de saison hors de son mois.]
 == Ajouter un bouton ou une action à une page de l'enseignant <enseignant>
 
 #ou[`js/src/70-enseignant.js` (le plus gros fichier : configuration, fiches de feuille et d'examen, confirmations,
-export…), `71-sequences.js` (séquences pédagogiques : liste, page Modifier), `72-travail-individualise.js`, `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
+export…), `71-sequences.js` (séquences pédagogiques : liste, page Modifier), `72-travail-individualise.js`, `73-examen-contenu.js`
+(contenu d'un examen en deux listes, aperçu d'un exercice), `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
 `config-globale.phtml`, `capacite.phtml`, `acces-classe.phtml`, `confirmations.phtml`) et d'action
 (`desactiver.phtml` + `_procs/desactiver.sh`, `propager.phtml` + `_procs/propager.sh`, `ecarts-zones.phtml`,
-`sequences.phtml` + `_procs/sequences.sh`, `participants-zones.phtml`).]
+`sequences.phtml` + `_procs/sequences.sh`, `examen-contenu.phtml` + `_procs/examen.sh`, `participants-zones.phtml`).
+Bouton « Enregistrer » collant d'une page : `barreEnregistrer(bloc, ref, avis)` (`20-composants.js`), qui renvoie
+`regler(modifie)` pour montrer ou cacher la pastille « Modifié ».]
 
 === Ajouter un bouton, une aide ou une carte
 
@@ -1460,6 +1463,28 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == Écrire et calculer sur le serveur
 
+#piege[Un script shell écrit dans le mauvais fichier][
+  Une action enregistrée vide ou abîme un AUTRE fichier que celui visé (vécu : contenu d'un examen écrit à la place
+  d'une feuille de la classe).
+][
+  En `sh`, une fonction n'a pas de variables à elle : une boucle `for f in …` dans la fonction remplace le `f` de
+  l'appelant.
+][
+  Donner aux variables d'une fonction un préfixe qui lui est propre (`cp_f`, `ct_s` dans `_procs/examen.sh`), fixer le
+  chemin de la cible juste avant d'écrire et le vérifier par un motif (`case "$cible" in exams/.exam[0-9]*`) ; écrire
+  dans un fichier voisin puis `mv`. Au banc : empreinte (`md5sum`) des fichiers voisins avant et après l'essai.
+]
+
+#piege[Une page d'erreur de WIMS « résultat intermédiaire trop long »][
+  La page entière est remplacée par l'erreur de WIMS dès qu'un widget lit beaucoup de données.
+][
+  Le résultat d'un `!sh` (ou d'un `!set x=!sh …`) passe par une ligne de WIMS, limitée à 45 000 octets
+  (`MAX_LINELEN`, `src/wimsdef.h`) ; les exercices de toutes les feuilles d'une classe dépassent vite cette taille.
+][
+  Découper : un appel par feuille, écrit directement dans la page (`!sh` sans `!set`, dans une boucle `!for`), comme
+  `_widgets/examen-contenu.phtml`.
+]
+
 #piege[Une séquence enregistrée avec d'autres ressources que celles choisies][
   Après « Enregistrer » sur l'onglet Contenu d'une séquence, la liste du fichier `seq/.sequence<n>` (3#super[e] ligne)
   ne correspond pas aux rangs donnés, ou garde une ressource retirée.
@@ -1876,7 +1901,7 @@ niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "functi
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
   "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
-  "71-sequences.js", "72-travail-individualise.js", "80-reglages.js", "99-demarrage.js")
+  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))
@@ -1994,7 +2019,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`badges.awk`], [badges],
   [`activite.awk`, `vacances-zones.txt`], [« Mon activité », vacances des zones A, B, C],
   [`avatar.awk`, `avatar.proc`, `avatar-catalogue.txt`, `avatar-zones.sh`, `avatars-classe.sh`, `avatars-retour.sh`], [avatar],
-  [`propager.sh`, `desactiver.sh`, `sequences.sh`], [actions de l'enseignant],
+  [`propager.sh`, `desactiver.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant],
   [`jeu-icones.sh`], [lien du jeu Lucide dans `gifs/themes`],
   [`suivi.pl`], [relevé du suivi en direct],
   [`version.sh`], [ligne de version],
@@ -2371,6 +2396,7 @@ action, pour qu'un rechargement ne la rejoue pas.
   [`nova_desactiver=<type>…`], [désactive une ressource malgré un refus de WIMS], [`desactiver.phtml`],
   [`nova_seq_de`, `nova_seq_vers`, `nova_seq_numero`], [déplace une séquence (chiffres) ; choisit d'afficher le numéro seul (`oui`, `non`)], [`sequences.phtml`],
   [`nova_seq_plage`, `nova_seq_mode`, `nova_seq_debut`, `nova_seq_fin`], [plage d'affichage d'une séquence : numéro, `tous`, `cachee` ou `plage`, dates `AAAAMMJJHHMM` (chiffres)], [`sequences.phtml`],
+  [`nova_ex_n`, `nova_ex_contenu`], [contenu d'un examen en préparation : numéro (chiffres), contenu entier en octets latin-1 écrits en hexadécimal (enregistrements séparés par 1e, champs par 1f ; `_procs/examen.sh ecrire`)], [`examen-contenu.phtml`],
   [`nova_seq_partage=1`], [la même plage aussi dans les classes qui partagent les séquences (adresse de la liste, ou champ du formulaire de la page Modifier)], [`sequences.phtml`],
   [`nova_reglages=1` et un paramètre par réglage], [enregistre les réglages du site (formulaire de la page Apparence du gestionnaire)], [`reglages-site.phtml`],
 )

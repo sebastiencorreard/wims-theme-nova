@@ -621,18 +621,12 @@
       dessiner();
     }
 
-    /* « Enregistrer » de la page Modifier d'une séquence (2026-11-19, utilisateur : « tout en bas, peu visible ») : barre fixée en
-     * bas de l'écran, à la largeur du formulaire, sur les deux onglets, tant que la place du bouton est plus bas ; arrivée à
-     * sa place, elle la reprend. « Modifié : pensez à enregistrer » s'y affiche dès qu'un onglet a changé (évènement
-     * nova-seq-modifie). Même principe que boutonsCollants (repère après le bloc, cale à sa place), pas de position sticky. */
+    /* « Enregistrer » de la page Modifier d'une séquence (2026-11-19, utilisateur : « tout en bas, peu visible ») : barre
+     * collante (barreEnregistrer) ; « Modifié : pensez à enregistrer » dès qu'un onglet a changé (évènement nova-seq-modifie). */
     function enregistrerCollant(form) {
       var bouton = form.querySelector('input[type="submit"][name="save"]'), bloc = bouton && bouton.parentNode;
-      if (!bloc || bloc === form || !window.IntersectionObserver) return;
-      bloc.classList.add('nova-seq-enreg');
-      var texte = el('span', 'nova-seq-enreg-avis', t('a-enregistrer'));
-      texte.hidden = true;
-      texte.setAttribute('role', 'status');
-      bloc.insertBefore(texte, bouton);
+      if (!bloc || bloc === form) return;
+      var regler = barreEnregistrer(bloc, form, t('a-enregistrer'));
       // Titre, description, champs de WIMS (2026-11-19, utilisateur : « je ne vois pas le texte » après avoir changé le titre ou la
       // description) : tout changement compte, sauf la recherche et les filtres de l'onglet Contenu et l'interrupteur des classes
       // en partage (le contenu et l'affichage ont leur propre avis). Description sous TinyMCE : éditeur « sale » (isDirty).
@@ -650,44 +644,8 @@
         if (window.tinymce.get) suivreEditeur(window.tinymce.get('seq_desc'));
       }
       document.addEventListener('nova-seq-modifie', function () {
-        var modifie = touche || Array.prototype.some.call(document.querySelectorAll('.wimsbody .nova-seq-modif-avis'), function (a) { return !a.hidden; });
-        texte.hidden = !modifie;
-        bloc.classList.toggle('nova-seq-enreg-modifie', modifie);
+        regler(touche || Array.prototype.some.call(document.querySelectorAll('.wimsbody .nova-seq-modif-avis'), function (a) { return !a.hidden; }));
       });
-      var repere = el('span', 'nova-collant-repere');
-      repere.setAttribute('aria-hidden', 'true');
-      bloc.parentNode.insertBefore(repere, bloc.nextSibling);
-      var cale = el('div', 'nova-collant-cale');
-      cale.setAttribute('aria-hidden', 'true');
-      var dessous = false;
-      var placer = function () {
-        if (!bloc.classList.contains('nova-seq-enreg-fixe')) return;
-        var r = (cale.parentNode ? cale : form).getBoundingClientRect();
-        bloc.style.left = Math.max(8, r.left) + 'px';
-        bloc.style.width = Math.min(r.width, document.documentElement.clientWidth - 16) + 'px';
-      };
-      var appliquer = function () {
-        var fixer = dessous && form.getClientRects().length > 0;
-        if (fixer === bloc.classList.contains('nova-seq-enreg-fixe')) return;
-        if (fixer) {
-          cale.style.height = bloc.offsetHeight + 'px';
-          bloc.parentNode.insertBefore(cale, bloc);
-          bloc.classList.add('nova-seq-enreg-fixe');
-          placer();
-        } else {
-          bloc.classList.remove('nova-seq-enreg-fixe');
-          bloc.style.left = bloc.style.width = '';
-          if (cale.parentNode) cale.parentNode.removeChild(cale);
-        }
-        document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant, .nova-seq-enreg-fixe'));
-      };
-      new IntersectionObserver(function (entrees) {
-        var e = entrees[entrees.length - 1];
-        dessous = !e.isIntersecting && e.boundingClientRect.top > 0;
-        appliquer();
-      }).observe(repere);
-      window.addEventListener('resize', placer);
-      // Changer d'onglet change la hauteur de la page : la place du bouton aussi (l'observateur le voit tout seul).
     }
 
     function enregistrerPlage(d, n, mode, deb, fin, aussiPartage) {

@@ -963,3 +963,4 @@ html:not(.nova-std-listes) .wimsbody #wims_supervisor_doc table.wimstable { widt
 .nova-dialogue .nova-forcer-actions .nova-forcer-ok.disabled { opacity: .5; pointer-events: none; }
 body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-forcer-annuler { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
 body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-forcer-annuler:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); color: var(--nova-sur-accent); }
+.nova-forcer-sauver.nova-forcer-sauver-fixe { display: block; }

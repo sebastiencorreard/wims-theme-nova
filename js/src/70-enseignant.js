@@ -683,11 +683,10 @@
     // sans la commande « zip » : WIMS répond « l'archivage n'a pas abouti », vu sur le banc). Libellé sans extension
     // (2026-11-12, utilisateur : « annonce un .zip, c'est un .tgz qui arrive ») ; l'étape 2 donne le nom du fichier. Deux requêtes (l'entrée dans le module ignore job=…), 1,5 s d'écart,
     // puis le fichier (lien getfile de la page) récupéré et enregistré par le navigateur. Échec : rien n'est désactivé.
-    var caseSauver = document.createElement('label');
-    caseSauver.className = 'nova-forcer-sauver';
-    var cocher = document.createElement('input');
-    cocher.type = 'checkbox';
-    cocher.checked = true;
+    // Sauvegarde OBLIGATOIRE (2026-11-19, utilisateur : « oblige à télécharger la classe dans tous les cas ») : plus de case à
+    // cocher ni de « Désactiver sans sauvegarde » après un échec ; seulement « Réessayer ».
+    var caseSauver = document.createElement('div');
+    caseSauver.className = 'nova-forcer-sauver nova-forcer-sauver-fixe';
     var libSauver = document.createElement('span');
     var gras = document.createElement('b');
     gras.textContent = f.getAttribute('data-sauver') || 'Download a backup of the class first';
@@ -698,11 +697,9 @@
       aideSauver.textContent = f.getAttribute('data-sauver-aide');
       libSauver.appendChild(aideSauver);
     }
-    caseSauver.appendChild(cocher);
     caseSauver.appendChild(libSauver);
     d.appendChild(caseSauver);
-    var libelleOk = function () { ok.textContent = cocher.checked ? (f.getAttribute('data-ok-sauver') || 'Back up, then deactivate') : (f.getAttribute('data-ok') || 'Deactivate anyway'); };
-    cocher.addEventListener('change', libelleOk);
+    var libelleOk = function () { ok.textContent = f.getAttribute('data-ok-sauver') || 'Back up, then deactivate'; };
     var suivi = document.createElement('ol');
     suivi.className = 'nova-forcer-etapes';
     suivi.hidden = true;
@@ -753,26 +750,20 @@
     echec.setAttribute('role', 'alert');
     echec.textContent = f.getAttribute('data-echec') || 'The backup failed: nothing was deactivated.';
     d.appendChild(echec);
-    var sansSauver = document.createElement('button');
-    sansSauver.type = 'button';
-    sansSauver.className = 'wims_button wims_secondary_button';
-    sansSauver.textContent = f.getAttribute('data-sans') || 'Deactivate without backup';
-    sansSauver.hidden = true;
-    sansSauver.addEventListener('click', function () { sansSauver.disabled = true; annuler.disabled = true; etape(2); desactiver(); });
     ok.addEventListener('click', function (e) {
       e.preventDefault();
       if (ok.getAttribute('aria-disabled') === 'true') return;
       ok.setAttribute('aria-disabled', 'true');
       ok.classList.add('disabled');
-      if (!cocher.checked || !window.fetch || !window.Promise) { desactiver(); return; }
-      ul.hidden = true; caseSauver.hidden = true; echec.hidden = true; sansSauver.hidden = true;
+      if (!window.fetch || !window.Promise) { echec.hidden = false; return; }
+      ul.hidden = true; caseSauver.hidden = true; echec.hidden = true;
       annuler.disabled = true;
       suivi.hidden = false;
       libelleOk();
       etape(0);
       sauvegarder().then(function () { etape(2); return pause(1500); }).then(desactiver).catch(function () {
         etapes[0].className = 'echec';
-        echec.hidden = false; sansSauver.hidden = false;
+        echec.hidden = false;
         ok.textContent = f.getAttribute('data-reessayer') || 'Try again';
         annuler.disabled = false;
         ok.removeAttribute('aria-disabled');
@@ -781,7 +772,6 @@
     });
     libelleOk();
     actions.appendChild(ok);
-    actions.appendChild(sansSauver);
     actions.appendChild(annuler);
     d.appendChild(actions);
     return { annuler: annuler, ok: ok };

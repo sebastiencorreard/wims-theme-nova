@@ -1526,7 +1526,7 @@
     ficheEditeurs(cadre, tx);
   }
   function ficheStatut(etat, tx, type) {
-    if (type === 'e' && document.getElementById('nova-statuts-textes')) { fichePastille(etat, tx); return; }
+    if (document.getElementById('nova-statuts-textes')) { fichePastille(etat, tx, type); return; }
     var champ = etat.closest('.field');
     var m = /wims_status_(\d)/.exec(etat.className);
     var n = m ? m[1] : '0';
@@ -1560,11 +1560,12 @@
     champ.appendChild(bandeau);
     champ.appendChild(etat);
   }
-  /* Statut d'un examen sur sa page de préparation (2026-11-19, utilisateur : « tranche avec les choix faits ailleurs ») :
-   * pastille colorée et son menu, comme sur l'accueil de l'enseignant (etatMenu), au lieu du bandeau ; la phrase qui dit ce
-   * que voient les élèves (#nova-fiche-textes) à côté. Menu marqué data-nova-fiche : après une action confirmée, retour à
-   * la page de l'examen (confirmationsRessources). */
-  function fichePastille(etat, tx) {
+  /* Statut d'un examen ou d'une feuille sur sa page de préparation (2026-11-19, utilisateur : « tranche avec les choix faits
+   * ailleurs » ; feuilles alignées sur les examens le même jour) : pastille colorée et son menu, comme sur l'accueil de
+   * l'enseignant (etatMenu), au lieu du bandeau ; la phrase qui dit ce que voient les élèves (#nova-fiche-textes) à côté.
+   * Feuille active avec condition d'affichage : la précision de WIMS entre parenthèses passe sous la pastille. Menu marqué
+   * data-nova-fiche : après une action confirmée, retour à la page de la ressource (confirmationsRessources). */
+  function fichePastille(etat, tx, type) {
     var st = document.getElementById('nova-statuts-textes');
     var t = function (c) { return st.getAttribute('data-' + c) || ''; };
     var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
@@ -1576,13 +1577,15 @@
     var liens = Array.prototype.slice.call(champ.querySelectorAll('a.wims_button[href]'));
     var texte = etat.textContent.replace(/\s+/g, ' ').trim();
     if (n === 3) texte = texte.split('+')[0].trim();
+    var precision = (/\(([^()]+)\)\s*$/.exec(texte) || [])[1] || '';
+    if (precision) texte = texte.slice(0, texte.lastIndexOf('(')).trim();
     texte = texte.charAt(0).toUpperCase() + texte.slice(1);
     var ton = n === 0 ? 'neutre' : (n === 1 ? 'ok' : 'attention');
     var pastille = el('button', 'nova-etat nova-etat-' + ton);
     pastille.appendChild(icone(['crayon', 'coche', 'horloge', 'oeil-barre'][n] || 'crayon'));
     pastille.appendChild(el('span', 'nova-etat-nom', texte));
     var titre = document.querySelector('.wimsbody input#title');
-    var menu = etatMenu(pastille, liens, 'exam', n, t, titre ? titre.value : '', menusEtat());
+    var menu = etatMenu(pastille, liens, type === 'e' ? 'exam' : 'sheet', n, t, titre ? titre.value : '', menusEtat());
     menu.setAttribute('data-nova-fiche', '');
     etat.hidden = true;
     champ.textContent = '';
@@ -1590,9 +1593,10 @@
     if (mot) champ.appendChild(el('span', 'nova-fiche-etat-mot', mot));
     var ligne = el('div', 'nova-fiche-etat');
     ligne.appendChild(pastille);
-    var phrase = tx.getAttribute('data-e' + n);
+    var phrase = tx.getAttribute('data-' + type + n);
     if (phrase) ligne.appendChild(el('span', 'nova-fiche-etat-expl', phrase));
     champ.appendChild(ligne);
+    if (precision) champ.appendChild(el('span', 'nova-fiche-etat-expl', precision.charAt(0).toUpperCase() + precision.slice(1)));
     champ.appendChild(etat);
   }
   function ficheTuiles(cadre, tx) {

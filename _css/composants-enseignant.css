@@ -941,7 +941,7 @@ button.nova-ex-menu-item:disabled { opacity: .45; cursor: default; }
 html.nova-apercu-exo #wimstopbox, html.nova-apercu-exo body > nav:has(> .breadcrumbs), html.nova-apercu-exo #wimsmenumodubox, html.nova-apercu-exo .wims_topback { display: none !important; }
 html.nova-apercu-exo #wimsbodybox { margin-left: 0 !important; padding-top: 0 !important; }
 @media (hover: none) { .wimsbody li.nova-ex-exo { grid-template-columns: minmax(0, 1fr) auto; } }
-/* Statut d'un examen sur sa page de préparation : pastille et son menu comme sur l'accueil (2026-11-19, utilisateur ; nova.js
+/* Statut d'un examen ou d'une feuille sur sa page de préparation : pastille et son menu comme sur l'accueil (2026-11-19, utilisateur ; nova.js
  * fichePastille), la phrase « ce que voient les élèves » à côté. */
 .wimsbody .nova-fiche-etat-champ { display: grid; gap: 6px; }
 .wimsbody .nova-fiche-etat-mot { font-weight: 700; font-size: var(--nova-petit); }

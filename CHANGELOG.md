@@ -34,7 +34,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Accueil : le bouton « Créer le DM noté » s'appelle désormais « DM noté » (icône inchangée).
 - Accueil : les cartes ont la largeur habituelle des contenus au lieu de toute la largeur de l'écran.
 - Accueil : le tableau des documents n'occupe plus toute la largeur d'un grand écran.
-- Page d'un examen : le statut est une pastille colorée qui ouvre le menu des actions (activer, expirer, désactiver…), comme sur l'accueil.
+- Page d'une feuille ou d'un examen : le statut est une pastille colorée qui ouvre le menu des actions (activer, expirer, désactiver…), comme sur l'accueil.
 - Contenu d'un examen : une carte par exercice (WIMS tire un des exercices de la carte), les feuilles actives à côté ; glisser ou « + » pour composer, clic sur un exercice pour l'essayer dans une fenêtre, « Enregistrer » en bas de l'écran.
 - Modifier une séquence : « Enregistrer » reste en bas de l'écran, sur les deux onglets, avec « Modifié : pensez à enregistrer » dès qu'on change quelque chose (titre et description compris).
 - **Contenu d'une séquence** (page Modifier) : plus de numéros à taper. Deux listes : « Dans la séquence », qu'on réordonne en glissant ou avec les flèches, et « Ressources de la classe », avec recherche et filtres (type, « Hors séquence ») ; on ajoute avec « + » ou en glissant. L'état de chaque ressource est affiché, avec un avertissement si les élèves ne la verront pas, et les autres séquences où elle se trouve.

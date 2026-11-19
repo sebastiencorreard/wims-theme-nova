@@ -172,7 +172,7 @@
 !set nova_rg_avances=Réglages avancés
 !set nova_rg_dm_aide=Un DM WIMS, c'est un examen d'entraînement (beaucoup de sessions) et un examen noté (peu de sessions) au même contenu. Nova les reconnaît à leur titre. Les accents et les majuscules ne comptent pas.
 !set nova_rg_dm_usage=Ces réglages servent à :
-!set nova_rg_dm_usage1=<strong>« Créer le DM noté »</strong> : bouton de votre accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; il en fait une copie « En préparation », titrée avec un mot de DM noté et réglée sur le nombre de sessions ci-dessous.
+!set nova_rg_dm_usage1=<strong>« DM noté »</strong> : bouton de votre accueil, à côté d'un DM d'entraînement qui n'a pas encore son DM noté ; il en fait une copie « En préparation », titrée avec un mot de DM noté et réglée sur le nombre de sessions ci-dessous.
 !set nova_rg_dm_usage2=<strong>Badge Échauffement</strong> : un DM compte quand l'élève a fait assez de sessions complètes de l'entraînement avant d'ouvrir le DM noté.
 !set nova_rg_dm_usage3=<strong>Badge Au top</strong> : DM notés réussis (note retenue au moins égale au seuil du badge).
 !set nova_rg_dm_mots=Mots-clés d'un DM WIMS
@@ -181,7 +181,7 @@
 !set nova_rg_dm_note_aide=Le titre d'un DM noté contient en plus l'un de ces mots.
 !set nova_rg_dm_ent=Mots-clés d'un DM d'entraînement
 !set nova_rg_dm_ent_aide=Le titre d'un DM d'entraînement contient en plus l'un de ces mots. Un entraînement et son DM noté ont le même contenu, ou le même titre à ce mot près.
-!set nova_rg_dm_essais1=« Créer le DM noté » lui donne
+!set nova_rg_dm_essais1=« DM noté » lui donne
 !set nova_rg_dm_essais2=sessions.
 !set nova_bdg_coul_ligne1=Couleur :
 !set nova_bdg_coul_ligne2=Dégradés :

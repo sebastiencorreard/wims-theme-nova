@@ -931,7 +931,7 @@
       b.className = cellule ? 'nova-etat-modifier nova-dm-note' : 'wims_button nova-dm-note';
       b.setAttribute('role', 'button');
       var libelleDM = document.createElement('span');
-      libelleDM.textContent = texte('dm-note', 'Create the graded homework');
+      libelleDM.textContent = texte('dm-note', 'Graded homework');
       if (cellule) {
         var icoDM = document.createElement('span');
         icoDM.className = 'nova-etat-ico';

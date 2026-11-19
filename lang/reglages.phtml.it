@@ -172,7 +172,7 @@
 !set nova_rg_avances=Impostazioni avanzate
 !set nova_rg_dm_aide=Un compito WIMS è un esame di allenamento (molte sessioni) e un esame valutato (poche sessioni) con lo stesso contenuto. Nova li riconosce dal titolo. Accenti e maiuscole sono ignorati.
 !set nova_rg_dm_usage=Queste impostazioni sono usate da:
-!set nova_rg_dm_usage1=<strong>«Crea il compito valutato»</strong>: pulsante nella tua pagina iniziale, accanto a un compito di allenamento che non ha ancora un compito valutato; crea una copia «In preparazione», con una parola chiave di valutazione nel titolo e il numero di sessioni qui sotto.
+!set nova_rg_dm_usage1=<strong>«Compito valutato»</strong>: pulsante nella tua pagina iniziale, accanto a un compito di allenamento che non ha ancora un compito valutato; crea una copia «In preparazione», con una parola chiave di valutazione nel titolo e il numero di sessioni qui sotto.
 !set nova_rg_dm_usage2=<strong>Distintivo Riscaldamento</strong>: un compito conta quando lo studente ha fatto abbastanza sessioni complete di allenamento prima di aprire quello valutato.
 !set nova_rg_dm_usage3=<strong>Distintivo Al top</strong>: compito valutato superato (voto tenuto almeno pari alla soglia del distintivo).
 !set nova_rg_dm_mots=Parole chiave di un compito WIMS
@@ -181,7 +181,7 @@
 !set nova_rg_dm_note_aide=Il titolo di un compito valutato contiene inoltre una di queste parole.
 !set nova_rg_dm_ent=Parole chiave di un compito di allenamento
 !set nova_rg_dm_ent_aide=Il titolo di un compito di allenamento contiene inoltre una di queste parole. Un esame di allenamento e il suo compito valutato hanno lo stesso contenuto, o lo stesso titolo tranne questa parola.
-!set nova_rg_dm_essais1=«Crea il compito valutato» gli dà
+!set nova_rg_dm_essais1=«Compito valutato» gli dà
 !set nova_rg_dm_essais2=sessioni.
 !set nova_bdg_coul_ligne1=Colore:
 !set nova_bdg_coul_ligne2=Sfumature:

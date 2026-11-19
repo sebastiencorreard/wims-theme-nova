@@ -2302,7 +2302,7 @@ listes séparées par des espaces.
   )),
   ("DM WIMS", (
     ("dm-mots", [Mots du titre qui désignent un DM WIMS.]),
-    ("dm-note-essais", [Nombre de sessions du DM noté créé par « Créer le DM noté ».]),
+    ("dm-note-essais", [Nombre de sessions du DM noté créé par « DM noté ».]),
   )),
   ("« Ma couleur »", (
     ("couleur-badge", [Badge dont le niveau débloque la couleur personnelle.]),

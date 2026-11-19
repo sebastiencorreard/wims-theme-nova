@@ -172,7 +172,7 @@
 !set nova_rg_avances=Ajustes avanzados
 !set nova_rg_dm_aide=Un deber WIMS es un examen de práctica (muchas sesiones) y un examen calificado (pocas sesiones) con el mismo contenido. Nova los reconoce por su título. Se ignoran acentos y mayúsculas.
 !set nova_rg_dm_usage=Estos ajustes los usan:
-!set nova_rg_dm_usage1=<strong>«Crear el deber calificado»</strong>: botón en tu página de inicio, junto a un deber de práctica que todavía no tiene deber calificado; hace una copia «En preparación», con una palabra clave de calificado en el título y el número de sesiones de abajo.
+!set nova_rg_dm_usage1=<strong>«Deber calificado»</strong>: botón en tu página de inicio, junto a un deber de práctica que todavía no tiene deber calificado; hace una copia «En preparación», con una palabra clave de calificado en el título y el número de sesiones de abajo.
 !set nova_rg_dm_usage2=<strong>Insignia Calentamiento</strong>: un deber cuenta cuando el alumno ha hecho suficientes sesiones completas de práctica antes de abrir el calificado.
 !set nova_rg_dm_usage3=<strong>Insignia En la cima</strong>: deber calificado superado (nota retenida al menos igual al umbral de la insignia).
 !set nova_rg_dm_mots=Palabras clave de un deber WIMS
@@ -181,7 +181,7 @@
 !set nova_rg_dm_note_aide=El título de un deber calificado contiene además una de estas palabras.
 !set nova_rg_dm_ent=Palabras clave de un deber de práctica
 !set nova_rg_dm_ent_aide=El título de un deber de práctica contiene además una de estas palabras. Un examen de práctica y su deber calificado tienen el mismo contenido, o el mismo título salvo esta palabra.
-!set nova_rg_dm_essais1=«Crear el deber calificado» le da
+!set nova_rg_dm_essais1=«Deber calificado» le da
 !set nova_rg_dm_essais2=sesiones.
 !set nova_bdg_coul_ligne1=Color:
 !set nova_bdg_coul_ligne2=Degradados:

@@ -663,13 +663,14 @@
     });
     d.appendChild(ul);
     var actions = document.createElement('div');
-    actions.className = 'wimscenter';
+    // Annuler incité (2026-11-19, utilisateur) : bouton plein à droite, choisi ; désactiver = lien rouge à gauche.
+    actions.className = 'wimscenter nova-forcer-actions';
     var annuler = document.createElement('button');
     annuler.type = 'button';
-    annuler.className = 'wims_button wims_secondary_button';
+    annuler.className = 'wims_button nova-forcer-annuler';
     annuler.textContent = f.getAttribute('data-annuler') || 'Cancel';
     var ok = document.createElement('a');
-    ok.className = 'wims_button wims_warning';
+    ok.className = 'nova-forcer-ok';
     ok.setAttribute('role', 'button');
     ok.href = lienAccueil('&nova_desactiver=' + f.getAttribute('data-type') + ':' + n);
     // Sans passer par l'accueil (2026-11-09) : retour à la page de l'examen ou de la feuille, avec le message.
@@ -779,9 +780,9 @@
       });
     });
     libelleOk();
-    actions.appendChild(annuler);
-    actions.appendChild(sansSauver);
     actions.appendChild(ok);
+    actions.appendChild(sansSauver);
+    actions.appendChild(annuler);
     d.appendChild(actions);
     return { annuler: annuler, ok: ok };
   }
@@ -2277,7 +2278,7 @@
       d.appendChild(corps);
       var boutons = el('div', 'nova-conf-boutons');
       d.appendChild(boutons);
-      var bloque = function () { var a = d.querySelector('.wimscenter .wims_secondary_button'); return !!(a && a.disabled); };
+      var bloque = function () { var a = d.querySelector('.nova-forcer-annuler'); return !!(a && a.disabled); };
       d.addEventListener('cancel', function (e) { if (bloque()) e.preventDefault(); });
       d.addEventListener('click', function (e) { if (e.target === d && !bloque()) d.close(); });
       d.addEventListener('close', function () { d.remove(); if (dlg === d) dlg = null; });

@@ -955,3 +955,11 @@ html:not(.nova-std-listes) .wimsbody #wims_supervisor_doc table.wimstable { widt
 .wimsbody .nova-forcer-lien, .nova-dialogue .nova-forcer-lien { all: unset; display: inline-block; margin-top: var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .wimsbody .nova-forcer-lien:hover, .nova-dialogue .nova-forcer-lien:hover { color: var(--nova-texte); }
 .wimsbody .nova-forcer-lien:focus-visible, .nova-dialogue .nova-forcer-lien:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; border-radius: 2px; }
+/* Avertissement « malgré le partage » (2026-11-19, utilisateur : inciter à annuler) : Annuler plein à droite, désactiver en lien
+ * rouge à gauche. */
+.nova-dialogue .nova-forcer-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--nova-e3); }
+.nova-dialogue .nova-forcer-actions .nova-forcer-ok { margin-right: auto; color: var(--nova-erreur); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.nova-dialogue .nova-forcer-actions .nova-forcer-ok:hover { text-decoration-thickness: 2px; }
+.nova-dialogue .nova-forcer-actions .nova-forcer-ok.disabled { opacity: .5; pointer-events: none; }
+body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-forcer-annuler { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
+body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-forcer-annuler:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); color: var(--nova-sur-accent); }

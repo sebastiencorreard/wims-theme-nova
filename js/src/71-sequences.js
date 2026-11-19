@@ -117,7 +117,8 @@
         var c = el(x.diff ? 'button' : 'span', 'nova-seq-classe' + (x.diff ? ' nova-seq-classe-diff' : ''), x.nom);
         if (x.diff) {
           var detailler = function () {
-            var la = vueEleves(etat, lirePlage(r)).long, moi = ici ? ici() : vueEleves(etat, lirePlage(brutIci)).long;
+            // Comparer les réglages d'affichage, même séquence désactivée (sinon « Désactivée » des deux côtés).
+            var la = vueEleves(1, lirePlage(r)).long, moi = ici ? ici() : vueEleves(1, lirePlage(brutIci)).long;
             var detail = t(la === moi ? 'partage-ecart-aligne' : 'partage-ecart', '%1').replace('%1', x.nom).replace('%2', la).replace('%3', moi);
             c.setAttribute('data-detail', detail);
             c.setAttribute('aria-label', detail);
@@ -838,7 +839,7 @@
         var differentes = partage.filter(function (x) { return (x.plages[n] || n + ':tous') !== (brut[n] || n + ':tous'); });
         if (differentes.length) {
           var diff = el('span', 'nova-seq-diff', '\u2260 ' + differentes.length);
-          diff.title = nombre('partage-diff', differentes.length);
+          diff.title = nombre('partage-diff', differentes.length) + (etat !== 1 ? '. ' + t('partage-inactif') : '');
           diff.setAttribute('aria-label', diff.title);
           pastille.appendChild(diff);
         }
@@ -871,14 +872,17 @@
             partage.forEach(function (x) {
               var r = x.plages[n] || n + ':tous', ligne = el('span', '', x.nom + ' : ');
               if (r === (brut[n] || n + ':tous')) ligne.appendChild(document.createTextNode(t('partage-pareil')));
-              else ligne.appendChild(el('strong', '', vueEleves(etat, lirePlage(r)).long));
+              else ligne.appendChild(el('strong', '', vueEleves(1, lirePlage(r)).long));
               detail.appendChild(ligne);
             });
+            // Séquence désactivée (statut commun, dossier seq/) : l'affichage propre à chaque classe (.S<n>) diffère mais ne
+            // joue pas encore ; montrer ce réglage, pas « Désactivée » pour toutes (2026-11-19, utilisateur, Pgm 3e).
+            if (etat !== 1 && differentes.length) detail.appendChild(el('small', 'nova-seq-partage-note', t('partage-inactif')));
             menu.appendChild(detail);
             var hr0 = el('hr'); hr0.setAttribute('role', 'separator'); menu.appendChild(hr0);
           }
           if (bascule) {
-            var activer = /[?&]option=1/.test(bascule.getAttribute('href'));
+            var activer = /[?&]\+?option=1(&|$)/.test(bascule.getAttribute('href'));   // WIMS écrit « &+option=1 »
             // Statut dans seq/, commun aux classes en partage : le dire (2026-11-19).
             action(bascule, activer ? 'lecture' : 'oeil-barre', t(activer ? 'activer' : 'desactiver') + (partage.length ? ' ' + nombre('partage-commun', partage.length) : ''));
           }
@@ -989,8 +993,8 @@
           plis = plis.map(nouveau);
           ecrire(clePlis, plis.length ? plis : null, localStorage);
           garderVue(d, vers);
-          debut = Date.now();
-          relire(1500);
+          // 1,5 s comptées depuis l'envoi, comme pour l'affichage (avant : 1,5 s de plus après la réponse).
+          relire(Math.max(0, 1500 - (Date.now() - debut)));
         })
         .catch(function () {
           annoncer(etatEnvoi, t('erreur'));

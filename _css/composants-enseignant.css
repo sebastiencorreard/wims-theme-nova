@@ -755,6 +755,7 @@ body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_
 .nova-etat-menu .nova-seq-partage-etat { display: grid; gap: 3px; padding: 8px 12px 6px; color: var(--nova-texte-2); font-size: .82rem; line-height: 1.35; }
 .nova-etat-menu .nova-seq-partage-etat b { color: var(--nova-texte); }
 .nova-etat-menu .nova-seq-partage-etat strong { color: var(--nova-attention-texte); }
+.nova-etat-menu .nova-seq-partage-etat .nova-seq-partage-note { margin-top: 4px; color: var(--nova-texte-2); font-size: .78rem; font-style: italic; }
 :is(.nova-seq-plage, .wimsbody .nova-seq-modif-etat) .nova-seq-plage-partage { display: grid; gap: 4px; margin: var(--nova-e3) 0 0; padding: 10px 12px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-fond); }
 /* Page Modifier d'une séquence (2026-11-19, utilisateur) : pastille en tête de la carte ; dessous, sur la page (pas de fenêtre),
  * les champs de WIMS (dates, heures, IP ; tableau de la variable technique) et l'interrupteur des classes en partage. Listes de

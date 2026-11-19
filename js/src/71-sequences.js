@@ -370,7 +370,7 @@
         if (Array.prototype.some.call(type.options, function (x) { return x.value === 'techvar'; }))
           item(t('technique-choix'), 'curseurs', '', choisir('techvar'), type.value === 'techvar');
       }
-      function suivre() { avis.hidden = releve() === depart && visible.value === visible.defaultValue; dessiner(); }
+      function suivre() { avis.hidden = releve() === depart && visible.value === visible.defaultValue; dessiner(); document.dispatchEvent(new Event('nova-seq-modifie')); }
       if (temps) { temps.addEventListener('input', suivre); temps.addEventListener('change', suivre); }
       menus.brancher(pastille, menu);
       dessiner();
@@ -380,6 +380,7 @@
         if (inter && inter.checked && (releve() !== depart || diff)) e.formData.set('nova_seq_partage', '1');
       });
       contenuSequence(numeroSeq);
+      enregistrerCollant(form);
       editeurAjuste('seq_desc');
       var desc = champ('seq_desc'), cd = desc && (desc.closest('.field') || desc.parentNode);
       var lab = cd && cd.querySelector('label[for="seq_desc"]'), aide = lab && lab.nextElementSibling;
@@ -570,6 +571,7 @@
         // 0, pas vide : WIMS (addseq.proc) aligne les valeurs sur la liste des champs, une valeur vide la décale.
         items.forEach(function (x) { if (dans.indexOf(x) < 0) x.champ.value = '0'; });
         avis.hidden = dans.map(function (x) { return x.cle; }).join(',') === depart;
+        document.dispatchEvent(new Event('nova-seq-modifie'));
         dessiner();
         if (texte) annonce.textContent = texte;
         if (focus) { var b = focus(); if (b) b.focus(); }
@@ -617,6 +619,59 @@
       }
       recherche.addEventListener('input', dessiner);
       dessiner();
+    }
+
+    /* « Enregistrer » de la page Modifier d'une séquence (2026-11-19, utilisateur : « tout en bas, peu visible ») : barre fixée en
+     * bas de l'écran, à la largeur du formulaire, sur les deux onglets, tant que la place du bouton est plus bas ; arrivée à
+     * sa place, elle la reprend. « Modifié : pensez à enregistrer » s'y affiche dès qu'un onglet a changé (évènement
+     * nova-seq-modifie). Même principe que boutonsCollants (repère après le bloc, cale à sa place), pas de position sticky. */
+    function enregistrerCollant(form) {
+      var bouton = form.querySelector('input[type="submit"][name="save"]'), bloc = bouton && bouton.parentNode;
+      if (!bloc || bloc === form || !window.IntersectionObserver) return;
+      bloc.classList.add('nova-seq-enreg');
+      var texte = el('span', 'nova-seq-enreg-avis', t('a-enregistrer'));
+      texte.hidden = true;
+      texte.setAttribute('role', 'status');
+      bloc.insertBefore(texte, bouton);
+      document.addEventListener('nova-seq-modifie', function () {
+        var modifie = Array.prototype.some.call(document.querySelectorAll('.wimsbody .nova-seq-modif-avis'), function (a) { return !a.hidden; });
+        texte.hidden = !modifie;
+        bloc.classList.toggle('nova-seq-enreg-modifie', modifie);
+      });
+      var repere = el('span', 'nova-collant-repere');
+      repere.setAttribute('aria-hidden', 'true');
+      bloc.parentNode.insertBefore(repere, bloc.nextSibling);
+      var cale = el('div', 'nova-collant-cale');
+      cale.setAttribute('aria-hidden', 'true');
+      var dessous = false;
+      var placer = function () {
+        if (!bloc.classList.contains('nova-seq-enreg-fixe')) return;
+        var r = (cale.parentNode ? cale : form).getBoundingClientRect();
+        bloc.style.left = Math.max(8, r.left) + 'px';
+        bloc.style.width = Math.min(r.width, document.documentElement.clientWidth - 16) + 'px';
+      };
+      var appliquer = function () {
+        var fixer = dessous && form.getClientRects().length > 0;
+        if (fixer === bloc.classList.contains('nova-seq-enreg-fixe')) return;
+        if (fixer) {
+          cale.style.height = bloc.offsetHeight + 'px';
+          bloc.parentNode.insertBefore(cale, bloc);
+          bloc.classList.add('nova-seq-enreg-fixe');
+          placer();
+        } else {
+          bloc.classList.remove('nova-seq-enreg-fixe');
+          bloc.style.left = bloc.style.width = '';
+          if (cale.parentNode) cale.parentNode.removeChild(cale);
+        }
+        document.documentElement.classList.toggle('nova-boutons-collants', !!document.querySelector('.nova-collant, .nova-seq-enreg-fixe'));
+      };
+      new IntersectionObserver(function (entrees) {
+        var e = entrees[entrees.length - 1];
+        dessous = !e.isIntersecting && e.boundingClientRect.top > 0;
+        appliquer();
+      }).observe(repere);
+      window.addEventListener('resize', placer);
+      // Changer d'onglet change la hauteur de la page : la place du bouton aussi (l'observateur le voit tout seul).
     }
 
     function enregistrerPlage(d, n, mode, deb, fin, aussiPartage) {

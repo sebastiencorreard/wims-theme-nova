@@ -846,3 +846,10 @@ html.nova-sans-animation .nova-seq-plage-partage .nova-seq-inter input::after { 
   .wimsbody .nova-seq-ress-corps { grid-column: 2; }
   .wimsbody .nova-seq-ress-actions { grid-column: 3; }
 }
+/* « Enregistrer » de la page Modifier d'une séquence (2026-11-19, utilisateur) : barre fixée en bas de l'écran tant que sa
+ * place est plus bas (enregistrerCollant) ; « Modifié : pensez à enregistrer » à côté du bouton. */
+.wimsbody .nova-seq-enreg { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; }
+.wimsbody .nova-seq-enreg-avis { color: var(--nova-attention-texte); font-size: var(--nova-petit); font-weight: 700; }
+.wimsbody .nova-seq-enreg.nova-seq-enreg-fixe { position: fixed; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 40; box-sizing: border-box; margin: 0; padding: 10px 14px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); box-shadow: 0 2px 6px rgb(0 0 0 / 10%), 0 10px 28px rgb(0 0 0 / 16%); }
+.wimsbody .nova-seq-enreg.nova-seq-enreg-fixe.nova-seq-enreg-modifie { border-color: var(--nova-attention); box-shadow: inset 4px 0 0 var(--nova-attention), 0 2px 6px rgb(0 0 0 / 10%), 0 10px 28px rgb(0 0 0 / 16%); }
+html.nova-clavier-ouvert .nova-seq-enreg-fixe { display: none !important; }

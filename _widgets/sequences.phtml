@@ -12,6 +12,9 @@
 !! Variables : nova_q la requete ; nova_sd, nova_sv sequence deplacee et place visee ; nova_sr resultat de sequences.sh ;
 !! nova_sn option "numero seul" (recue oui/non, puis lue yes) ; nova_sp sequence dont la plage change, puis les plages
 !! lues ; nova_sm mode de la plage ; nova_s1, nova_s2 debut et fin ; nova_mo mot generique ; nova_ov sequence_open.
+!! Classes en partage des sequences (2026-11-19, utilisateur ; sur job=show, memes variables reprises) : nova_sd leur
+!! liste, nova_sv l'une d'elles, nova_s1 leurs plages, nova_s2 leurs noms (separes par |), nova_sr une valeur lue.
+!! nova_seq_partage=1 dans l'adresse : la plage est aussi ecrite dans ces classes (case de la fenetre de nova.js).
 !if $module=adm/class/sequence and $wims_user=supervisor
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
@@ -39,12 +42,19 @@
     !set nova_s2=!getopt nova_seq_fin in $nova_q
     !set nova_s1=!text select 0123456789 in $nova_s1
     !set nova_s2=!text select 0123456789 in $nova_s2
-    !set nova_sr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plage "$nova_sp" "$nova_sm" "$nova_s1" "$nova_s2"
+    !set nova_sd=!getopt nova_seq_partage in $nova_q
+    !if $nova_sd=1
+      !set nova_sd=partage
+    !else
+      !reset nova_sd
+    !endif
+    !set nova_sr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plage "$nova_sp" "$nova_sm" "$nova_s1" "$nova_s2" $nova_sd
+    !set nova_sv=!text select 0123456789 in $nova_sr
     !set nova_sr=!text select abcdefghijklmnopqrstuvwxyz in $nova_sr
     !if $nova_sr=ok
-      !set wims_class_log=sequence $nova_sp allow $nova_sm (Nova) by $wims_realuser
+      !set wims_class_log=sequence $nova_sp allow $nova_sm $nova_sd (Nova) by $wims_realuser
     !endif
-<span id="nova-seq-plage-fait" hidden data-resultat="$nova_sr"></span>
+<span id="nova-seq-plage-fait" hidden data-resultat="$nova_sr" data-partage="$nova_sv"></span>
   !endif
   !if $job=show or $job=$empty
     !! Texte d'aide de WIMS en tete de page (show.phtml) : entoure, masque par le CSS sauf reglage std-listes (2026-11-19).
@@ -59,7 +69,20 @@
     !set nova_mo=!replace internal " by &quot; in $nova_mo
     !set nova_mo=!replace internal < by &lt; in $nova_mo
     !set nova_ov=!defof sequence_open in wimshome/log/classes/$wims_class/seq/.def
-<span id="nova-seq-reglages" hidden data-plages="$nova_sp" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration" data-ouvert="$nova_ov" data-mot="$nova_mo"></span>
+    !set nova_sd=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" partage
+    !set nova_sd=!text select 0123456789/, in $nova_sd
+    !reset nova_s1 nova_s2
+    !for nova_sv in $nova_sd
+      !set nova_sr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$nova_sv" plages
+      !set nova_sr=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sr
+      !set nova_s1=$nova_s1|$nova_sr
+      !set nova_sr=!defof class_description in wimshome/log/classes/$nova_sv/.def
+      !set nova_sr=!replace internal | by / in $nova_sr
+      !set nova_sr=!replace internal " by &quot; in $nova_sr
+      !set nova_sr=!replace internal < by &lt; in $nova_sr
+      !set nova_s2=$nova_s2|$nova_sr
+    !next nova_sv
+<span id="nova-seq-reglages" hidden data-partage="$nova_sd" data-partage-plages="$nova_s1" data-partage-noms="$nova_s2" data-plages="$nova_sp" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration" data-ouvert="$nova_ov" data-mot="$nova_mo"></span>
   !endif
 !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang sequences
   !read themes/$wims_theme/_widgets/confirmations.phtml

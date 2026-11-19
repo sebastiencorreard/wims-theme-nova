@@ -749,3 +749,13 @@ body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_
 .nova-page-vide-ico::before { content: ""; width: 26px; height: 26px; background: var(--nova-accent); -webkit-mask: var(--nova-ico-vide) center / contain no-repeat; mask: var(--nova-ico-vide) center / contain no-repeat; }
 .nova-page-vide { --nova-ico-vide: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='22 12 16 12 14 15 10 15 8 12 2 12'/%3E%3Cpath d='M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/svg%3E"); }
 .wimsbody .nova-page-vide > p { margin: 0 0 var(--nova-e4); font-weight: 700; }
+/* Séquences en partage (2026-11-19, utilisateur, maquette C) : marque « ≠ k » sur la pastille (affichage différent dans
+ * k classes en partage), détail en tête du menu, case « Appliquer aussi… » de la fenêtre Affichage aux élèves. */
+.wimsbody .nova-seq-etat .nova-seq-diff { display: inline-flex; flex: none; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-size: .75rem; font-weight: 700; line-height: 1; }
+.nova-etat-menu .nova-seq-partage-etat { display: grid; gap: 3px; padding: 8px 12px 6px; color: var(--nova-texte-2); font-size: .82rem; line-height: 1.35; }
+.nova-etat-menu .nova-seq-partage-etat b { color: var(--nova-texte); }
+.nova-etat-menu .nova-seq-partage-etat strong { color: var(--nova-attention-texte); }
+.nova-seq-plage .nova-seq-plage-partage { display: grid; gap: 4px; margin: var(--nova-e3) 0 0; padding: 10px 12px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-fond); }
+.nova-seq-plage .nova-seq-plage-partage label { display: flex; align-items: flex-start; gap: 8px; font-weight: 700; }
+.nova-seq-plage .nova-seq-plage-partage input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--nova-accent); }
+.nova-seq-plage .nova-seq-plage-partage small { padding-left: 26px; color: var(--nova-texte-2); font-size: .82rem; }

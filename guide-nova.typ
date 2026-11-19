@@ -1543,6 +1543,20 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Rien à corriger dans le thème ; le savoir pour ne pas chercher une panne qui n'existe pas.
 ]
 
+#piege[Séquences en partage : un affichage par classe][
+  Une séquence cachée ici reste visible dans une classe qui partage les séquences ; après un déplacement, une autre
+  séquence y devient cachée.
+][
+  Le dossier `seq/` de la classe qui reçoit est un lien vers celui de la classe d'origine (statut, ordre : communs),
+  mais la plage d'affichage `.S<n>` est à la racine de chaque classe. WIMS ne la recopie qu'à la demande (« pour toutes
+  les classes en partage », choisies d'après le partage des *feuilles*) et ne la déplace pas avec la séquence
+  (`moveup.proc`).
+][
+  `sequences.sh partage` liste les classes de `sharable_seq` (vérifiées par leur `sharing_seq`) ; `plage … partage`
+  y écrit la plage, `deplacer` y fait suivre les `.S<n>`. Essai : `banc-nova/sequences-partage-test.mjs`, partage posé
+  à la main (liens et fichiers `neighbors`), à défaire après.
+]
+
 #piege[Une session expirée qui ne prévient pas][
   Après une longue pause, l'élève refait un exercice, sans note, et en anglais ; l'enseignant lit « Vous n'êtes pas
   dans une classe ».
@@ -2332,6 +2346,7 @@ action, pour qu'un rechargement ne la rejoue pas.
   [`nova_desactiver=<type>…`], [désactive une ressource malgré un refus de WIMS], [`desactiver.phtml`],
   [`nova_seq_de`, `nova_seq_vers`, `nova_seq_numero`], [déplace une séquence (chiffres) ; choisit d'afficher le numéro seul (`oui`, `non`)], [`sequences.phtml`],
   [`nova_seq_plage`, `nova_seq_mode`, `nova_seq_debut`, `nova_seq_fin`], [plage d'affichage d'une séquence : numéro, `tous`, `cachee` ou `plage`, dates `AAAAMMJJHHMM` (chiffres)], [`sequences.phtml`],
+  [`nova_seq_partage=1`], [la même plage aussi dans les classes qui partagent les séquences], [`sequences.phtml`],
   [`nova_reglages=1` et un paramètre par réglage], [enregistre les réglages du site (formulaire de la page Apparence du gestionnaire)], [`reglages-site.phtml`],
 )
 

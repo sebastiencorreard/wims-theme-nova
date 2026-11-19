@@ -4,6 +4,7 @@
 #     Deplace la sequence <de> au rang <vers> d'un coup (glisser-deposer de l'enseignant). WIMS ne sait que remonter
 #     d'un cran (moveup.proc) : memes fichiers, permutes en rotation : seq/.sequenceN et .SN (conditions d'acces).
 #     Index seq/.sequences et seq/.seqinverse renumerotes aussi (WIMS les refait a l'affichage suivant : sheetindex).
+#     Les plages (.SN) des classes en partage des sequences suivent aussi (2026-11-19).
 #   sequences.sh <wims_home> <classe> numero oui|non
 #     Option « numero seul, sans mot generique » : ligne sequence_nova_numero du fichier seq/.def.
 #   sequences.sh <wims_home> <classe> plages
@@ -13,12 +14,34 @@
 #   sequences.sh <wims_home> <classe> plage <N> tous|cachee|plage <debut> <fin>
 #     Ecrit la plage de la sequence N (2026-11-19, utilisateur), au format de WIMS (scripts/adm/scorerestriction, get).
 #     Les adresses IP deja posees sont gardees (sauf « cachee », comme WIMS) ; une variable technique : refus.
+#   sequences.sh <wims_home> <classe> plage <N> <mode> <debut> <fin> partage
+#     Meme chose, puis dans chaque classe en partage des sequences (2026-11-19, utilisateur) : chacune garde ses adresses
+#     IP ; une classe a variable technique est laissee telle quelle. Sortie : ok (classe d'origine), suivi du nombre de
+#     classes en partage ecrites (« ok 2 »).
+#   sequences.sh <wims_home> <classe> partage
+#     Classes qui recoivent les sequences de <classe> (« c1,c2 ») : sharable_seq de son fichier neighbors, verifie par
+#     sharing_seq=<classe> dans celui de chacune (scripts/adm/class/addshare). Leur dossier seq/ est un lien vers celui
+#     de <classe> : statut et ordre communs ; la plage (.SN, racine de la classe) est propre a chacune. Seule la classe
+#     d'origine repercute, comme WIMS (adm/class/sequence, allowshare ; WIMS prend les classes en partage des FEUILLES :
+#     une sequence N y serait une autre sequence si les sequences ne sont pas partagees).
 # Sortie : ok, ou la raison du refus.
 h=$1; c=$2; action=$3
 case "$c" in ''|*[!0-9/]*|*..*) echo classe; exit 0;; esac
 d="$h/log/classes/$c"
 [ -d "$d/seq" ] || { echo classe; exit 0; }
 cd "$d" || exit 0
+
+# Classes en partage des sequences de la classe courante (repertoire courant), une par ligne.
+classes_partage() {
+  sed -n 's/^sharable_seq=//p' neighbors 2>/dev/null | tr ', ' '\n\n' | while read -r k; do
+    case "$k" in ''|*[!0-9/]*|*..*) continue;; esac
+    [ -d "$h/log/classes/$k" ] || continue
+    sed -n 's/^sharing_seq=//p' "$h/log/classes/$k/neighbors" 2>/dev/null | grep -qx "$c" && echo "$k"
+  done
+}
+if [ "$action" = partage ]; then
+  classes_partage | paste -sd, -; exit 0
+fi
 
 if [ "$action" = numero ]; then
   case "$4" in oui) v=yes;; non) v=no;; *) echo valeur; exit 0;; esac
@@ -51,33 +74,49 @@ if [ "$action" = plage ]; then
   k=$4; mode=$5; deb=$6; fin=$7
   case "$k" in ''|*[!0-9]*) echo rang; exit 0;; esac
   [ -f "seq/.sequence$k" ] || { echo rang; exit 0; }
-  f=".S$k"
-  if [ -s "$f" ]; then case "$(tr '\n' ' ' < "$f" | awk '{print $1}')" in \\*) echo technique; exit 0;; esac; fi
-  # Adresses IP gardees (mots sans < ni >, hors « none »).
-  ips=""
-  [ -f "$f" ] && ips=$(tr '\n' ' ' < "$f" | awk '{ s = ""; for (i = 1; i <= NF; i++) { c = substr($i, 1, 1)
-    if (c != "<" && c != ">" && $i != "none") s = s " " $i } print substr(s, 2) }')
   date_ok() {   # AAAAMMJJHHMM
     case "$1" in [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]) ;; *) return 1;; esac
-    m=$(echo "$1" | cut -c5-6); j=$(echo "$1" | cut -c7-8); h=$(echo "$1" | cut -c9-10); mi=$(echo "$1" | cut -c11-12)
-    [ "$m" -ge 1 ] && [ "$m" -le 12 ] && [ "$j" -ge 1 ] && [ "$j" -le 31 ] && [ "$h" -le 23 ] && [ "$mi" -le 59 ]
+    m=$(echo "$1" | cut -c5-6); j=$(echo "$1" | cut -c7-8); hh=$(echo "$1" | cut -c9-10); mi=$(echo "$1" | cut -c11-12)
+    [ "$m" -ge 1 ] && [ "$m" -le 12 ] && [ "$j" -ge 1 ] && [ "$j" -le 31 ] && [ "$hh" -le 23 ] && [ "$mi" -le 59 ]
   }
   wims() { echo "$1" | sed 's/^\(........\)\(..\)\(..\)$/\1.\2:\3/'; }
   case "$mode" in
-    tous) if [ -n "$ips" ]; then printf '%s\n' "$ips" > "$f"; else rm -f "$f"; fi;;
-    cachee) printf 'none\n' > "$f";;
+    tous|cachee) ;;
     plage)
       [ -z "$deb" ] || date_ok "$deb" || { echo date; exit 0; }
       [ -z "$fin" ] || date_ok "$fin" || { echo date; exit 0; }
       [ -n "$deb$fin" ] || { echo date; exit 0; }
-      if [ -n "$deb" ] && [ -n "$fin" ] && [ "$deb" -ge "$fin" ]; then echo ordre; exit 0; fi
-      l=""
-      [ -z "$deb" ] || l=">$(wims "$deb")"
-      [ -z "$fin" ] || l="$l <$(wims "$fin")"
-      [ -z "$ips" ] || l="$l $ips"
-      printf '%s\n' "$(echo $l)" > "$f";;
+      if [ -n "$deb" ] && [ -n "$fin" ] && [ "$deb" -ge "$fin" ]; then echo ordre; exit 0; fi;;
     *) echo mode; exit 0;;
   esac
+  # Ecrit la plage dans le fichier .S$k du repertoire courant ; 1 si une variable technique s'y trouve (rien ecrit).
+  ecrire_plage() {
+    f=".S$k"
+    if [ -s "$f" ]; then case "$(tr '\n' ' ' < "$f" | awk '{print $1}')" in \\*) return 1;; esac; fi
+    # Adresses IP gardees (mots sans < ni >, hors « none »).
+    ips=""
+    [ -f "$f" ] && ips=$(tr '\n' ' ' < "$f" | awk '{ s = ""; for (i = 1; i <= NF; i++) { c = substr($i, 1, 1)
+      if (c != "<" && c != ">" && $i != "none") s = s " " $i } print substr(s, 2) }')
+    case "$mode" in
+      tous) if [ -n "$ips" ]; then printf '%s\n' "$ips" > "$f"; else rm -f "$f"; fi;;
+      cachee) printf 'none\n' > "$f";;
+      plage)
+        l=""
+        [ -z "$deb" ] || l=">$(wims "$deb")"
+        [ -z "$fin" ] || l="$l <$(wims "$fin")"
+        [ -z "$ips" ] || l="$l $ips"
+        printf '%s\n' "$(echo $l)" > "$f";;
+    esac
+    return 0
+  }
+  ecrire_plage || { echo technique; exit 0; }
+  if [ "$8" = partage ]; then
+    nb=0
+    for autre in $(classes_partage); do
+      ( cd "$h/log/classes/$autre" && ecrire_plage ) && nb=$((nb+1))
+    done
+    echo "ok $nb"; exit 0
+  fi
   echo ok; exit 0
 fi
 
@@ -104,6 +143,9 @@ deplacer() {   # $1 = prefixe du fichier (seq/.sequence ou .S)
 }
 deplacer seq/.sequence
 deplacer .S
+# Classes en partage : meme ordre (dossier seq/ commun), leurs plages suivent (2026-11-19 ; WIMS, moveup.proc, ne
+# deplace que celles de la classe courante).
+for autre in $(classes_partage); do ( cd "$h/log/classes/$autre" && deplacer .S ); done
 
 # Nouveau numero d'une ancienne sequence k.
 regle='function nv(k) { k += 0; if (k == de) return vers; if (de < vers && k > de && k <= vers) return k - 1; if (de > vers && k >= vers && k < de) return k + 1; return k }'

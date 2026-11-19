@@ -2184,6 +2184,25 @@
       var m = /^(\d+):([a-z]+)(?:,(\d*),(\d*),(\d))?$/.exec(x);
       if (m) plages[m[1]] = { mode: m[2], debut: m[3] || '', fin: m[4] || '', postes: m[5] === '1' };
     });
+    // Classes en partage des séquences (2026-11-19, utilisateur, maquette C) : leurs plages et leurs noms
+    // (#nova-seq-reglages, data-partage…). Comparées à celles de la classe par leur forme brute (« 3:cachee »).
+    var brut = {}, partage = [];
+    if (rg) {
+      (rg.getAttribute('data-plages') || '').split(';').forEach(function (x) { var k = x.split(':')[0]; if (k) brut[k] = x; });
+      var pc = (rg.getAttribute('data-partage') || '').split(','), pp = (rg.getAttribute('data-partage-plages') || '').split('|').slice(1),
+        pn = (rg.getAttribute('data-partage-noms') || '').split('|').slice(1);
+      pc.forEach(function (c, i) {
+        if (!c) return;
+        var m = {};
+        (pp[i] || '').split(';').forEach(function (x) { var k = x.split(':')[0]; if (k) m[k] = x; });
+        partage.push({ classe: c, nom: (pn[i] || '').trim() || c, plages: m });
+      });
+    }
+    var lirePlage = function (x) {
+      var m = /^\d+:([a-z]+)(?:,(\d*),(\d*),(\d))?$/.exec(x || '');
+      return m ? { mode: m[1], debut: m[2] || '', fin: m[3] || '', postes: m[4] === '1' } : null;
+    };
+    var nombre = function (k, n) { return n === 1 ? t(k + '-1') : t(k, n); };
     var chiffres = function (v) { return (v || '').replace(/\D/g, ''); };
     // Message d'envoi ; en cours : sablier qui tourne (2026-11-19, utilisateur), retiré pour une erreur.
     var annoncer = function (e, texte, enCours) { if (!e) return; e.textContent = texte; e.classList.toggle('nova-en-cours', !!enCours); };
@@ -2270,6 +2289,19 @@
       var suivre = function () { [dDeb, hDeb, dFin, hFin].forEach(function (c) { c.disabled = !rPlage.checked; }); };
       [rTous, rCache, rPlage].forEach(function (r) { r.addEventListener('change', suivre); });
       [dDeb, dFin].forEach(function (c) { c.addEventListener('input', function () { if (c.value) { rPlage.checked = true; suivre(); } }); });
+      // Classes en partage : case cochée à l'ouverture (2026-11-19, utilisateur).
+      var casePartage = null;
+      if (partage.length && p.mode !== 'technique') {
+        var bloc = el('div', 'nova-seq-plage-partage');
+        var lp = el('label');
+        casePartage = el('input');
+        casePartage.type = 'checkbox'; casePartage.checked = true; casePartage.id = 'nova-seq-plage-partage';
+        lp.appendChild(casePartage);
+        lp.appendChild(document.createTextNode(' ' + nombre('partage-case', partage.length)));
+        bloc.appendChild(lp);
+        bloc.appendChild(el('small', '', partage.map(function (x) { return x.nom; }).join(', ') + '. ' + t(partage.length === 1 ? 'partage-remplace-1' : 'partage-remplace')));
+        form.appendChild(bloc);
+      }
       var note = el('p', 'nova-seq-plage-note', t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
       form.appendChild(note);
       var erreur = el('p', 'nova-seq-plage-erreur');
@@ -2303,14 +2335,14 @@
           if (deb && fin && deb >= fin) { erreur.textContent = t('date-ordre'); return; }
         }
         f.close();
-        enregistrerPlage(d, n, mode, deb, fin);
+        enregistrerPlage(d, n, mode, deb, fin, !!(casePartage && casePartage.checked));
       });
       f.addEventListener('click', function (e) { if (e.target === f) f.close(); });
       document.body.appendChild(f);
       f.showModal();
       (choix.querySelector('input:checked') || rTous).focus();
     }
-    function enregistrerPlage(d, n, mode, deb, fin) {
+    function enregistrerPlage(d, n, mode, deb, fin, aussiPartage) {
       occupe = true;
       document.documentElement.classList.add('nova-occupe');
       annoncer(etatEnvoi, t('enregistrement'), true);
@@ -2319,10 +2351,14 @@
         setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, attente);
       };
       fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show&nova_seq_plage=' + n + '&nova_seq_mode=' + mode +
-        '&nova_seq_debut=' + deb + '&nova_seq_fin=' + fin), { credentials: 'same-origin' })
+        '&nova_seq_debut=' + deb + '&nova_seq_fin=' + fin + (aussiPartage ? '&nova_seq_partage=1' : '')), { credentials: 'same-origin' })
         .then(function (r) { return r.text(); })
         .then(function (texte) {
           if (!/id="nova-seq-plage-fait"[^>]*data-resultat="ok"/.test(texte)) throw new Error('refus');
+          var ecrites = /id="nova-seq-plage-fait"[^>]*data-partage="(\d+)"/.exec(texte);
+          if (aussiPartage && ecrites && +ecrites[1] > 0) {
+            try { sessionStorage.setItem('nova-message', JSON.stringify({ texte: nombre('partage-fait', +ecrites[1]), etat: '', quand: Date.now() })); } catch (e) { /* message perdu */ }
+          }
           garderVue(d, n);
           relire(Math.max(0, 1500 - (Date.now() - debut)));
         })
@@ -2492,6 +2528,14 @@
         nom.appendChild(el('span', 'nova-seq-court', vu.court));
         pastille.appendChild(nom);
         if (vu.detail) pastille.title = vu.detail;
+        // Affichage différent dans des classes en partage : marque « ≠ k » (2026-11-19, utilisateur, maquette C).
+        var differentes = partage.filter(function (x) { return (x.plages[n] || n + ':tous') !== (brut[n] || n + ':tous'); });
+        if (differentes.length) {
+          var diff = el('span', 'nova-seq-diff', '\u2260 ' + differentes.length);
+          diff.title = nombre('partage-diff', differentes.length);
+          diff.setAttribute('aria-label', diff.title);
+          pastille.appendChild(diff);
+        }
         statut.parentNode.removeChild(statut);
         tete.appendChild(pastille);
         if (bascule || effacer || rg) {
@@ -2514,9 +2558,23 @@
             a.appendChild(tt);
             menu.appendChild(a);
           };
+          if (partage.length) {
+            var detail = el('div', 'nova-seq-partage-etat');
+            detail.setAttribute('role', 'none');
+            detail.appendChild(el('b', '', t('partage-titre')));
+            partage.forEach(function (x) {
+              var r = x.plages[n] || n + ':tous', ligne = el('span', '', x.nom + ' : ');
+              if (r === (brut[n] || n + ':tous')) ligne.appendChild(document.createTextNode(t('partage-pareil')));
+              else ligne.appendChild(el('strong', '', vueEleves(etat, lirePlage(r)).long));
+              detail.appendChild(ligne);
+            });
+            menu.appendChild(detail);
+            var hr0 = el('hr'); hr0.setAttribute('role', 'separator'); menu.appendChild(hr0);
+          }
           if (bascule) {
             var activer = /[?&]option=1/.test(bascule.getAttribute('href'));
-            action(bascule, activer ? 'lecture' : 'oeil-barre', t(activer ? 'activer' : 'desactiver'));
+            // Statut dans seq/, commun aux classes en partage : le dire (2026-11-19).
+            action(bascule, activer ? 'lecture' : 'oeil-barre', t(activer ? 'activer' : 'desactiver') + (partage.length ? ' ' + nombre('partage-commun', partage.length) : ''));
           }
           if (rg) {
             var b = el('button', '', t('affichage'));

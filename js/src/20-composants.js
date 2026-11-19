@@ -354,6 +354,29 @@
     });
   }
 
+  /* Accueil (enseignant, élève) : onglet « Feuilles » ouvert par défaut plutôt que le premier, souvent « Documents » (2026-11-19,
+   * utilisateur). Le script de WIMS (scripts/adm/tabscript) ouvre l'onglet gardé dans sessionStorage (<nom>_selectedTab), sinon
+   * le premier. Nova y écrit le rang de l'onglet des feuilles quand rien n'est gardé, ou quand la valeur gardée est celle qu'il a
+   * lui-même écrite (nova-<nom>_selectedTab ; le rang change d'une classe à l'autre) ; un onglet choisi à la main est respecté.
+   * Appelée dès l'exécution de nova.js (différé : page lue), avant le « ready » de jQuery qui construit les onglets. std-listes. */
+  function ongletFeuilles() {
+    if (standard('listes')) return;
+    ['supervisor_list', 'user_list'].forEach(function (nom) {
+      var w = document.getElementById('widget_' + nom);
+      if (!w) return;
+      var liens = Array.prototype.slice.call(w.querySelectorAll(':scope > ul > li > a'));
+      var k = liens.findIndex(function (a) { return a.classList.contains('wims_sheet_item'); });
+      var cle = nom + '_selectedTab', auto = 'nova-' + cle;
+      try {
+        var v = sessionStorage.getItem(cle);
+        if (v !== null && v !== sessionStorage.getItem(auto)) return;
+        k = String(Math.max(0, k));
+        sessionStorage.setItem(cle, k);
+        sessionStorage.setItem(auto, k);
+      } catch (e) { /* stockage refusé : premier onglet, comme WIMS */ }
+    });
+  }
+
   /* Bouton « Enregistrer » collant (2026-11-19, utilisateur ; page Modifier d'une séquence, contenu d'un examen) : <bloc> (le
    * bouton et ce qui l'entoure) est fixé en bas de l'écran, à la largeur de <ref>, tant que sa place est plus bas ; arrivé à sa
    * place, il la reprend. Sans cadre (« bouton seul ») : le bouton avec une ombre et, quand c'est modifié, <avis> en pastille.

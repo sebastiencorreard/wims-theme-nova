@@ -28,6 +28,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Accueil : l'onglet « Feuilles » s'ouvre par défaut (plutôt que « Documents ») ; un onglet choisi reste ouvert pendant la session (aussi pour les élèves) ;
 - Contenu d'une feuille : une carte par série, qu'on déplace en glissant ou avec les flèches (enregistré tout de suite) ; pastille « Modifier » avec son menu (modifier, paramètres des exercices, essayer, effacer avec confirmation).
 - Modifier une série : description à la hauteur de son texte, commentaires repliés, paramètres des exercices résumés en clair.
 - Modifier une série : paramètres (exercices, nombre par série, ordre, chronomètre, essais, aides, note, QCM) réglés sur la page même, enregistrés avec elle (feuille en préparation), boutons Enregistrer et Abandonner toujours visibles en bas de l'écran ;

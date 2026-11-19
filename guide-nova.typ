@@ -2442,7 +2442,8 @@ sans elles, la page prend ses valeurs par défaut.
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
-(`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé)… Ces clés peuvent changer sans précaution.
+(`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé), onglet « Feuilles » ouvert par défaut sur l'accueil
+(`nova-supervisor_list_selectedTab`, `nova-user_list_selectedTab` : valeur écrite par Nova dans la clé de WIMS)… Ces clés peuvent changer sans précaution.
 
 == Repères posés dans la page <annexe-reperes>
 

@@ -2483,6 +2483,8 @@
       if (statut) {
         var etat = +((/wims_status_(\d)/.exec(statut.className) || [])[1] || 0);
         var vu = vueEleves(etat, plages[n]);
+        // Invisible aux eleves aujourd'hui (desactivee, cachee, terminee, a venir) : carte grisee comme l'affichage en sequences coupe.
+        if (vu.genre === 'neutre' || vu.genre === 'venir') d.classList.add('nova-seq-invisible');
         var pastille = el(bascule || effacer || rg ? 'button' : 'span', 'nova-etat nova-seq-etat nova-etat-' + vu.genre);
         pastille.appendChild(icone(vu.icone));
         var nom = el('span', 'nova-etat-nom');

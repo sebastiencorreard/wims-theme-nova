@@ -2092,6 +2092,15 @@
     return menu;
   }
 
+  /* Accueil de l'enseignant : infobulle du titre de la colonne « Séq. » des documents, feuilles et examens (2026-11-19,
+   * utilisateur) : « Utilisé dans quelles séquences pédagogiques ? » (th.nova-col-seq, supervisor.phtml ; texte data-seq-info de
+   * #nova-statuts-textes). */
+  function colonneSequences() {
+    var tx = document.getElementById('nova-statuts-textes'), info = tx && tx.getAttribute('data-seq-info');
+    if (!info) return;
+    document.querySelectorAll('th.nova-col-seq').forEach(function (th) { th.title = info; });
+  }
+
   /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
    * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
    * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :

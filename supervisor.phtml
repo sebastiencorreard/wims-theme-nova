@@ -204,7 +204,8 @@
     !set table_htdr_1=$table_hdtr<th scope="col">$wims_name_number</th><th scope="col">$wims_name_title</th>
     !set table_htdr_2=<th scope="col">$wims_name_Status</th><th scope="col">$wims_name_action</th></tr>
     !if $seq_open=yes
-      !set table_htdr_seq=<th scope="col">$wims_name_sequence</th>
+      !! Nova : colonne des sequences reperee (infobulle, nova.js colonneSequences, 2026-11-19).
+      !set table_htdr_seq=<th scope="col" class="nova-col-seq">$wims_name_sequence</th>
     !else
       !reset table_htdr_seq
     !endif

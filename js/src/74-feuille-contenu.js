@@ -414,70 +414,137 @@
   }
 
   /* Paramètres d'un exercice OEF (page d'accueil du module, #oef_intro_params ; ouverte aussi depuis une série de feuille ;
-   * 2026-11-19, utilisateur, maquette feuille-contenu, section 4). Carte « Paramétrage de l'affichage des aides » : chaque
-   * réglage en boutons accolés (.nova-app-choix : les boutons radio de WIMS déplacés dans leur libellé, rien de simulé),
-   * choix « jamais / toujours / après l'expiration » d'un côté, numéros de version de l'autre (même groupe de radios).
-   * WIMS (scripts/oef/intromenu_expert.phtml) donne le même id à « toujours » et « après l'expiration » du feedback et de
-   * l'indication : le libellé du second cochait le premier ; Nova donne un id propre à chaque choix. Réglage std-listes. */
+   * 2026-11-19, utilisateur, maquette feuille-contenu, section 4, puis « les mêmes boutons pour les autres cartes »).
+   * Dans toutes les cartes : chaque groupe de boutons radio en boutons (.nova-app-choix : les radios de WIMS déplacés dans
+   * leur libellé, rien de simulé) ; une liste déroulante courte (au plus 10 choix, pas multiple : nombre d'exercices d'une
+   * série, nombre de choix d'un QCM) en boutons qui la règlent (elle reste, cachée, dans le formulaire) ; une case à cocher
+   * en bouton à bascule (même principe). Aides : choix « jamais / toujours / après l'expiration » d'un côté, numéros de
+   * version de l'autre (même groupe de radios). WIMS (scripts/oef/intromenu_expert.phtml) donne le même id à « toujours » et
+   * « après l'expiration » du feedback et de l'indication : le libellé du second cochait le premier ; Nova donne un id
+   * propre à chaque choix. Réglage std-listes. */
   function aidesOef() {
-    var r0 = document.querySelector('#oef_intro_params input[name="intro_good"]');
-    var cadre = r0 && r0.closest('fieldset');
-    if (!cadre || standard('listes') || cadre.classList.contains('nova-aides')) return;
-    cadre.classList.add('nova-aides');
+    var zone = document.getElementById('oef_intro_params');
+    if (!zone || standard('listes') || zone.classList.contains('nova-params')) return;
+    zone.classList.add('nova-params');
+    var VERSIONS = /^intro_(good|sol|feed|hint)$/;
     var vus = {};
-    cadre.querySelectorAll('input[type="radio"]').forEach(function (r) {
-      var lab = r.nextElementSibling && r.nextElementSibling.tagName === 'LABEL' ? r.nextElementSibling : null;
+    zone.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(function (r) {
       if (r.id && vus[r.id]) {
+        var lab = r.nextElementSibling && r.nextElementSibling.tagName === 'LABEL' ? r.nextElementSibling : null;
         var id = 'nova-' + r.name + '-' + String(r.value).replace(/[^0-9a-z]/gi, 'm');
         r.id = id;
         if (lab) lab.htmlFor = id;
       }
       if (r.id) vus[r.id] = true;
     });
-    var VERSIONS = /^intro_(good|sol|feed|hint)$/;
-    cadre.querySelectorAll(':scope > .field').forEach(function (f) {
-      var ligne = f.querySelector(':scope > div:not(.formHelp)');
-      var radios = ligne ? Array.prototype.slice.call(ligne.querySelectorAll(':scope > input[type="radio"]')) : [];
-      if (radios.length < 2) return;
-      var nom = f.querySelector(':scope > strong');
-      var avecVersions = VERSIONS.test(radios[0].name);
-      var groupe = function (cl) {
-        var g = document.createElement('span');
-        g.className = 'nova-app-choix ' + cl;
-        return g;
-      };
-      var choix = groupe('nova-aide-choix'), versions = groupe('nova-aide-versions');
-      // Texte entre les choix et les numéros de version (« ou à partir de l'étude de la version ») : gardé, sans le « ou ».
-      var lien = '';
-      var nouvelle = document.createElement('div');
-      nouvelle.className = 'nova-aide-ligne';
-      radios.forEach(function (r) {
-        var lab = r.nextElementSibling && r.nextElementSibling.tagName === 'LABEL' ? r.nextElementSibling : null;
-        if (!lab) return;
-        var version = avecVersions && +r.value >= 1;
-        if (version && !lien) {
-          var n = r.previousSibling, tx = '';
-          while (n && n.nodeType === 3) { tx = n.textContent + tx; n = n.previousSibling; }
-          lien = tx.replace(/\s+/g, ' ').replace(/^[\s,]*(ou|or|o|oder|of)\s+/i, '').trim();
+    var libelleDe = function (champ, r) {
+      var l = r.nextElementSibling && r.nextElementSibling.tagName === 'LABEL' ? r.nextElementSibling : null;
+      return l || (r.id ? champ.querySelector('label[for="' + r.id + '"]') : null);
+    };
+    var groupe = function (cl, nom) {
+      var g = document.createElement('span');
+      g.className = 'nova-app-choix ' + cl;
+      g.setAttribute('role', 'radiogroup');
+      if (nom) g.setAttribute('aria-label', nom);
+      return g;
+    };
+    // Reste de WIMS autour des boutons déplacés : enveloppes vides retirées ; un bloc qui ne garde que du texte (« ou à partir
+    // de l'étude de la version… de la série d'exercices ») est caché ; virgules seules retirées.
+    var nettoyer = function (champ) {
+      champ.querySelectorAll('span.wims_formradio').forEach(function (sp) { if (!sp.querySelector('input, label') && !sp.textContent.trim()) sp.remove(); });
+      Array.prototype.slice.call(champ.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && /^[\s,;]*$/.test(n.textContent)) n.remove();
+        else if (n.nodeType === 1 && n.tagName === 'DIV' && !n.classList.contains('formHelp') && !n.classList.contains('nova-param-ligne')) {
+          Array.prototype.slice.call(n.childNodes).forEach(function (m) { if (m.nodeType === 3 && /^[\s,;]*$/.test(m.textContent)) m.remove(); });
+          if (!n.children.length || !n.querySelector('*:not(br)')) n.classList.add('nova-param-source');
         }
-        lab.insertBefore(r, lab.firstChild);
-        (version ? versions : choix).appendChild(lab);
       });
-      if (nom) { nom.classList.add('nova-aide-nom'); }
-      nouvelle.appendChild(choix);
-      if (versions.childNodes.length) {
-        var bloc = document.createElement('span');
-        bloc.className = 'nova-aide-bloc-versions';
-        if (lien) { var s = document.createElement('span'); s.className = 'nova-aide-lien'; s.textContent = lien; bloc.appendChild(s); }
-        bloc.appendChild(versions);
-        nouvelle.appendChild(bloc);
-      }
-      ligne.parentNode.insertBefore(nouvelle, ligne);
-      choix.setAttribute('role', 'radiogroup');
-      if (nom) choix.setAttribute('aria-label', nom.textContent.trim());
-      if (versions.childNodes.length && nom) { versions.setAttribute('role', 'radiogroup'); versions.setAttribute('aria-label', nom.textContent.trim() + ' : ' + lien); }
-      ligne.classList.add('nova-aide-source');
-      var aide = f.querySelector(':scope > .formHelp');
+    };
+    zone.querySelectorAll('.field').forEach(function (champ) {
+      if (champ.querySelector('.field')) return;
+      var nomEl = champ.querySelector(':scope > strong') || Array.prototype.filter.call(champ.querySelectorAll(':scope > label'), function (l) { return !l.querySelector('input'); })[0] || null;
+      var nom = nomEl ? nomEl.textContent.replace(/\s+/g, ' ').replace(/\s*:\s*$/, '').trim() : '';
+      var radios = Array.prototype.slice.call(champ.querySelectorAll('input[type="radio"]'));
+      var cases = Array.prototype.slice.call(champ.querySelectorAll('input[type="checkbox"]'));
+      var liste = champ.querySelector('select:not([multiple])');
+      var ligne = document.createElement('div');
+      ligne.className = 'nova-param-ligne';
+      if (radios.length >= 2) {
+        var avecVersions = VERSIONS.test(radios[0].name);
+        var choix = groupe('nova-param-choix', nom), versions = groupe('nova-param-versions', nom), lien = '';
+        var avant = radios[0].closest('.field > *') || radios[0];
+        radios.forEach(function (r) {
+          var lab = libelleDe(champ, r);
+          if (!lab) return;
+          var version = avecVersions && +r.value >= 1;
+          if (version && !lien) {
+            var n = r.previousSibling, tx = '';
+            while (n && n.nodeType === 3) { tx = n.textContent + tx; n = n.previousSibling; }
+            lien = tx.replace(/\s+/g, ' ').replace(/^[\s,]*(ou|or|o|oder|of)\s+/i, '').trim();
+          }
+          lab.insertBefore(r, lab.firstChild);
+          (version ? versions : choix).appendChild(lab);
+        });
+        ligne.appendChild(choix);
+        if (versions.childNodes.length) {
+          var bloc = document.createElement('span');
+          bloc.className = 'nova-param-bloc-versions';
+          if (lien) { var sp = document.createElement('span'); sp.className = 'nova-param-lien'; sp.textContent = lien; bloc.appendChild(sp); versions.setAttribute('aria-label', nom + ' : ' + lien); }
+          bloc.appendChild(versions);
+          ligne.appendChild(bloc);
+        }
+        champ.insertBefore(ligne, avant);
+      } else if (cases.length && !radios.length) {
+        cases.forEach(function (c) {
+          var lab = libelleDe(champ, c);
+          if (!lab) return;
+          lab.insertBefore(c, lab.firstChild);
+          lab.classList.add('nova-param-case');
+          var g = document.createElement('span');
+          g.className = 'nova-app-choix nova-param-cases';
+          g.appendChild(lab);
+          ligne.appendChild(g);
+        });
+        champ.insertBefore(ligne, champ.firstChild);
+      } else if (liste && liste.options.length > 1 && liste.options.length <= 10) {
+        var g2 = groupe('nova-param-versions nova-param-liste', nom);
+        Array.prototype.forEach.call(liste.options, function (o) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'nova-param-option';
+          b.textContent = o.textContent.trim();
+          b.setAttribute('role', 'radio');
+          b.addEventListener('click', function () { liste.value = o.value; liste.dispatchEvent(new Event('change', { bubbles: true })); maj(); });
+          g2.appendChild(b);
+        });
+        var maj = function () { Array.prototype.forEach.call(g2.children, function (b, k) { b.setAttribute('aria-checked', liste.selectedIndex === k ? 'true' : 'false'); b.tabIndex = liste.selectedIndex === k ? 0 : -1; }); };
+        liste.addEventListener('change', maj);
+        g2.addEventListener('keydown', function (ev) {
+          var k = liste.selectedIndex, d = ev.key === 'ArrowRight' || ev.key === 'ArrowDown' ? 1 : ev.key === 'ArrowLeft' || ev.key === 'ArrowUp' ? -1 : 0;
+          if (!d) return;
+          ev.preventDefault();
+          k = Math.max(0, Math.min(liste.options.length - 1, k + d));
+          g2.children[k].click();
+          g2.children[k].focus();
+        });
+        maj();
+        liste.classList.add('nova-param-source');
+        liste.parentNode.insertBefore(ligne, liste);
+        ligne.appendChild(g2);
+      } else if (nomEl && nomEl.tagName === 'LABEL' && champ.querySelector(':scope > input:not([type]), :scope > input[type="text"], :scope > input[type="number"]')) {
+        // Champ à saisir (chronomètre) : même présentation, nom à gauche, champ et unité à droite.
+        var saisie = champ.querySelector(':scope > input:not([type]), :scope > input[type="text"], :scope > input[type="number"]');
+        champ.insertBefore(ligne, saisie);
+        ligne.appendChild(saisie);
+      } else return;
+      champ.classList.add('nova-param-champ');
+      if (nomEl) nomEl.classList.add('nova-param-nom');
+      nettoyer(champ);
+      // Texte de WIMS resté à côté (« exercices. ») : à la suite des boutons, pas dans une case de la grille.
+      Array.prototype.slice.call(champ.childNodes).forEach(function (n) {
+        if (n.nodeType === 3 && n.textContent.trim()) { var u = document.createElement('span'); u.className = 'nova-param-unite'; u.textContent = n.textContent.trim(); ligne.appendChild(u); n.remove(); }
+      });
+      var aide = champ.querySelector(':scope > .formHelp');
       if (aide && !aide.textContent.trim()) aide.remove();
     });
   }

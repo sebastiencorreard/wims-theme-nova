@@ -1016,25 +1016,33 @@ body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-
 .wimsbody details.nova-serie-brut .nova-serie-module { margin: 6px 0 0; font-family: var(--nova-police-mono, monospace); font-size: .78rem; overflow-wrap: anywhere; }
 .wimsbody .nova-serie-param-vise .nova-serie-resume { box-shadow: 0 0 0 2px var(--nova-accent); }
 @media (max-width: 560px) { .wimsbody dl.nova-serie-dl { grid-template-columns: minmax(0, 1fr); gap: 0; } .wimsbody dl.nova-serie-dl dd { margin-bottom: 6px; } }
-/* Paramètres d'un exercice OEF (nova.js aidesOef) : affichage des aides en boutons accolés ; texte restant de WIMS masqué. */
-.wimsbody fieldset.nova-aides > .field { display: grid; grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); align-items: start; gap: 6px 16px; box-sizing: border-box; width: 100%; max-width: none; margin: 0; padding: 12px 0; border-top: 1px solid var(--nova-bord); }
-.wimsbody fieldset.nova-aides > .field:first-of-type { border-top: 0; }
-.wimsbody fieldset.nova-aides .nova-aide-nom { padding-top: 7px; }
-.wimsbody fieldset.nova-aides .nova-aide-source { display: none; }
-.wimsbody fieldset.nova-aides > .field > .formHelp { grid-column: 1 / -1; margin: 0; padding: 6px 10px; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); font-size: .8rem; }
-.wimsbody .nova-aide-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
-.wimsbody .nova-aide-bloc-versions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-.wimsbody .nova-aide-lien { color: var(--nova-texte-2); font-size: .85rem; }
-/* Choix séparés (pas un cadre commun) : ils passent à la ligne proprement au téléphone. */
-.wimsbody .nova-aides .nova-app-choix { flex-wrap: wrap; gap: 6px; border: 0; border-radius: 0; overflow: visible; }
-.wimsbody .nova-aides .nova-app-choix label { position: relative; min-height: 34px; padding: 0 12px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); font-size: .85rem; }
-.wimsbody .nova-aides .nova-app-choix label:has(input:checked) { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
-.wimsbody .nova-aides .nova-aide-versions { gap: 4px; }
-.wimsbody .nova-aides .nova-aide-versions label { box-sizing: border-box; width: 36px; min-width: 0; justify-content: center; padding: 0; font-variant-numeric: tabular-nums; }
-@media (max-width: 620px) { .wimsbody fieldset.nova-aides > .field { grid-template-columns: minmax(0, 1fr); } .wimsbody fieldset.nova-aides .nova-aide-nom { padding-top: 0; } }
+/* Paramètres d'un exercice OEF (nova.js aidesOef) : choix en boutons séparés (ils passent à la ligne proprement au téléphone),
+ * nom à gauche ; reste du texte de WIMS masqué (radios, listes et cases gardés dans le formulaire). */
+.wimsbody #oef_intro_params .nova-param-champ { display: grid; grid-template-columns: minmax(9rem, 13rem) minmax(0, 1fr); align-items: start; gap: 6px 16px; box-sizing: border-box; width: 100%; max-width: none; margin: 0; padding: 12px 0; border-top: 1px solid var(--nova-bord); float: none; }
+.wimsbody #oef_intro_params .nova-param-champ:first-of-type { border-top: 0; }
+.wimsbody #oef_intro_params .nova-param-champ:not(:has(> .nova-param-nom)) > * { grid-column: 1 / -1; }
+.wimsbody #oef_intro_params .nova-param-nom { grid-column: 1; padding-top: 7px; font-weight: 700; font-size: .92rem; line-height: 1.3; }
+.wimsbody #oef_intro_params .nova-param-champ > :not(.nova-param-nom) { grid-column: 2; min-width: 0; }
+.wimsbody #oef_intro_params .nova-param-source { display: none !important; }
+.wimsbody #oef_intro_params .nova-param-champ > .formHelp, .wimsbody #oef_intro_params .nova-param-champ > div > .formHelp { grid-column: 1 / -1; margin: 4px 0 0; padding: 6px 10px; border-left: 3px solid var(--nova-bord-fort); color: var(--nova-texte-2); font-size: .8rem; }
+.wimsbody .nova-param-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
+.wimsbody .nova-param-bloc-versions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.wimsbody .nova-param-lien { color: var(--nova-texte-2); font-size: .85rem; }
+.wimsbody .nova-params .nova-app-choix { flex-wrap: wrap; gap: 6px; border: 0; border-radius: 0; overflow: visible; }
+.wimsbody .nova-params .nova-app-choix label, .wimsbody .nova-params button.nova-param-option { position: relative; display: inline-flex; align-items: center; min-height: 34px; margin: 0; padding: 0 12px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); color: var(--nova-texte-2); font: inherit; font-size: .85rem; font-weight: 700; line-height: 1.2; box-shadow: none; text-transform: none; letter-spacing: 0; cursor: pointer; }
+.wimsbody .nova-params .nova-app-choix label:has(input:checked), .wimsbody .nova-params button.nova-param-option[aria-checked='true'] { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-params button.nova-param-option:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.wimsbody .nova-params .nova-param-versions { gap: 4px; }
+.wimsbody .nova-params .nova-param-versions label, .wimsbody .nova-params .nova-param-versions button.nova-param-option { box-sizing: border-box; width: 36px; min-width: 0; justify-content: center; padding: 0; font-variant-numeric: tabular-nums; }
+/* Case à cocher en bascule : coche dessinée devant le libellé. */
+.wimsbody .nova-params label.nova-param-case { gap: 8px; border-radius: var(--nova-rayon-petit); padding: 6px 12px; text-align: left; }
+.wimsbody .nova-params label.nova-param-case::before { content: ""; flex: none; width: 16px; height: 16px; border: 2px solid currentColor; border-radius: 4px; box-sizing: border-box; }
+.wimsbody .nova-params label.nova-param-case:has(input:checked)::before { background: currentColor; box-shadow: inset 0 0 0 2px var(--nova-accent); }
+@media (max-width: 620px) { .wimsbody #oef_intro_params .nova-param-champ { grid-template-columns: minmax(0, 1fr); } .wimsbody #oef_intro_params .nova-param-champ > * { grid-column: 1 !important; } .wimsbody #oef_intro_params .nova-param-nom { padding-top: 0; } }
 /* Mots-clés de WIMS (a.wims_label dans une liste inline wims_nopuce : « D'autres exercices sur ») en pastilles d'accent. */
 :where(html:not(.nova-std-listes)) .wimsbody ul.inline.wims_nopuce { display: inline-flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; padding: 0; vertical-align: middle; }
 :where(html:not(.nova-std-listes)) .wimsbody ul.inline.wims_nopuce > li { margin: 0; padding: 0; }
 :where(html:not(.nova-std-listes)) .wimsbody ul.inline.wims_nopuce > li::before { content: none; }
 :where(html:not(.nova-std-listes)) .wimsbody ul.wims_nopuce a.wims_label { display: inline-flex; align-items: center; min-height: 28px; padding: 0 12px; border: 1px solid transparent; border-radius: 999px; background: var(--nova-accent-doux); color: var(--nova-lien); font-family: var(--nova-police); font-size: .82rem; font-weight: 700; text-decoration: none; }
 :where(html:not(.nova-std-listes)) .wimsbody ul.wims_nopuce a.wims_label:is(:hover, :focus-visible) { border-color: var(--nova-accent); }
+.wimsbody .nova-param-unite { color: var(--nova-texte-2); font-size: .85rem; }

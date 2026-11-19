@@ -1107,7 +1107,7 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
  * Aspect seul : pas de réglage « thème standard ». Avant nova.js : bloc de bienvenue masqué (secours 3 s). */
 .wimsbody > .nova-carte-classe,
 .wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content {
-  margin: var(--nova-e4) 0;
+  margin: var(--nova-e4) auto;
   padding: var(--nova-e4) var(--nova-e5);
   border: 1px solid var(--nova-bord);
   border-radius: var(--nova-rayon-carte);
@@ -1115,6 +1115,10 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
   box-shadow: var(--nova-ombre);
 }
 .wimsbody > #widget_supervisor_list.ui-tabs.ui-widget.ui-widget-content { padding-top: var(--nova-e3); }
+/* Largeur standard des contenus (54 rem, comme les formulaires et les cartes de réglages ; 2026-11-19, utilisateur : « elles
+ * occupent toute la largeur ») : carte « classe », onglets des ressources, moteur de recherche et message du haut, centrés. */
+.wimsbody > :is(.nova-carte-classe, #widget_supervisor_list),
+.wimsbody:has(> .nova-carte-classe) > :is(#wims_supervisor_search, .wims_msg) { box-sizing: border-box; max-width: 54rem; margin-inline: auto; }
 .nova-carte-classe > :first-child { margin-top: 0; }
 .nova-carte-classe > :last-child { margin-bottom: 0; }
 .nova-carte-classe > .wimscenter { margin-top: var(--nova-e3); }

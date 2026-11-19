@@ -28,6 +28,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Accueil : les cartes ont la largeur habituelle des contenus au lieu de toute la largeur de l'écran.
 - Accueil : le tableau des documents n'occupe plus toute la largeur d'un grand écran.
 - Page d'un examen : le statut est une pastille colorée qui ouvre le menu des actions (activer, expirer, désactiver…), comme sur l'accueil.
 - Contenu d'un examen : une carte par exercice (WIMS tire un des exercices de la carte), les feuilles actives à côté ; glisser ou « + » pour composer, clic sur un exercice pour l'essayer dans une fenêtre, « Enregistrer » en bas de l'écran.

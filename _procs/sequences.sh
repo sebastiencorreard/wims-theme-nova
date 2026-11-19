@@ -18,6 +18,10 @@
 #     Meme chose, puis dans chaque classe en partage des sequences (2026-11-19, utilisateur) : chacune garde ses adresses
 #     IP ; une classe a variable technique est laissee telle quelle. Sortie : ok (classe d'origine), suivi du nombre de
 #     classes en partage ecrites (« ok 2 »).
+#   sequences.sh <wims_home> <classe> copier <N>
+#     Recopie la plage de la sequence N (.SN, tel quel : dates, postes) dans les classes en partage des sequences, apres
+#     l'enregistrement de la page Modifier de WIMS (2026-11-19, utilisateur). Variable technique : refus (« technique »).
+#     Sortie : « ok <nombre de classes ecrites> ».
 #   sequences.sh <wims_home> <classe> partage
 #     Classes qui recoivent les sequences de <classe> (« c1,c2 ») : sharable_seq de son fichier neighbors, verifie par
 #     sharing_seq=<classe> dans celui de chacune (scripts/adm/class/addshare). Leur dossier seq/ est un lien vers celui
@@ -41,6 +45,19 @@ classes_partage() {
 }
 if [ "$action" = partage ]; then
   classes_partage | paste -sd, -; exit 0
+fi
+
+if [ "$action" = copier ]; then
+  k=$4
+  case "$k" in ''|*[!0-9]*) echo rang; exit 0;; esac
+  [ -f "seq/.sequence$k" ] || { echo rang; exit 0; }
+  f=".S$k"
+  if [ -s "$f" ]; then case "$(tr '\n' ' ' < "$f" | awk '{print $1}')" in \\*) echo technique; exit 0;; esac; fi
+  nb=0
+  for autre in $(classes_partage); do
+    if [ -s "$f" ]; then cp "$f" "$h/log/classes/$autre/$f"; else rm -f "$h/log/classes/$autre/$f"; fi && nb=$((nb+1))
+  done
+  echo "ok $nb"; exit 0
 fi
 
 if [ "$action" = numero ]; then

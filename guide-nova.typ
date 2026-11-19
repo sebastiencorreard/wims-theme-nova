@@ -1553,7 +1553,9 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   (`moveup.proc`).
 ][
   `sequences.sh partage` liste les classes de `sharable_seq` (vérifiées par leur `sharing_seq`) ; `plage … partage`
-  y écrit la plage, `deplacer` y fait suivre les `.S<n>`. Essai : `banc-nova/sequences-partage-test.mjs`, partage posé
+  y écrit la plage, `deplacer` y fait suivre les `.S<n>`, `copier N` y recopie la plage enregistrée par la page
+  Modifier (le widget lit `save` dans la requête, WIMS l'ayant vidé, et `$seq`, gardé en session : il n'est pas dans le
+  formulaire). Essai : `banc-nova/sequences-partage-test.mjs`, partage posé
   à la main (liens et fichiers `neighbors`), à défaire après.
 ]
 
@@ -2346,7 +2348,7 @@ action, pour qu'un rechargement ne la rejoue pas.
   [`nova_desactiver=<type>…`], [désactive une ressource malgré un refus de WIMS], [`desactiver.phtml`],
   [`nova_seq_de`, `nova_seq_vers`, `nova_seq_numero`], [déplace une séquence (chiffres) ; choisit d'afficher le numéro seul (`oui`, `non`)], [`sequences.phtml`],
   [`nova_seq_plage`, `nova_seq_mode`, `nova_seq_debut`, `nova_seq_fin`], [plage d'affichage d'une séquence : numéro, `tous`, `cachee` ou `plage`, dates `AAAAMMJJHHMM` (chiffres)], [`sequences.phtml`],
-  [`nova_seq_partage=1`], [la même plage aussi dans les classes qui partagent les séquences], [`sequences.phtml`],
+  [`nova_seq_partage=1`], [la même plage aussi dans les classes qui partagent les séquences (adresse de la liste, ou champ du formulaire de la page Modifier)], [`sequences.phtml`],
   [`nova_reglages=1` et un paramètre par réglage], [enregistre les réglages du site (formulaire de la page Apparence du gestionnaire)], [`reglages-site.phtml`],
 )
 

@@ -2179,6 +2179,8 @@
       return d.querySelector(':scope > .wims_content_seq > .wims_seq_actions') && d.querySelector(':scope > h2.wims_title_seq');
     });
     var rg = document.getElementById('nova-seq-reglages');
+    // Page Modifier d'une séquence (2026-11-19) : heure du serveur, dates de la classe, classes en partage.
+    var rm = document.getElementById('nova-seq-modifier'), src = rg || rm;
     var plages = {};
     if (rg) (rg.getAttribute('data-plages') || '').split(';').forEach(function (x) {
       var m = /^(\d+):([a-z]+)(?:,(\d*),(\d*),(\d))?$/.exec(x);
@@ -2187,10 +2189,10 @@
     // Classes en partage des séquences (2026-11-19, utilisateur, maquette C) : leurs plages et leurs noms
     // (#nova-seq-reglages, data-partage…). Comparées à celles de la classe par leur forme brute (« 3:cachee »).
     var brut = {}, partage = [];
-    if (rg) {
-      (rg.getAttribute('data-plages') || '').split(';').forEach(function (x) { var k = x.split(':')[0]; if (k) brut[k] = x; });
-      var pc = (rg.getAttribute('data-partage') || '').split(','), pp = (rg.getAttribute('data-partage-plages') || '').split('|').slice(1),
-        pn = (rg.getAttribute('data-partage-noms') || '').split('|').slice(1);
+    if (src) {
+      (src.getAttribute('data-plages') || '').split(';').forEach(function (x) { var k = x.split(':')[0]; if (k) brut[k] = x; });
+      var pc = (src.getAttribute('data-partage') || '').split(','), pp = (src.getAttribute('data-partage-plages') || '').split('|').slice(1),
+        pn = (src.getAttribute('data-partage-noms') || '').split('|').slice(1);
       pc.forEach(function (c, i) {
         if (!c) return;
         var m = {};
@@ -2206,8 +2208,19 @@
     var chiffres = function (v) { return (v || '').replace(/\D/g, ''); };
     // Message d'envoi ; en cours : sablier qui tourne (2026-11-19, utilisateur), retiré pour une erreur.
     var annoncer = function (e, texte, enCours) { if (!e) return; e.textContent = texte; e.classList.toggle('nova-en-cours', !!enCours); };
-    var maintenant = rg ? chiffres(rg.getAttribute('data-maintenant')).slice(0, 12) : '';
+    var maintenant = src ? chiffres(src.getAttribute('data-maintenant')).slice(0, 12) : '';
+    // Plage recopiée dans les classes en partage après l'enregistrement de la page Modifier (#nova-seq-copie-fait).
+    var copie = document.getElementById('nova-seq-copie-fait'), corps0 = document.querySelector('.wimsbody');
+    if (copie && corps0) {
+      var nbc = +(copie.getAttribute('data-partage') || 0), okc = copie.getAttribute('data-resultat') === 'ok';
+      if (!okc || nbc > 0) {
+        var msg = el('div', 'wims_msg ' + (okc ? 'success' : 'alert'), okc ? nombre('partage-fait', nbc) : t('plage-erreur'));
+        msg.setAttribute('role', 'status');
+        corps0.insertBefore(msg, corps0.firstChild);
+      }
+    }
     if (rg) barreReglages(cartes.length ? cartes[0] : null);
+    if (rm) { modifierSequence(); return; }
     if (!cartes.length) return;
     var numero = function (d) { return +d.id.replace('wims_seq_', ''); };
     var plis = lire(clePlis, localStorage) || [];
@@ -2243,8 +2256,10 @@
 
     // Fenêtre « Affichage aux élèves » d'une séquence : toujours, jamais, entre deux dates (heure du serveur).
     var fenetre = null;
-    function fenetrePlage(n, d, titre, modifier) {
-      var p = plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
+    // o (page Modifier, 2026-11-19) : { plage, ips, technique (choix possible), valider(r) } ; sans o, la liste (enregistrement
+    // immédiat, nova_seq_plage).
+    function fenetrePlage(n, d, titre, modifier, o) {
+      var p = o ? o.plage : plages[n] || { mode: 'tous', debut: '', fin: '', postes: false };
       if (fenetre) fenetre.remove();
       var f = fenetre = el('dialog', 'nova-dialogue nova-seq-plage');
       var h = el('h1', '', t('plage-titre'));
@@ -2258,7 +2273,7 @@
       var choix = el('div', 'nova-seq-plage-choix');
       form.appendChild(choix);
       // Postes seuls (sans dates) : « toujours » (les postes sont gardés à l'enregistrement).
-      var actuel = p.mode === 'plage' && !p.debut && !p.fin ? 'tous' : p.mode;
+      var actuel = p.mode === 'plage' && !p.debut && !p.fin && !o ? 'tous' : p.mode;
       var radio = function (v, texte) {
         var l = el('label'), r = el('input');
         r.type = 'radio'; r.name = 'nova-seq-mode'; r.value = v;
@@ -2268,12 +2283,13 @@
         return r;
       };
       var rTous = radio('tous', t('toujours')), rCache = radio('cachee', t('jamais')), rPlage = radio('plage', t('entre'));
+      var rTech = null, champIp = null;
       var dates = el('div', 'nova-seq-plage-dates');
       var champ = function (type, val, lab) {
         var c = el('input'); c.type = type; if (val) c.value = val;
         c.setAttribute('aria-label', lab);
-        if (type === 'date' && rg) {
-          var a = chiffres(rg.getAttribute('data-creation')), b = chiffres(rg.getAttribute('data-expiration'));
+        if (type === 'date' && src) {
+          var a = chiffres(src.getAttribute('data-creation')), b = chiffres(src.getAttribute('data-expiration'));
           if (a.length === 8) c.min = a.slice(0, 4) + '-' + a.slice(4, 6) + '-' + a.slice(6, 8);
           if (b.length === 8) c.max = b.slice(0, 4) + '-' + b.slice(4, 6) + '-' + b.slice(6, 8);
         }
@@ -2286,24 +2302,34 @@
       dates.appendChild(el('span', '', t('du'))); dates.appendChild(dDeb); dates.appendChild(hDeb);
       dates.appendChild(el('span', '', t('au'))); dates.appendChild(dFin); dates.appendChild(hFin);
       choix.appendChild(dates);
-      var suivre = function () { [dDeb, hDeb, dFin, hFin].forEach(function (c) { c.disabled = !rPlage.checked; }); };
-      [rTous, rCache, rPlage].forEach(function (r) { r.addEventListener('change', suivre); });
+      // Page Modifier : postes (adresses IP, champ IPscore de WIMS) et variable technique, si la classe en a.
+      if (o) {
+        var lip = el('label', 'nova-seq-plage-ip');
+        lip.appendChild(el('span', '', t('postes-champ')));
+        champIp = el('input'); champIp.type = 'text'; champIp.value = o.ips || ''; champIp.autocomplete = 'off';
+        lip.appendChild(champIp);
+        choix.appendChild(lip);
+        if (o.technique) rTech = radio('technique', t('technique-choix'));
+      }
+      var suivre = function () { [dDeb, hDeb, dFin, hFin].concat(champIp ? [champIp] : []).forEach(function (c) { c.disabled = !rPlage.checked; }); };
+      [rTous, rCache, rPlage].concat(rTech ? [rTech] : []).forEach(function (r) { r.addEventListener('change', suivre); });
       [dDeb, dFin].forEach(function (c) { c.addEventListener('input', function () { if (c.value) { rPlage.checked = true; suivre(); } }); });
-      // Classes en partage : case cochée à l'ouverture (2026-11-19, utilisateur).
+      // Classes en partage : interrupteur allumé à l'ouverture (2026-11-19, utilisateur ; case auparavant).
       var casePartage = null;
-      if (partage.length && p.mode !== 'technique') {
+      if (partage.length && (p.mode !== 'technique' || o)) {
         var bloc = el('div', 'nova-seq-plage-partage');
-        var lp = el('label');
+        var lp = el('label', 'nova-seq-inter');
         casePartage = el('input');
-        casePartage.type = 'checkbox'; casePartage.checked = true; casePartage.id = 'nova-seq-plage-partage';
+        casePartage.type = 'checkbox'; casePartage.checked = o && o.partage != null ? o.partage : true; casePartage.id = 'nova-seq-plage-partage';
+        casePartage.setAttribute('role', 'switch');
         lp.appendChild(casePartage);
-        lp.appendChild(document.createTextNode(' ' + nombre('partage-case', partage.length)));
+        lp.appendChild(el('span', '', nombre('partage-case', partage.length)));
         bloc.appendChild(lp);
         bloc.appendChild(el('small', '', partage.map(function (x) { return x.nom; }).join(', ') + '. ' + t(partage.length === 1 ? 'partage-remplace-1' : 'partage-remplace')));
         form.appendChild(bloc);
       }
-      var note = el('p', 'nova-seq-plage-note', t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
-      form.appendChild(note);
+      var note = el('p', 'nova-seq-plage-note', o ? (o.technique ? t('technique-dessous') : '') : t(p.mode === 'technique' ? 'technique-aide' : p.postes ? 'postes-garde' : 'avance'));
+      if (note.textContent) form.appendChild(note);
       var erreur = el('p', 'nova-seq-plage-erreur');
       erreur.setAttribute('role', 'alert');
       form.appendChild(erreur);
@@ -2312,11 +2338,11 @@
       annuler.type = 'button';
       annuler.addEventListener('click', function () { f.close(); });
       boutons.appendChild(annuler);
-      if (p.mode === 'technique') {
+      if (p.mode === 'technique' && !o) {
         [rTous, rCache, rPlage].forEach(function (r) { r.disabled = true; });
         if (modifier) { var m = el('a', 'wims_button', t('modifier')); m.href = modifier.href; boutons.appendChild(m); }
       } else {
-        var ok = el('button', 'wims_button', t('enregistrer'));
+        var ok = el('button', 'wims_button', t(o ? 'valider' : 'enregistrer'));
         ok.type = 'submit';
         boutons.appendChild(ok);
       }
@@ -2324,23 +2350,144 @@
       suivre();
       form.addEventListener('submit', function (ev) {
         ev.preventDefault();
-        if (p.mode === 'technique') return;
-        var mode = rTous.checked ? 'tous' : rCache.checked ? 'cachee' : rPlage.checked ? 'plage' : '';
+        if (p.mode === 'technique' && !o) return;
+        var mode = rTous.checked ? 'tous' : rCache.checked ? 'cachee' : rPlage.checked ? 'plage' : rTech && rTech.checked ? 'technique' : '';
         if (!mode) return;
-        var deb = '', fin = '';
+        var deb = '', fin = '', ips = champIp ? champIp.value.replace(/\s+/g, ' ').trim() : '';
         if (mode === 'plage') {
           if (dDeb.value) deb = chiffres(dDeb.value) + chiffres(hDeb.value || '00:00');
           if (dFin.value) fin = chiffres(dFin.value) + chiffres(hFin.value || '23:59');
-          if (!deb && !fin) { erreur.textContent = t('date-manque'); return; }
+          if (!deb && !fin && !ips) { erreur.textContent = t(o ? 'date-ou-postes' : 'date-manque'); return; }
           if (deb && fin && deb >= fin) { erreur.textContent = t('date-ordre'); return; }
         }
         f.close();
+        if (o) { o.valider({ mode: mode, debut: deb, fin: fin, ips: ips, partage: !!(casePartage && casePartage.checked) }); return; }
         enregistrerPlage(d, n, mode, deb, fin, !!(casePartage && casePartage.checked));
       });
       f.addEventListener('click', function (e) { if (e.target === f) f.close(); });
       document.body.appendChild(f);
       f.showModal();
       (choix.querySelector('input:checked') || rTous).focus();
+    }
+    /* Page Modifier d'une séquence, onglet Informations générales (2026-11-19, utilisateur, maquette
+     * maquettes/sequence-modifier-2026-11-19.html) : UNE pastille comme dans la liste (statut + affichage aux élèves), son menu
+     * (Activer ou Désactiver, Affichage aux élèves) et la même fenêtre que la liste, complétée des postes et de la variable
+     * technique ; interrupteur des classes en partage dans la fenêtre. Les listes Statut et Affichage de WIMS restent dans le
+     * formulaire, masquées, remplies par la pastille : rien n'est enregistré avant « Enregistrer ». Classes en partage : champ
+     * nova_seq_partage=1 ajouté au formulaire (GET), la plage enregistrée par WIMS est recopiée par _widgets/sequences.phtml
+     * (la question « pour toutes les classes en partage » de WIMS, qui suit le partage des feuilles, reste à Non, masquée).
+     * Description : éditeur à la hauteur du texte, comme un examen (editeurAjuste). */
+    function modifierSequence() {
+      var visible = document.getElementById('visible'), type = document.getElementById('allowtype');
+      var titreSeq = document.getElementById('seq_title'), cadre = titreSeq && titreSeq.closest('fieldset');
+      if (!visible || !type || !cadre || !visible.form) return;
+      var form = visible.form, champ = function (id) { return document.getElementById(id); };
+      var numeroSeq = (/[?&]seq=(\d+)/.exec(location.search) || [])[1] || '';
+      var techOk = Array.prototype.some.call(type.options, function (x) { return x.value === 'techvar'; });
+      var copier = null, menus = menusEtat();
+      var iso = function (v) { return v ? v.slice(0, 4) + '-' + v.slice(4, 6) + '-' + v.slice(6, 8) : ''; };
+      var hm = function (v) { return v ? v.slice(8, 10) + ':' + v.slice(10, 12) : ''; };
+      function plageForm() {
+        if (type.value === 'all') return { mode: 'tous', debut: '', fin: '', postes: false };
+        if (type.value === 'none') return { mode: 'cachee', debut: '', fin: '', postes: false };
+        if (type.value === 'techvar') return { mode: 'technique', debut: '', fin: '', postes: false };
+        var d1 = champ('begindscore'), h1 = champ('begintscore'), d2 = champ('enddscore'), h2 = champ('endtscore'), ip = champ('IPscore');
+        return {
+          mode: 'plage',
+          debut: d1 && d1.value ? chiffres(d1.value) + chiffres((h1 && h1.value) || '00:00') : '',
+          fin: d2 && d2.value ? chiffres(d2.value) + chiffres((h2 && h2.value) || '23:59') : '',
+          postes: !!(ip && ip.value.trim())
+        };
+      }
+      // Champs de WIMS masqués (restent dans le formulaire) ; le tableau de la variable technique reste visible.
+      [visible.closest('.field') || visible.parentNode, type, form.querySelector('label[for="allowtype"]'), champ('js_restricted_time'),
+        type.parentNode.querySelector('.wims_button_help'), form.querySelector('label[for="allowshare"]')].forEach(function (e) {
+        if (!e) return;
+        if (e.matches('label[for="allowshare"]')) e = e.parentNode;
+        e.classList.add('nova-seq-masque');
+      });
+      var share = form.querySelector('select[name="allowshare"]');
+      if (share) share.value = '0';
+
+      var zone = el('div', 'nova-seq-modif-etat');
+      var pastille = el('button', 'nova-etat nova-seq-etat');
+      pastille.type = 'button';
+      var menu = el('div', 'nova-etat-menu');
+      menu.id = 'nova-seq-modif-menu';
+      menu.setAttribute('role', 'menu');
+      menu.hidden = true;
+      var avis = el('p', 'nova-seq-modif-avis', t('a-enregistrer'));
+      avis.hidden = true;
+      zone.appendChild(pastille);
+      zone.appendChild(avis);
+      cadre.classList.add('nova-fiche');
+      var legende = cadre.querySelector(':scope > legend');
+      cadre.insertBefore(zone, legende ? legende.nextSibling : cadre.firstChild);
+      var item = function (texte, ico, effet, faire) {
+        var b = el('button', 'nova-etat-action');
+        b.type = 'button';
+        b.setAttribute('role', 'menuitem');
+        b.setAttribute('tabindex', '-1');
+        b.appendChild(icone(ico));
+        var tt = el('span', 'nova-etat-texte', texte);
+        tt.appendChild(el('small', '', effet));
+        b.appendChild(tt);
+        b.addEventListener('click', function () { menus.fermer(false); faire(); });
+        menu.appendChild(b);
+        return b;
+      };
+      function dessiner() {
+        var etat = visible.value === '1' ? 1 : 0, vu = vueEleves(etat, plageForm());
+        pastille.className = 'nova-etat nova-seq-etat nova-etat-' + vu.genre;
+        pastille.textContent = '';
+        pastille.appendChild(icone(vu.icone));
+        var nom = el('span', 'nova-etat-nom');
+        nom.appendChild(el('span', 'nova-seq-long', vu.long));
+        nom.appendChild(el('span', 'nova-seq-court', vu.court));
+        pastille.appendChild(nom);
+        pastille.title = vu.detail || '';
+        pastille.appendChild(el('span', 'nova-etat-chevron'));
+        menu.textContent = '';
+        var commun = partage.length ? ' ' + nombre('partage-commun', partage.length) : '';
+        if (etat === 1) item(t('b-desactiver'), 'oeil-barre', t('desactiver') + commun, function () { changer(function () { visible.value = '0'; }); });
+        else item(t('b-activer'), 'lecture', t('activer') + commun, function () { changer(function () { visible.value = '1'; }); });
+        item(t('affichage'), 'calendrier', t('affichage-effet'), function () {
+          var ip = champ('IPscore');
+          fenetrePlage(numeroSeq, null, titreSeq.value, null, {
+            plage: plageForm(), ips: ip ? ip.value : '', technique: techOk, partage: copier,
+            valider: function (r) { changer(function () { ecrire(r); }); }
+          });
+        });
+      }
+      function changer(faire) { faire(); avis.hidden = false; dessiner(); }
+      function ecrire(r) {
+        var avant = type.value;
+        type.value = { tous: 'all', cachee: 'none', plage: 'select', technique: 'techvar' }[r.mode];
+        if (r.mode === 'plage') {
+          var mettre = function (id, v) { var c = champ(id); if (c) c.value = v; };
+          mettre('begindscore', iso(r.debut)); mettre('begintscore', hm(r.debut) || '00:00');
+          mettre('enddscore', iso(r.fin)); mettre('endtscore', hm(r.fin) || '23:59');
+          mettre('IPscore', r.ips);
+        }
+        // onchange de WIMS (toggle_allowtype) : affiche le tableau de la variable technique.
+        if (avant !== type.value) type.dispatchEvent(new Event('change', { bubbles: true }));
+        copier = partage.length ? r.partage : null;
+      }
+      menus.brancher(pastille, menu);
+      dessiner();
+      form.addEventListener('formdata', function (e) {
+        if (share) e.formData.set('allowshare', '0');
+        if (copier) e.formData.set('nova_seq_partage', '1');
+      });
+      editeurAjuste('seq_desc');
+      var desc = champ('seq_desc'), cd = desc && (desc.closest('.field') || desc.parentNode);
+      var lab = cd && cd.querySelector('label[for="seq_desc"]'), aide = lab && lab.nextElementSibling;
+      if (lab && aide && !aide.querySelector('textarea, iframe') && !aide.classList.contains('tox')) {
+        var tete = el('div', 'nova-champ-tete');
+        cd.insertBefore(tete, lab);
+        tete.appendChild(lab);
+        tete.appendChild(aide);
+      }
     }
     function enregistrerPlage(d, n, mode, deb, fin, aussiPartage) {
       occupe = true;

@@ -4,4 +4,8 @@
 !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang fiche_ressource
 !! Feuille et examen : statut en pastille avec menu, comme sur l'accueil (2026-11-19) : textes des actions.
 !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang statuts_ressources
+!! Feuille : contenu en liste (js/src/74-feuille-contenu.js, 2026-11-19).
+!if $module=adm/class/sheet
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang feuille_contenu
+!endif
 !read themes/$wims_theme/_widgets/confirmations.phtml

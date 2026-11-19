@@ -28,6 +28,9 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Contenu d'une feuille : une carte par série, qu'on déplace en glissant ou avec les flèches (enregistré tout de suite) ; pastille « Modifier » avec son menu (modifier, paramètres des exercices, essayer, effacer avec confirmation).
+- Modifier une série : description à la hauteur de son texte, commentaires repliés, paramètres des exercices résumés en clair.
+- Paramètres d'un exercice : affichage des aides en boutons ; « après l'expiration » du feedback et de l'indication coche enfin le bon choix (défaut de WIMS) ; mots-clés en pastilles.
 - Désactiver malgré le partage : la sauvegarde de la classe est désormais obligatoire (plus de case à cocher ni de désactivation sans sauvegarde).
 - Désactiver malgré le partage : « Annuler » est le bouton principal, à droite ; la désactivation n'est plus qu'un lien rouge.
 - Désactiver un examen ou une feuille partagés : la fenêtre dit d'abord le refus, « Annuler » est choisi ; un lien discret « Désactiver quand même… » mène à l'avertissement détaillé.

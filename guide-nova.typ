@@ -692,7 +692,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant`)],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant`) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `aidesOef`)],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -1901,7 +1901,7 @@ niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "functi
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
   "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
-  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "80-reglages.js", "99-demarrage.js")
+  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))

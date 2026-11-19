@@ -213,15 +213,16 @@
       if (s.com) infos.appendChild(etiquette(t('com'), '', s.com));
       corps.appendChild(infos);
       li.appendChild(corps);
+      var act = el('span', 'nova-fc-actions');
+      act.appendChild(pastille(s));
+      li.appendChild(act);
+      // Flèches tout à droite de la carte, après « Modifier » (2026-11-19, utilisateur).
       if (modifiable) {
         var fl = el('span', 'nova-fc-fleches');
         fl.appendChild(bouton('fleche-haut', t('monter'), function () { focusApres = '.nova-fc-fleches button:first-child'; deplacer(s, s.n - 1); }, i === 0));
         fl.appendChild(bouton('fleche-bas', t('descendre'), function () { focusApres = '.nova-fc-fleches button:last-child'; deplacer(s, s.n + 1); }, i === series.length - 1));
         li.appendChild(fl);
       }
-      var act = el('span', 'nova-fc-actions');
-      act.appendChild(pastille(s));
-      li.appendChild(act);
       if (modifiable) {
         li.draggable = true;
         li.addEventListener('dragstart', function (ev) {

@@ -3,7 +3,8 @@
 # _widgets/examen-contenu.phtml (adm/class/exam, enseignant).
 #   examen.sh <wims_home> <classe> examen <examen>
 #     HTML cache pour nova.js (examenContenu) : un <i class="x" ...> par exercice de l'examen (fichier exams/.examN de WIMS :
-#     enregistrements « :poids / choix / titre / dependances / options / commentaire », choix = « feuille.exercice,... »).
+#     enregistrements « :poids / choix / titre / dependances / options / commentaire », choix = « 1.23, 1.25 » : virgule
+#     ET espace, comme WIMS les ecrit ; lus aussi sans espace).
 #   examen.sh <wims_home> <classe> feuille <feuille> [hors]
 #     Un <b ...> (numero, titre : ligne 3 de sheets/.sheets), puis un <i class="e" ...> par exercice (numero, titre : ligne 5,
 #     module et parametres : lignes 1 et 2 de sheets/.sheetN, pour l'apercu) ; « hors » : feuille non active citee par
@@ -43,7 +44,7 @@ comptes() {
 # Feuilles citees par l'examen hors des feuilles actives (titres des exercices pour les cartes).
 citees() {
   [ -f "exams/.exam$n" ] || return 0
-  awk '/^:/ { getline; print }' "exams/.exam$n" | tr ',' '\n' | sed -n 's/^\([0-9][0-9]*\)\.[0-9][0-9]*$/\1/p' | sort -un | while read -r ct_s; do
+  awk '/^:/ { getline; print }' "exams/.exam$n" | tr ', ' '\n\n' | sed -n 's/^\([0-9][0-9]*\)\.[0-9][0-9]*$/\1/p' | sort -un | while read -r ct_s; do
     printf '%s\n' "$liste" | grep -qx "$ct_s" || printf '%s\n' "$ct_s"
   done
 }
@@ -98,13 +99,13 @@ ecrire)
         if (rec[r] == "") continue
         split(rec[r], c, "\037")
         p = c[1]; if (p !~ /^[0-9]+(\.[0-9]+)?$/ || p + 0 > 10) p = 1
-        ch = ""; q = split(c[2], it, ",")
+        ch = ""; q = split(c[2], it, /[ ,]+/)
         for (j = 1; j <= q; j++) {
           if (it[j] !~ /^[0-9]+\.[0-9]+$/) continue
           split(it[j], fe, ".")
           if (!(fe[1] in nb) || fe[2] + 0 < 1 || fe[2] + 0 > nb[fe[1]] + 0) continue
-          if (index("," ch ",", "," it[j] ",")) continue
-          ch = ch (ch == "" ? "" : ",") it[j]
+          if (index(", " ch ",", ", " it[j] ",")) continue
+          ch = ch (ch == "" ? "" : ", ") it[j]
         }
         if (ch == "") continue
         ti = ligne(c[3], 100); gsub(/  +/, " ", ti); sub(/^ +/, "", ti); sub(/ +$/, "", ti); if (ti == "") ti = "Ex"

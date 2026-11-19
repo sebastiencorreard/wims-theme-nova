@@ -37,7 +37,8 @@
     var cartes = Array.prototype.filter.call(src.children, function (x) { return x.classList.contains('x'); }).map(function (x) {
       return {
         poids: x.getAttribute('data-p') || '1', titre: clair(x.getAttribute('data-n')),
-        choix: (x.getAttribute('data-c') || '').split(',').filter(function (c) { return /^\d+\.\d+$/.test(c); }),
+        // WIMS écrit la liste « 1.23, 1.25, 1.26 » (virgule et espace ; vu chez l'utilisateur, 2026-11-19 : seul le premier gardé).
+        choix: (x.getAttribute('data-c') || '').split(/[\s,]+/).filter(function (c) { return /^\d+\.\d+$/.test(c); }),
         dep: x.getAttribute('data-d') || '', opt: x.getAttribute('data-o') || '', com: x.getAttribute('data-k') || '', ouvert: false
       };
     });
@@ -510,7 +511,7 @@
       if (envoi) return;
       var rs = String.fromCharCode(30), us = String.fromCharCode(31);
       var texte = cartes.filter(function (c) { return c.choix.length; }).map(function (c) {
-        return [String(c.poids).replace(',', '.'), c.choix.join(','), c.titre, c.dep, c.opt, c.com].map(function (v) { return String(v).replace(/[\x1e\x1f\r\n]/g, ' '); }).join(us);
+        return [String(c.poids).replace(',', '.'), c.choix.join(', '), c.titre, c.dep, c.opt, c.com].map(function (v) { return String(v).replace(/[\x1e\x1f\r\n]/g, ' '); }).join(us);
       }).join(rs);
       envoi = true;
       bEnr.disabled = true;

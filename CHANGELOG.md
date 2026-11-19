@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- **Fin de session par inactivité** (élèves et enseignants) : cinq minutes avant que WIMS déconnecte un compte resté sans activité (1 h 30 par défaut), un message orange le dit, avec un bouton « Rester connecté(e) » ; à l'échéance, une fenêtre « Session expirée » propose de se reconnecter, au lieu de continuer sans s'en rendre compte en visiteur (exercice sans note). Remplace la fenêtre de WIMS (une minute avant), gardée avec le réglage « textes » du thème standard.
 - Zone Élèves, liste des classes : « protégé » et « ouvert » en pastilles avec un cadenas (gris, vert) au lieu d'étiquettes encadrées.
 - **Droites graduées et images où l'on clique** : au téléphone, l'image entière tient dans l'écran ; la toucher ouvre une loupe en taille réelle autour du point, où l'on touche le point exact puis « Valider ce point ». Réglage « Réponse du thème standard » pour garder l'image en taille réelle.
 - Page d'une feuille : progression d'abord (« 2 exercices réussis sur 10 »), un état par exercice (Réussi, En cours, À faire) et ses points ; « Suspendre l'enregistrement » devient l'interrupteur « Mode entraînement », expliqué.

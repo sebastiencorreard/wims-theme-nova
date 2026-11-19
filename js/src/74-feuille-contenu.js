@@ -328,6 +328,24 @@
       if (id === 'mod_comment') commentairesReplies(champ, tete, zone, ftx);
     });
 
+    // « Enregistrer » et « Abandonner » de WIMS (div.wimsform) : barre collante en bas de l'écran (2026-11-19, utilisateur) ;
+    // « Modifié : pensez à enregistrer » dès qu'un champ de la page (description sous TinyMCE comprise) ou un paramètre a changé.
+    var envoiW = cadre.form.querySelector('input[type="submit"]'), blocW = envoiW && envoiW.parentNode;
+    var barre = { modifie: false, parametres: false, avis: null, regler: function () {} };
+    if (blocW && blocW !== cadre.form) {
+      var reglerW = barreEnregistrer(blocW, cadre.form, t('sp-modifie'));
+      barre.avis = blocW.querySelector('.nova-seq-enreg-avis');
+      barre.regler = function () { if (barre.avis) barre.avis.textContent = t('sp-modifie'); reglerW(barre.modifie || barre.parametres); };
+      var marquer = function () { if (barre.modifie) return; barre.modifie = true; barre.regler(); };
+      var surChamp = function (e) { if (!e.target.closest('.nova-sp')) marquer(); };
+      cadre.form.addEventListener('input', surChamp);
+      cadre.form.addEventListener('change', surChamp);
+      if (window.tinymce && tinymce.on) tinymce.on('AddEditor', function (e) {
+        var ed = e.editor;
+        if (ed && /^mod_(desc|comment)$/.test(ed.id)) ed.on('input change undo redo ExecCommand', function () { if (ed.isDirty()) marquer(); });
+      });
+    }
+
     var pre = cadre.querySelector('.field > pre');
     var champ = pre && pre.parentNode;
     if (!champ) return;
@@ -347,7 +365,7 @@
       bas0.appendChild(brut);
       var wims = champ.querySelector(':scope > a.wims_button');
       if (wims) wims.classList.add('nova-fc-masque');
-      serieEditeur(champ, modele, cadre.form, t, el);
+      serieEditeur(champ, modele, cadre.form, t, el, barre);
       return;
     }
     var p = {}, exos = {};
@@ -439,7 +457,7 @@
    * Enregistrement, seulement si un paramètre a changé : le formulaire de la page part d'abord dans un cadre caché (job=modify,
    * qui travaille sur les anciens paramètres : tableau d'ordre de WIMS masqué, laissé tel quel), puis la requête du lien
    * « Remplacer dans la feuille » de WIMS (job=chseries, iniparm) ouvre la page de la feuille. */
-  function serieEditeur(champ, modele, form, t, el) {
+  function serieEditeur(champ, modele, form, t, el, barre) {
     var bouton = champ.querySelector(':scope > a.wims_button');
     var paires = [];
     (modele.getAttribute('data-parm') || '').split('&').forEach(function (x) {
@@ -671,8 +689,7 @@
     var lChrono = ligne(t('p-chrono'));
     var r3 = rang();
     r3.appendChild(bascule(t('sp-chrono-case'), function () { return st.chrono; }, function (v) { st.chrono = v; if (v && !st.d1) st.d1 = '60'; }));
-    lChrono.lastChild.appendChild(r3);
-    var phrase = el('div', 'nova-sp-rang nova-sp-petit nova-sp-temps');
+    var phrase = el('span', 'nova-sp-petit nova-sp-temps');
     var champs = {};
     t('sp-chrono-phrase', '%1', '%2').split(/(%[12])/).forEach(function (morceau) {
       if (morceau === '%1' || morceau === '%2') {
@@ -688,7 +705,8 @@
       } else if (morceau) phrase.appendChild(document.createTextNode(morceau));
     });
     var erreurTemps = el('p', 'nova-sp-alerte', t('sp-chrono-erreur'));
-    lChrono.lastChild.appendChild(phrase);
+    r3.appendChild(phrase);
+    lChrono.lastChild.appendChild(r3);
     lChrono.lastChild.appendChild(erreurTemps);
     majs.push(function (frappe) {
       phrase.hidden = !st.chrono;
@@ -791,16 +809,12 @@
     bas.appendChild(annuler);
     ed.appendChild(bas);
 
-    // ---- État modifié, à côté du bouton d'envoi de la page
-    var envoi = form.querySelector('button[type="submit"], input[type="submit"]');
-    var marque = el('span', 'nova-sp-modifie', t('sp-modifie'));
-    marque.setAttribute('role', 'status');
-    if (envoi) envoi.insertAdjacentElement('afterend', marque); else ed.appendChild(marque);
     var valide = function () { return st.exos.length > 0 && erreurTemps.hidden; };
     function change(frappe) {
       majs.forEach(function (f) { f(frappe); });
       var modifie = parametres(st) !== initial;
-      marque.hidden = !modifie;
+      barre.parametres = modifie;
+      barre.regler();
       annuler.hidden = !modifie;
       ed.classList.toggle('nova-sp-modifiee', modifie);
     }
@@ -817,8 +831,7 @@
       if (!valide()) { change(); (st.exos.length ? champs.d1 : ed).scrollIntoView({ block: 'center' }); return; }
       parti = true;
       var nouveau = parametres(st);
-      marque.textContent = t('sp-enreg');
-      marque.hidden = false;
+      if (barre.avis) { barre.avis.textContent = t('sp-enreg'); barre.avis.hidden = false; }
       var cible = el('iframe', 'nova-fc-masque');
       cible.hidden = true;
       cible.style.display = 'none';
@@ -833,7 +846,7 @@
         cible.addEventListener('load', function () {
           var ok = false;
           try { ok = !cible.contentDocument.querySelector('input[name="job"][value="modify"]'); } catch (x) { ok = false; }
-          if (!ok) { parti = false; form.target = avant; marque.textContent = t('sp-erreur'); return; }
+          if (!ok) { parti = false; form.target = avant; if (barre.avis) { barre.avis.textContent = t('sp-erreur'); barre.avis.hidden = false; } return; }
           setTimeout(function () { location.href = suite; }, 1500);
         }, { once: true });
         if (form.requestSubmit) form.requestSubmit(ev.submitter && ev.submitter.form === form ? ev.submitter : undefined); else form.submit();

@@ -1063,7 +1063,8 @@ body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-
 .wimsbody .nova-sp-aide { gap: 6px 8px; }
 .wimsbody .nova-sp-aide-nom { flex: 0 0 7.5rem; font-size: .85rem; font-weight: 700; }
 .wimsbody .nova-sp input.nova-sp-nombre { width: 5rem; min-height: 34px; margin: 0 2px; padding: 4px 8px; box-sizing: border-box; font-variant-numeric: tabular-nums; }
-.wimsbody .nova-sp-temps { gap: 4px; }
+.wimsbody .nova-sp-temps { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.wimsbody .nova-sp-temps[hidden] { display: none; }
 /* Exercices choisis : pastilles ; ordre fixé : liste numérotée avec flèches. */
 .wimsbody ol.nova-sp-choisis { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .wimsbody ol.nova-sp-choisis:empty { display: none; }
@@ -1097,6 +1098,4 @@ body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-
 .wimsbody a.nova-sp-wims { font-size: .85rem; font-weight: 700; }
 .wimsbody .nova-sp-bas .nova-sp-petit { flex: 1 1 14rem; }
 .wimsbody .nova-sp-bas .nova-sp-annuler[hidden] { display: none; }
-.wimsbody .nova-sp-modifie { display: inline-flex; align-items: center; margin: 4px 10px; padding: 4px 12px; border-radius: 999px; background: var(--nova-attention-fond); color: var(--nova-attention-texte); font-size: .82rem; font-weight: 700; vertical-align: middle; }
-.wimsbody .nova-sp-modifie[hidden] { display: none; }
 @media (max-width: 620px) { .wimsbody .nova-sp-ligne { grid-template-columns: minmax(0, 1fr); } .wimsbody .nova-sp-nom { padding-top: 0; } .wimsbody .nova-sp-aide-nom { flex-basis: 100%; } }

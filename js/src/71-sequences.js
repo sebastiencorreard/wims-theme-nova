@@ -865,19 +865,20 @@
             a.appendChild(tt);
             menu.appendChild(a);
           };
-          if (partage.length) {
+          // Sous la pastille, seulement les classes en partage dont l'affichage diffère ; aucune : rien (2026-11-19,
+          // utilisateur : « cette zone est pour faire ressortir les différences, pas les similitudes »).
+          if (differentes.length) {
             var detail = el('div', 'nova-seq-partage-etat');
             detail.setAttribute('role', 'none');
             detail.appendChild(el('b', '', t('partage-titre')));
-            partage.forEach(function (x) {
-              var r = x.plages[n] || n + ':tous', ligne = el('span', '', x.nom + ' : ');
-              if (r === (brut[n] || n + ':tous')) ligne.appendChild(document.createTextNode(t('partage-pareil')));
-              else ligne.appendChild(el('strong', '', vueEleves(1, lirePlage(r)).long));
+            differentes.forEach(function (x) {
+              var ligne = el('span', '', x.nom + ' : ');
+              ligne.appendChild(el('strong', '', vueEleves(1, lirePlage(x.plages[n] || n + ':tous')).long));
               detail.appendChild(ligne);
             });
             // Séquence désactivée (statut commun, dossier seq/) : l'affichage propre à chaque classe (.S<n>) diffère mais ne
             // joue pas encore ; montrer ce réglage, pas « Désactivée » pour toutes (2026-11-19, utilisateur, Pgm 3e).
-            if (etat !== 1 && differentes.length) detail.appendChild(el('small', 'nova-seq-partage-note', t('partage-inactif')));
+            if (etat !== 1) detail.appendChild(el('small', 'nova-seq-partage-note', t('partage-inactif')));
             menu.appendChild(detail);
             var hr0 = el('hr'); hr0.setAttribute('role', 'separator'); menu.appendChild(hr0);
           }

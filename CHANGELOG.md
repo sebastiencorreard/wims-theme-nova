@@ -120,7 +120,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
-- Séquences en partage désactivées : le menu montre l'affichage réglé dans chaque classe (au lieu de « Désactivée » pour toutes) ; « Activer » n'est plus décrit comme « Désactiver » ; déplacement d'une séquence un peu plus rapide ;
+- Séquences en partage : le menu ne cite que les classes dont l'affichage diffère, avec cet affichage (au lieu de « Désactivée » pour toutes) ; « Activer » n'est plus décrit comme « Désactiver » ; déplacement d'une séquence un peu plus rapide ;
 - Contenu d'un examen : tous les exercices de chaque carte sont lus et gardés (un seul l'était quand WIMS les sépare par « , »).
 - Modifier une séquence : les classes en partage dont l'affichage diffère n'étaient jamais signalées (numéro de la séquence mal lu), et l'onglet Contenu montrait la séquence elle-même en étiquette.
 - Accueil de l'élève (et vue élève de l'enseignant) : les feuilles et les examens sont de nouveau des cartes blanches cliquables en entier, comme les documents, au lieu de pastilles colorées ; au téléphone, le titre passe sous « Feuille 1. » et la note.

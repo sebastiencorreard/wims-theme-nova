@@ -122,6 +122,10 @@
     !read themes/$wims_theme/_widgets/couleur-choix.phtml
   !endif
 !endif
+!! Session qui expire faute d'activite : avertissements de nova.js (_widgets/session.phtml ; 2026-11-19).
+!if $wims_user!=$empty and _ notin $wims_session
+  !read themes/$wims_theme/_widgets/session.phtml
+!endif
 !reset nova_m nova_site
 !! Header menu bar definition.
 !nocache

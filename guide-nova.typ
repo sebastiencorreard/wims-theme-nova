@@ -1543,6 +1543,21 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Rien à corriger dans le thème ; le savoir pour ne pas chercher une panne qui n'existe pas.
 ]
 
+#piege[Une session expirée qui ne prévient pas][
+  Après une longue pause, l'élève refait un exercice, sans note, et en anglais ; l'enseignant lit « Vous n'êtes pas
+  dans une classe ».
+][
+  WIMS efface la session d'un utilisateur connecté restée `$wims_idletime` secondes sans requête (`idle_time` de
+  `wims.conf`, 1 h 30 par défaut ; ménage toutes les 5 minutes), puis ouvre sans rien dire une session de visiteur au
+  clic suivant. Une requête `fetch` vers la page courante ne la garde pas en vie sans risque (exercice regénéré, état
+  changé) ; `cmd=getins` ne remet pas son heure à jour.
+][
+  `sessionInactive` (`_widgets/session.phtml`) prévient cinq minutes avant et garde la session par une requête d'aide
+  (`session=<s>_mhelp.<n>&cmd=help`) : WIMS remet l'heure de la session à jour sans rien enregistrer (vérifié au banc,
+  `banc-nova/session-inactive-test.mjs`, horloge simulée). Il retire l'avertissement de WIMS
+  (`themes/_widgets/session_warn.phtml`), sauf réglage « textes ».
+]
+
 == CSS
 
 #piege[Feuilles et examens de l'accueil de l'élève en pastilles colorées, non cliquables][
@@ -1925,6 +1940,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`desactiver.phtml`, `confirmations.phtml`, `statuts-ressources.phtml`, `fiche-ressource.phtml`], [ressources (feuilles, examens) : désactivation, confirmations, états, fiches],
   [`acces-classe.phtml`, `capacite.phtml`, `config-globale.phtml`, `sequences.phtml`], [configuration de la classe, séquences],
   [`notes-detail.phtml`], [détail des notes],
+  [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],
   [`activite.phtml`, `activite-entree.phtml`], [« Mon activité »],
   [`avatar.phtml`, `avatar-entree.phtml`, `avatar-barre.phtml`, `avatars-classe.phtml`, `avatars-entree.phtml`, `avatars-participants.phtml`], [avatar de l'élève, avatars vus par l'enseignant],
@@ -2354,6 +2370,7 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova-flyers-nom|<classe>`], [nom de la classe modifié pour les flyers à imprimer],
   [`nova-editeur-taille`], [taille du texte de l'éditeur de code, en px (absente : 14)],
   [`nova-fiche-avancees`], [options avancées d'une fiche de ressource ouvertes ou fermées],
+  [`nova-session-activite`], [session et heure de la dernière page chargée (ou de « Rester connecté »), commune aux onglets],
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement

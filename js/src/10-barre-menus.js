@@ -914,3 +914,138 @@
     var h = document.querySelector('#wims_modu_title1 > h1.wims_title');
     if (h && titre && !h.textContent.trim()) h.textContent = titre;
   }
+
+  /* Session qui expire faute d'activite (2026-11-19, utilisateur, maquettes C puis B ; _widgets/session.phtml) : WIMS
+   * efface la session d'un participant connecte restee #nova-session[data-delai] secondes sans requete ($wims_idletime, 1 h 30
+   * par defaut), puis ouvre sans rien dire une session de visiteur (un eleve y fait l'exercice sans note). Cinq minutes
+   * avant : message << Rester connecte >>, qui garde la session par une requete d'aide (sous-session _mhelp : WIMS remet
+   * l'heure de la session a jour sans rien enregistrer, ni module ni page, verifie au banc). A l'echeance : fenetre
+   * << Session expiree >>. Horloge commune aux onglets de la meme session (localStorage nova-session-activite). Hors
+   * examen et aide (sous-sessions, filtrees aussi par header.phtml). Remplace l'avertissement de WIMS (session_warn). */
+  function sessionInactive() {
+    var el = document.getElementById('nova-session');
+    if (!el || !window.fetch) return;
+    var m = /[?&]session=([^&.]+)/.exec(lienAccueil('')), session = m ? decodeURIComponent(m[1]) : '';
+    if (!session || session.indexOf('_') >= 0) return;
+    var t = function (k, def) { return el.getAttribute('data-' + k) || def; };
+    // Reglage std-textes : avertissement de WIMS (session_warn.phtml : fenetre 60 s avant, compte a rebours, sans bouton
+    // pour rester connecte). Sinon ses deux fenetres sont retirees : son minuteur n'ouvre alors rien.
+    if (standard('textes')) return;
+    ['sess_dialog1', 'sess_dialog2'].forEach(function (id) { var d = document.getElementById(id); if (d) d.remove(); });
+    var CLE_ACTIVITE = 'nova-session-activite';
+    var delai = parseInt(el.getAttribute('data-delai'), 10);
+    if (!(delai > 0)) delai = 5400;
+    var avance = Math.min(300, Math.floor(delai / 3));
+    var derniere = Date.now(), fenetreVue = false, bientot = null, fenetre = null;
+    function duree(s) {
+      var min = Math.max(1, Math.round(s / 60)), h = Math.floor(min / 60), r = min % 60;
+      return h ? h + ' h' + (r ? ' ' + (r < 10 ? '0' : '') + r + ' min' : '') : min + ' min';
+    }
+    function noter(x) {
+      derniere = x;
+      try { localStorage.setItem(CLE_ACTIVITE, session + ' ' + x); } catch (e) { /* cet onglet seulement */ }
+    }
+    function lireAutres() {
+      try {
+        var v = (localStorage.getItem(CLE_ACTIVITE) || '').split(' ');
+        if (v[0] === session && +v[1] > derniere) derniere = +v[1];
+      } catch (e) { /* cet onglet seulement */ }
+    }
+    function cacherBientot() { if (bientot) bientot.hidden = true; }
+    function montrerBientot(reste) {
+      if (!bientot) {
+        bientot = document.createElement('div');
+        bientot.className = 'nova-session-bientot';
+        bientot.setAttribute('role', 'status');
+        var ico = document.createElement('span');
+        ico.className = 'nova-etat-ico';
+        ico.setAttribute('data-icone', 'horloge');
+        bientot.appendChild(ico);
+        bientot.appendChild(document.createElement('p'));
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'wims_button';
+        b.textContent = t('rester', 'Stay logged in');
+        b.addEventListener('click', garder);
+        bientot.appendChild(b);
+        document.body.appendChild(bientot);
+      }
+      bientot.hidden = false;
+      if (!bientot.novaFait) bientot.querySelector('p').textContent = t('bientot', 'With no activity, you will be logged out in %1.').replace('%1', duree(reste / 1000));
+    }
+    function garder() {
+      var b = bientot.querySelector('button'), p = bientot.querySelector('p');
+      b.disabled = true;
+      var u = 'wims.cgi?session=' + encodeURIComponent(session) + '_mhelp.' + (Date.now() % 100000) + '&lang=' + encodeURIComponent(t('lang', racineLangue())) + '&cmd=help';
+      fetch(u, { credentials: 'same-origin', cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        noter(Date.now());
+        bientot.novaFait = true;
+        p.textContent = t('reste', 'Done: you stay logged in.');
+        b.hidden = true;
+        setTimeout(function () { bientot.hidden = true; bientot.novaFait = false; b.hidden = false; b.disabled = false; }, 4000);
+      }).catch(function () {
+        p.textContent = t('echec', 'The server does not answer: your session could not be extended.');
+        b.disabled = false;
+      });
+    }
+    function lienConnexion() {
+      var meta = function (n) { var x = document.querySelector('meta[name="' + n + '"]'); return x ? x.content : ''; };
+      var racine = (meta('nova-structure') || meta('nova-classe').split('/')[0]).replace(/[^0-9]/g, '');
+      // Langue de WIMS (data-lang) : l'attribut lang de certaines pages d'exercice vaut << en >> (vu au banc).
+      var u = 'wims.cgi?lang=' + encodeURIComponent(t('lang', racineLangue()));
+      if (racine) u += '&module=adm%2Fclass%2Fclasses&type=auth' + (t('role', '') === 'prof' ? 'supervisor' : 'participant') + '&class=' + racine;
+      return u;
+    }
+    function montrerExpiree() {
+      cacherBientot();
+      if (fenetreVue) return;
+      fenetreVue = true;
+      fenetre = document.createElement('dialog');
+      fenetre.className = 'nova-dialogue nova-session-expiree';
+      fenetre.setAttribute('role', 'alertdialog');
+      var h = document.createElement('h1');
+      var ico = document.createElement('span');
+      ico.className = 'nova-etat-ico';
+      ico.setAttribute('data-icone', 'horloge');
+      h.appendChild(ico);
+      h.appendChild(document.createTextNode(t('titre', 'Session expired')));
+      h.id = 'nova-session-titre';
+      fenetre.setAttribute('aria-labelledby', h.id);
+      fenetre.appendChild(h);
+      var p = document.createElement('p');
+      p.textContent = t('expiree', 'You have done nothing for %1: WIMS logged you out.').replace('%1', duree(delai));
+      fenetre.appendChild(p);
+      var actions = document.createElement('div');
+      actions.className = 'nova-session-actions';
+      var rester = document.createElement('button');
+      rester.type = 'button';
+      rester.className = 'wims_button wims_secondary_button';
+      rester.textContent = t('page', 'Stay on this page');
+      rester.addEventListener('click', function () { fenetre.close(); });
+      var lien = document.createElement('a');
+      lien.className = 'wims_button';
+      lien.href = lienConnexion();
+      lien.textContent = t('reconnecter', 'Log in again');
+      actions.appendChild(rester);
+      actions.appendChild(lien);
+      fenetre.appendChild(actions);
+      document.body.appendChild(fenetre);
+      if (typeof fenetre.showModal === 'function') fenetre.showModal(); else fenetre.setAttribute('open', '');
+      lien.focus();
+    }
+    function verifier() {
+      lireAutres();
+      var reste = derniere + delai * 1000 - Date.now();
+      if (reste <= 0) montrerExpiree();
+      else {
+        // Session gardee depuis un autre onglet : fenetre refermee, elle pourra revenir.
+        if (fenetreVue && fenetre) { if (fenetre.open) fenetre.close(); fenetre.remove(); fenetre = null; fenetreVue = false; }
+        if (reste <= avance * 1000) montrerBientot(reste); else cacherBientot();
+      }
+    }
+    noter(derniere);
+    setInterval(verifier, 15000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) verifier(); });
+    window.addEventListener('storage', function (e) { if (e.key === CLE_ACTIVITE) verifier(); });
+  }

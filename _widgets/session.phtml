@@ -1,0 +1,14 @@
+!! Nova : session qui expire faute d'activite (2026-11-19, utilisateur, maquettes C puis B,
+!! maquettes/session-expiree-2026-11-19.html). WIMS efface la session d'un participant connecte restee idle_time
+!! secondes sans requete ($wims_idletime, pose a la connexion par scripts/adm/class/authprep ; 5400 par defaut ;
+!! menage de wimslogd toutes les 5 min, src/Wimslogd/cleaning.c), puis ouvre sans rien dire une session de visiteur
+!! au clic suivant. nova.js (sessionInactive) previent avant l'echeance (bouton << Rester connecte >>), puis a
+!! l'echeance, et remplace l'avertissement de WIMS (themes/_widgets/session_warn.phtml, lu par tail, user et
+!! supervisor), sauf reglage std-textes.
+!! Lu par header.phtml pour un utilisateur connecte, hors sous-session (examen, aide).
+!! Textes : << tu >> pour l'eleve, << vous >> pour l'enseignant (utilisateur). Aucune variable de travail.
+!if $wims_user=supervisor
+  !read themes/$wims_theme/lang/name-textes.phtml.$lang session_prof
+!else
+  !read themes/$wims_theme/lang/name-textes.phtml.$lang session_eleve
+!endif

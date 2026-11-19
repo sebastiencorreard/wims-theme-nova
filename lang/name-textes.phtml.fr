@@ -34,3 +34,13 @@
 !! header.phtml
   <template id="nova-liens-textes" data-type="$class_type" data-qr-script="themes/$wims_theme/js/qrcode.js" data-script-flyers="themes/$wims_theme/js/flyers.js" data-nom="$wims_classname" data-flyers="Flyers à imprimer (PDF)" data-fl-nom="Nom de la classe sur les flyers" data-fl-aide="Une page A4 de 30 flyers à découper : un par élève, à coller dans le cahier." data-agrandir="Agrandir" data-telecharger="Télécharger" data-fermer="Fermer" data-qr-alt="QR code du lien pour vos élèves" data-vous="Lien pour vous" data-vous-aide="Ouvre la connexion enseignant : feuilles, examens, élèves et leurs notes. Gardez-le dans vos favoris." data-eleves="Lien pour vos élèves" data-eleves-aide="Pour s'inscrire dans la classe ou y entrer une fois inscrits. À donner sur l'ENT ou au tableau." data-eleves-aide-s="Pour s'inscrire dans une classe ou y entrer une fois inscrits. À donner sur l'ENT ou au tableau." data-qr="QR code à projeter en classe : les élèves le scannent avec leur téléphone." data-ens="Lien pour les enseignants" data-ens-aide="Pour que les enseignants entrent dans leurs classes." data-insc="Inscription des enseignants" data-insc-aide="Pour qu'un enseignant crée son compte." data-copier="Copier" data-copie="Copié" data-copier-num="Copier le numéro" data-echec="Copie impossible : sélectionnez le lien et copiez-le." data-numero="Numéro de la classe" data-numero-s="Numéro de la structure" data-numero-aide="À garder aussi : il permet de la retrouver depuis l'accueil de WIMS."></template>
 !exit
+
+:session_eleve
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="eleve" data-bientot="Sans activité, tu seras déconnecté(e) dans %1." data-rester="Rester connecté(e)" data-reste="C'est bon : tu restes connecté(e)." data-echec="Le serveur ne répond pas : ta session n'a pas pu être prolongée." data-titre="Session expirée" data-expiree="Tu n'as rien fait depuis %1 : WIMS t'a déconnecté(e). Une réponse envoyée maintenant ne serait pas enregistrée." data-page="Rester sur la page" data-reconnecter="Se reconnecter"></span>
+!exit
+
+:session_prof
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="prof" data-bientot="Sans activité, vous serez déconnecté(e) dans %1." data-rester="Rester connecté(e)" data-reste="C'est bon : vous restez connecté(e)." data-echec="Le serveur ne répond pas : votre session n'a pas pu être prolongée." data-titre="Session expirée" data-expiree="Vous n'avez rien fait depuis %1 : WIMS vous a déconnecté(e). Ce que vous enregistreriez maintenant serait perdu." data-page="Rester sur la page" data-reconnecter="Se reconnecter"></span>
+!exit

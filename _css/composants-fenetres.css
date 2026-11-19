@@ -223,3 +223,21 @@ img[src*="gifs/arrows/corr"]:not(td > img) { display: block; position: relative;
 td:has(> img[src*="gifs/arrows/corr"]) { vertical-align: middle; white-space: normal; }  /* la bonne réponse est dans un .tt en pre-wrap : le retour à la ligne après l'image faisait une ligne vide sous la flèche */
 td > img[src*="gifs/arrows/corr"] { display: block; margin: 0 auto; }
 
+
+/* Session qui expire faute d'activite (2026-11-19, utilisateur, maquettes C puis B ; nova.js sessionInactive) : message
+ * cinq minutes avant, en bas de l'ecran, et fenetre a l'echeance. Orange d'attention (utilisateur). */
+.nova-session-bientot {
+  position: fixed; z-index: 1000; left: 0; right: 0; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; width: min(34rem, calc(100vw - 24px)); margin: 0 auto;
+  padding: 12px 14px; border: 1px solid color-mix(in oklab, var(--nova-attention) 30%, transparent); border-radius: var(--nova-rayon-carte);
+  background: var(--nova-attention-fond); color: var(--nova-attention-texte); box-shadow: 0 8px 24px rgb(0 0 0 / 18%); box-sizing: border-box;
+}
+.nova-session-bientot[hidden] { display: none; }
+.nova-session-bientot p { flex: 1 1 14rem; min-width: 0; margin: 0; font-weight: 700; }
+.nova-session-bientot .nova-etat-ico, .nova-session-expiree h1 .nova-etat-ico { width: 20px; height: 20px; }
+body.main_body .nova-session-bientot button.wims_button { margin: 0 0 0 auto; }
+.nova-session-expiree h1 { display: flex; align-items: center; gap: 10px; }
+.nova-session-expiree h1 .nova-etat-ico { color: var(--nova-attention); }
+.nova-session-expiree p { margin: 0; }
+.nova-session-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--nova-e2); margin-top: var(--nova-e3); }
+body.main_body .nova-session-actions .wims_button { display: inline-flex; align-items: center; justify-content: center; margin: 0; text-decoration: none; }

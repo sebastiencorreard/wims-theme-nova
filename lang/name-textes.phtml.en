@@ -34,3 +34,13 @@
 !! header.phtml
   <template id="nova-liens-textes" data-type="$class_type" data-qr-script="themes/$wims_theme/js/qrcode.js" data-script-flyers="themes/$wims_theme/js/flyers.js" data-nom="$wims_classname" data-flyers="Printable flyers (PDF)" data-fl-nom="Class name on the flyers" data-fl-aide="An A4 page of 30 flyers to cut out: one per student, to stick in their notebook." data-agrandir="Enlarge" data-telecharger="Download" data-fermer="Close" data-qr-alt="QR code of the link for your students" data-vous="Link for you" data-vous-aide="Opens the teacher login: worksheets, exams, students and their scores. Keep it in your bookmarks." data-eleves="Link for your students" data-eleves-aide="To register in the class, or to enter it once registered. Share it on your school platform or on the board." data-eleves-aide-s="To register in a class, or to enter it once registered. Share it on your school platform or on the board." data-qr="QR code to show in class: students scan it with their phone." data-ens="Link for teachers" data-ens-aide="For teachers to enter their classes." data-insc="Teacher registration" data-insc-aide="For a teacher to create their account." data-copier="Copy" data-copie="Copied" data-copier-num="Copy the number" data-echec="Cannot copy: select the link and copy it." data-numero="Class number" data-numero-s="Structure number" data-numero-aide="Keep it too: it lets you find it from the WIMS home page."></template>
 !exit
+
+:session_eleve
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="eleve" data-bientot="With no activity, you will be logged out in %1." data-rester="Stay logged in" data-reste="Done: you stay logged in." data-echec="The server does not answer: your session could not be extended." data-titre="Session expired" data-expiree="You have done nothing for %1: WIMS logged you out. An answer sent now would not be recorded." data-page="Stay on this page" data-reconnecter="Log in again"></span>
+!exit
+
+:session_prof
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="prof" data-bientot="With no activity, you will be logged out in %1." data-rester="Stay logged in" data-reste="Done: you stay logged in." data-echec="The server does not answer: your session could not be extended." data-titre="Session expired" data-expiree="You have done nothing for %1: WIMS logged you out. Anything you save now would be lost." data-page="Stay on this page" data-reconnecter="Log in again"></span>
+!exit

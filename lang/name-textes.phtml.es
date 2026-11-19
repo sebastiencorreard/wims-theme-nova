@@ -34,3 +34,13 @@
 !! header.phtml
   <template id="nova-liens-textes" data-type="$class_type" data-qr-script="themes/$wims_theme/js/qrcode.js" data-script-flyers="themes/$wims_theme/js/flyers.js" data-nom="$wims_classname" data-flyers="Folletos para imprimir (PDF)" data-fl-nom="Nombre de la clase en los folletos" data-fl-aide="Una página A4 con 30 folletos para recortar: uno por alumno, para pegar en el cuaderno." data-agrandir="Ampliar" data-telecharger="Descargar" data-fermer="Cerrar" data-qr-alt="Código QR del enlace para sus alumnos" data-vous="Enlace para usted" data-vous-aide="Abre la conexión de profesor: hojas, exámenes, alumnos y sus notas. Guárdelo en sus favoritos." data-eleves="Enlace para sus alumnos" data-eleves-aide="Para inscribirse en la clase o entrar en ella una vez inscritos. Compártalo en la plataforma educativa o en la pizarra." data-eleves-aide-s="Para inscribirse en una clase o entrar en ella una vez inscritos. Compártalo en la plataforma educativa o en la pizarra." data-qr="Código QR para proyectar en clase: los alumnos lo escanean con su teléfono." data-ens="Enlace para los profesores" data-ens-aide="Para que los profesores entren en sus clases." data-insc="Inscripción de los profesores" data-insc-aide="Para que un profesor cree su cuenta." data-copier="Copiar" data-copie="Copiado" data-copier-num="Copiar el número" data-echec="No se puede copiar: seleccione el enlace y cópielo." data-numero="Número de la clase" data-numero-s="Número de la estructura" data-numero-aide="Guárdelo también: permite encontrarla desde la página de inicio de WIMS."></template>
 !exit
+
+:session_eleve
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="eleve" data-bientot="Sin actividad, se cerrará tu sesión dentro de %1." data-rester="Seguir conectado" data-reste="Listo: sigues conectado." data-echec="El servidor no responde: no se ha podido prolongar tu sesión." data-titre="Sesión caducada" data-expiree="No has hecho nada desde hace %1: WIMS ha cerrado tu sesión. Una respuesta enviada ahora no se guardaría." data-page="Quedarse en la página" data-reconnecter="Volver a conectarse"></span>
+!exit
+
+:session_prof
+!! _widgets/session.phtml
+<span id="nova-session" hidden data-delai="$wims_idletime" data-lang="$lang" data-role="prof" data-bientot="Sin actividad, se cerrará su sesión dentro de %1." data-rester="Seguir conectado" data-reste="Listo: sigue conectado." data-echec="El servidor no responde: no se ha podido prolongar su sesión." data-titre="Sesión caducada" data-expiree="No ha hecho nada desde hace %1: WIMS ha cerrado su sesión. Lo que guarde ahora se perdería." data-page="Quedarse en la página" data-reconnecter="Volver a conectarse"></span>
+!exit

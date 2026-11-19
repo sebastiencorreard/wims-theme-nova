@@ -454,6 +454,9 @@ button[aria-expanded='true'] > .nova-etat-chevron { transform: translateY(1px) r
 .nova-dialogue.nova-conf { width: min(36rem, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-sizing: border-box; overflow: auto; }
 dialog.nova-conf [hidden] { display: none !important; }
 html.nova-occupe, html.nova-occupe * { cursor: progress !important; }
+/* Séquences : pause d'après un envoi (nova.js seqRemplacer) : rien de cliquable ni de saisissable dans la liste. */
+html.nova-occupe .wimsbody .nova-seq, html.nova-occupe .wimsbody .nova-seq-reglages { pointer-events: none; }
+html.nova-occupe .wimsbody .nova-seq-deplacer, html.nova-occupe .wimsbody .nova-seq-poignee { opacity: .35; }
 .nova-conf-tete { display: flex; align-items: flex-start; gap: 14px; margin-right: 32px; }
 .nova-conf-ico { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
 .nova-conf-ico .nova-etat-ico { width: 22px; height: 22px; }

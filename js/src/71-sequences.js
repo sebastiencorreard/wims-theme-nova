@@ -4,14 +4,50 @@
    * liens de WIMS, Effacer confirmé par confirmationsRessources), « Modifier », flèches Monter / Descendre (script de
    * Nova, pas moveup). Replis gardés par navigateur et par classe (localStorage). Glisser-déposer par la poignée : carte
    * repliée qui suit le pointeur, silhouette à sa place, les autres s'écartent ; requête en arrière-plan (nova_seq_de,
-   * nova_seq_vers : _widgets/sequences.phtml, _procs/sequences.sh), puis la page est relue (numéros et liens de WIMS),
-   * même position à l'écran. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes.
+   * nova_seq_vers : _widgets/sequences.phtml, _procs/sequences.sh) ; la page que WIMS renvoie (liste déjà à jour : numéros et
+   * liens de WIMS) remplace la liste à l'écran, sans rechargement (seqRemplacer, 2026-11-19, utilisateur), même position. Ressources de chaque séquence : petites pastilles d'état. Réglage std-listes.
    * Réglages sur la page (2026-11-19, utilisateur, maquette sequences-reglages) : barre au-dessus de la liste (variante A :
    * présentation en séquences, mot générique, numéro seul, Ajouter), enregistrée par le formulaire Configurer de WIMS
    * (lu en arrière-plan, recopié dans la page et envoyé par le navigateur : accents en windows-1252) ; une seule pastille
    * par séquence (variante B) = ce que voient les élèves aujourd'hui, d'après le statut de WIMS et la plage d'affichage
    * (#nova-seq-reglages, fichier .S<n>) ; son menu : Activer ou Désactiver, Affichage aux élèves (fenêtre : toujours,
    * jamais, entre deux dates ; nova_seq_plage, _procs/sequences.sh), Effacer. */
+  /* Liste remplacée sans rechargement (2026-11-19, utilisateur). WIMS traite mal deux requêtes d'une même session à moins
+   * d'une seconde d'écart (la seconde part avec l'état d'avant) : après un envoi, tout reste bloqué jusqu'à seqPauseFin
+   * (1,5 s après l'envoi), même dans la liste remise en forme (html.nova-occupe : flèches, glisser, menus, liens). */
+  var seqPauseFin = 0;
+  // Page de la liste renvoyée par WIMS après un enregistrement (texte déjà décodé en windows-1252) : sa zone .wimsbody et les
+  // données de Nova (#nova-seq-reglages, #nova-seq-numero, hors de .wimsbody) remplacent celles de la page, puis la liste est
+  // remise en forme par sequencesEnseignant et sequencesNumero. Faux si la page reçue n'a pas la liste : l'appelant recharge.
+  function seqRemplacer(texte) {
+    if (!window.DOMParser) return false;
+    var doc = new DOMParser().parseFromString(texte, 'text/html');
+    var neuf = doc.querySelector('.wimsbody'), ici = document.querySelector('.wimsbody');
+    if (!neuf || !ici || !neuf.querySelector('div.wims_seq[id^="wims_seq_"] > h2.wims_title_seq')) return false;
+    document.dispatchEvent(new Event('nova-fermer-menus'));
+    // Menus des pastilles (rangés dans <body> par menusEtat) et fenêtre d'affichage de l'ancienne liste.
+    Array.prototype.forEach.call(document.querySelectorAll('body > .nova-etat-menu[id^="nova-seq-menu-"], dialog.nova-seq-plage'), function (x) { x.parentNode.removeChild(x); });
+    ['nova-seq-reglages', 'nova-seq-numero'].forEach(function (id) {
+      var a = document.getElementById(id), b = doc.getElementById(id);
+      if (a && b) a.parentNode.replaceChild(document.importNode(b, true), a);
+      else if (a) a.parentNode.removeChild(a);
+    });
+    // Zone entière remplacée (élément neuf) : les écouteurs posés sur l'ancienne par d'autres fonctions (legendeTypes) partent avec.
+    var zone = document.importNode(neuf, true);
+    ici.parentNode.replaceChild(zone, ici);
+    ici = zone;
+    document.documentElement.classList.remove('nova-seq-eteint');
+    // Blocs vides des ressources masqués, comme scores() au chargement (le reste de scores() ne concerne pas cette page).
+    Array.prototype.forEach.call(ici.querySelectorAll('li[class$="_item"] > :is(ul, div, span):not(.wims_score_bar, .wims_seq_item_n)'), function (bloc) {
+      if (!bloc.textContent.trim() && !bloc.querySelector('img, svg, input, a, canvas')) bloc.classList.add('nova-vide');
+    });
+    sequencesEnseignant();
+    sequencesNumero();
+    legendeTypes();
+    messageReporte();
+    return true;
+  }
+
   function sequencesEnseignant() {
     var tx = document.getElementById('nova-seq-textes');
     if (!tx || standard('listes')) return;
@@ -75,6 +111,8 @@
     var numero = function (d) { return +d.id.replace('wims_seq_', ''); };
     var plis = lire(clePlis, localStorage) || [];
     var menus = menusEtat(), occupe = false;
+    // Bloqué : un envoi en cours ici, ou la pause d'après le dernier envoi (liste remise en forme pendant cette pause).
+    var bloque = function () { return occupe || Date.now() < seqPauseFin; };
 
     // Date AAAAMMJJHHMM (heure du serveur) : objet Date local, et texte court (« 30 nov. », heure si elle compte).
     function enDate(v) { return new Date(+v.slice(0, 4), +v.slice(4, 6) - 1, +v.slice(6, 8), +v.slice(8, 10), +v.slice(10, 12)); }
@@ -659,15 +697,17 @@
       };
       fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show&nova_seq_plage=' + n + '&nova_seq_mode=' + mode +
         '&nova_seq_debut=' + deb + '&nova_seq_fin=' + fin + (aussiPartage ? '&nova_seq_partage=1' : '')), { credentials: 'same-origin' })
-        .then(function (r) { return r.text(); })
-        .then(function (texte) {
+        .then(function (r) { return r.arrayBuffer(); })
+        .then(function (buf) {
+          var texte = window.TextDecoder ? new TextDecoder('windows-1252').decode(buf) : '';
           if (!/id="nova-seq-plage-fait"[^>]*data-resultat="ok"/.test(texte)) throw new Error('refus');
           var ecrites = /id="nova-seq-plage-fait"[^>]*data-partage="(\d+)"/.exec(texte);
           if (aussiPartage && ecrites && +ecrites[1] > 0) {
             try { sessionStorage.setItem('nova-message', JSON.stringify({ texte: nombre('partage-fait', +ecrites[1]), etat: '', quand: Date.now() })); } catch (e) { /* message perdu */ }
           }
           garderVue(d, n);
-          relire(Math.max(0, 1500 - (Date.now() - debut)));
+          seqPauseFin = debut + 1500;
+          if (!seqRemplacer(texte)) relire(Math.max(0, seqPauseFin - Date.now()));
         })
         .catch(function () {
           annoncer(etatEnvoi, t('plage-erreur'));
@@ -918,7 +958,7 @@
           else {
             f.type = 'button';
             f.addEventListener('click', function () {
-              if (occupe) return;
+              if (bloque()) return;
               var autre = cartes[cible - 1];
               if (autre) autre.parentNode.insertBefore(d, cible < n ? autre : autre.nextSibling);
               enregistrer(d, n, cible);
@@ -961,6 +1001,17 @@
     if (cartes.length > 1) outils.appendChild(boutons);
     cartes[0].parentNode.insertBefore(outils, cartes[0]);
 
+    // Liste remise en forme pendant la pause d'après un envoi : « Enregistrement… » et blocage jusqu'à sa fin.
+    if (Date.now() < seqPauseFin) {
+      document.documentElement.classList.add('nova-occupe');
+      annoncer(etatEnvoi, t('enregistrement'), true);
+      setTimeout(function () {
+        if (Date.now() < seqPauseFin) return;
+        document.documentElement.classList.remove('nova-occupe');
+        annoncer(etatEnvoi, '');
+      }, seqPauseFin - Date.now() + 20);
+    } else document.documentElement.classList.remove('nova-occupe');
+
     // Retour après un déplacement : même position à l'écran, carte marquée un instant.
     var vue = lire('nova_seq_vue', sessionStorage);
     ecrire('nova_seq_vue', null, sessionStorage);
@@ -987,15 +1038,17 @@
         setTimeout(function () { location.href = lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show'); }, attente);
       };
       fetch(lienSession('&cmd=new&module=adm%2Fclass%2Fsequence&job=show&nova_seq_de=' + de + '&nova_seq_vers=' + vers), { credentials: 'same-origin' })
-        .then(function (r) { return r.text(); })
-        .then(function (texte) {
+        .then(function (r) { return r.arrayBuffer(); })
+        .then(function (buf) {
+          var texte = window.TextDecoder ? new TextDecoder('windows-1252').decode(buf) : '';
           var ok = /id="nova-seq-fait"[^>]*data-resultat="ok"/.test(texte);
           if (!ok) throw new Error('refus');
           plis = plis.map(nouveau);
           ecrire(clePlis, plis.length ? plis : null, localStorage);
           garderVue(d, vers);
-          // 1,5 s comptées depuis l'envoi, comme pour l'affichage (avant : 1,5 s de plus après la réponse).
-          relire(Math.max(0, 1500 - (Date.now() - debut)));
+          // Liste reçue affichée tout de suite ; sinon rechargement, 1,5 s après l'envoi.
+          seqPauseFin = debut + 1500;
+          if (!seqRemplacer(texte)) relire(Math.max(0, seqPauseFin - Date.now()));
         })
         .catch(function () {
           annoncer(etatEnvoi, t('erreur'));
@@ -1111,7 +1164,7 @@
       if (!tete || !d.querySelector('.nova-seq-poignee')) return;
       tete.classList.add('nova-seq-saisissable');
       tete.addEventListener('pointerdown', function (ev) {
-        if (occupe || !ev.isPrimary || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+        if (bloque() || !ev.isPrimary || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
         if (ev.target.closest('button, a, input, select, .nova-etat-menu')) return;
         var surPoignee = !!ev.target.closest('.nova-seq-poignee');
         if (surPoignee && ev.pointerType !== 'mouse') { ev.preventDefault(); glisser(d, ev); return; }

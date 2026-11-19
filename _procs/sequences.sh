@@ -22,6 +22,9 @@
 #     Recopie la plage de la sequence N (.SN, tel quel : dates, postes) dans les classes en partage des sequences, apres
 #     l'enregistrement de la page Modifier de WIMS (2026-11-19, utilisateur). Variable technique : refus (« technique »).
 #     Sortie : « ok <nombre de classes ecrites> ».
+#   sequences.sh <wims_home> <classe> contenus
+#     Une ligne par sequence : « N|titre|ressources » (ressources : ligne 3 de seq/.sequenceN, ex. « sheet 3,exam 2 » ;
+#     « | » et « ; » du titre changent en « / » et « , »). Page Modifier, onglet Contenu : autres sequences d'une ressource (2026-11-19).
 #   sequences.sh <wims_home> <classe> partage
 #     Classes qui recoivent les sequences de <classe> (« c1,c2 ») : sharable_seq de son fichier neighbors, verifie par
 #     sharing_seq=<classe> dans celui de chacune (scripts/adm/class/addshare). Leur dossier seq/ est un lien vers celui
@@ -45,6 +48,16 @@ classes_partage() {
 }
 if [ "$action" = partage ]; then
   classes_partage | paste -sd, -; exit 0
+fi
+
+if [ "$action" = contenus ]; then
+  for f in seq/.sequence[0-9]*; do
+    [ -f "$f" ] || continue
+    k=${f#seq/.sequence}
+    case "$k" in *[!0-9]*) continue;; esac
+    printf '%s|%s|%s\n' "$k" "$(sed -n '1s/^://p' "$f" | tr '|;' '/,')" "$(sed -n 3p "$f")"
+  done | sort -n
+  exit 0
 fi
 
 if [ "$action" = copier ]; then

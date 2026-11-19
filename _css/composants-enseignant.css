@@ -796,3 +796,53 @@ html.nova-sans-animation .nova-seq-plage-partage .nova-seq-inter input::after { 
 .nova-seq-classes button.nova-seq-classe-diff:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-seq-classes .nova-seq-classe-diff::after { content: attr(data-detail); position: absolute; z-index: 5; left: 0; bottom: calc(100% + 6px); width: max-content; max-width: min(18rem, 70vw); padding: 6px 10px; border-radius: var(--nova-rayon-petit); background: var(--nova-texte); color: var(--nova-surface); font-size: .8rem; font-weight: 400; line-height: 1.35; white-space: normal; text-align: left; pointer-events: none; opacity: 0; visibility: hidden; }
 .nova-seq-classes .nova-seq-classe-diff:is(:hover, :focus-visible, [data-ouvert])::after { opacity: 1; visibility: visible; }
+/* Onglet Contenu de la page Modifier d'une séquence (2026-11-19, utilisateur, maquette A) : deux listes, glisser ou « + ».
+ * Icônes de type : mêmes couleurs que les cartes (contenu.css, .nova-seq-ress[data-type]). */
+.wimsbody .nova-seq-contenu { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--nova-e4, 16px); align-items: start; }
+.wimsbody .nova-seq-contenu-carte { display: grid; gap: var(--nova-e2); min-width: 0; padding: var(--nova-e3); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); }
+.wimsbody .nova-seq-contenu-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.wimsbody .nova-seq-contenu-tete h3 { margin: 0; font-size: 1rem; }
+.wimsbody .nova-seq-contenu-compte { color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.wimsbody .nova-seq-contenu-tete .nova-seq-modif-avis { flex: 1 1 100%; }
+.wimsbody input.nova-seq-contenu-recherche { box-sizing: border-box; width: 100%; max-width: none; min-height: 40px; margin: 0; padding: 0 10px; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); font: inherit; }
+.wimsbody .nova-seq-contenu-filtres { display: flex; flex-wrap: wrap; gap: 6px; }
+.wimsbody button.nova-seq-contenu-filtre { min-height: 32px; margin: 0; padding: 0 12px; border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface); color: var(--nova-texte); font: inherit; font-size: .85rem; font-weight: 400; box-shadow: none; text-transform: none; letter-spacing: 0; cursor: pointer; }
+.wimsbody button.nova-seq-contenu-filtre[aria-pressed='true'] { border-color: var(--nova-accent); background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
+.wimsbody .nova-seq-contenu-liste { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.wimsbody .nova-seq-contenu-liste > li { margin: 0; }
+.wimsbody .nova-seq-contenu-liste > li::before { content: none; }
+.wimsbody li.nova-seq-ress { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface); }
+.wimsbody li.nova-seq-ress::after { content: ""; grid-column: 2; grid-row: 1; width: 30px; height: 30px; border-radius: var(--nova-rayon-petit); background: var(--nova-type-fond, var(--nova-fond)) var(--nova-type-icone, none) center / 18px no-repeat; }
+.wimsbody .nova-seq-ress-poignee { grid-column: 1; grid-row: 1; display: inline-flex; color: var(--nova-texte-2); cursor: grab; }
+.wimsbody .nova-seq-ress-corps { grid-column: 3; grid-row: 1; display: grid; gap: 2px; min-width: 0; }
+.wimsbody .nova-seq-ress-titre { overflow-wrap: anywhere; font-size: .92rem; line-height: 1.3; }
+.wimsbody .nova-seq-ress-info { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: .78rem; }
+.wimsbody .nova-seq-ress-etat { padding: 0 8px; border-radius: 999px; font-weight: 700; }
+.wimsbody .nova-seq-ress-etat-ok { background: var(--nova-succes-fond, #E3F4EA); color: var(--nova-succes, #1E7A45); }
+.wimsbody .nova-seq-ress-etat-expire { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.wimsbody .nova-seq-ress-etat-cache { background: var(--nova-fond); color: var(--nova-texte-2); border: 1px solid var(--nova-bord); }
+.wimsbody .nova-seq-ress-alerte { color: var(--nova-attention-texte); font-weight: 700; }
+.wimsbody .nova-seq-ress-autre { padding: 0 8px; border-radius: 999px; background: var(--nova-fond); color: var(--nova-texte-2); }
+.wimsbody .nova-seq-ress-actions { grid-column: 4; grid-row: 1; display: flex; gap: 2px; }
+.wimsbody button.nova-seq-contenu-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; min-height: 0; margin: 0; padding: 0; border: 1px solid transparent; border-radius: var(--nova-rayon-petit); background: transparent; color: var(--nova-texte-2); box-shadow: none; cursor: pointer; }
+.wimsbody button.nova-seq-contenu-btn:hover:not(:disabled) { background: var(--nova-fond); color: var(--nova-texte); }
+.wimsbody button.nova-seq-contenu-btn:disabled { opacity: .35; cursor: default; }
+.wimsbody button.nova-seq-contenu-btn:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 1px; }
+.wimsbody ul.nova-seq-contenu-liste button.nova-seq-contenu-btn:not(:disabled) { border-color: var(--nova-bord); color: var(--nova-accent); }
+.wimsbody li.nova-seq-ress-deja { opacity: .6; }
+.wimsbody li.nova-seq-ress-deja .nova-seq-ress-poignee { visibility: hidden; }
+.wimsbody li.nova-seq-ress-glissee { opacity: .45; }
+.wimsbody li.nova-seq-ress-vise-avant { box-shadow: 0 -3px 0 var(--nova-accent); }
+.wimsbody li.nova-seq-ress-vise-apres { box-shadow: 0 3px 0 var(--nova-accent); }
+.wimsbody li.nova-seq-contenu-vide { padding: 10px; border: 2px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon); color: var(--nova-texte-2); font-size: .85rem; text-align: center; }
+.wimsbody .nova-seq-contenu-cible li.nova-seq-contenu-vide { border-color: var(--nova-accent); background: var(--nova-accent-doux); }
+.wimsbody .nova-seq-contenu-annonce { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* Écran tactile : pas de glisser (« + », flèches, corbeille), poignée retirée. */
+@media (hover: none) {
+  .wimsbody .nova-seq-ress-poignee { display: none; }
+  .wimsbody li.nova-seq-contenu-deposer { display: none; }
+  .wimsbody li.nova-seq-ress { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .wimsbody li.nova-seq-ress::after { grid-column: 1; }
+  .wimsbody .nova-seq-ress-corps { grid-column: 2; }
+  .wimsbody .nova-seq-ress-actions { grid-column: 3; }
+}

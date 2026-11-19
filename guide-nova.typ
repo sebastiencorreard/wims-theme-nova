@@ -4,7 +4,7 @@
 // verifier.sh le recompile dans guide-nova.pdf (dans le dépôt, à commiter avec ce source) et contrôle qu'il nomme
 // chaque fichier ; livrer.sh en met une copie datée dans l'archive (si typst est installé).
 //
-// revue de structure : 2026-11-14 (première version). Changer cette ligne à chaque revue (@annexe-maintenir) :
+// revue de structure : 2026-11-19 (70-enseignant.js découpé : 71-sequences.js, 72-travail-individualise.js). Changer cette ligne à chaque revue (@annexe-maintenir) :
 // verifier.sh compte les commits depuis la dernière modification de cette ligne.
 
 #let version = read("/VERSION").split("\n").at(0)
@@ -90,7 +90,7 @@
   [changer un accueil (visiteur, élève, enseignant)], [`visitor|user|supervisor.phtml`, `accueil.css` (@accueils)],
   [toucher aux exercices, examens, feuilles, notes], [`js/src/30` à `50`, `contenu.css`, `chrono.css` (@exercices à @feuilles)],
   [toucher aux badges, avatar, couleur, « Mon activité »], [`_procs/*.awk`, widgets, `js/src/60` à `62` (@recompenses)],
-  [toucher aux pages de l'enseignant ou au suivi en direct], [`70-enseignant.js`, `composants-enseignant.css`, `suivi*` (@enseignant, @suivi)],
+  [toucher aux pages de l'enseignant ou au suivi en direct], [`js/src/70` à `72`, `composants-enseignant.css`, `suivi*` (@enseignant, @suivi)],
   [ajouter une icône], [jeu Lucide, `icones/` (@icones)],
   [passer à une nouvelle version de WIMS], [`ORIGINES.sha256` et les copies de WIMS (@wims)],
   [livrer une version], [`./livrer.sh`, `VERSION`, `CHANGELOG.md`, ce guide (@livrer)],
@@ -692,7 +692,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources`, `sequencesEnseignant`)],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `etatsRessources`), `71-sequences.js` (`sequencesEnseignant`)],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -966,8 +966,8 @@ s'affiche ; élément de saison hors de son mois.]
 
 == Ajouter un bouton ou une action à une page de l'enseignant <enseignant>
 
-#ou[`js/src/70-enseignant.js` (le plus gros fichier : configuration, fiches de feuille et d'examen, séquences,
-confirmations, export…), `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
+#ou[`js/src/70-enseignant.js` (le plus gros fichier : configuration, fiches de feuille et d'examen, confirmations,
+export…), `71-sequences.js` (séquences pédagogiques : liste, page Modifier), `72-travail-individualise.js`, `_css/composants-enseignant.css`, widgets de textes (`fiche-ressource.phtml`,
 `config-globale.phtml`, `capacite.phtml`, `acces-classe.phtml`, `confirmations.phtml`) et d'action
 (`desactiver.phtml` + `_procs/desactiver.sh`, `propager.phtml` + `_procs/propager.sh`, `ecarts-zones.phtml`,
 `sequences.phtml` + `_procs/sequences.sh`, `participants-zones.phtml`).]
@@ -1073,7 +1073,7 @@ de tâche, nombre d'étoiles = niveau) et marche sans Nova. La carte de l'enseig
 - `ti/construire-moteur.py` produit `ti/moteur-ti.src` (latin-1) : le modifier, relancer `python3 ti/construire-moteur.py`,
   et *augmenter le numéro de version* de la première ligne quand la page change pour l'élève (la carte annonce alors
   « Elle sera mise à jour ») ;
-- `js/src/70-enseignant.js`, `travailIndividualise` : la carte de l'onglet « Page de présentation »
+- `js/src/72-travail-individualise.js`, `travailIndividualise` : la carte de l'onglet « Page de présentation »
   (`adm/class/sheet`, `#prpage`). Elle relit le moteur sur le serveur (`#nova-ti-moteur`, header.phtml), y remplace
   les trois lignes `ti_mode`, `ti_seuil`, `ti_ordre`, garde les lignes `tx_` de la page en place (textes modifiés à la
   main par l'enseignant) et envoie le formulaire de WIMS ;
@@ -1460,6 +1460,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == Écrire et calculer sur le serveur
 
+#piege[Une séquence enregistrée avec d'autres ressources que celles choisies][
+  Après « Enregistrer » sur l'onglet Contenu d'une séquence, la liste du fichier `seq/.sequence<n>` (3#super[e] ligne)
+  ne correspond pas aux rangs donnés, ou garde une ressource retirée.
+][
+  `addseq.proc` met bout à bout les valeurs de TOUS les champs de rang (`sheet_1`, `exam_2`…) puis cherche chaque rang
+  par sa position dans cette suite : un champ vide n'y laisse pas de place et décale tout.
+][
+  Écrire `0` (jamais vide) pour une ressource hors séquence, comme le dit la consigne de WIMS
+  (`contenuSequence`, `71-sequences.js`). Sur la même page, WIMS vide `$save` avant `header.phtml` et `seq` n'est pas
+  dans le formulaire : un widget lit `save` dans la requête et le numéro dans `$seq`.
+]
+
 #piege[Un `!writefile` qui n'écrit rien][
   Le fichier attendu n'existe pas, sans aucun message d'erreur.
 ][
@@ -1553,7 +1565,7 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   (`moveup.proc`).
 ][
   `sequences.sh partage` liste les classes de `sharable_seq` (vérifiées par leur `sharing_seq`) ; `plage … partage`
-  y écrit la plage, `deplacer` y fait suivre les `.S<n>`, `copier N` y recopie la plage enregistrée par la page
+  y écrit la plage, `deplacer` y fait suivre les `.S<n>`, `contenus` donne titre et ressources de chaque séquence (étiquette « Chapitre 1 » de l'onglet Contenu), `copier N` y recopie la plage enregistrée par la page
   Modifier (envoyé seulement si l'affichage a changé ou diffère d'une classe en partage) (le widget lit `save` dans la requête, WIMS l'ayant vidé, et `$seq`, gardé en session : il n'est pas dans le
   formulaire). Essai : `banc-nova/sequences-partage-test.mjs`, partage posé
   à la main (liens et fichiers `neighbors`), à défaire après.
@@ -1853,7 +1865,8 @@ Lue dans `js/src/` : description de chaque fichier (sa ligne `/* ===== … =====
 niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "function nom" js/src/*.js`.
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
-  "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js", "80-reglages.js", "99-demarrage.js")
+  "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
+  "71-sequences.js", "72-travail-individualise.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))
@@ -2464,6 +2477,9 @@ entrée.
     l'accueil et les modules `adm/…`. Un _gabarit_ du thème n'a que les droits du module de la page.][@serveur],
   ..terme[OEF][_Online Exercise Format_ : le format de la plupart des exercices de WIMS. Une page d'exercice OEF
     utilise beaucoup de variables (voir _tampon des noms_).][@exercices],
+  ..terme[Partage (classes en partage)][Une _classe_ peut partager avec d'autres ses feuilles, ses examens, ses
+    _séquences_… (Configuration › Partage). La classe qui reçoit a des liens vers les dossiers de celle qui partage :
+    une seule copie, des réglages parfois propres à chaque classe (affichage d'une séquence, `.S<n>`).][@pieges],
   ..terme[Point d'accroche][Fichier du thème que WIMS lit à un endroit fixe de la page (`header.phtml`,
     `tail.phtml`, accueils…). Il n'y en a pas d'autres.][@assemblage],
   ..terme[Portail][_Structure_ d'établissement organisée en niveaux, programmes et cours ; le travail s'y fait

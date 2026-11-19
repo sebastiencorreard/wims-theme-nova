@@ -17,7 +17,7 @@
 !! nova_seq_partage=1 dans l'adresse : la plage est aussi ecrite dans ces classes (interrupteur de la fenetre de nova.js) ;
 !! depuis la page Modifier (job=addseq, champ du formulaire), recopiee apres l'enregistrement de WIMS (save lu dans la requete, $seq).
 !! #nova-seq-modifier (job=addseq) : plages de la classe, heure du serveur, dates de la classe, classes en partage, leurs plages
-!! et leurs noms (interrupteur : ce qu'elles montrent aujourd'hui).
+!! et leurs noms (interrupteur : ce qu'elles montrent aujourd'hui) ; #nova-seq-contenus : titres et ressources des sequences.
 !if $module=adm/class/sequence and $wims_user=supervisor
   !set nova_q=!sh printf '%s' "$$QUERY_STRING"
   !set nova_q=!replace internal & by $ $ in $nova_q
@@ -92,6 +92,13 @@
   !if $job=addseq
     !set nova_sp=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" plages
     !set nova_sp=!text select 0123456789abcdefghijklmnopqrstuvwxyz:,; in $nova_sp
+    !! Onglet Contenu (2026-11-19, utilisateur, maquette A) : titres et ressources de toutes les sequences (nova_s1 reutilise),
+    !! mot generique (nova_mo).
+    !set nova_s1=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/sequences.sh "$wims_home" "$wims_class" contenus | tr '\n' ';' | tr -d '<"'
+    !set nova_mo=!defof sequence_Title in wimshome/log/classes/$wims_class/seq/.def
+    !set nova_mo=!replace internal " by &quot; in $nova_mo
+    !set nova_mo=!replace internal < by &lt; in $nova_mo
+<span id="nova-seq-contenus" hidden data-contenus="$nova_s1" data-mot="$nova_mo"></span>
 <span id="nova-seq-modifier" hidden data-plages="$nova_sp" data-partage="$nova_sd" data-partage-plages="$nova_s1" data-partage-noms="$nova_s2" data-maintenant="$wims_now" data-creation="$class_creation" data-expiration="$class_expiration"></span>
   !endif
   !if $job=show or $job=$empty

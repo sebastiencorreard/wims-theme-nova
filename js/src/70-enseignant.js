@@ -808,7 +808,7 @@
     var n = f.getAttribute('data-n');
     var b = document.createElement('button');
     b.type = 'button';
-    b.className = 'wims_button wims_warning nova-forcer-bouton';
+    b.className = 'nova-forcer-lien nova-forcer-bouton';
     b.textContent = f.getAttribute('data-bouton') || 'Deactivate anyway...';
     var d = document.createElement('dialog');
     d.className = 'nova-dialogue nova-forcer';
@@ -2368,19 +2368,30 @@
         var msg = messageWims(doc);
         var cause = function (f) {
           if (!msg) return;
+          // Sans l'intitulé « WIMS refuse » (2026-11-19, utilisateur) : le titre le dit déjà.
           var boite = el('div', 'nova-conf-cause');
-          boite.appendChild(el('b', '', t('wims-refuse')));
           boite.appendChild(msg);
           f.corps.appendChild(boite);
         };
+        // Passer outre au partage (2026-11-19, utilisateur : à décourager) : d'abord le refus et « Annuler » (choisi, Entrée
+        // annule) ; un lien discret « Désactiver quand même... » montre ensuite l'avertissement détaillé (remplirForcer).
         if (forcer && !forcer.hasAttribute('data-refus')) {
-          var titreF = (forcer.getAttribute('data-titre') || '').replace('%1', c.n);
-          var f1 = fenetre('alerte', 'r', titreF || t('refus-' + c.type, c.n), c.titre);
+          var f1 = fenetre('alerte', 'r', t('refus-' + c.type, c.n), c.titre);
           cause(f1);
-          f1.boutons.remove();
-          var fait = remplirForcer(forcer, f1.d, c.n, c.accueil ? lienAccueil('') : null);
-          fait.annuler.addEventListener('click', function () { f1.d.close(); });
-          fait.ok.focus();
+          var lienF = el('button', 'nova-forcer-lien', forcer.getAttribute('data-bouton') || 'Deactivate anyway...');
+          lienF.type = 'button';
+          f1.corps.appendChild(lienF);
+          var annulerF = annuler(f1);
+          lienF.addEventListener('click', function () {
+            var titreF = (forcer.getAttribute('data-titre') || '').replace('%1', c.n);
+            if (titreF) f1.d.querySelector('#nova-conf-titre').textContent = titreF;
+            lienF.remove();
+            f1.boutons.remove();
+            var fait = remplirForcer(forcer, f1.d, c.n, c.accueil ? lienAccueil('') : null);
+            fait.annuler.addEventListener('click', function () { f1.d.close(); });
+            fait.annuler.focus();
+          });
+          annulerF.focus();
           return;
         }
         if (oui) {

@@ -28,6 +28,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Désactiver un examen ou une feuille partagés : la fenêtre dit d'abord le refus, « Annuler » est choisi ; un lien discret « Désactiver quand même… » mène à l'avertissement détaillé.
 - Accueil : le bouton « Créer le DM noté » s'appelle désormais « DM noté » (icône inchangée).
 - Accueil : les cartes ont la largeur habituelle des contenus au lieu de toute la largeur de l'écran.
 - Accueil : le tableau des documents n'occupe plus toute la largeur d'un grand écran.

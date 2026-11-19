@@ -860,7 +860,9 @@ html.nova-clavier-ouvert .nova-seq-enreg-fixe { display: none !important; }
  * de liste, recherche et boutons : ceux du contenu d'une séquence (.nova-seq-contenu…). */
 .wimsbody .nova-ex-resultat { margin: 0; padding: 6px 10px; border-radius: var(--nova-rayon-petit); background: var(--nova-succes-fond, #E3F4EA); color: var(--nova-succes, #1E7A45); font-size: var(--nova-petit); font-weight: 700; }
 .wimsbody .nova-ex-resultat-refus { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
-.wimsbody .nova-ex-lecture-avis { margin: 0; color: var(--nova-texte-2); font-size: var(--nova-petit); }
+.wimsbody .nova-ex-lecture-avis { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 16px; border: 1px solid color-mix(in srgb, var(--nova-info) 30%, transparent); border-left: 4px solid var(--nova-info); border-radius: var(--nova-rayon); background: var(--nova-info-fond); color: var(--nova-info); font-weight: 700; }
+.nova-etat-ico[data-icone='cadenas'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E"); }
+.wimsbody .nova-ex-lecture-avis .nova-etat-ico { flex: none; width: 20px; height: 20px; }
 .wimsbody ol.nova-ex-cartes { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .wimsbody ol.nova-ex-cartes > li { margin: 0; }
 .wimsbody ol.nova-ex-cartes > li::before { content: none; }

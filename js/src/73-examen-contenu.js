@@ -69,7 +69,13 @@
       var r = /^ok(\d+)$/.exec(resultat);
       gauche.carte.appendChild(el('p', 'nova-ex-resultat' + (r ? '' : ' nova-ex-resultat-refus'), r ? (r[1] === '1' ? t('fait-1') : t('fait', r[1])) : t('refus', resultat)));
     }
-    if (!modifiable) gauche.carte.appendChild(el('p', 'nova-ex-lecture-avis', t('lecture')));
+    // Examen actif : bandeau d'information au-dessus des deux listes (2026-11-19, utilisateur : « plus en exergue »).
+    if (!modifiable) {
+      var avisLecture = el('p', 'nova-ex-lecture-avis');
+      avisLecture.appendChild(icone('cadenas'));
+      avisLecture.appendChild(el('span', '', t('lecture')));
+      zone.insertBefore(avisLecture, gauche.carte);
+    }
     var liste = el('ol', 'nova-ex-cartes');
     liste.setAttribute('aria-label', t('titre-gauche'));
     gauche.carte.appendChild(liste);

@@ -24,5 +24,16 @@
   !if $nova_nu!=$empty
     !set nova_ns=!sh c="$wims_home/log/classes/$wims_class"; [ -f "$$c/score/$nova_nu.exam" ] && awk 'FNR==1 {f++} f==1 { if (substr($$0,1,1)==":") {n++; k=0} else {k++; if (k==2) t[n]=$$2} } f==2 && $$2=="00" {s[$$1]++} END { for (i=1;i<=n;i++) if (s[i]) printf "%d:%d:%d ", i, s[i], t[i] }' "$$c/exams/.exams" "$$c/score/$nova_nu.exam" 2>/dev/null
   !endif
-<div id="nova-notes-sessions" hidden data-sessions="$nova_ns"></div>
+!! Indicateur du bareme de chaque feuille (2026-11-22, utilisateur : la ligne d'un exercice montre l'indicateur qui compte
+!! pour la note) : 3e mot de la ligne <feuille+1> de sheets/.severity (0 cumul, 1 reussite, 2 acquis) ; absent ou
+!! illisible : 3e mot de DF_SEVERITY, comme scripts/adm/class/sheetweights (WIMS calcule la note avec, mais getuser.phtml
+!! ne montre alors aucune colonne d'indicateur a l'eleve).
+!! Variables : nova_nid indicateur par defaut ; nova_ni mots "feuille:indicateur".
+  !set nova_nid=!defof DF_SEVERITY in wimshome/public_html/bases/sys/define.conf
+  !set nova_nid=!word 3 of $nova_nid
+  !set nova_nid=!text select 012 in $nova_nid
+  !set nova_nid=!char 1 of $nova_nid
+  !default nova_nid=1
+  !set nova_ni=!sh f="$wims_home/log/classes/$wims_class/sheets/.severity"; [ -f "$$f" ] && awk -v d=$nova_nid 'NR>1 { s=$$3; if (s !~ /^[012]$$/) s=d; printf "%d:%s ", NR-1, s }' "$$f" 2>/dev/null
+<div id="nova-notes-sessions" hidden data-sessions="$nova_ns" data-indicateurs="$nova_ni" data-indicateur-defaut="$nova_nid"></div>
 !endif

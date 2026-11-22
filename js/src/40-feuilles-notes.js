@@ -513,7 +513,14 @@
       cacher(examens, bloc);
     }
 
-    // Feuilles.
+    // Feuilles. Indicateur du bareme de chaque feuille (#nova-notes-sessions : mots "feuille:indicateur", defaut).
+    var srcI = document.getElementById('nova-notes-sessions');
+    var indDefaut = srcI && /^[012]$/.test(srcI.getAttribute('data-indicateur-defaut') || '') ? +srcI.getAttribute('data-indicateur-defaut') : 1;
+    var indFeuilles = {};
+    ((srcI && srcI.getAttribute('data-indicateurs')) || '').trim().split(/\s+/).forEach(function (mot) {
+      var mi = /^(\d+):([012])$/.exec(mot);
+      if (mi) indFeuilles[mi[1]] = +mi[2];
+    });
     var section = null;
     Array.prototype.forEach.call(feuilles, function (t, rang) {
       var ths = Array.prototype.slice.call(t.querySelectorAll('thead tr:last-child > th'));
@@ -549,21 +556,52 @@
       bloc1.appendChild(el('span', 'nova-nd-chevron'));
       resume.appendChild(bloc1);
       // Exercices.
+      // Valeur de la ligne (2026-11-22, utilisateur) : l'indicateur du bareme de la feuille (0 cumul, 1 reussite, 2 acquis ;
+      // #nova-notes-sessions, _widgets/notes-detail.phtml), pas la qualite. Colonnes de WIMS : No, Titre, Points requis,
+      // Poids, Qualite, puis l'indicateur (eleve : le seul du bareme ; enseignant : les trois), Dernier resultat, Essais.
+      // Eleve sans colonne d'indicateur (bareme sans 3e mot : WIMS ne la montre pas) : la qualite, comme avant.
+      var numF = thead && /(\d+)$/.exec(thead.id);
+      var ind = numF && indFeuilles[numF[1]] !== undefined ? indFeuilles[numF[1]] : indDefaut;
+      var iInd = noms.length === 10 ? 5 + ind : (noms.length === 8 ? 5 : -1);
       var lignes = [], faits = 0;
       var iQual = noms.length > 4 ? 4 : -1;
+      var iDer = noms.length - 2;
+      // Valeurs sur 10 (qualite, dernier resultat, acquis) : « /10 » ajoute ; cumul et reussite : pourcentage de WIMS.
+      var sur10 = function (c) { return c === iQual || c === iDer || (noms.length === 10 ? c === 7 : (c === iInd && ind === 2)); };
+      var valeur = function (c, cel) { var s = propre(cel.textContent); return sur10(c) && !isNaN(nombre(s)) ? s + '/10' : s.replace(/\s*%$/, ' %'); };
       Array.prototype.forEach.call(t.querySelectorAll('tbody > tr'), function (tr) {
         var td = Array.prototype.slice.call(tr.cells);
         if (td.length < 2) return;
         var fait = td.length === noms.length && iQual >= 0 && !isNaN(nombre(td[iQual].textContent)) && propre(td[iQual].textContent) !== '--';
         var qual = fait ? nombre(td[iQual].textContent) : NaN;
         if (fait) faits++;
+        // Valeur et couleur de la ligne : indicateur (pourcentage ramene sur 10 pour la couleur), sinon qualite.
+        var iVal = iInd >= 0 ? iInd : iQual;
+        var v = fait ? nombre(td[iVal].textContent) : NaN;
+        var niv = niveau(Math.ceil(iVal === iInd && ind !== 2 ? v / 10 : v));
         var infos = [];
-        var essais = null;
-        if (fait) td.forEach(function (cel, c) {
-          if (c < 5 || !noms[c]) return;
-          var tt = cel.querySelector('.wims_tooltip');
-          if (tt) {
-            infos.push(noms[c] + ' : ' + propre(tt.firstChild.textContent));
+        var essais = null, phraseEssais = '';
+        if (fait) {
+          // Indicateur d'abord, puis qualite, puis le reste (enseignant : les deux autres indicateurs ; dernier resultat).
+          var ordre = [];
+          if (iInd >= 0) ordre.push(iInd);
+          ordre.push(iQual);
+          for (var c0 = 5; c0 < td.length; c0++) if (c0 !== iInd) ordre.push(c0);
+          ordre.forEach(function (c) {
+            var cel = td[c];
+            if (!noms[c] || !cel) return;
+            var tt = cel.querySelector('.wims_tooltip');
+            if (!tt) { infos.push(noms[c] + ' : ' + valeur(c, cel)); return; }
+            // Essais : « 2 + 0 » ou « (2 + 0) | 5 » de WIMS (notes, abandonnes, plafond de l'enseignant), dits en clair.
+            var brut = propre(tt.firstChild.textContent);
+            var me = /(\d+)\s*\+\s*(\d+)\s*\)?\s*(?:\|\s*(\d+))?/.exec(brut);
+            if (me) {
+              var nN = +me[1], nA = +me[2], morceaux = [];
+              morceaux.push(nN ? pluriel(nN, texte('essai-note', '%1 scored try'), texte('essais-notes', '%1 scored tries')) : texte('essai-zero', 'no scored try'));
+              morceaux.push(nA ? pluriel(nA, texte('abandon', '%1 left unfinished'), texte('abandons', '%1 left unfinished')) : texte('abandon-zero', 'none left unfinished'));
+              if (me[3]) morceaux.push(texte('essais-max', 'at most %1 counted').replace('%1', me[3]));
+              phraseEssais = morceaux.join(POINT);
+            } else phraseEssais = noms[c] + ' : ' + brut;
             var graines = tt.querySelectorAll('.wims_seed_item');
             if (graines.length) {
               essais = el('span', 'nova-nd-essais');
@@ -577,15 +615,15 @@
                 essais.appendChild(c2);
               });
             }
-          } else infos.push(noms[c] + ' : ' + propre(cel.textContent));
-        });
-        lignes.push({ td: td, fait: fait, qual: qual, infos: infos, essais: essais });
+          });
+        }
+        lignes.push({ td: td, fait: fait, qual: qual, iVal: iVal, niv: niv, infos: infos, essais: essais, phraseEssais: phraseEssais });
       });
       var pNote = bloc1.querySelector('.nova-nd-pastille');
       if (pNote && lignes.length && !faits) pNote.classList.add('nova-nd-vide');   // rien de commencé : grise (maquette A)
       var seg = el('div', 'nova-nd-segments');
       seg.setAttribute('aria-hidden', 'true');
-      lignes.forEach(function (l) { seg.appendChild(el('i', 'nova-nd-n-' + niveau(Math.ceil(l.qual)))); });
+      lignes.forEach(function (l) { seg.appendChild(el('i', 'nova-nd-n-' + l.niv)); });
       if (lignes.length) resume.appendChild(seg);
       var bas = indicateurs.slice();
       if (lignes.length) bas.push(faits ? pluriel(faits, texte('commence', '%1 of %2 exercises started'), texte('commences', '%1 of %2 exercises started'), lignes.length) : texte('pas-commence', 'Not started yet'));
@@ -595,16 +633,19 @@
         var tete = el(l.fait ? 'summary' : 'div', 'nova-nd-ligne' + (l.fait ? '' : ' nova-nd-pas-fait'));
         tete.appendChild(el('span', 'nova-nd-num', propre(l.td[0].textContent)));
         tete.appendChild(el('span', 'nova-nd-nom', propre(l.td[1].textContent)));
-        var q = el('span', 'nova-nd-qualite nova-nd-n-' + niveau(Math.ceil(l.qual)), l.fait ? propre(l.td[iQual].textContent) : TIRET);
-        if (noms[iQual]) q.title = l.fait ? noms[iQual] : texte('pas-fait', 'Not done yet');
+        var q = el('span', 'nova-nd-qualite nova-nd-n-' + l.niv, l.fait ? valeur(l.iVal, l.td[l.iVal]) : TIRET);
+        if (noms[l.iVal]) q.title = l.fait ? noms[l.iVal] : texte('pas-fait', 'Not done yet');
         tete.appendChild(q);
         if (!l.fait) { carte.appendChild(tete); return; }
         var ex = el('details', 'nova-nd-rang');
         ex.appendChild(tete);
         var d = el('div', 'nova-nd-rang-detail');
-        var l1 = el('div', '', l.infos.join(POINT));
-        if (l.essais) l1.appendChild(l.essais);
-        d.appendChild(l1);
+        d.appendChild(el('div', '', l.infos.join(POINT)));
+        if (l.phraseEssais || l.essais) {
+          var l2 = el('div', '', l.phraseEssais);
+          if (l.essais) l2.appendChild(l.essais);
+          d.appendChild(l2);
+        }
         var fixes = [];
         [2, 3].forEach(function (c) { if (l.td[c] && noms[c]) fixes.push(noms[c] + ' : ' + propre(l.td[c].textContent)); });
         if (fixes.length) d.appendChild(el('div', '', fixes.join(POINT)));

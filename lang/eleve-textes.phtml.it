@@ -48,7 +48,7 @@
 
 :notes_detail
 !! _widgets/notes-detail.phtml (nova.js notesDetail)
-<template id="nova-notes-textes" data-titre="I miei voti" data-examen-restant="%1 esame non ancora svolto" data-examens-restants="%1 esami non ancora svolti" data-commence="%1 esercizio su %2 iniziato" data-commences="%1 esercizi su %2 iniziati" data-pas-commence="Non ancora iniziato" data-pas-fait="Non ancora fatto" data-ouvrir="Apri il foglio" data-feuilles="Fogli di esercizi" data-retenue="Voto considerato: %1 (la tua sessione migliore)" data-retenue-prof="Voto considerato: %1 (sessione migliore)" data-session="%1 sessione iniziata" data-sessions="%1 sessioni iniziate" data-reste="ne restano %1" data-reste-zero="non ne restano"></template>
+<template id="nova-notes-textes" data-titre="I miei voti" data-examen-restant="%1 esame non ancora svolto" data-examens-restants="%1 esami non ancora svolti" data-commence="%1 esercizio su %2 iniziato" data-commences="%1 esercizi su %2 iniziati" data-pas-commence="Non ancora iniziato" data-pas-fait="Non ancora fatto" data-ouvrir="Apri il foglio" data-feuilles="Fogli di esercizi" data-retenue="Voto considerato: %1 (la tua sessione migliore)" data-retenue-prof="Voto considerato: %1 (sessione migliore)" data-session="%1 sessione iniziata" data-sessions="%1 sessioni iniziate" data-reste="ne restano %1" data-reste-zero="non ne restano" data-essai-note="%1 tentativo valutato" data-essais-notes="%1 tentativi valutati" data-essai-zero="nessun tentativo valutato" data-abandon="%1 abbandonato" data-abandons="%1 abbandonati" data-abandon-zero="nessuno abbandonato" data-essais-max="al massimo %1 contati"></template>
 !exit
 
 :feuille

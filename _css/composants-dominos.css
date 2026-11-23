@@ -162,6 +162,8 @@ html.nova-dominos:not(.nova-std-dominos) .oef_indgood .drag_content > table.wims
  * ligne, serrées contre le bord droit, et leur place vide à la ligne suivante (trou entre deux rangées de cases). */
 html.nova-dominos:not(.nova-std-dominos) a[id^="fill"],
 html.nova-tuiles:not(.nova-std-dominos) a[id^="fill"] { display: inline-block; }
+/* Cases sur une figure (nova.js tuiles) : repère laissé en ligne, comme WIMS (en bloc, il remontait les cases de 2 px). */
+html.nova-tuiles-figure:not(.nova-std-dominos) a[id^="fill"]:not([id^="fillobj"]) { display: inline; }
 /* Cases dans un tableau (E4/number/oefoperation addition2, addition posée ; signalé par l'utilisateur, 2026-11-11) :
  * la place réservée n'est jamais réduite (sinon les cases, de taille fixe, se chevauchent) et reste sur la ligne de sa
  * cale (sinon chaque rangée double de hauteur). Trop large : nova.js (tuiles) le centre sur l'écran. */
@@ -234,6 +236,11 @@ html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:not(.nova-tuile-v
  * symbole (image) remplit sa tuile, agrandie à 44 px dans la réserve, à la taille de l'auteur sur la figure. */
 html.nova-tuiles-figure:not(.nova-std-dominos) .wims_grabbable :is(.wims_fill_object, .fill_content){ width: 100%; height: 100%; padding: 0; display: flex; align-items: center; justify-content: center; }
 html.nova-tuiles-figure:not(.nova-std-dominos) .wims_grabbable .fill_content img{ width: 100%; height: 100%; max-width: none; object-fit: contain; }
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_grabbable.nova-tuile-sur-figure:not([style*="rgb(96, 96, 255)"]){ border: 0 !important; border-radius: 0; box-shadow: none; }
+/* Case remplie sur la figure (mode clic : WIMS y recopie le symbole) : ni creux ni fond, le symbole à sa place exacte. */
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_droppable[style*="rgb(192, 192, 192)"]{ background: transparent !important; box-shadow: none; border-radius: 0; }
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_droppable :is(.wims_fill_object, .fill_content){ width: 100%; height: 100%; padding: 0; line-height: 0; }
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_droppable .fill_content img{ display: block; width: 100%; height: 100%; max-width: none; }
 
 /* Cases creusées ; le « ? » de WIMS masqué tant que la case n'est pas remplie. */
 html.nova-tuiles:not(.nova-std-dominos) .wims_droppable{

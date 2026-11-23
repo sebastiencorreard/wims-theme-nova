@@ -199,9 +199,12 @@
       ligne.juste.classList.add('nova-verdict-juste');
       el.appendChild(ligne.juste);
     };
+    // Reponse de l'eleve non vide : du texte, ou une image ou une formule seule (etiquettes images d'un exercice a cases,
+    // H1/geometry/oefevalwimssym : prises pour des cases vides, signale par l'utilisateur le 2026-11-23).
+    var reponseDonnee = function (el) { return !!(el.textContent.trim() || el.querySelector('img, svg, math, mjx-container')); };
     // Réponse hors énoncé, fausse : copie de la réponse de l'élève, en rouge.
     var eleve = function (ligne) {
-      if (!ligne.eleve || ligne.champs.length || ligne.etat === 'bonne' || !ligne.eleve.textContent.trim()) return;
+      if (!ligne.eleve || ligne.champs.length || ligne.etat === 'bonne' || !reponseDonnee(ligne.eleve)) return;
       var p = document.createElement('p');
       p.className = 'nova-verdict-eleve';
       p.appendChild(document.createTextNode(texte('votre-reponse', 'Your answer:') + ' '));
@@ -269,7 +272,7 @@
           return;
         }
         var celBonne = tr.insertCell();
-        var donnee = ligne.eleve && ligne.eleve.textContent.trim() ? document.createElement('span') : null;
+        var donnee = ligne.eleve && reponseDonnee(ligne.eleve) ? document.createElement('span') : null;
         if (donnee) {
           while (ligne.eleve.firstChild) donnee.appendChild(ligne.eleve.firstChild);
           donnee.className = ligne.etat === 'bonne' ? 'nova-juste' : ligne.etat === 'mauvaise' ? 'nova-faux' : 'nova-partiel';
@@ -1113,6 +1116,8 @@
         // Dynapi ecrit la taille d'un calque deja affiche sans unite (css.width = 24, dynlayer_base.js setSize), ce que le
         // navigateur ignore : une tuile de la reserve (44 px) posee sur la figure (24 px) garderait 44 px. Unite remise.
         if (figure && this.css && this.w != null && this.h != null) { this.css.width = this.w + 'px'; this.css.height = this.h + 'px'; }
+        // Tuile posee sur la figure : sans bord ni ombre (CSS), le symbole retombe sur les traits de la figure.
+        if (figure && this.elm && this.elm.classList && /wims_grabbable/.test(this.elm.className)) this.elm.classList.toggle('nova-tuile-sur-figure', !!a && !/^fillobj/.test(a.leftA || ''));
         return r;
       };
       if (nsx !== sx || nsy !== sy) racine.classList.add('nova-tuiles-agrandies');

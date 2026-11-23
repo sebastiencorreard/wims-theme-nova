@@ -1815,7 +1815,10 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Dynapi écrit la taille d'un calque déjà affiché sans unité (`css.width = 24`) : le navigateur l'ignore.
 ][
   Lire la taille sur l'ancrage de la réserve (`leftA:'fillobj'`). Avec `f_bigimage` (`html.nova-tuiles-figure`),
-  n'agrandir que la réserve et remettre `px` après chaque ancrage ; ne jamais toucher aux places sur la figure.
+  n'agrandir que la réserve et remettre `px` après chaque ancrage ; ne jamais toucher aux places sur la figure. Laisser
+  le repère `fill1` en ligne (en bloc, il remonte les cases de 2 px) ; en mode clic, WIMS recopie le symbole DANS la case :
+  case remplie sans fond ni arrondi, image en bloc. Correction : une réponse faite d'une image seule n'a pas de texte, la
+  tester par `reponseDonnee` (sinon case vide).
 ]
 
 #piege[Un sélecteur qui attrape trop][

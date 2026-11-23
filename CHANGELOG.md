@@ -10,6 +10,7 @@ En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Luc
 flyers à imprimer, restriction d'accès en quelques clics, configuration en cartes, Nova en espagnol et en italien.
 
 ### Élèves
+- **Exercices réussis** : une seule règle partout (accueil, séquences, page d'une feuille) : réussi au-delà de 90 % des points demandés, comme WIMS, au lieu de 100 % sur la page de la feuille. Les pastilles de la page d'une feuille et la barre de chaque exercice prennent la couleur de l'état (orange en cours, vert réussi) au lieu de celle de la qualité ; « brillamment réussi » : pastille verte avec une étoile blanche et « ★ Réussi », au lieu du vert foncé cerclé de jaune.
 - **Mes notes** : la ligne d'un exercice montre la **réussite** (ou l'indicateur choisi par l'enseignant dans « Barème » : cumul, acquis) au lieu de la qualité ; la toucher donne la qualité, le dernier résultat et les essais en clair (« 3 essais notés · 1 abandonné ») au lieu de « 3 + 1 ». La barre colorée de chaque feuille suit la même valeur.
 - **Fin de session par inactivité** (élèves et enseignants) : cinq minutes avant que WIMS déconnecte un compte resté sans activité (1 h 30 par défaut), un message orange le dit, avec un bouton « Rester connecté(e) » ; à l'échéance, une fenêtre « Session expirée » propose de se reconnecter, au lieu de continuer sans s'en rendre compte en visiteur (exercice sans note). Remplace la fenêtre de WIMS (une minute avant), gardée avec le réglage « textes » du thème standard.
 - Zone Élèves, liste des classes : « protégé » et « ouvert » en pastilles avec un cadenas (gris, vert) au lieu d'étiquettes encadrées.
@@ -29,6 +30,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- Réglages de Nova, onglet Élèves : **seuil « Exercice réussi »** (plus de 90 % des points demandés par défaut, règle de WIMS), appliqué aux pastilles de l'accueil, des séquences et de la page d'une feuille.
 - Séquences : déplacer une séquence ou changer son affichage ne recharge plus la page (la liste se met à jour aussitôt ; flèches et glisser-déposer en pause une seconde et demie) ;
 - Accueil : infobulle « Utilisé dans quelles séquences pédagogiques ? » sur le titre de la colonne des séquences ;
 - Accueil : l'onglet « Feuilles » s'ouvre par défaut (plutôt que « Documents ») ; un onglet choisi reste ouvert pendant la session (aussi pour les élèves) ;

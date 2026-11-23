@@ -475,7 +475,8 @@ li.wims_sheet_item:not(:has(a)):hover, li.wims_exam_item:not(:has(a)):hover, li.
 /* ---------- Barres de score (charte Nova) ----------
  * Feuille : un segment arrondi par exercice + compteur « réussis/total » ; examen : pastille de
  * note. Couleurs (WIMS les écrit parfois en ligne : !important) :
- *   non commencé var(--nova-note-np) · commencé #F0A830 · réussi #2E9E5B · excellent #17734A (liseré or)
+ *   non commencé var(--nova-note-np) · commencé #F0A830 · réussi #2E9E5B · brillamment réussi : même vert, étoile
+ *   blanche (2026-11-23, utilisateur, variante B ; avant : vert foncé #17734A et liseré or)
  *   · à retravailler #E06A4E ; notes : faible corail, moyen ambre, bon vert (fond doux, texte foncé). */
 :where(html:not(.nova-std-listes)) .wimsbody li.nova-vide, :where(html:not(.nova-std-listes)) .wimsbody .nova-vide{ display: none !important; }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score{
@@ -513,7 +514,8 @@ li.wims_sheet_item:not(:has(a)):hover, li.wims_exam_item:not(:has(a)):hover, li.
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_undone{ background: #F0A830 !important; }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_unwork{ background: #E06A4E !important; }
 :where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done{ background: #2E9E5B !important; }
-:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation{ background: #17734A !important; box-shadow: 0 0 0 2px #E8B931; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation{ position: relative; }
+:where(html:not(.nova-std-listes)) .wims_score_bar.nova-score:not(.nova-score-examen) ol > li.wims_exo_done.wims_congratulation::after{ content: ""; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; transform: translate(-50%, -50%); background: #FFFFFF; pointer-events: none; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 :where(html:not(.nova-std-listes)) .nova-score-compte{
   flex: 0 0 auto;
   color: var(--nova-texte-2);
@@ -680,8 +682,9 @@ html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(a)), html:wh
 :where(html:not(.nova-std-listes)) .nova-scores .nova-score{ display: inline-flex; gap: 4px; align-items: baseline; padding: 2px 8px; border-radius: 999px; background: var(--nova-surface-2); font-size: .8125rem; color: var(--nova-texte-2); white-space: nowrap; }
 :where(html:not(.nova-std-listes)) .nova-scores .nova-score strong{ color: var(--nova-texte); font-weight: 700; }
 :where(html:not(.nova-std-listes)) .nova-barre-reussite{ height: 6px; margin: var(--nova-e2) 0 0; border-radius: 3px; background: var(--nova-surface-2); overflow: hidden; }
-:where(html:not(.nova-std-listes)) .nova-barre-reussite > span{ display: block; height: 100%; border-radius: inherit; background: var(--nova-accent); }
-:where(html:not(.nova-std-listes)) .nova-barre-reussite[data-plein] > span{ background: #2E9E5B; }
+:where(html:not(.nova-std-listes)) .nova-barre-reussite > span{ display: block; height: 100%; border-radius: inherit; background: #F0A830; }
+/* Barre de points de la couleur de l'état, comme les segments de l'accueil (2026-11-23, utilisateur ; avant : accent, vert à 100 %). */
+:where(html:not(.nova-std-listes)) .nova-barre-reussite:is([data-etat="reussi"], [data-etat="brillant"]) > span{ background: #2E9E5B; }
 
 /* ---------- Exercices d'un examen (adm/class/exam, page de l'examen) ---------- */
 /* Cartes comme la feuille d'exercices (maquette A, utilisateur, 2026-10-03) ; contenu rangé par js/nova.js
@@ -1129,18 +1132,17 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
 html.nova-js.nova-role-prof:not(.nova-cartes-pretes) .wimsbody > :is(.wims_greetings, .wims_greetings ~ a.wims_button_help, p.wims_connected, .wims_connected + .wimscenter) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 
 /* Feuille de l'élève, progression d'abord (audit D2, 2026-11-14, utilisateur, maquette B ; nova.js feuilleProgression) :
- * carte d'en-tête (résumé, segments par exercice colorés par la qualité, validité, « Mode entraînement ») ; par exercice,
+ * carte d'en-tête (résumé, segments par exercice colorés par l'état comme ceux de l'accueil, validité, « Mode entraînement ») ; par exercice,
  * état en étiquette, barre de points, « x / R points » et qualité en petit ; essais (carrés) non montrés.
  * Réglage « Feuilles et examens en liste ». Avant nova.js : scores et bouton de WIMS masqués (secours 3 s). */
 :where(html:not(.nova-std-listes)) .nova-feuille-etat { margin: var(--nova-e4) 0; padding: var(--nova-e4) var(--nova-e5); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); }
 :where(html:not(.nova-std-listes)) .nova-feuille-resume strong { font-size: var(--nova-corps); }
 :where(html:not(.nova-std-listes)) .nova-feuille-segments { display: flex; gap: 3px; margin: var(--nova-e2) 0 var(--nova-e3); }
 :where(html:not(.nova-std-listes)) .nova-feuille-segments > i { flex: 1; height: 8px; border-radius: 4px; background: var(--nova-note-np); }
-:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-zero { background: var(--nova-note-zero); box-shadow: inset 0 0 0 1.5px var(--nova-note-contour); }
-:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-rouge { background: var(--nova-note-rouge); }
-:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-orange { background: var(--nova-note-orange); }
-:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-jaune { background: var(--nova-note-jaune); }
-:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-vert { background: var(--nova-note-vert); }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-cours { background: #F0A830; }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > :is(.nova-seg-reussi, .nova-seg-brillant) { background: #2E9E5B; }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-brillant { position: relative; }
+:where(html:not(.nova-std-listes)) .nova-feuille-segments > .nova-seg-brillant::after { content: ""; position: absolute; top: 50%; left: 50%; width: 7px; height: 7px; transform: translate(-50%, -50%); background: #FFFFFF; clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 :where(html:not(.nova-std-listes)) .nova-feuille-etat > .nova-feuille-validite { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
 :where(html:not(.nova-std-listes)) .nova-entrainement { display: flex; align-items: center; gap: var(--nova-e3); min-height: var(--nova-cible); margin-top: var(--nova-e3); padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); color: var(--nova-texte); text-decoration: none; }
 :where(html:not(.nova-std-listes)) .nova-entrainement:hover { color: var(--nova-texte); }
@@ -1157,6 +1159,7 @@ html.nova-sans-animation .nova-interrupteur, html.nova-sans-animation .nova-inte
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.wims_exo_item.nova-exo-b > :not(a, .nova-etat-exo) { grid-column: 2 / -1; }
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.wims_exo_item.nova-exo-b > .nova-etat-exo { grid-column: 3; grid-row: 1; align-self: center; padding: 3px 9px; border-radius: 999px; font-size: .75rem; font-weight: 700; white-space: nowrap; }
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-reussi { background: var(--nova-succes-fond); color: var(--nova-succes); }
+:where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-brillant::before { content: "\2605\00a0"; color: #C99A06; }
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-cours { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-etat-faire { background: var(--nova-surface-2); color: var(--nova-texte-2); }
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list > li.nova-exo-b .wims_score_bar { display: none; }

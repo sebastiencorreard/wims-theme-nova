@@ -28,16 +28,61 @@
         barre.className = 'nova-barre-reussite';
         barre.setAttribute('aria-hidden', 'true');
         plein.style.width = Math.max(0, Math.min(100, pourcent)) + '%';
-        if (pourcent >= 100) barre.setAttribute('data-plein', '');
+        barre.setAttribute('data-etat', pourcent > seuilReussi() ? 'reussi' : 'cours');
         barre.appendChild(plein);
         bloc.appendChild(barre);
       }
     });
   }
 
+  /* Etat d'un exercice de feuille, le meme partout (2026-11-23, utilisateur) : accueil, sequences, page de la feuille.
+   * Reussi = indicateur du bareme AU-DELA de --nova-seuil-reussi % des points demandes (90 par defaut = regle de WIMS,
+   * themes/_widgets/userbar.phtml) ; brillamment reussi = reussi et qualite > 9 (WIMS) ; en cours = au moins un essai. */
+  function seuilReussi() {
+    var v = parseFloat(String(racineStyle().getPropertyValue('--nova-seuil-reussi')).replace(/["']/g, '').replace(',', '.'));
+    return isNaN(v) ? 90 : Math.max(0, Math.min(99, v));
+  }
+  function etatExercice(pourcent, qualite, essai) {
+    if (pourcent > seuilReussi()) return qualite > 9 ? 'brillant' : 'reussi';
+    return essai ? 'cours' : 'faire';
+  }
+
+  /* Barre d'une feuille de l'accueil (ecrite par WIMS avec son seuil fixe) reclassee d'apres les valeurs de
+   * _widgets/feuilles-valeurs.phtml (#nova-feuilles-valeurs, data-f<feuille> = « indicateurs;qualites;points demandes;
+   * essais;rangs montres » ). Sans valeurs (autre page, feuille absente) : classes de WIMS gardees. */
+  function reclasserBarre(barre, cases) {
+    var source = document.getElementById('nova-feuilles-valeurs');
+    if (!source) return;
+    var a = barre.querySelector('a[href*="worksheet="]');
+    var m = a && /[?&+]worksheet=(\d+)/.exec(a.getAttribute('href'));
+    if (!m) {
+      var carte = barre.closest('li.wims_sheet_item'), l = carte && carte.querySelector('a[href*="sh="]');
+      m = l && /[?&+]sh=(\d+)/.exec(l.getAttribute('href'));
+    }
+    var brut = m && source.getAttribute('data-f' + m[1]);
+    if (!brut) return;
+    var champs = brut.split(';'), mots = function (i) { return (champs[i] || '').trim().split(/\s+/).filter(Boolean); };
+    var d = mots(0), q = mots(1), r = mots(2), t = mots(3), rangs = (champs[4] || '').trim() ? mots(4).filter(function (x) { return x !== '-'; }) : null;
+    var noms = (source.getAttribute('data-noms') || '').split('|'), exo = source.getAttribute('data-exercice') || '';
+    var classes = { faire: ['wims_exo_untry', 0], cours: ['wims_exo_undone', 1], reussi: ['wims_exo_done', 2], brillant: ['wims_exo_done wims_congratulation', 3] };
+    Array.prototype.forEach.call(cases, function (li, k) {
+      var i = rangs ? parseInt(rangs[k], 10) - 1 : k;
+      var di = parseFloat(d[i]), ri = parseFloat(r[i]);
+      if (isNaN(di) || !(ri > 0)) return;
+      var e = etatExercice(100 * di / ri, parseFloat(q[i]) || 0, parseFloat(t[i]) >= 1);
+      var c = classes[e];
+      li.classList.remove('wims_exo_untry', 'wims_exo_undone', 'wims_exo_done', 'wims_congratulation', 'wims_exo_unwork');
+      c[0].split(' ').forEach(function (x) { li.classList.add(x); });
+      var titre = exo + ' ' + (i + 1) + ': ' + (noms[c[1]] || '');
+      var lien = li.querySelector('a');
+      if (lien) { lien.setAttribute('title', titre); lien.textContent = titre; }
+      else if (li.hasAttribute('title')) li.setAttribute('title', titre);
+    });
+  }
+
   /* Barres de score (themes/_widgets/userbar.phtml) : charte Nova (cadre.css / contenu.css).
    *  - feuille : segments par exercice, état lu dans la classe WIMS (untry, undone, done,
-   *    congratulation, unwork) + compteur « réussis/total » ;
+   *    congratulation, unwork), reclassé d'après le seuil de Nova (reclasserBarre) + compteur « réussis/total » ;
    *  - examen : une case colorée en ligne par WIMS, note dans le titre (« Note:4/20 ») → pastille
    *    « 4/20 », niveau faible / moyen / bon.
    * Et, dans une carte d'activité, les blocs que WIMS laisse vides (espaces seuls) sont masqués. */
@@ -158,6 +203,7 @@
       });
       if (notes) { historiques.push(historique(barre, cases)); return; }
       if (barre.closest('li.wims_exam_item')) return;   // examen : pas de compteur de feuille
+      reclasserBarre(barre, cases);
       var reussis = barre.querySelectorAll('ol > li.wims_exo_done').length;
       var compte = document.createElement('span');
       compte.className = 'nova-score-compte';
@@ -685,9 +731,10 @@
   }
 
   /* Feuille vue par l'élève, progression d'abord (audit D2, 2026-11-14, utilisateur, maquette B) : en tête, une carte
-   * « n exercices réussis sur N » (segments colorés par la qualité), la validité de la feuille (texte de WIMS) et
+   * « n exercices réussis sur N » (segments colorés par l'état, etatExercice), la validité de la feuille (texte de WIMS) et
    * « Mode entraînement », interrupteur à la place de « Suspendre l'enregistrement » / « Réactiver » (mêmes liens) ;
-   * par exercice, un état (Réussi, En cours, À faire), une barre de points et « x / R points », la qualité en petit.
+   * par exercice, un état (Réussi, avec étoile si brillant ; En cours, À faire), une barre de points de la couleur de
+   * l'état et « x / R points », la qualité en petit.
    * Scores de WIMS (adm/sheet/class.phtml) : « Qualité: m/10 », puis « Réussite: p% » (ou meilleure réussite, ou
    * niveau /10 selon la sévérité de la feuille), « Points requis:R », éventuellement « Essais: a/b » ; lus par la forme
    * des valeurs, pas par les libellés (toutes langues). Réglage « Feuilles et examens en liste » (feuilleExercices) ;
@@ -700,7 +747,6 @@
     var t = function (k, a, b) { return (tx.getAttribute('data-' + k) || '').replace('%1', a == null ? '' : a).replace('%2', b == null ? '' : b); };
     var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte != null) e.textContent = texte; return e; };
     var num = function (v) { return parseFloat(String(v).replace(',', '.')); };
-    var niveau = function (q) { var n = Math.round(q); return n <= 0 ? 'zero' : n <= 3 ? 'rouge' : n <= 6 ? 'orange' : n <= 8 ? 'jaune' : 'vert'; };
     try {
       // Sous-titre « Feuille d'exercices No1 » : « Feuille 1 ».
       var st = document.querySelector('#wims_modu_title1 > h2.wims_subtitle');
@@ -723,7 +769,7 @@
         });
         if (e.p === null || isNaN(e.p)) return;
         var essais = Array.prototype.some.call(li.querySelectorAll('.wims_seed_item'), function (x) { return /^\d/.test(x.getAttribute('title') || ''); });
-        e.etat = e.p >= 100 ? 'reussi' : (e.p > 0 || e.qualite > 0 || essais) ? 'cours' : 'faire';
+        e.etat = etatExercice(e.p, e.qualite, e.p > 0 || e.qualite > 0 || essais);
         exos.push(e);
       });
       if (!exos.length) return false;
@@ -731,13 +777,15 @@
       exos.forEach(function (e) {
         var li = e.li, bloc = li.querySelector('.wims_sheet_score');
         li.classList.add('nova-exo-b');
-        var etat = el('span', 'nova-etat-exo nova-etat-' + e.etat, t('etat-' + e.etat));
+        // Brillamment reussi : etiquette « Reussi » precedee d'une etoile (CSS), nom complet en info-bulle.
+        var etat = el('span', 'nova-etat-exo nova-etat-' + (e.etat === 'brillant' ? 'reussi nova-etat-brillant' : e.etat), t('etat-' + (e.etat === 'brillant' ? 'reussi' : e.etat)));
+        if (e.etat === 'brillant' && t('etat-brillant')) etat.title = t('etat-brillant');
         li.insertBefore(etat, li.querySelector(':scope > a') ? li.querySelector(':scope > a').nextSibling : li.firstChild);
         var barre = el('div', 'nova-barre-reussite');
         barre.setAttribute('aria-hidden', 'true');
         var plein = el('span');
         plein.style.width = Math.max(0, Math.min(100, e.p)) + '%';
-        if (e.p >= 100) barre.setAttribute('data-plein', '');
+        if (e.etat !== 'faire') barre.setAttribute('data-etat', e.etat);
         barre.appendChild(plein);
         var ligne = el('div', 'nova-exo-chiffres');
         var gauche = e.pourcent && e.requis ? t('points', Math.round(Math.min(100, e.p) * e.requis / 100), e.requis)
@@ -754,13 +802,14 @@
       var corps = document.querySelector('.wimsbody');
       var feuille = liste.closest('.wims_sheet');
       var carte = el('section', 'nova-feuille-etat');
-      var n = exos.filter(function (e) { return e.etat === 'reussi'; }).length;
+      var n = exos.filter(function (e) { return e.etat === 'reussi' || e.etat === 'brillant'; }).length;
       var tete = el('div', 'nova-feuille-resume');
       tete.appendChild(el('strong', '', t(n > 1 ? 'reussis' : 'reussi', n, exos.length)));
       carte.appendChild(tete);
       var seg = el('div', 'nova-feuille-segments');
       seg.setAttribute('aria-hidden', 'true');
-      exos.forEach(function (e) { seg.appendChild(el('i', e.etat === 'faire' ? 'nova-seg-np' : 'nova-seg-' + niveau(e.qualite))); });
+      // Segments colores par l'etat (2026-11-23, utilisateur ; avant : par la qualite), comme la barre de l'accueil.
+      exos.forEach(function (e) { seg.appendChild(el('i', 'nova-seg-' + e.etat)); });
       carte.appendChild(seg);
       var validite = corps.querySelector(':scope > p#name_student1');
       if (validite) { validite.classList.add('nova-feuille-validite'); carte.appendChild(validite); }

@@ -82,6 +82,10 @@
   /* Fil d'Ariane des profs et admins fixe sous la barre du haut, sur grand écran (2026-10-09) : « oui » ; « non » le
    * laisse défiler avec la page. Page Apparence (site, portail, classe). nova.js pose html.nova-fil-libre. */
   --nova-fil-fixe: oui;
+  /* Exercice réussi (2026-11-23, utilisateur) : indicateur du barème de la feuille AU-DELÀ de ce pourcentage des points
+   * demandés (strictement, 0 à 99) ; 90 = règle de WIMS (userbar.phtml). Brillamment réussi : réussi et qualité > 9.
+   * Page Réglages de Nova, onglet Élèves. nova.js scores, feuilleProgression, feuilleExercices. */
+  --nova-seuil-reussi: 90;
   --nova-notes-moyenne: oui;   /* carte « Moyenne globale » de Mes notes et du détail d'un élève ; non : retirée (2026-11-16) */
   --nova-decorations: oui;   /* decorations de saison de la barre (_css/decorations.css), 2026-11-11 */
   --nova-travail-individualise: non;   /* carte « Travail individualisé » de la page de présentation d'une feuille (2026-11-18, utilisateur) */

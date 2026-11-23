@@ -48,7 +48,7 @@
   var TI_ACTIF = false;
   var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
     'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
-    'dm-mots', 'dm-note-essais', 'notes-moyenne', 'travail-individualise'];
+    'dm-mots', 'dm-note-essais', 'notes-moyenne', 'travail-individualise', 'seuil-reussi'];
   var racineCache = null;
   var racineLecteur = {
     getPropertyValue: function (nom) {

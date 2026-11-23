@@ -52,8 +52,8 @@ html.nova-degrade .nova-badges-onglet.nova-actif { background-image: var(--nova-
 html.nova-degrade .wimsbody .ui-tabs .ui-tabs-nav li.ui-tabs-active .ui-tabs-anchor::after { background-image: var(--nova-degrade); }
 /* Note retenue */
 html.nova-degrade :is(li.wims_sheet_item .wims_sheet_score, li.wims_exam_item .nova-note-examen .wims_sheet_score) { background-image: var(--nova-degrade); }
-/* Barres de progression */
-html.nova-degrade :is(.nova-avatar-jauge span, .nova-barre-reussite > span, .nova-parcours .wims_seed_item.nova-fait, ul.wims_serie_bar > li.wims_exo_todo) { background-image: var(--nova-degrade); }
+/* Barres de progression (la barre de points d'un exercice de feuille a la couleur de son état depuis le 2026-11-23 : sans dégradé) */
+html.nova-degrade :is(.nova-avatar-jauge span, .nova-parcours .wims_seed_item.nova-fait, ul.wims_serie_bar > li.wims_exo_todo) { background-image: var(--nova-degrade); }
 html.nova-degrade .oefstatement .wims_score_bar .wims_seed_item[title="done"] { background-image: var(--nova-degrade) !important; }
 /* Retour en haut (pictogramme masqué : le dégradé passe dans la flèche) */
 html.nova-degrade .wims_topback a::before { background-image: var(--nova-degrade); }

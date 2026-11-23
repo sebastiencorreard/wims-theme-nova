@@ -830,12 +830,13 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
 
 == Modifier une feuille d'exercices ou un tableau de notes <feuilles>
 
-#ou[`js/src/40-feuilles-notes.js`, `_widgets/couleurs-notes.phtml`, `notes-detail.phtml`, `contenu.css`.]
+#ou[`js/src/40-feuilles-notes.js`, `_widgets/couleurs-notes.phtml`, `notes-detail.phtml`, `feuilles-valeurs.phtml`, `contenu.css`.]
 
 #table(columns: (1fr, 1.6fr), align: left,
   [Ce qui est en cause], [Où],
   [les cartes d'exercices d'une feuille (élève)], [`feuilleExercices`, `feuilleProgression` ; `contenu.css` (`li.wims_sheet_item`) ; réglage `listes`],
-  [les barres de score], [`scores`],
+  [les barres de score], [`scores`, `reclasserBarre` ; `_widgets/feuilles-valeurs.phtml`],
+  [l'état d'un exercice (réussi, brillant, en cours, à faire)], [`etatExercice`, `seuilReussi` ; réglage `--nova-seuil-reussi`],
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
   [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],
   [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
@@ -853,13 +854,25 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
   (`.nova-scores .nova-score`).
 + Texte : attribut de l'élément de textes de la feuille (`lang/eleve-textes.phtml.<l>`, @textes).
 
+=== Changer la règle « exercice réussi »
+
++ Une seule règle pour l'accueil, les séquences et la page d'une feuille : `etatExercice` (`40-feuilles-notes.js`).
+  Réussi = l'indicateur du barème de la feuille dépasse `--nova-seuil-reussi` % des points demandés (90 = règle de
+  WIMS) ; brillamment réussi = réussi et qualité au-dessus de 9 ; en cours = au moins un essai.
++ La barre de l'accueil et des séquences est écrite par WIMS (`themes/_widgets/userbar.phtml`), avec son seuil fixe :
+  `reclasserBarre` la reclasse d'après les valeurs de `_widgets/feuilles-valeurs.phtml` (mêmes appels que
+  `userbar.phtml` : `!getscore…`, exercices individualisés filtrés). Changer l'un, c'est relire l'autre.
++ Couleurs d'état (ambre, vert, étoile blanche du brillant) : `contenu.css`, chercher `wims_congratulation` et
+  `nova-seg-`. Ce ne sont pas les couleurs des notes (ci-dessous) : la qualité ne colore plus les segments.
++ Réglage `listes` : barre de WIMS telle quelle, son seuil compris.
+
 === Changer les couleurs des notes
 
 + Les quatre couleurs sont `--nova-note-rouge`, `-orange`, `-jaune`, `-vert` (plus `-np` pour « non passé » et
   `-zero`) dans `jetons.css` : les changer là change les barres, les pastilles et les tableaux.
 + Les *tranches* (1 à 3 rouge, 4 à 6 orange, 7 et 8 jaune, 9 et 10 vert) sont dans
   `_widgets/couleurs-notes.phtml` pour les tableaux de WIMS (une règle écrite par couleur de la classe), et à
-  trois endroits de `40-feuilles-notes.js` pour ce que Nova dessine (chercher `'rouge'`) : les changer ensemble.
+  deux endroits de `40-feuilles-notes.js` pour ce que Nova dessine (chercher `'rouge'`) : les changer ensemble.
 + Vérifier le contraste du texte posé sur chaque couleur.
 
 === Modifier un tableau de notes
@@ -2005,6 +2018,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`desactiver.phtml`, `confirmations.phtml`, `statuts-ressources.phtml`, `fiche-ressource.phtml`], [ressources (feuilles, examens) : désactivation, confirmations, états, fiches],
   [`acces-classe.phtml`, `capacite.phtml`, `config-globale.phtml`, `sequences.phtml`], [configuration de la classe, séquences],
   [`notes-detail.phtml`], [détail des notes],
+  [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
   [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],
   [`activite.phtml`, `activite-entree.phtml`], [« Mon activité »],
@@ -2273,6 +2287,7 @@ listes séparées par des espaces.
     ("decorations", [Décorations de saison de la barre.]),
     ("travail-individualise", [Carte « Travail individualisé » de l'onglet « Page de présentation » d'une feuille (`travailIndividualise`) ; `non` par défaut, `oui` la montre. Les pages déjà écrites restent affichées aux élèves.]),
     ("notes-moyenne", [Carte « Moyenne globale » de « Mes notes » et du détail d'un élève vu par l'enseignant ; `non` la retire.]),
+    ("seuil-reussi", [Exercice réussi (pastille verte) quand l'indicateur du barème dépasse ce pourcentage des points demandés, de 0 à 99 ; 90 par défaut (règle de WIMS). Accueil, séquences et page d'une feuille ; pas avec le réglage `listes`.]),
     ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen. Vérifié aussi côté serveur.]),
     ("masques-eleves", [Rubriques du menu masquées aux élèves : liste parmi `communication` et `liens`, ou `aucune`.]),
     ("communication-eleves", [Ancien réglage (rubrique Communication des élèves), gardé pour les classes qui l'ont posé ; remplacé par `masques-eleves`.]),

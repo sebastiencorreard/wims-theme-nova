@@ -53,5 +53,5 @@
 
 :feuille
 !! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
-<template id="nova-feuille-textes" data-feuille="Feuille %1" data-reussi="%1 exercice réussi sur %2" data-reussis="%1 exercices réussis sur %2" data-etat-reussi="Réussi" data-etat-cours="En cours" data-etat-faire="À faire" data-points="%1 / %2 points" data-entrainement="Mode entraînement" data-entrainement-aide="Tes réponses ne sont pas notées tant qu'il est activé."></template>
+<template id="nova-feuille-textes" data-feuille="Feuille %1" data-reussi="%1 exercice réussi sur %2" data-reussis="%1 exercices réussis sur %2" data-etat-reussi="Réussi" data-etat-brillant="Brillamment réussi" data-etat-cours="En cours" data-etat-faire="À faire" data-points="%1 / %2 points" data-entrainement="Mode entraînement" data-entrainement-aide="Tes réponses ne sont pas notées tant qu'il est activé."></template>
 !exit

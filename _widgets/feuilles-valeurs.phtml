@@ -1,0 +1,46 @@
+!! Nova : valeurs des exercices de chaque feuille de l'accueil de l'eleve (2026-11-23, utilisateur : un seul seuil de
+!! reussite partout, reglable). La barre de WIMS (themes/_widgets/userbar.phtml, lue par usersheet.phtml et par
+!! home/sequence.phtml) classe les exercices avec un seuil fixe (indicateur > 90 % des points demandes, brillant si de plus
+!! qualite > 9) ; nova.js scores les reclasse avec --nova-seuil-reussi d'apres ces valeurs. Memes calculs que userbar.phtml :
+!! indicateur du bareme d'apres f_<feuille> (user_varsheet.phtml : I0 cumul, I1 meilleure reussite, I2 acquis), qualite,
+!! points demandes, essais ; exercices individualises (ligne 11 de l'exercice) filtres comme userbar.phtml.
+!! Lu par user.phtml apres usersheet.phtml (aclist, f_<n>, indivtechval_<n> de user_varsheet.phtml).
+!! Variables :
+!!   nova_fv    numero de la feuille (boucle sur aclist) ;
+!!   nova_fv_d  indicateur de chaque exercice (mots) ; nova_fv_q qualite ; nova_fv_r points demandes ; nova_fv_t essais ;
+!!   nova_fv_s  rangs des exercices montres a l'eleve suivis de << - >> (feuille individualisee seulement ; vide = tous) ;
+!!   nova_fv_k  rang d'un exercice ; nova_fv_x nombre d'exercices (borne de la boucle, lue une fois), puis ligne 11 de
+!!              l'exercice (valeurs de la variable technique qui le montrent).
+!if $wims_user=supervisor or $aclist=$empty
+  !exit
+!endif
+<template id="nova-feuilles-valeurs" data-noms="$wims_name_exo_untry|$wims_name_exo_undone|$wims_name_exo_done|$wims_name_exo_congratulation" data-exercice="$wims_name_Exercise"
+!for nova_fv in $aclist
+  !reset nova_fv_d
+  !if I0 isin $(f_$nova_fv)
+    !set nova_fv_d=!getscore sheet=$nova_fv
+  !endif
+  !if I1 isin $(f_$nova_fv)
+    !set nova_fv_d=!getscorebest sheet=$nova_fv
+  !endif
+  !if I2 isin $(f_$nova_fv)
+    !set nova_fv_d=!getscorelevel sheet=$nova_fv
+  !endif
+  !set nova_fv_q=!getscoremean sheet=$nova_fv
+  !set nova_fv_r=!getscorerequire sheet=$nova_fv
+  !set nova_fv_t=!getscoretry sheet=$nova_fv
+  !reset nova_fv_s
+  !if $(indivtechval_$nova_fv)!=$empty
+    !set nova_fv_x=!wordcnt $nova_fv_d
+    !for nova_fv_k=1 to $nova_fv_x
+      !set nova_fv_x=!record $nova_fv_k of wimshome/log/classes/$wims_class/sheets/.sheet$nova_fv
+      !set nova_fv_x=!line 11 of $nova_fv_x
+      !if $(indivtechval_$nova_fv) isitemof $nova_fv_x
+        !set nova_fv_s=$nova_fv_s $nova_fv_k
+      !endif
+    !next nova_fv_k
+    !set nova_fv_s=$nova_fv_s -
+  !endif
+  data-f$nova_fv="$nova_fv_d;$nova_fv_q;$nova_fv_r;$nova_fv_t;$nova_fv_s"
+!next nova_fv
+></template>

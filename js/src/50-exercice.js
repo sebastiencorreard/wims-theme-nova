@@ -1062,10 +1062,17 @@
     // texte, cases à sa taille ; module P7 « proportionnalité », signalé par l'utilisateur le 2026-11-18) : mise en page
     // de l'auteur, Nova ne change ni les tailles ni l'aspect des tuiles (agrandies, elles débordaient de la ligne).
     if (Array.prototype.some.call(document.scripts, function (sc) { return sc !== script && /fillobj/.test(sc.textContent); })) { caseVisee(); return; }
-    var m = script.textContent.match(/stretchH:(\d+),stretchV:(\d+)/);
+    // Taille des tuiles : celle de l'ancrage de la reserve (f_toright, fillobj). La premiere taille du script peut etre
+    // celle de la figure (f_bigimage, cases posees sur une image : H1/geometry/oefevalwimssym, 300 x 300 lu au lieu de 24 ;
+    // tuiles prises pour larges, poignee sur le symbole, signale par l'utilisateur le 2026-11-23).
+    var m = script.textContent.match(/leftA:'fillobj'[^}]*?stretchH:(\d+),stretchV:(\d+)/) || script.textContent.match(/stretchH:(\d+),stretchV:(\d+)/);
     if (!m) return;
     var sx = +m[1], sy = +m[2], racine = document.documentElement;
+    // Cases posees sur une figure (coordonnees de l'auteur) : seules les tuiles de la reserve sont agrandies ; cases et
+    // tuiles posees gardent leur taille et leur place sur la figure.
+    var figure = /f_bigimage/.test(script.textContent);
     racine.classList.add('nova-tuiles');
+    if (figure) racine.classList.add('nova-tuiles-figure');
     if (sx >= 160) racine.classList.add('nova-tuiles-larges');
     // Avant « load » : petites tuiles agrandies à 44 px, et 8 px entre les cases d'un même groupe (Dynapi les colle :
     // pas de fill_sx, f_cut cases par ligne ; demande de l'utilisateur, 2026-11-11). Places réservées dans la page
@@ -1077,6 +1084,7 @@
         var w = parseFloat(im.style.width), h = parseFloat(im.style.height);
         var lien = /^fill/.test(im.parentElement.id || '') ? im.parentElement : im.nextElementSibling;
         var groupe = !!lien && !/^fillobj/.test(lien.id || '');
+        if (figure && groupe) return;
         var k = Math.round(w / sx), r = Math.floor(h / sy);
         if (k >= 1 && Math.abs(w - k * sx) < 1) im.style.width = (k * nsx + (groupe ? (k - 1) * ecart : 0)) + 'px';
         if (r >= 1) im.style.height = (h + r * (nsy - sy) + (groupe ? (r - 1) * ecart : 0)) + 'px';
@@ -1087,7 +1095,7 @@
         // (addChild, event.js) ; sans la marque, cases décalées deux fois quand la taille ne change pas (vécu,
         // tuiles de 44 px et plus : tuiles posées à côté des cases, 2026-11-11).
         centrer();
-        if (a && !a.novaAjuste && a.stretchH === sx && a.stretchV === sy) {
+        if (a && !a.novaAjuste && a.stretchH === sx && a.stretchV === sy && !(figure && !/^fillobj/.test(a.leftA || ''))) {
           var b = { novaAjuste: true }, groupe = !/^fillobj/.test(a.leftA || '');
           for (var k in a) if (Object.prototype.hasOwnProperty.call(a, k)) b[k] = a[k];
           b.stretchH = nsx; b.stretchV = nsy;
@@ -1101,7 +1109,11 @@
           }
           a = b;
         }
-        return ancrer.call(this, a);
+        var r = ancrer.call(this, a);
+        // Dynapi ecrit la taille d'un calque deja affiche sans unite (css.width = 24, dynlayer_base.js setSize), ce que le
+        // navigateur ignore : une tuile de la reserve (44 px) posee sur la figure (24 px) garderait 44 px. Unite remise.
+        if (figure && this.css && this.w != null && this.h != null) { this.css.width = this.w + 'px'; this.css.height = this.h + 'px'; }
+        return r;
       };
       if (nsx !== sx || nsy !== sy) racine.classList.add('nova-tuiles-agrandies');
       // Tableau de cases plus large que l'énoncé (addition posée de E4/number/oefoperation au téléphone ; signalé par

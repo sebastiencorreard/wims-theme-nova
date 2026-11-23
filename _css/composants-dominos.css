@@ -230,6 +230,11 @@ html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:hover::before,
 html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable[style*="rgb(96, 96, 255)"]::before{ background-color: var(--nova-accent); }
 html.nova-tuiles-larges:not(.nova-std-dominos) .wims_grabbable:not(.nova-tuile-vider) .wims_fill_object{ box-sizing: border-box; padding: 0 10px 0 30px; }
 
+/* Cases posées sur une figure (nova.js tuiles, html.nova-tuiles-figure ; H1/geometry/oefevalwimssym, 2026-11-23) : le
+ * symbole (image) remplit sa tuile, agrandie à 44 px dans la réserve, à la taille de l'auteur sur la figure. */
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_grabbable :is(.wims_fill_object, .fill_content){ width: 100%; height: 100%; padding: 0; display: flex; align-items: center; justify-content: center; }
+html.nova-tuiles-figure:not(.nova-std-dominos) .wims_grabbable .fill_content img{ width: 100%; height: 100%; max-width: none; object-fit: contain; }
+
 /* Cases creusées ; le « ? » de WIMS masqué tant que la case n'est pas remplie. */
 html.nova-tuiles:not(.nova-std-dominos) .wims_droppable{
   box-sizing: border-box;

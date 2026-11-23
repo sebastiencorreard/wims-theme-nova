@@ -1806,6 +1806,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   `tuiles` ne touche à rien quand un autre script de la page cite `fillobj` : l'auteur gère sa mise en page.
 ]
 
+#piege[Étiquettes illisibles dans un exercice à cases posées sur une figure][
+  Tuiles minuscules couvertes par la poignée en pointillés, symbole invisible (ex. `H1/geometry/oefevalwimssym`, coder
+  une figure).
+][
+  Le script de `fill.after` ancre d'abord l'image de la figure (`f_bigimage`, `stretchH:300`) : lue comme taille des
+  tuiles, elle les faisait passer pour « larges ». Les cases y sont à des coordonnées de l'auteur, pas en rangée. Et
+  Dynapi écrit la taille d'un calque déjà affiché sans unité (`css.width = 24`) : le navigateur l'ignore.
+][
+  Lire la taille sur l'ancrage de la réserve (`leftA:'fillobj'`). Avec `f_bigimage` (`html.nova-tuiles-figure`),
+  n'agrandir que la réserve et remettre `px` après chaque ancrage ; ne jamais toucher aux places sur la figure.
+]
+
 #piege[Un sélecteur qui attrape trop][
   `el.querySelectorAll('ul a')` renvoie aussi des liens hors de `el`, ou une règle masque des alertes sans rapport.
 ][

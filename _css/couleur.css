@@ -34,14 +34,15 @@ dialog.nova-couleur-fenetre { width: min(28rem, calc(100vw - 24px)); }
 
 /* ---------- Dégradé de l'élève ---------- */
 html.nova-degrade #wimstopbox { background-image: var(--nova-degrade); }
-/* Boutons principaux (les secondaires, à contour, et les boutons d'aide restent tels quels) */
-html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, :disabled, .disabled),
+/* Boutons principaux (les secondaires, à contour, et les boutons d'aide restent tels quels ; un bouton à fond en ligne
+ * garde sa couleur : pinceau des exercices clicktile, couleur changée par WIMS, 2026-11-23) */
+html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, .clicktile_button, [style*="background"], :disabled, .disabled),
 html.nova-degrade .ui-dialog .ui-dialog-buttonpane .ui-button:first-child,
 html.nova-degrade :is(.nova-mes-notes a.nova-mes-notes-bouton, .nova-fin-session .nova-fin-session-bouton, .nova-couleur-carte a.nova-couleur-choisir) {
   background-image: var(--nova-degrade);
   border-color: transparent;
 }
-html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, :disabled, .disabled):hover,
+html.nova-degrade :is(input[type="submit"], input[type="button"], .wims_button, button.wims_button):not(.wims_secondary_button, .wims_button_help, .clicktile_button, [style*="background"], :disabled, .disabled):hover,
 html.nova-degrade .ui-dialog .ui-dialog-buttonpane .ui-button:first-child:hover { filter: brightness(.9); }
 /* Titres des fenêtres : en-tête plein (fenêtres de Nova), bande en haut des dialogues au titre sur fond clair */
 html.nova-degrade .nova-badges-entete { background-image: var(--nova-degrade); }

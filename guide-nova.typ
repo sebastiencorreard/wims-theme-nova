@@ -1629,6 +1629,17 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == CSS
 
+#piege[Un bouton d'exercice qui ne change plus de couleur avec « Ma couleur » en dégradé][
+  Le pinceau d'un exercice à cases à colorier (type `clicktile`, ex. `E6/geometry/oefsymmetry.fr`) garde la même teinte
+  quand l'élève clique dessus.
+][
+  WIMS change la couleur du bouton par `style.backgroundColor` ; `_css/couleur.css` pose un `background-image` (le
+  dégradé) sur les boutons principaux, qui se peint par-dessus toute couleur de fond.
+][
+  Un bouton dont le fond est écrit en ligne (`[style*="background"]`) ou `.clicktile_button` est exclu de la règle du
+  dégradé. Faire de même pour toute nouvelle règle qui pose une image de fond sur des boutons de WIMS.
+]
+
 #piege[Feuilles et examens de l'accueil de l'élève en pastilles colorées, non cliquables][
   Sur l'accueil de l'élève (et la vue élève de l'enseignant), les feuilles et examens avaient l'aspect des étiquettes de
   légende (fond de couleur, arrondi complet), alors que les documents étaient des cartes blanches cliquables.

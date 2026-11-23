@@ -51,7 +51,12 @@
 <template id="nova-notes-textes" data-titre="Mis notas" data-examen-restant="%1 examen aún no hecho" data-examens-restants="%1 exámenes aún no hechos" data-commence="%1 de %2 ejercicios empezado" data-commences="%1 de %2 ejercicios empezados" data-pas-commence="Aún no empezada" data-pas-fait="Aún no hecho" data-ouvrir="Abrir la hoja" data-feuilles="Hojas de ejercicios" data-retenue="Nota guardada: %1 (tu mejor sesión)" data-retenue-prof="Nota guardada: %1 (mejor sesión)" data-session="%1 sesión empezada" data-sessions="%1 sesiones empezadas" data-reste="quedan %1" data-reste-zero="no queda ninguna" data-essai-note="%1 intento calificado" data-essais-notes="%1 intentos calificados" data-essai-zero="ningún intento calificado" data-abandon="%1 abandonado" data-abandons="%1 abandonados" data-abandon-zero="ninguno abandonado" data-essais-max="%1 contados como máximo"></template>
 !exit
 
+:etats_exercices
+!! _widgets/feuilles-valeurs.phtml, accueil de l'eleve (nova.js reclasserBarre, 2026-11-23) : info-bulle des pastilles
+<template id="nova-etats-textes" data-exercice="Ejercicio %1: %2" data-faire="Por hacer" data-cours="En curso" data-reussi="Logrado" data-brillant="Logrado con brillantez"></template>
+!exit
+
 :feuille
 !! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
-<template id="nova-feuille-textes" data-feuille="Hoja %1" data-reussi="%1 ejercicio logrado de %2" data-reussis="%1 ejercicios logrados de %2" data-etat-reussi="Logrado" data-etat-brillant="Logrado con brillantez" data-etat-cours="En curso" data-etat-faire="Por hacer" data-points="%1 / %2 puntos" data-entrainement="Modo práctica" data-entrainement-aide="Tus respuestas no se califican mientras esté activado."></template>
+<template id="nova-feuille-textes" data-exercice="Ejercicio %1: %2" data-feuille="Hoja %1" data-reussi="%1 ejercicio logrado de %2" data-reussis="%1 ejercicios logrados de %2" data-etat-reussi="Logrado" data-etat-brillant="Logrado con brillantez" data-etat-cours="En curso" data-etat-faire="Por hacer" data-points="%1 / %2 puntos" data-entrainement="Modo práctica" data-entrainement-aide="Tus respuestas no se califican mientras esté activado."></template>
 !exit

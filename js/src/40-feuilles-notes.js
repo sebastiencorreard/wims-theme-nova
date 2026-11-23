@@ -63,20 +63,21 @@
     if (!brut) return;
     var champs = brut.split(';'), mots = function (i) { return (champs[i] || '').trim().split(/\s+/).filter(Boolean); };
     var d = mots(0), q = mots(1), r = mots(2), t = mots(3), rangs = (champs[4] || '').trim() ? mots(4).filter(function (x) { return x !== '-'; }) : null;
-    var noms = (source.getAttribute('data-noms') || '').split('|'), exo = source.getAttribute('data-exercice') || '';
-    var classes = { faire: ['wims_exo_untry', 0], cours: ['wims_exo_undone', 1], reussi: ['wims_exo_done', 2], brillant: ['wims_exo_done wims_congratulation', 3] };
+    // Info-bulle : « Exercice n : <etat de Nova> » (#nova-etats-textes ; sans textes, celle de WIMS reste).
+    var tx = document.getElementById('nova-etats-textes');
+    var classes = { faire: 'wims_exo_untry', cours: 'wims_exo_undone', reussi: 'wims_exo_done', brillant: 'wims_exo_done wims_congratulation' };
     Array.prototype.forEach.call(cases, function (li, k) {
       var i = rangs ? parseInt(rangs[k], 10) - 1 : k;
       var di = parseFloat(d[i]), ri = parseFloat(r[i]);
       if (isNaN(di) || !(ri > 0)) return;
       var e = etatExercice(100 * di / ri, parseFloat(q[i]) || 0, parseFloat(t[i]) >= 1);
-      var c = classes[e];
       li.classList.remove('wims_exo_untry', 'wims_exo_undone', 'wims_exo_done', 'wims_congratulation', 'wims_exo_unwork');
-      c[0].split(' ').forEach(function (x) { li.classList.add(x); });
-      var titre = exo + ' ' + (i + 1) + ': ' + (noms[c[1]] || '');
+      classes[e].split(' ').forEach(function (x) { li.classList.add(x); });
+      if (!tx || !tx.getAttribute('data-' + e)) return;
+      var titre = (tx.getAttribute('data-exercice') || '%1: %2').replace('%1', i + 1).replace('%2', tx.getAttribute('data-' + e));
       var lien = li.querySelector('a');
       if (lien) { lien.setAttribute('title', titre); lien.textContent = titre; }
-      else if (li.hasAttribute('title')) li.setAttribute('title', titre);
+      else li.setAttribute('title', titre);
     });
   }
 
@@ -809,7 +810,12 @@
       var seg = el('div', 'nova-feuille-segments');
       seg.setAttribute('aria-hidden', 'true');
       // Segments colores par l'etat (2026-11-23, utilisateur ; avant : par la qualite), comme la barre de l'accueil.
-      exos.forEach(function (e) { seg.appendChild(el('i', 'nova-seg-' + e.etat)); });
+      // Info-bulle « Exercice n : etat » (2026-11-23, utilisateur : l'etoile doit se comprendre au survol).
+      exos.forEach(function (e, k) {
+        var i = el('i', 'nova-seg-' + e.etat), nom = t('etat-' + e.etat);
+        if (nom && t('exercice')) i.title = t('exercice', k + 1, nom);   // rang = numero de la carte (liste ol)
+        seg.appendChild(i);
+      });
       carte.appendChild(seg);
       var validite = corps.querySelector(':scope > p#name_student1');
       if (validite) { validite.classList.add('nova-feuille-validite'); carte.appendChild(validite); }

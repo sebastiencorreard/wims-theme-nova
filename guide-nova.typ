@@ -864,6 +864,8 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
   `userbar.phtml` : `!getscore…`, exercices individualisés filtrés). Changer l'un, c'est relire l'autre.
 + Couleurs d'état (ambre, vert, étoile blanche du brillant) : `contenu.css`, chercher `wims_congratulation` et
   `nova-seg-`. Ce ne sont pas les couleurs des notes (ci-dessous) : la qualité ne colore plus les segments.
++ Info-bulle des pastilles (« Exercice n : état ») : textes de `lang/eleve-textes.phtml.<l>`, étiquette `etats_exercices`
+  (accueil, lue par `feuilles-valeurs.phtml`) et `data-exercice` de l'étiquette `feuille` (segments de la feuille).
 + Réglage `listes` : barre de WIMS telle quelle, son seuil compris.
 
 === Changer les couleurs des notes

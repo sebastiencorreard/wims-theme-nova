@@ -4,6 +4,8 @@
 !! qualite > 9) ; nova.js scores les reclasse avec --nova-seuil-reussi d'apres ces valeurs. Memes calculs que userbar.phtml :
 !! indicateur du bareme d'apres f_<feuille> (user_varsheet.phtml : I0 cumul, I1 meilleure reussite, I2 acquis), qualite,
 !! points demandes, essais ; exercices individualises (ligne 11 de l'exercice) filtres comme userbar.phtml.
+!! Info-bulle des pastilles (Exercice n : etat de Nova, au lieu des libelles de WIMS) : #nova-etats-textes,
+!! lang/eleve-textes.phtml.<lang>, etiquette etats_exercices.
 !! Lu par user.phtml apres usersheet.phtml (aclist, f_<n>, indivtechval_<n> de user_varsheet.phtml).
 !! Variables :
 !!   nova_fv    numero de la feuille (boucle sur aclist) ;
@@ -14,7 +16,8 @@
 !if $wims_user=supervisor or $aclist=$empty
   !exit
 !endif
-<template id="nova-feuilles-valeurs" data-noms="$wims_name_exo_untry|$wims_name_exo_undone|$wims_name_exo_done|$wims_name_exo_congratulation" data-exercice="$wims_name_Exercise"
+!read themes/$wims_theme/lang/eleve-textes.phtml.$lang etats_exercices
+<template id="nova-feuilles-valeurs"
 !for nova_fv in $aclist
   !reset nova_fv_d
   !if I0 isin $(f_$nova_fv)

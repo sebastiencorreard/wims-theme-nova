@@ -51,7 +51,12 @@
 <template id="nova-notes-textes" data-titre="I miei voti" data-examen-restant="%1 esame non ancora svolto" data-examens-restants="%1 esami non ancora svolti" data-commence="%1 esercizio su %2 iniziato" data-commences="%1 esercizi su %2 iniziati" data-pas-commence="Non ancora iniziato" data-pas-fait="Non ancora fatto" data-ouvrir="Apri il foglio" data-feuilles="Fogli di esercizi" data-retenue="Voto considerato: %1 (la tua sessione migliore)" data-retenue-prof="Voto considerato: %1 (sessione migliore)" data-session="%1 sessione iniziata" data-sessions="%1 sessioni iniziate" data-reste="ne restano %1" data-reste-zero="non ne restano" data-essai-note="%1 tentativo valutato" data-essais-notes="%1 tentativi valutati" data-essai-zero="nessun tentativo valutato" data-abandon="%1 abbandonato" data-abandons="%1 abbandonati" data-abandon-zero="nessuno abbandonato" data-essais-max="al massimo %1 contati"></template>
 !exit
 
+:etats_exercices
+!! _widgets/feuilles-valeurs.phtml, accueil de l'eleve (nova.js reclasserBarre, 2026-11-23) : info-bulle des pastilles
+<template id="nova-etats-textes" data-exercice="Esercizio %1: %2" data-faire="Da fare" data-cours="In corso" data-reussi="Riuscito" data-brillant="Riuscito brillantemente"></template>
+!exit
+
 :feuille
 !! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
-<template id="nova-feuille-textes" data-feuille="Foglio %1" data-reussi="%1 esercizio riuscito su %2" data-reussis="%1 esercizi riusciti su %2" data-etat-reussi="Riuscito" data-etat-brillant="Riuscito brillantemente" data-etat-cours="In corso" data-etat-faire="Da fare" data-points="%1 / %2 punti" data-entrainement="Modalità allenamento" data-entrainement-aide="Le tue risposte non sono valutate finché è attiva."></template>
+<template id="nova-feuille-textes" data-exercice="Esercizio %1: %2" data-feuille="Foglio %1" data-reussi="%1 esercizio riuscito su %2" data-reussis="%1 esercizi riusciti su %2" data-etat-reussi="Riuscito" data-etat-brillant="Riuscito brillantemente" data-etat-cours="In corso" data-etat-faire="Da fare" data-points="%1 / %2 punti" data-entrainement="Modalità allenamento" data-entrainement-aide="Le tue risposte non sono valutate finché è attiva."></template>
 !exit

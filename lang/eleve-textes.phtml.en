@@ -51,7 +51,12 @@
 <template id="nova-notes-textes" data-titre="My scores" data-examen-restant="%1 exam not taken yet" data-examens-restants="%1 exams not taken yet" data-commence="%1 of %2 exercises started" data-commences="%1 of %2 exercises started" data-pas-commence="Not started yet" data-pas-fait="Not done yet" data-ouvrir="Open the worksheet" data-feuilles="Worksheets" data-retenue="Score kept: %1 (your best session)" data-retenue-prof="Score kept: %1 (best session)" data-session="%1 session started" data-sessions="%1 sessions started" data-reste="%1 left" data-reste-zero="none left" data-essai-note="%1 scored try" data-essais-notes="%1 scored tries" data-essai-zero="no scored try" data-abandon="%1 left unfinished" data-abandons="%1 left unfinished" data-abandon-zero="none left unfinished" data-essais-max="at most %1 counted"></template>
 !exit
 
+:etats_exercices
+!! _widgets/feuilles-valeurs.phtml, accueil de l'eleve (nova.js reclasserBarre, 2026-11-23) : info-bulle des pastilles
+<template id="nova-etats-textes" data-exercice="Exercise %1: %2" data-faire="To do" data-cours="In progress" data-reussi="Done" data-brillant="Brilliantly done"></template>
+!exit
+
 :feuille
 !! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
-<template id="nova-feuille-textes" data-feuille="Sheet %1" data-reussi="%1 exercise done out of %2" data-reussis="%1 exercises done out of %2" data-etat-reussi="Done" data-etat-brillant="Brilliantly done" data-etat-cours="In progress" data-etat-faire="To do" data-points="%1 / %2 points" data-entrainement="Practice mode" data-entrainement-aide="Your answers are not scored while it is on."></template>
+<template id="nova-feuille-textes" data-exercice="Exercise %1: %2" data-feuille="Sheet %1" data-reussi="%1 exercise done out of %2" data-reussis="%1 exercises done out of %2" data-etat-reussi="Done" data-etat-brillant="Brilliantly done" data-etat-cours="In progress" data-etat-faire="To do" data-points="%1 / %2 points" data-entrainement="Practice mode" data-entrainement-aide="Your answers are not scored while it is on."></template>
 !exit

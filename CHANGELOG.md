@@ -4,6 +4,14 @@ Thème WIMS moderne et adapté au téléphone. Les versions les plus récentes s
 Ce qui est réservé aux élèves (badges, avatar, couleur personnelle) reste **désactivé** tant que
 l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la configuration).
 
+## 1.5 — en préparation
+
+### Enseignants
+- **Réglages de Nova** : chaque réglage a son « ▸ Ce qui change », comme les réglages du thème standard : ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site).
+
+### Corrections
+- Accueil d'un portail ou d'un groupement : le bouton « Mes notes » n'apparaît plus (il s'affichait pour les enseignants), comme dans le thème standard ; il reste dans les classes et les cours.
+
 ## 1.4 — 11 novembre 2026
 
 En bref : menu de gauche personnalisable sur toutes les pages, jeu d'icônes Lucide, liens de connexion avec QR code et
@@ -30,7 +38,6 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
-- **Réglages de Nova** : chaque réglage a son « ▸ Ce qui change », comme les réglages du thème standard : ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site).
 - Réglages de Nova, onglet Élèves : **seuil « Exercice réussi »** (plus de 90 % des points demandés par défaut, règle de WIMS), appliqué aux pastilles de l'accueil, des séquences et de la page d'une feuille.
 - Séquences : déplacer une séquence ou changer son affichage ne recharge plus la page (la liste se met à jour aussitôt ; flèches et glisser-déposer en pause une seconde et demie) ;
 - Accueil : infobulle « Utilisé dans quelles séquences pédagogiques ? » sur le titre de la colonne des séquences ;
@@ -125,7 +132,6 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Nom du dossier du thème : **lettres et chiffres seulement** (`Nova12`, pas `Nova-1-3` ni `Nova_1_2`) ; avec un tiret ou un soulignement, les pages d'accueil s'affichaient sans Nova. Notice d'installation corrigée, `livrer.sh` refuse ces noms.
 
 ### Corrections
-- Accueil d'un portail ou d'un groupement : le bouton « Mes notes » n'apparaît plus (il s'affichait pour les enseignants), comme dans le thème standard ; il reste dans les classes et les cours.
 - Exercices où l'on dépose des étiquettes sur une figure (coder une figure de symétrie…) : étiquettes agrandies et lisibles dans la réserve, sans la poignée en pointillés qui cachait le symbole ; posées sur la figure, elles gardent la taille et la place prévues par l'auteur, symbole exactement sur les traits ; la correction montre les étiquettes de l'élève (cases vides avant).
 - « Ma couleur » en dégradé (Crépuscule…) : le bouton du pinceau des exercices à cases à colorier (symétrie axiale, braille…) montre de nouveau la couleur choisie ; il restait couvert par le dégradé.
 - Séquences en partage : le menu ne cite que les classes dont l'affichage diffère, avec cet affichage (au lieu de « Désactivée » pour toutes) ; « Activer » n'est plus décrit comme « Désactiver » ; déplacement d'une séquence un peu plus rapide ;

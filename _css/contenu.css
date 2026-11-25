@@ -1094,37 +1094,26 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody p.exampart
 .wimsbody .nova-xd-rien > p { margin: 0; color: var(--nova-texte-2); }
 .wimsbody .nova-xd-legende > span { display: inline-flex; align-items: center; gap: 6px; }
 .wimsbody .nova-xd-legende .nova-xd-ico { flex: none; }
-/* Liste des eleves : colonne (grand ecran) ou liste qui s'ouvre sous la barre. */
-.wimsbody .nova-xd-liste { display: none; background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); box-shadow: var(--nova-ombre); padding: 10px; flex-direction: column; gap: 6px; min-width: 0; }
-.wimsbody .nova-xd-liste.nova-ouvert { display: flex; }
-.wimsbody .nova-xd-liste-tete { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nova-texte-2); }
-.wimsbody input.nova-xd-chercher { width: 100%; box-sizing: border-box; margin: 0; }
-.wimsbody .nova-xd-liste ul { list-style: none; margin: 0; padding: 0; max-height: min(60vh, 26rem); overflow: auto; overscroll-behavior: contain; position: relative; }
-.wimsbody .nova-xd-liste li { margin: 0; padding: 0; }
-.wimsbody .nova-xd-liste li a { display: block; padding: 6px 9px; border-radius: var(--nova-rayon-petit); color: var(--nova-texte); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
-.wimsbody .nova-xd-liste li a:hover, .wimsbody .nova-xd-liste li a:focus-visible { background: var(--nova-accent-doux); }
-.wimsbody .nova-xd-liste li a[aria-current] { background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
-.wimsbody .nova-xd-aucun { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
-.wimsbody .nova-xd-touches { display: none; margin: 0; padding-top: 6px; border-top: 1px solid var(--nova-bord); font-size: 12px; color: var(--nova-texte-2); }
-.wimsbody .nova-xd-touches kbd { font: inherit; font-size: 11px; border: 1px solid var(--nova-bord-fort); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--nova-surface); }
-.wimsbody .nova-xd-barre { display: flex; align-items: center; gap: var(--nova-e2); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); padding: 6px; }
-.wimsbody .nova-xd-fleche { flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-petit); color: var(--nova-lien); }
-.wimsbody .nova-xd-fleche::before { content: ""; width: 20px; height: 20px; background: currentColor; -webkit-mask: var(--nova-xd-m) center / contain no-repeat; mask: var(--nova-xd-m) center / contain no-repeat; }
-.wimsbody .nova-xd-prec { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
-.wimsbody .nova-xd-suiv { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
-.wimsbody .nova-xd-fleche[hidden] { display: none; }
-.wimsbody button.nova-xd-choix { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--nova-e2); min-height: 40px; margin: 0; padding: 6px 10px; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); color: var(--nova-texte); font: inherit; font-weight: 700; text-align: left; box-shadow: none; }
-.wimsbody .nova-xd-choix-nom { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wimsbody .nova-xd-choix small { flex: none; font-weight: 400; color: var(--nova-texte-2); }
-.wimsbody .nova-xd-choix::after { content: ""; flex: none; width: 16px; height: 16px; background: var(--nova-texte-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat; }
-.wimsbody .nova-xd-choix[aria-expanded="true"]::after { transform: rotate(180deg); }
-@media (min-width: 1100px) {
-  .wimsbody .nova-xd.nova-xd-avec-liste { max-width: 1120px; grid-template-columns: minmax(0, 1fr) 240px; grid-template-areas: "cartes liste"; align-items: start; }
-  .wimsbody .nova-xd-avec-liste > .nova-xd-cartes { grid-area: cartes; }
-  .wimsbody .nova-xd-avec-liste > .nova-xd-liste { grid-area: liste; display: flex; position: sticky; top: 120px; }
-  .wimsbody .nova-xd-avec-liste > .nova-xd-barre { display: none; }
-  .wimsbody .nova-xd-touches { display: block; }
+/* Liste des eleves (nova.js elevesListe, 2026-11-25, utilisateur) : sur les pages a « Part. precedent / suivant », colonne
+ * fixe a droite de l'ecran, SEULEMENT a partir de 1200 px (rien en dessous : fleches du clavier et menu de WIMS) ; la page
+ * * lui laisse la place (marge droite de .wimsbody). Sous la barre du haut et le fil d'Ariane fixe, au-dessus du bouton
+ * « retour en haut » (.wims_topback, fixe en bas a droite). */
+.nova-xd-liste { display: none; }
+@media (min-width: 1200px) {
+  html.nova-eleves-colonne .wimsbody { padding-right: calc(240px + 3 * var(--nova-e4)); }
+  .nova-xd-liste { display: flex; flex-direction: column; gap: 6px; position: fixed; z-index: 20; right: var(--nova-e4); top: 128px; width: 240px; box-sizing: border-box; max-height: calc(100vh - 128px - 84px); padding: 10px; background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); box-shadow: var(--nova-ombre); font-size: 14px; text-align: left; }
+  html.nova-fil-libre .nova-xd-liste { top: 80px; max-height: calc(100vh - 80px - 84px); }
 }
+.nova-xd-liste-tete { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nova-texte-2); }
+.nova-xd-liste input.nova-xd-chercher { width: 100%; box-sizing: border-box; margin: 0; }
+.nova-xd-liste ul { flex: 1 1 auto; min-height: 0; list-style: none; margin: 0; padding: 0; overflow: auto; overscroll-behavior: contain; position: relative; }
+.nova-xd-liste li { margin: 0; padding: 0; }
+.nova-xd-liste li a { display: block; padding: 6px 9px; border-radius: var(--nova-rayon-petit); color: var(--nova-texte); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nova-xd-liste li a:hover, .nova-xd-liste li a:focus-visible { background: var(--nova-accent-doux); text-decoration: none; }
+.nova-xd-liste li a[aria-current] { background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
+.nova-xd-aucun { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.nova-xd-touches { margin: 0; padding-top: 6px; border-top: 1px solid var(--nova-bord); font-size: 12px; color: var(--nova-texte-2); }
+.nova-xd-touches kbd { font: inherit; font-size: 11px; border: 1px solid var(--nova-bord-fort); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--nova-surface); }
 @media (max-width: 640px) {
   .wimsbody .nova-xd-session { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "quand note bug" "exos exos exos"; }
   .wimsbody .nova-xd-quand { grid-area: quand; }

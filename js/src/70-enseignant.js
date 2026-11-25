@@ -2838,3 +2838,85 @@
       lien.click();
     });
   }
+
+  /* Liste des eleves (2026-11-25, utilisateur ; maquette 1 du Detail des examens) : sur toute page de l'enseignant qui a
+   * « Part. precedent / suivant » (scripts/adm/class/getnextuser : detail des examens, des notes, scores bruts, fiche du
+   * participant, activite, travaux libres, variables techniques ; les memes que participantsFleches), colonne fixe a droite
+   * de l'ecran, seulement s'il est assez large (contenu.css, html.nova-eleves-colonne) : recherche sans accents, eleve
+   * affiche en accent, rappel des fleches. Eleves lus par _widgets/eleves-liste.phtml (#nova-eleves) ; lien = celui de
+   * « Part. suivant » de WIMS, autre valeur de son dernier parametre (checkuser, getuser, getraw, user, userv selon la
+   * page). Rien avec un seul eleve. */
+  function elevesListe() {
+    var source = document.getElementById('nova-eleves');
+    var suiv = document.querySelector('a.next_participant'), prec = document.querySelector('a.prev_participant');
+    var modele = (suiv || prec) ? (suiv || prec).getAttribute('href') : '';
+    var param = /[?&]\+?([A-Za-z_]+)=[^&#]*$/.exec(modele);
+    if (!source || !param || source.children.length < 2 || document.getElementById('nova-xd-liste')) return;
+    var tx = document.getElementById('nova-xd-textes');
+    var texte = function (k, defaut) { return (tx && tx.getAttribute('data-' + k)) || defaut; };
+    var courant = source.getAttribute('data-courant') || '';
+    var MARQUES = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
+    var plat = function (s) { return (s || '').normalize('NFD').replace(MARQUES, '').toLowerCase(); };
+    var lien = function (login) { return modele.replace(/=[^&#=]*$/, '=' + encodeURIComponent(login)); };
+    var el = function (tag, classe, contenu) {
+      var e = document.createElement(tag);
+      if (classe) e.className = classe;
+      if (contenu !== undefined && contenu !== null) e.textContent = contenu;
+      return e;
+    };
+    var aside = el('aside', 'nova-xd-liste');
+    aside.id = 'nova-xd-liste';
+    aside.setAttribute('aria-label', texte('eleves', 'Students'));
+    var tete = el('div', 'nova-xd-liste-tete');
+    tete.appendChild(el('span', '', texte('eleves', 'Students')));
+    tete.appendChild(el('span', '', String(source.children.length)));
+    aside.appendChild(tete);
+    var cherche = el('input', 'nova-xd-chercher');
+    cherche.type = 'search';
+    cherche.placeholder = texte('chercher', 'Search for a student');
+    cherche.setAttribute('aria-label', cherche.placeholder);
+    aside.appendChild(cherche);
+    var ul = el('ul');
+    Array.prototype.forEach.call(source.children, function (li) {
+      var login = li.getAttribute('data-login');
+      var nom = (li.textContent || '').trim() || login;
+      var item = el('li');
+      var a = el('a', '', nom);
+      a.href = lien(login);
+      a.title = nom;
+      item.setAttribute('data-plat', plat(nom + ' ' + login));
+      if (login === courant) a.setAttribute('aria-current', 'page');
+      item.appendChild(a);
+      ul.appendChild(item);
+    });
+    aside.appendChild(ul);
+    var aucun = el('p', 'nova-xd-aucun', texte('aucun', 'No student found.'));
+    aucun.hidden = true;
+    aside.appendChild(aucun);
+    var touches = el('p', 'nova-xd-touches');
+    touches.appendChild(el('kbd', '', String.fromCharCode(8592)));
+    touches.appendChild(document.createTextNode(' '));
+    touches.appendChild(el('kbd', '', String.fromCharCode(8594)));
+    touches.appendChild(document.createTextNode(' ' + texte('touches', 'previous / next student')));
+    aside.appendChild(touches);
+    cherche.addEventListener('input', function () {
+      var q = plat(cherche.value).trim(), vus = 0;
+      Array.prototype.forEach.call(ul.children, function (li) {
+        var ok = !q || li.getAttribute('data-plat').indexOf(q) >= 0;
+        li.hidden = !ok;
+        if (ok) vus++;
+      });
+      aucun.hidden = vus > 0;
+    });
+    cherche.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      var premier = ul.querySelector('li:not([hidden]) a');
+      if (premier) { e.preventDefault(); premier.click(); }
+    });
+    document.body.appendChild(aside);
+    document.documentElement.classList.add('nova-eleves-colonne');
+    requestAnimationFrame(function () {
+      var ici = ul.querySelector('a[aria-current]');
+      if (ici && ul.clientHeight) ul.scrollTop = ici.parentNode.offsetTop - ul.clientHeight / 2 + ici.offsetHeight / 2;
+    });
+  }

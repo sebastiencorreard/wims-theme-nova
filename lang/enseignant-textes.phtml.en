@@ -99,5 +99,5 @@
 
 :examens_detail
 !! _widgets/eleves-liste.phtml (nova.js examensDetail)
-<template id="nova-xd-textes" data-eleves="Students" data-chercher="Search for a student" data-aucun="No student found." data-touches="previous / next student" data-precedent="Previous student" data-suivant="Next student" data-choisir="Choose another student" data-session-1="%1 session" data-session-n="%1 sessions" data-examen-1="%1 exam" data-examen-n="%1 exams" data-non-terminee="Not finished" data-signaler="Report a bug" data-non-ouvert="Exercise %1: not opened in this session" data-ouvrir="Exercise %1: %2 (see the statement and answers)"></template>
+<template id="nova-xd-textes" data-eleves="Students" data-chercher="Search for a student" data-aucun="No student found." data-touches="previous / next student" data-session-1="%1 session" data-session-n="%1 sessions" data-examen-1="%1 exam" data-examen-n="%1 exams" data-non-terminee="Not finished" data-signaler="Report a bug" data-non-ouvert="Exercise %1: not opened in this session" data-ouvrir="Exercise %1: %2 (see the statement and answers)"></template>
 !exit

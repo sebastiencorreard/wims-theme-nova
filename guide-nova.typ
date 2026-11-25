@@ -1059,8 +1059,14 @@ Modèle : `examensDetail` (`30-examen.js`, « Détail des examens », adm/class/
 par ses colonnes (le `colspan` de l'en-tête donne leur nombre), *déplacer* les liens de WIMS dans les cartes (leur `target`,
 leur `onclick` et les panneaux « Signaler un bug » suivent ; `panneaux()` les branche ensuite), puis retirer le tableau.
 Le cacher avant `nova.js` par le CSS (`visibility: hidden`, secours `nova-revele` de 3 s) et le garder tel quel sous le
-réglage standard qui convient (ici `notes-enseignant`). Une liste lue sur le serveur (ici les élèves,
-`_widgets/eleves-liste.phtml` et `_procs/eleves-liste.sh`) passe par un élément caché que `nova.js` lit.
+réglage standard qui convient (ici `notes-enseignant`).
+
+Une liste lue sur le serveur passe par un élément caché que `nova.js` lit. Modèle : la liste des élèves
+(`elevesListe`, `70-enseignant.js`), sur les sept pages à « Part. précédent / suivant ». `tail.phtml` lit
+`_widgets/eleves-liste.phtml` quand le menu contient `prev_participant` ou `next_participant` ; l'élève affiché est
+`$gn_st`, laissé par `scripts/adm/class/getnextuser`. Les liens reprennent celui de « Part. suivant », dont seul le
+dernier paramètre change (`checkuser`, `getuser`, `getraw`, `user`, `userv` selon la page). La colonne est fixe, à
+droite, à partir de 1200 px seulement (`html.nova-eleves-colonne` réserve la marge de `.wimsbody`).
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
@@ -2112,7 +2118,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`desactiver.phtml`, `desactivables.phtml`, `confirmations.phtml`, `statuts-ressources.phtml`, `fiche-ressource.phtml`], [ressources (feuilles, examens) : désactivation, désactivations refusées (liens retirés), confirmations, états, fiches],
   [`acces-classe.phtml`, `capacite.phtml`, `config-globale.phtml`, `sequences.phtml`], [configuration de la classe, séquences],
   [`notes-detail.phtml`], [détail des notes],
-  [`eleves-liste.phtml`], [liste des élèves du « Détail des examens » de l'enseignant (`examensDetail`, `elevesListe`)],
+  [`eleves-liste.phtml`], [liste des élèves des pages à « Part. précédent / suivant » de l'enseignant (`elevesListe`)],
   [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
   [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],
@@ -2130,7 +2136,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`activite.awk`, `vacances-zones.txt`], [« Mon activité », vacances des zones A, B, C],
   [`avatar.awk`, `avatar.proc`, `avatar-catalogue.txt`, `avatar-zones.sh`, `avatars-classe.sh`, `avatars-retour.sh`], [avatar],
   [`propager.sh`, `desactiver.sh`, `desactivables.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant (`desactivables.sh` : lecture seule, refus de WIMS recalculés)],
-  [`eleves-liste.sh`], [participants d'une classe ou d'une zone (`.userlist`), liste des élèves du « Détail des examens »],
+  [`eleves-liste.sh`], [participants d'une classe ou d'une zone (`.userlist`), liste des élèves des pages à « Part. suivant »],
   [`serie-exos.sh`], [titres des exercices d'un module OEF (fichier `Extitles`), éditeur des paramètres d'une série],
   [`jeu-icones.sh`], [lien du jeu Lucide dans `gifs/themes`],
   [`suivi.pl`], [relevé du suivi en direct],

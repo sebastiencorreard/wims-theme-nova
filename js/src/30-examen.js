@@ -674,9 +674,9 @@
    * des notes ; sablier = signe « dague » de WIMS, session non terminee ; bulle barree = « ?? », pas de reponse ;
    * pointilles = exercice pas ouvert, sans lien comme dans WIMS) ; note de la session en pastille d'accent (asterisque
    * de WIMS en info-bulle) ; « ... » = menu « Signaler un bug » de WIMS. Les liens de WIMS sont deplaces tels quels
-   * (fenetre wims_check, pagesExamen). Liste des eleves (#nova-eleves, _widgets/eleves-liste.phtml) : colonne a
-   * droite sur grand ecran, barre « < nom v > » sinon (contenu.css : .nova-xd). Reglage notes-enseignant : tableau de
-   * WIMS et ses signes (signesExamens). Avant nova.js, le tableau est cache (contenu.css, secours 3 s). */
+   * (fenetre wims_check, pagesExamen). Liste des eleves : elevesListe (toutes les pages a « Part. suivant »).
+   * Reglage notes-enseignant : tableau de WIMS et ses signes (signesExamens). Avant nova.js, le tableau est cache
+   * (contenu.css, secours 3 s). */
   function examensDetail() {
     var intro = document.querySelector('.wimsbody p.exampart');
     if (!intro) { examensAucun(); return; }
@@ -838,13 +838,12 @@
     });
     if (legende.children.length) cartes.appendChild(legende);
     tout.appendChild(cartes);
-    elevesListe(tout);
     cadre.parentNode.insertBefore(tout, cadre);
     cadre.remove();
   }
 
   /* Detail des examens d'un eleve sans session (examcheck.phtml : p.no_exampart au lieu du tableau ; 2026-11-25,
-   * utilisateur) : la liste des eleves reste a la meme place qu'avec les cartes ; le message de WIMS va dans une carte. */
+   * utilisateur) : le message de WIMS va dans une carte, a la place des cartes d'examens. */
   function examensAucun() {
     var p = document.querySelector('.wimsbody p.no_exampart');
     if (!p || p.closest('.nova-xd') || standard('notes-enseignant')) return;
@@ -858,115 +857,6 @@
     carte.appendChild(p);
     cartes.appendChild(carte);
     tout.appendChild(cartes);
-    elevesListe(tout);
-  }
-
-  /* Liste des eleves du Detail des examens (examensDetail, maquette 1) : colonne avec recherche (sans accents), eleve
-   * affiche en accent ; ecran etroit : barre « < nom v > » qui ouvre la meme liste. Liens = celui de « Part. suivant »
-   * de WIMS, autre valeur de checkuser (meme session, meme compteur). Rien avec un seul eleve. */
-  function elevesListe(tout) {
-    var source = document.getElementById('nova-eleves');
-    var suiv = document.querySelector('a.next_participant'), prec = document.querySelector('a.prev_participant');
-    var modele = (suiv || prec) ? (suiv || prec).getAttribute('href') : '';
-    if (!source || !/checkuser=/.test(modele) || source.children.length < 2) return;
-    var tx = document.getElementById('nova-xd-textes');
-    var texte = function (k, defaut) { return (tx && tx.getAttribute('data-' + k)) || defaut; };
-    var courant = source.getAttribute('data-courant') || '';
-    var MARQUES = new RegExp('[' + String.fromCharCode(768) + '-' + String.fromCharCode(879) + ']', 'g');
-    var plat = function (s) { return (s || '').normalize('NFD').replace(MARQUES, '').toLowerCase(); };
-    var lien = function (login) { return modele.replace(/(checkuser=)[^&#]*/, '$1' + encodeURIComponent(login)); };
-    var el = function (tag, classe, contenu) {
-      var e = document.createElement(tag);
-      if (classe) e.className = classe;
-      if (contenu !== undefined && contenu !== null) e.textContent = contenu;
-      return e;
-    };
-    var aside = el('aside', 'nova-xd-liste');
-    aside.id = 'nova-xd-liste';
-    aside.setAttribute('aria-label', texte('eleves', 'Students'));
-    var tete = el('div', 'nova-xd-liste-tete');
-    tete.appendChild(el('span', '', texte('eleves', 'Students')));
-    tete.appendChild(el('span', '', String(source.children.length)));
-    aside.appendChild(tete);
-    var cherche = el('input', 'nova-xd-chercher');
-    cherche.type = 'search';
-    cherche.placeholder = texte('chercher', 'Search for a student');
-    cherche.setAttribute('aria-label', cherche.placeholder);
-    aside.appendChild(cherche);
-    var ul = el('ul');
-    var rang = 0, nomCourant = '';
-    Array.prototype.forEach.call(source.children, function (li, i) {
-      var login = li.getAttribute('data-login');
-      var nom = (li.textContent || '').trim() || login;
-      var item = el('li');
-      var a = el('a', '', nom);
-      a.href = lien(login);
-      item.setAttribute('data-plat', plat(nom + ' ' + login));
-      if (login === courant) { a.setAttribute('aria-current', 'page'); rang = i + 1; nomCourant = nom; }
-      item.appendChild(a);
-      ul.appendChild(item);
-    });
-    aside.appendChild(ul);
-    var aucun = el('p', 'nova-xd-aucun', texte('aucun', 'No student found.'));
-    aucun.hidden = true;
-    aside.appendChild(aucun);
-    var touches = el('p', 'nova-xd-touches');
-    touches.appendChild(el('kbd', '', String.fromCharCode(8592)));
-    touches.appendChild(document.createTextNode(' '));
-    touches.appendChild(el('kbd', '', String.fromCharCode(8594)));
-    touches.appendChild(document.createTextNode(' ' + texte('touches', 'previous / next student')));
-    aside.appendChild(touches);
-    cherche.addEventListener('input', function () {
-      var q = plat(cherche.value).trim(), vus = 0;
-      Array.prototype.forEach.call(ul.children, function (li) {
-        var ok = !q || li.getAttribute('data-plat').indexOf(q) >= 0;
-        li.hidden = !ok;
-        if (ok) vus++;
-      });
-      aucun.hidden = vus > 0;
-    });
-    cherche.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter') return;
-      var premier = ul.querySelector('li:not([hidden]) a');
-      if (premier) { e.preventDefault(); premier.click(); }
-    });
-    // Barre des ecrans etroits.
-    var barre = el('div', 'nova-xd-barre');
-    var fleche = function (a, cle, sens) {
-      var f = el('a', 'nova-xd-fleche nova-xd-' + sens);
-      f.href = a ? a.getAttribute('href') : '#';
-      f.setAttribute('aria-label', texte(cle, cle));
-      f.title = f.getAttribute('aria-label');
-      if (!a) f.hidden = true;
-      return f;
-    };
-    barre.appendChild(fleche(prec, 'precedent', 'prec'));
-    var choix = el('button', 'nova-xd-choix');
-    choix.type = 'button';
-    choix.setAttribute('aria-expanded', 'false');
-    choix.setAttribute('aria-controls', aside.id);
-    choix.title = texte('choisir', 'Choose another student');
-    choix.appendChild(el('span', 'nova-xd-choix-nom', nomCourant || courant));
-    choix.appendChild(el('small', '', rang ? rang + '/' + source.children.length : String(source.children.length)));
-    barre.appendChild(choix);
-    barre.appendChild(fleche(suiv, 'suivant', 'suiv'));
-    var centrer = function () {
-      var ici = ul.querySelector('a[aria-current]');
-      if (ici && ul.clientHeight) ul.scrollTop = ici.parentNode.offsetTop - ul.offsetTop - ul.clientHeight / 2 + ici.offsetHeight / 2;
-    };
-    var ouvrir = function (oui) {
-      aside.classList.toggle('nova-ouvert', oui);
-      choix.setAttribute('aria-expanded', oui ? 'true' : 'false');
-      if (oui) { centrer(); cherche.focus(); }
-    };
-    choix.addEventListener('click', function () { ouvrir(!aside.classList.contains('nova-ouvert')); });
-    aside.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && aside.classList.contains('nova-ouvert')) { ouvrir(false); choix.focus(); }
-    });
-    tout.classList.add('nova-xd-avec-liste');
-    tout.insertBefore(aside, tout.firstChild);
-    tout.insertBefore(barre, tout.firstChild);
-    requestAnimationFrame(centrer);
   }
 
   /* Page d'un examen alors qu'un autre est en cours (adm/class/exam/student.phtml : div.wims_msg.alert

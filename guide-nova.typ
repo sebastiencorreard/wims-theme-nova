@@ -1722,6 +1722,25 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Position fixe plus un repère dans la page (voir `boutonsCollants` dans `20-composants.js`).
 ]
 
+#piege[Des boutons « Aide » qui ne se ressemblent pas][
+  Le bouton « Aide » de WIMS est plus petit, plus grand ou réduit à une pastille selon la page.
+][
+  Une règle de mise en page (grille d'un champ, rangée de boutons flexible, tuile) a touché sa taille, sa police ou son texte.
+][
+  Une règle locale ne règle que la place du bouton (marges, ordre, alignement : `align-self: center` dans une rangée
+  flexible). L'aspect vient d'une seule règle (`composants-fenetres.css`). Vérifier par un relevé de l'aspect sur plusieurs pages.
+]
+
+#piege[Un bloc collé en bas de l'écran qui « vibre »][
+  À une position de défilement précise, le bloc se fixe et se libère sans arrêt.
+][
+  Fixé, le bloc perd ses marges ; une cale de la hauteur `offsetHeight` ne garde pas exactement sa place : le repère qui
+  suit le bloc bouge de quelques pixels, repasse de l'autre côté du bord de l'écran, et le bloc se libère, puis se refixe.
+][
+  Mesurer le repère avant et après la fixation, et corriger la hauteur de la cale de l'écart, sans seuil
+  (`boutonsCollants`, `barreEnregistrer`). Tout nouveau bloc collant reprend ce code.
+]
+
 #piege[Un masquage qui ne masque pas][
   Le code pose l'attribut `hidden`, un test dit « masqué », mais l'élément est visible.
 ][

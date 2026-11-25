@@ -83,7 +83,7 @@
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > * { grid-column: 1 / -1; justify-self: start; }
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > label:first-child { grid-column: 1; margin-bottom: 0; }
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > .wims_button_help {
-  grid-column: 2; grid-row: 1; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem;
+  grid-column: 2; grid-row: 1; float: none; margin: 0;   /* taille commune des boutons Aide (2026-11-25, utilisateur) */
 }
 .property_fields .field:has(> label:first-child + .wims_button_help):not(:has(> :is(input, select, textarea) ~ :is(input, select, textarea))) > :is(input, select, textarea) { margin-top: var(--nova-e1); }
 /* Configuration d'une feuille (adm/sheet/sheetinfo.phtml ; demande de l'utilisateur, 2026-11-03). Un champ nombre ignore
@@ -104,7 +104,7 @@
 .property_fields .field:has(> #formulaB) { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--nova-e2); }
 .property_fields .field:has(> #formulaB)::after { content: ""; order: 3; flex-basis: 100%; }
 .property_fields .field:has(> #formulaB) > label:first-child { order: 1; margin-bottom: 0; }
-.property_fields .field:has(> #formulaB) > .wims_button_help { order: 2; float: none; margin: 0; min-height: 30px; padding: 0 var(--nova-e2); font-size: .8125rem; }
+.property_fields .field:has(> #formulaB) > .wims_button_help { order: 2; float: none; margin: 0; }
 .property_fields .field:has(> #formulaB) > :not(label:first-child, .wims_button_help) { order: 4; margin-top: var(--nova-e1); }
 .property_fields .field:has(> #formulaB) > label[for="formulaB"] { margin-left: var(--nova-e2); font-weight: 700; }
 .property_fields p { padding: 0; }

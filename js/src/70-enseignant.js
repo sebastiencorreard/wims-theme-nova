@@ -1630,12 +1630,9 @@
       var aide = c.querySelector(':scope > a.wims_button_help');
       if (libelle) { libelle.classList.add('nova-tuile-nom'); tete.appendChild(libelle); }
       if (aide) {
-        var t = aide.textContent.trim();
+        // Bouton « Aide » de WIMS garde son texte, comme sur les autres pages (2026-11-25, utilisateur : boutons homogenes).
         aide.classList.add('nova-tuile-aide');
         aide.classList.remove('float_right');
-        aide.setAttribute('title', t);
-        aide.textContent = '';
-        var s = document.createElement('span'); s.className = 'nova-cache-visuel'; s.textContent = t; aide.appendChild(s);
         tete.appendChild(aide);
       }
       // Valeur en texte seul (individualisation, mode d'affichage) : dans un span.

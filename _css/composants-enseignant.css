@@ -220,6 +220,8 @@ html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte)
 .wimsbody ul.nova-cfg-carte > li::after { content: "\203A"; position: absolute; right: .9rem; top: 50%; transform: translateY(-50%); font-size: 1.35rem; line-height: 1; color: var(--nova-texte-2); pointer-events: none; }
 .wimsbody ul.nova-cfg-carte > li.nova-cfg-index::after { content: none; }
 .nova-cfg-ligne > .nova-cfg-tete { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; }
+/* Bouton « Aide » parmi les boutons d'une ligne : sa hauteur à lui, pas celle des voisins (2026-11-25, boutons Aide homogènes). */
+.wimsbody .nova-cfg-boutons > .wims_button_help { align-self: center; }
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien { color: var(--nova-texte); text-decoration: none; font-weight: 600; display: inline-block; }
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien::first-letter { text-transform: uppercase; }
 .wimsbody .nova-cfg-ligne a.nova-cfg-lien::after { content: ""; position: absolute; inset: 0; }
@@ -368,9 +370,9 @@ body.main_body .nova-statut-actions a.wims_button:is([data-nova-action='deactiva
 .nova-tuile-ico[data-icone='repete'] { --nova-fiche-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m17 2 4 4-4 4'/%3E%3Cpath d='M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4'/%3E%3Cpath d='M21 13v1a4 4 0 0 1-4 4H3'/%3E%3C/svg%3E"); }
 .nova-tuile-ico[data-icone='ciseaux'] { --nova-fiche-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='6' r='3'/%3E%3Cpath d='M8.12 8.12 12 12M20 4 8.12 15.88'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Cpath d='M14.8 14.8 20 20'/%3E%3C/svg%3E"); }
 .nova-tuile-ico[data-icone='ecran'] { --nova-fiche-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='20' height='14' x='2' y='3' rx='2'/%3E%3Cpath d='M8 21h8M12 17v4'/%3E%3C/svg%3E"); }
-.nova-tuile-tete a.nova-tuile-aide { position: relative; flex: none; width: 28px; height: 28px; min-height: 0; margin: 0 0 0 auto; padding: 0; border: 0; border-radius: 50%; background: color-mix(in oklab, var(--nova-aide) 10%, white); box-shadow: none; }
-.nova-tuile-tete a.nova-tuile-aide::before { content: ''; position: absolute; inset: 6px; background: var(--nova-aide); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01'/%3E%3C/svg%3E") center / contain no-repeat; }
-.nova-tuile-tete a.nova-tuile-aide::after { content: none; }
+/* Bouton « Aide » d'une tuile : le bouton de WIMS, texte et icône du jeu d'icônes, comme partout (2026-11-25, utilisateur ;
+ * avant : pastille ronde « ? » sans texte). Seulement sa place : à droite du nom. */
+.nova-tuile-tete a.nova-tuile-aide { flex: none; margin: 0 0 0 auto; }
 .nova-tuile .formHelp { margin: 0; font-size: .82rem; color: var(--nova-texte-2); }
 .nova-tuile-valeur { font-weight: 600; color: var(--nova-texte-2); }
 .nova-tuile .nova-tuile-choix { flex-wrap: wrap; border-radius: 20px; }

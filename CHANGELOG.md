@@ -10,6 +10,8 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
 
 ### Corrections
+- Boutons « Aide » : le même partout. Les réglages des feuilles et des examens retrouvent le bouton « Aide » au lieu d'une pastille « ? », et la page Apparence et la page Configuration de la classe n'en montrent plus de version réduite ou étirée.
+- Bouton « Enregistrer » collé en bas de l'écran (page Modifier d'une séquence, contenu d'un examen) : il ne « vibre » plus quand sa place est juste sous le bas de l'écran.
 - Accueil d'un portail ou d'un groupement : le bouton « Mes notes » n'apparaît plus (il s'affichait pour les enseignants), comme dans le thème standard ; il reste dans les classes et les cours.
 
 ## 1.4 — 11 novembre 2026

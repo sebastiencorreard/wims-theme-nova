@@ -1105,3 +1105,65 @@ body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-
 .wimsbody .nova-sp-bas .nova-sp-petit { flex: 1 1 14rem; }
 .wimsbody .nova-sp-bas .nova-sp-annuler[hidden] { display: none; }
 @media (max-width: 620px) { .wimsbody .nova-sp-ligne { grid-template-columns: minmax(0, 1fr); } .wimsbody .nova-sp-nom { padding-top: 0; } .wimsbody .nova-sp-aide-nom { flex-basis: 100%; } }
+
+/* Fiche d'un eleve, « Proprietes du compte » (adm/class/usermanage, job=userprop ; 2026-11-26, utilisateur, maquettes A et 1) :
+ * nova.js ficheEleve range le fieldset de WIMS en trois cartes (identite, classes, informations), dans le formulaire.
+ * Reglage std notes-enseignant : formulaire de WIMS (seul le bouton d'inscription est ajoute). Masque avant nova.js. */
+html.nova-js:not(.nova-std-notes-enseignant) .wimsbody form:has(input[name="job"][value="userprop"]) fieldset.property_fields:not(.nova-pe) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.wimsbody fieldset.property_fields.nova-pe {
+  display: grid; gap: var(--nova-e4); width: 100%; max-width: 48rem; margin: var(--nova-e4) auto; padding: 0;
+  border: 0; background: none; box-shadow: none; box-sizing: border-box; min-width: 0;
+}
+.wimsbody fieldset.property_fields.nova-pe > legend { display: none; }
+.nova-pe-carte {
+  display: grid; gap: var(--nova-e3); min-width: 0; padding: var(--nova-e4) var(--nova-e5);
+  border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre);
+}
+.nova-pe-titre-ligne { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nova-e2); }
+.wimsbody .nova-pe-carte h2.nova-pe-titre { margin: 0; font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nova-texte-2); }
+/* Identite : photo ou initiales, nom, champs de WIMS sans saisie (identifiant, mot de passe, derniere connexion). */
+.nova-pe-tete { display: flex; align-items: center; gap: var(--nova-e3); min-width: 0; }
+.nova-pe-rond {
+  flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; overflow: hidden;
+  background: var(--nova-accent-doux); color: var(--nova-lien); font-weight: 800; font-size: 1.15rem;
+}
+.nova-pe-rond img { width: 100%; height: 100%; object-fit: cover; }
+.wimsbody .nova-pe-carte h2.nova-pe-nom { margin: 0; font-size: 1.3rem; overflow-wrap: anywhere; }
+.nova-pe-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e5); }
+.wimsbody .nova-pe-meta > :is(.field, .wimscenter) { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); width: auto; margin: 0; padding: 0; }
+.wimsbody .nova-pe-meta > .field > strong { font-weight: 600; color: var(--nova-texte-2); }
+.wimsbody .nova-pe-meta > .nova-pe-vide { display: none; }
+/* Classes : listes de WIMS en pastilles (teinte et icone de la zone, composants-messages-zones.css). */
+.wimsbody .nova-pe-classes > .nova-pe-liste { width: auto; margin: 0; padding: 0; }
+/* .tt de WIMS garde les retours a la ligne (white-space) : vide autour de la liste sans ce reglage. */
+.wimsbody .nova-pe-classes > .nova-pe-liste-seule > strong { display: none; }
+.wimsbody .nova-pe-classes > .nova-pe-liste > .tt { font-family: inherit; display: block; white-space: normal; padding: 0; }
+.wimsbody .nova-pe-classes ul.nova-pe-zones { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: 0; padding: 0; list-style: none; }
+.wimsbody .nova-pe-classes ul.nova-pe-zones > li { display: inline-flex; align-items: center; margin: 0; padding: .3em .8em .3em .6em; border-radius: 999px; font-size: .92rem; font-weight: 600; line-height: 1.3; color: var(--nova-zone-encre, var(--nova-texte)); }
+.wimsbody .nova-pe-classes ul.nova-pe-zones > li.nova-pe-aucune { padding: 0; font-weight: 400; color: var(--nova-texte-2); background: none; }
+.wimsbody .nova-pe-classes ul.nova-pe-zones > li.nova-pe-nouvelle { outline: 2px solid var(--nova-zone-encre); outline-offset: 1px; }
+.nova-pe-retirer {
+  display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; margin: 0 -.35em 0 .3em; padding: 0; border: 0; border-radius: 50%;
+  background: none; color: inherit; font: inherit; font-size: 1.05em; line-height: 1; cursor: pointer;
+}
+.nova-pe-retirer:is(:hover, :focus-visible) { background: color-mix(in srgb, currentColor 16%, transparent); }
+/* Informations : champs simples sur deux colonnes (>= 640 px), le reste en pleine largeur. */
+.nova-pe-grille { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nova-e3) var(--nova-e4); }
+@media (min-width: 640px) { .nova-pe-grille { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.wimsbody .nova-pe-grille > * { grid-column: 1 / -1; width: auto; min-width: 0; margin: 0; }
+.wimsbody .nova-pe-grille > .nova-pe-demi { grid-column: auto; }
+.wimsbody .nova-pe-grille > .field :is(input:not([type="checkbox"], [type="radio"], [type="file"], [type="submit"], [type="button"]), select, textarea) { width: 100%; max-width: none; box-sizing: border-box; }
+/* Fenetre d'inscription (et confirmation du retrait). */
+.nova-dialogue.nova-ic-dialogue { width: min(30rem, calc(100vw - 2rem)); }
+.nova-ic-dialogue .nova-ic-aide { margin: 0 0 var(--nova-e3); color: var(--nova-texte-2); }
+.nova-ic-dialogue .nova-ic-chercher { width: 100%; box-sizing: border-box; margin-bottom: var(--nova-e2); }
+.nova-ic-choix { display: grid; gap: 2px; max-height: min(50vh, 20rem); overflow: auto; }
+.nova-ic-niveau { padding: var(--nova-e2) var(--nova-e2) 2px; font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--nova-texte-2); }
+.nova-ic-choix > label.nova-ic-classe { display: flex; align-items: center; gap: var(--nova-e2); margin: 0; padding: 7px var(--nova-e2); border-radius: var(--nova-rayon-petit); cursor: pointer; }
+.nova-ic-choix > label.nova-ic-classe[hidden], .nova-ic-niveau[hidden] { display: none; }
+.nova-ic-choix > label.nova-ic-coche { background: var(--nova-accent-doux); }
+.nova-ic-choix > label.nova-ic-deja { color: var(--nova-texte-2); cursor: default; }
+.nova-ic-choix > label.nova-ic-deja small { margin-left: auto; font-size: .78rem; }
+.nova-ic-rien { margin: var(--nova-e2) 0 0; color: var(--nova-texte-2); }
+.nova-ic-erreur { margin: var(--nova-e2) 0 0; color: var(--nova-erreur); font-weight: 600; }
+.nova-ic-erreur:empty { display: none; }

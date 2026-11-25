@@ -698,7 +698,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`)],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml`],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -1067,6 +1067,15 @@ Une liste lue sur le serveur passe par un élément caché que `nova.js` lit. Mo
 `$gn_st`, laissé par `scripts/adm/class/getnextuser`. Les liens reprennent celui de « Part. suivant », dont seul le
 dernier paramètre change (`checkuser`, `getuser`, `getraw`, `user`, `userv` selon la page). La colonne est fixe, à
 droite, à partir de 1200 px seulement (`html.nova-eleves-colonne` réserve la marge de `.wimsbody`).
+
+Faire faire à WIMS une action d'une autre page, sans la quitter : modèle « Inscrire dans une classe » de la fiche d'un
+élève (`ficheEleve`, `75-fiche-eleve.js`). Passer par la page de WIMS faite pour cela, jamais écrire soi-même dans
+`wimshome/log`. Si tout ce qui part est en ASCII (portail : import CSV d'une ligne `login,participate`, que WIMS
+ajoute aux classes de l'élève), lire la page du formulaire par `fetch`, recopier ses champs cachés dans un `FormData`
+et l'envoyer. Si un champ peut porter un accent (groupement : le libellé traduit du bouton de « Gestion des
+inscriptions »), charger la page dans un `<iframe>` caché, cocher, cliquer le bouton : le navigateur encode comme
+WIMS l'attend. Dans les deux cas : un compteur de session neuf par requête, 1,6 s entre deux requêtes, la réussite lue
+dans la page renvoyée (message de WIMS, coche du tableau), puis rechargement de la page de départ.
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
@@ -1612,7 +1621,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 ][
   Lire la page du formulaire en arrière-plan, recopier ses champs dans un `<form>` de la page courante, l'envoyer dans
   un `<iframe>` caché, puis relire la page voulue 1,5 s après (modèle : `barreReglages` dans `sequencesEnseignant`).
-  Poser l'écouteur `load` du cadre au moment de l'envoi : un cadre vide en signale déjà un en entrant dans la page.
+  Poser l'écouteur `load` du cadre au moment de l'envoi : un cadre vide en signale déjà un en entrant dans la page ;
+  ou ignorer tout chargement dont l'adresse n'est pas `wims.cgi` (`inscriptionsGroupement`, `75-fiche-eleve.js`).
+]
+
+#piege[Une adresse construite par Nova fait passer la page en anglais][
+  Après un clic sur un lien fabriqué par `nova.js`, la page suivante est en anglais (vu à la racine d'un portail
+  et d'un groupement).
+][
+  `nova.js` lit la langue dans `<html lang>`, écrit par le C de WIMS (`src/exec.c`). À la racine d'une structure, il
+  vaut `en` sur des pages en français (cause dans WIMS non trouvée).
+][
+  Pour recharger une page de la session, ne pas mettre `lang=` dans l'adresse : la session garde sa langue.
 ]
 
 #piege[Les notes des feuilles d'une classe ne comptent pas][
@@ -2015,7 +2035,7 @@ niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "functi
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
   "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
-  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "80-reglages.js", "99-demarrage.js")
+  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "75-fiche-eleve.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))
@@ -2119,6 +2139,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`acces-classe.phtml`, `capacite.phtml`, `config-globale.phtml`, `sequences.phtml`], [configuration de la classe, séquences],
   [`notes-detail.phtml`], [détail des notes],
   [`eleves-liste.phtml`], [liste des élèves des pages à « Part. précédent / suivant » de l'enseignant (`elevesListe`)],
+  [`inscription-classes.phtml`], [classes d'un portail ou d'un groupement et classes de l'élève, pour « Inscrire dans une classe » de sa fiche (`ficheEleve`)],
   [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
   [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],

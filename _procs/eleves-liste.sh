@@ -1,6 +1,6 @@
 #!/bin/sh
-# Nova : participants d'une classe ou d'une zone, pour la liste des eleves du « Detail des examens » (2026-11-25,
-# _widgets/eleves-liste.phtml, nova.js examensDetail). Ordre de .userlist, celui de « Part. precedent / suivant »
+# Nova : participants d'une classe ou d'une zone, pour la liste des eleves des pages a « Part. suivant » (2026-11-25,
+# _widgets/eleves-liste.phtml, nova.js elevesListe). Ordre de .userlist, celui de « Part. precedent / suivant »
 # (scripts/adm/class/getnextuser). Une ligne <li> par eleve : data-login (caracteres surs seulement), texte
 # « Prenom Nom » echappe pour le HTML. 450 eleves au plus (sortie d'un !sh limitee a 45 000 octets).
 # Usage : eleves-liste.sh <wims_home> <classe ou zone, chiffres et / seulement>

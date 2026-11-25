@@ -1,0 +1,30 @@
+!! Nova : inscrire un eleve dans une classe depuis sa fiche (Proprietes du compte, adm/class/usermanage, job=userprop),
+!! administrateur a la racine d'un portail ou d'un groupement (2026-11-26, utilisateur, maquettes A et 1 de
+!! maquettes/proprietes-compte-2026-11-26.html). Lu par tail.phtml (qui lit les textes). Donne a nova.js (ficheEleve) les classes de la
+!! structure (ltclassname, ecrit par modules/adm/class/usermanage/mksubclslist.proc) et celles de l'eleve
+!! (user_participate, meme ordre que la liste de WIMS). L'inscription passe par les pages de WIMS, depuis le
+!! navigateur : import CSV d'une ligne « login,participate » (portail), Gestion des inscriptions (groupement, qui sait
+!! aussi retirer).
+!! Variables :
+!!   nova_ic_u  eleve affiche (getuser, filtre)
+!!   nova_ic_p  ses classes (user_participate, filtre)
+!!   nova_ic_n  nombre de lignes de ltclassname
+!!   nova_ic_k  rang de la ligne
+!!   nova_ic_z  zone de la ligne (chiffres et / seulement)
+!!   nova_ic_t  type de la zone (portail : 3e champ ; groupement : toujours une classe)
+!set nova_ic_u=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.@- in $getuser
+!set nova_ic_p=!text select 0123456789/, in $user_participate
+!set nova_ic_n=!linecnt $ltclassname
+<ul id="nova-inscription" hidden data-structure="$wims_supertype" data-eleve="$nova_ic_u" data-inscrit="$nova_ic_p">
+!for nova_ic_k=1 to $nova_ic_n
+  !set nova_ic_z=!text select 0123456789/ in $(ltclassname[$nova_ic_k;1])
+  !set nova_ic_t=class
+  !if $wims_supertype=4
+    !set nova_ic_t=!text select abcdefghijklmnopqrstuvwxyz in $(ltclassname[$nova_ic_k;3])
+  !endif
+  !if $nova_ic_z!=$empty and $nova_ic_t iswordof class level
+    <li data-zone="$nova_ic_z" data-type="$nova_ic_t">$(ltclassname[$nova_ic_k;2])</li>
+  !endif
+!next nova_ic_k
+</ul>
+!reset nova_ic_u nova_ic_p nova_ic_n nova_ic_k nova_ic_z nova_ic_t

@@ -101,3 +101,8 @@
 !! _widgets/eleves-liste.phtml (nova.js examensDetail)
 <template id="nova-xd-textes" data-eleves="Alumnos" data-chercher="Buscar un alumno" data-aucun="Ningún alumno encontrado." data-touches="alumno anterior / siguiente" data-session-1="%1 sesión" data-session-n="%1 sesiones" data-examen-1="%1 examen" data-examen-n="%1 exámenes" data-non-terminee="Sin terminar" data-signaler="Señalar un error" data-non-ouvert="Ejercicio %1: no abierto en esta sesión" data-ouvrir="Ejercicio %1: %2 (ver el enunciado y las respuestas)"></template>
 !exit
+
+:inscription
+!! _widgets/inscription-classes.phtml (nova.js ficheEleve)
+<template id="nova-ic-textes" data-classes="Clases" data-informations="Información" data-aucune="Todavía ninguna clase." data-inscrire="Inscribir en una clase" data-court="Inscribir" data-titre="Inscribir a %1" data-aide="Marque las clases en las que inscribir al alumno. Sus otras clases y sus notas no cambian." data-chercher="Buscar una clase" data-deja="ya inscrito" data-rien="Ninguna clase encontrada." data-toutes="El alumno ya está en todas las clases." data-annuler="Cancelar" data-fermer="Cerrar" data-valider-0="Inscribir" data-valider-1="Inscribir en 1 clase" data-valider-n="Inscribir en %1 clases" data-en-cours="Inscribiendo..." data-erreur="La inscripción no se ha realizado. Vuelva a cargar la página para ver las clases del alumno." data-retirer="Retirar de %1" data-retirer-titre="¿Retirar a %1 de %2?" data-retirer-aide="Sus notas en esta clase no se borran: vuelven si se le inscribe de nuevo." data-retirer-ok="Retirar" data-retrait-en-cours="Retirando..." data-retrait-erreur="No se ha podido retirar. Vuelva a cargar la página para ver las clases del alumno."></template>
+!exit

@@ -101,3 +101,8 @@
 !! _widgets/eleves-liste.phtml (nova.js examensDetail)
 <template id="nova-xd-textes" data-eleves="Students" data-chercher="Search for a student" data-aucun="No student found." data-touches="previous / next student" data-session-1="%1 session" data-session-n="%1 sessions" data-examen-1="%1 exam" data-examen-n="%1 exams" data-non-terminee="Not finished" data-signaler="Report a bug" data-non-ouvert="Exercise %1: not opened in this session" data-ouvrir="Exercise %1: %2 (see the statement and answers)"></template>
 !exit
+
+:inscription
+!! _widgets/inscription-classes.phtml (nova.js ficheEleve)
+<template id="nova-ic-textes" data-classes="Classes" data-informations="Details" data-aucune="No class yet." data-inscrire="Enrol in a class" data-court="Enrol" data-titre="Enrol %1" data-aide="Tick the classes to enrol the student in. Their other classes and grades do not change." data-chercher="Search for a class" data-deja="already enrolled" data-rien="No class found." data-toutes="The student is already in every class." data-annuler="Cancel" data-fermer="Close" data-valider-0="Enrol" data-valider-1="Enrol in 1 class" data-valider-n="Enrol in %1 classes" data-en-cours="Enrolling..." data-erreur="Enrolment failed. Reload the page to see the student's classes." data-retirer="Remove from %1" data-retirer-titre="Remove %1 from %2?" data-retirer-aide="Their grades in this class are not deleted: they come back if the student is enrolled again." data-retirer-ok="Remove" data-retrait-en-cours="Removing..." data-retrait-erreur="Removal failed. Reload the page to see the student's classes."></template>
+!exit

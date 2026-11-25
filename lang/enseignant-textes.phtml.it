@@ -101,3 +101,8 @@
 !! _widgets/eleves-liste.phtml (nova.js examensDetail)
 <template id="nova-xd-textes" data-eleves="Studenti" data-chercher="Cerca uno studente" data-aucun="Nessuno studente trovato." data-touches="studente precedente / successivo" data-session-1="%1 sessione" data-session-n="%1 sessioni" data-examen-1="%1 esame" data-examen-n="%1 esami" data-non-terminee="Non terminata" data-signaler="Segnala un errore" data-non-ouvert="Esercizio %1: non aperto in questa sessione" data-ouvrir="Esercizio %1: %2 (vedi il testo e le risposte)"></template>
 !exit
+
+:inscription
+!! _widgets/inscription-classes.phtml (nova.js ficheEleve)
+<template id="nova-ic-textes" data-classes="Classi" data-informations="Informazioni" data-aucune="Ancora nessuna classe." data-inscrire="Iscrivi a una classe" data-court="Iscrivi" data-titre="Iscrivi %1" data-aide="Seleziona le classi a cui iscrivere lo studente. Le sue altre classi e i suoi voti non cambiano." data-chercher="Cerca una classe" data-deja="già iscritto" data-rien="Nessuna classe trovata." data-toutes="Lo studente è già in tutte le classi." data-annuler="Annulla" data-fermer="Chiudi" data-valider-0="Iscrivi" data-valider-1="Iscrivi a 1 classe" data-valider-n="Iscrivi a %1 classi" data-en-cours="Iscrizione in corso..." data-erreur="L'iscrizione non è riuscita. Ricarica la pagina per vedere le classi dello studente." data-retirer="Togli da %1" data-retirer-titre="Togliere %1 da %2?" data-retirer-aide="I suoi voti in questa classe non vengono cancellati: tornano se viene iscritto di nuovo." data-retirer-ok="Togli" data-retrait-en-cours="Rimozione in corso..." data-retrait-erreur="La rimozione non è riuscita. Ricarica la pagina per vedere le classi dello studente."></template>
+!exit

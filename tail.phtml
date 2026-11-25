@@ -53,6 +53,15 @@
   <span id="nova-examtypes" hidden data-user="$checkuser" data-types="$nova_et"></span>
   !reset nova_et nova_s nova_x nova_f nova_n nova_t nova_k nova_r nova_c
 !endif
+!! Inscrire un eleve dans une classe depuis sa fiche (2026-11-26, utilisateur) : administrateur a la racine d'un portail
+!! (supertype 4) ou d'un groupement (2), fiche d'un eleve (pas d'un enseignant : user_supervisable).
+!! Textes des cartes de la fiche (nova.js ficheEleve) : toutes les fiches.
+!if $module=adm/class/usermanage and $job=userprop and _tool notin $wims_session
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang inscription
+  !if $wims_user=supervisor and $wims_class=$wims_superclass and $wims_supertype iswordof 2 4 and $user_supervisable!=yes and $getuser!=$empty
+    !read themes/$wims_theme/_widgets/inscription-classes.phtml
+  !endif
+!endif
 !! Liste des eleves (enseignant ; 2026-11-25) : pages a Part. precedent / suivant (entrees du menu posees par
 !! scripts/adm/class/getnextuser, qui laisse l'eleve affiche dans gn_st).
 !if $wims_user=supervisor and _check notin $wims_session and $gn_st!=$empty and (next_participant isin $wims_menu_items or prev_participant isin $wims_menu_items)

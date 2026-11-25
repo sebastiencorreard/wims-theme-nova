@@ -1,0 +1,46 @@
+!! Nova : feuilles et examens dont la desactivation serait refusee (2026-11-25, utilisateur : l'action "Desactiver" n'est
+!! proposee que si elle est permise, contournement de Nova compris). Calcul : _procs/desactivables.sh ; nova.js
+!! desactivationsRefusees retire les liens. Lu par statuts-ressources.phtml (accueil) et fiche-ressource.phtml (feuille, examen).
+!! Variables : nova_dz structure de la classe pour les examens (ok, mauvaise : badstructure de adm/class/exam/var.proc) ;
+!! nova_dk poste (class_secure puis !checkhost, comme adm/class/sheet/var.proc.deactivate), puis ressource de la page (sheet:N) ;
+!! nova_dr resultat du script, puis feuilles refusees ; nova_dz ensuite : examens refuses.
+!if $wims_user=supervisor and $wims_class!=$empty
+  !set nova_dz=ok
+  !if $class_type!=0 and ($class_type!=1 or $wims_superclass!=$class_parent) and /0// notin $wims_class//
+    !set nova_dz=mauvaise
+    !if $class_typename=program
+      !set nova_dr=!record 0 of wimshome/log/classes/$wims_class/courses
+      !set nova_dk=!record 0 of wimshome/log/classes/$wims_class/icourses
+      !if $nova_dr$nova_dk=$empty
+        !set nova_dz=ok
+      !endif
+    !endif
+  !endif
+  !set nova_dk=!defof class_secure in wimshome/log/classes/$wims_class/.def
+  !set nova_dk=!trim $nova_dk
+  !if $nova_dk!=$empty
+    !set nova_dr=!checkhost $nova_dk
+    !if $nova_dr>0
+      !set nova_dk=ok
+    !else
+      !set nova_dk=non
+    !endif
+  !else
+    !set nova_dk=non
+  !endif
+  !set nova_dr=!sh sh $wims_home/public_html/themes/$wims_theme/_procs/desactivables.sh "$wims_home" "$wims_class" "$nova_dz" "$nova_dk" "$wims_superclass" "$wims_ismanager"
+  !set nova_dz=!line 2 of $nova_dr
+  !set nova_dz=!text select 0123456789, in $nova_dz
+  !set nova_dr=!line 1 of $nova_dr
+  !set nova_dr=!text select 0123456789, in $nova_dr
+  !reset nova_dk
+  !if $module=adm/class/sheet and $sheet!=$empty
+    !set nova_dk=!text select 0123456789 in $sheet
+    !set nova_dk=sheet:$nova_dk
+  !endif
+  !if $module=adm/class/exam and $exam!=$empty
+    !set nova_dk=!text select 0123456789 in $exam
+    !set nova_dk=exam:$nova_dk
+  !endif
+  <span id="nova-desactivables" hidden data-refus-sheet="$nova_dr" data-refus-exam="$nova_dz" data-courant="$nova_dk"></span>
+!endif

@@ -4,7 +4,7 @@
 // verifier.sh le recompile dans guide-nova.pdf (dans le dépôt, à commiter avec ce source) et contrôle qu'il nomme
 // chaque fichier ; livrer.sh en met une copie datée dans l'archive (si typst est installé).
 //
-// revue de structure : 2026-11-19 (70-enseignant.js découpé : 71-sequences.js, 72-travail-individualise.js). Changer cette ligne à chaque revue (@annexe-maintenir) :
+// revue de structure : 2026-11-25 (recettes à jour ; 70-enseignant.js à 2 800 lignes, à découper au-delà de 3 000 ; tests de WIMS surveillés par ORIGINES). Changer cette ligne à chaque revue (@annexe-maintenir) :
 // verifier.sh compte les commits depuis la dernière modification de cette ligne.
 
 #let version = read("/VERSION").split("\n").at(0)
@@ -1021,6 +1021,13 @@ Suivre `confirmationsRessources` (fenêtre de Nova) et `_widgets/confirmations.p
 d'origine si l'enseignant confirme. Les boutons de danger sont en contour rouge sur la page ; le rouge plein est
 réservé au bouton qui confirme, dans la fenêtre.
 
+=== Changer les actions d'une feuille ou d'un examen (pastille d'état)
+
+Les liens d'action de WIMS (Activer, Expirer, Désactiver, Effacer…) sont déplacés tels quels dans le menu de la pastille
+d'état (`etatMenu`, `etatAction` : icône, effet, groupe), sur l'accueil (`etatsRessources`) et sur la page de la ressource
+(`ficheStatut`). Retirer une action avant eux : `desactivationsRefusees` retire « Désactiver » quand WIMS la refuserait
+(`_procs/desactivables.sh`). Ne pas fabriquer de lien : garder celui de WIMS, avec sa confirmation (`confirmationsRessources`).
+
 === Ajouter une action qui écrit sur le serveur
 
 Modèles : désactiver (`desactiver.phtml`), propager (`propager.phtml`), renuméroter (`sequences.phtml`).
@@ -1195,7 +1202,9 @@ Pour chaque « ÉCHEC » : comparer l'ancien original et le nouveau (`diff`), re
 Nova, puis mettre à jour la ligne de `ORIGINES.sha256`. Copies : les gabarits de `standard` (`header`, `tail`,
 `htmlheader`, `supervisor`, `user`, `visitor`, `docheader`, `doctail`, `mhelpheader`, `mhelptail`, `table.proc`),
 `_widgets/headmenu`, `user_links`, `ariane`, `headhome`, `classtitle`, `site_title`, `search_classe` (de Nikaia),
-`front` (du module `home`), `_procs/menumodubox0.proc`, et les règles du jeu Font Awesome pour Lucide.
+`front` (du module `home`), `_procs/menumodubox0.proc`, et les règles du jeu Font Awesome pour Lucide. Sans copie, mais
+surveillés : les tests de désactivation de WIMS (`adm/class/exam/var.proc`, `adm/class/sheet/var.proc.deactivate`,
+`sheetaction.phtml`), refaits par `_procs/desactivables.sh` : un « ÉCHEC » sur l'un d'eux = revoir ce script.
 
 Ensuite : repasser les pages principales de chaque rôle (@chap-verifier), surtout les exercices.
 
@@ -1722,6 +1731,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Position fixe plus un repère dans la page (voir `boutonsCollants` dans `20-composants.js`).
 ]
 
+#piege[WIMS propose « Désactiver », puis refuse][
+  Le lien « Désactiver » d'une feuille ou d'un examen est écrit pour tout statut actif, expiré ou caché
+  (`scripts/adm/sheet/sheetaction.phtml`) ; les refus ne sont calculés qu'au clic.
+][
+  WIMS ne teste rien en écrivant le lien.
+][
+  `_procs/desactivables.sh` refait les tests de WIMS (examen : partage, structure, élèves qui ont commencé ; feuille : poste
+  non sécurisé, partage, feuille dans un examen), dans le même ordre, et compte le contournement de Nova (réglage
+  `--nova-desactivation-forcee`, statut actif seulement). `desactivationsRefusees` (nova.js) retire les liens refusés.
+  Un test de WIMS qui change (nouvelle version) doit être reporté dans ce script.
+]
+
 #piege[Des boutons « Aide » qui ne se ressemblent pas][
   Le bouton « Aide » de WIMS est plus petit, plus grand ou réduit à une pastille selon la page.
 ][
@@ -2069,7 +2090,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`menu-serveur.phtml`, `menu-bascule.phtml`, `replis-classes.phtml`, `std-menus.phtml`], [menu de l'enseignant, classes repliées, réglage « menus »],
   [`apparence.phtml`, `apparence-classe.phtml`, `apparence-standard.phtml`, `reglages-site.phtml`, `version.phtml`], [cartes « Réglages de Nova », enregistrement des réglages du site, version],
   [`propager.phtml`, `ecarts-zones.phtml`, `participants-zones.phtml`], [zones dépendantes : propagation, écarts, listes après import],
-  [`desactiver.phtml`, `confirmations.phtml`, `statuts-ressources.phtml`, `fiche-ressource.phtml`], [ressources (feuilles, examens) : désactivation, confirmations, états, fiches],
+  [`desactiver.phtml`, `desactivables.phtml`, `confirmations.phtml`, `statuts-ressources.phtml`, `fiche-ressource.phtml`], [ressources (feuilles, examens) : désactivation, désactivations refusées (liens retirés), confirmations, états, fiches],
   [`acces-classe.phtml`, `capacite.phtml`, `config-globale.phtml`, `sequences.phtml`], [configuration de la classe, séquences],
   [`notes-detail.phtml`], [détail des notes],
   [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
@@ -2088,7 +2109,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`badges.awk`], [badges],
   [`activite.awk`, `vacances-zones.txt`], [« Mon activité », vacances des zones A, B, C],
   [`avatar.awk`, `avatar.proc`, `avatar-catalogue.txt`, `avatar-zones.sh`, `avatars-classe.sh`, `avatars-retour.sh`], [avatar],
-  [`propager.sh`, `desactiver.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant],
+  [`propager.sh`, `desactiver.sh`, `desactivables.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant (`desactivables.sh` : lecture seule, refus de WIMS recalculés)],
   [`serie-exos.sh`], [titres des exercices d'un module OEF (fichier `Extitles`), éditeur des paramètres d'une série],
   [`jeu-icones.sh`], [lien du jeu Lucide dans `gifs/themes`],
   [`suivi.pl`], [relevé du suivi en direct],

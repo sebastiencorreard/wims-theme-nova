@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Enseignants
+- « Désactiver » n'est plus proposé pour une feuille ou un examen que WIMS refuserait de désactiver (feuille utilisée dans un examen, examen déjà commencé par des élèves, partage, structure). Si la classe permet « Désactiver malgré le partage », l'action reste proposée quand Nova peut passer outre (feuille ou examen actif).
 - **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
 
 ### Corrections

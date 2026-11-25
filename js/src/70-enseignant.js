@@ -2098,6 +2098,30 @@
     document.querySelectorAll('th.nova-col-seq').forEach(function (th) { th.title = info; });
   }
 
+  /* « Désactiver » seulement quand c'est permis (2026-11-25, utilisateur) : WIMS propose le lien pour toute feuille ou tout
+   * examen actif, expiré ou caché, puis refuse (partage, structure, examen commencé, feuille dans un examen, poste non
+   * sécurisé). _widgets/desactivables.phtml donne les numéros refusés, contournement de Nova déjà compté
+   * (_procs/desactivables.sh). Liens de l'accueil : numéro dans l'adresse ; page d'une feuille ou d'un examen : data-courant.
+   * Avant etatsRessources et ficheStatut, qui construisent les menus à partir des liens restants. Réglage std-listes. */
+  function desactivationsRefusees() {
+    var d = document.getElementById('nova-desactivables');
+    if (!d || standard('listes')) return;
+    var refus = function (type) { return (d.getAttribute('data-refus-' + type) || '').split(',').filter(Boolean); };
+    var listes = { sheet: refus('sheet'), exam: refus('exam') };
+    var courant = /^(sheet|exam):(\d+)$/.exec(d.getAttribute('data-courant') || '');
+    document.querySelectorAll('.wimsbody a[href*="job=deactivate"]').forEach(function (a) {
+      var h = a.getAttribute('href') || '';
+      var m = /[?&]\+?module=adm(?:%2F|\/)class(?:%2F|\/)(sheet|exam)\b/.exec(h), n = m && new RegExp('[?&]\\+?' + m[1] + '=(\\d+)').exec(h);
+      // Page d'une feuille ou d'un examen : lien « cmd=reply » sans numéro (le module, parfois) : la ressource de la page.
+      var type = m ? m[1] : (courant && courant[1]), num = n ? n[1] : (courant && courant[1] === type ? courant[2] : '');
+      if (!type || !num || listes[type].indexOf(num) < 0) return;
+      // Espace insécable écrite par WIMS après le lien (scripts/adm/sheet/sheetaction.phtml) : partie avec lui.
+      var suivant = a.nextSibling;
+      if (suivant && suivant.nodeType === 3 && !suivant.nodeValue.trim()) suivant.remove();
+      a.remove();
+    });
+  }
+
   /* États des ressources sur l'accueil de l'enseignant (2026-11-12, utilisateur, maquette M1) : colonnes « Statut » et
    * « Action » fusionnées. La pastille d'état ouvre le menu des actions de WIMS (liens déplacés tels quels : GET, avec
    * leurs confirmations), chacune avec son effet (#nova-statuts-textes, _widgets/statuts-ressources.phtml). États :

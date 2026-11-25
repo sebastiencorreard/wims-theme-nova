@@ -22,3 +22,7 @@ a41cf09ada5a0b9b5295ac721039a1e181749974aecbbd31e81899c49ce2c715  standard/local
 d5380cc5d838303cec93becc6c6236f470c4faf9458e6192d21ac0bea9ed6a8b  _widgets/headhome.phtml
 855faf9984854ea2c6d2f5ef20112785e00794309e3762f315f0b6c89ecab81e  _widgets/classtitle.phtml
 61c07401369f068eb284d5806659142531e0fc4d87feeb45f9162b87ecdaf421  ../gifs/themes/Font_Awesome/icon-min.css
+# Pas de copie : tests de WIMS recopiés par _procs/desactivables.sh (refus de « Désactiver », 2026-11-25) ; un ÉCHEC = revoir ce script.
+0372c68b29d67df756d1c56eff9c966938dd95e07cf4bdccc12e82d1e7855a8b  ../modules/adm/class/exam/var.proc
+aa46bfd13bc8432a5bacb566130f14da706a2775052517c4cca3b7ea042aacc1  ../modules/adm/class/sheet/var.proc.deactivate
+e130cbf7a711207f6c6d5340c4492523c59d469492e291e78838df345f6e4aff  ../scripts/adm/sheet/sheetaction.phtml

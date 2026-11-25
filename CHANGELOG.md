@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Enseignants
+- **Détail des examens** d'un élève en cartes : une carte par examen, une ligne par session (date, durée ou « Non terminée », exercices avec leur note en couleur, note de la session) ; les signes † et ?? de WIMS deviennent un sablier (session non terminée) et une bulle barrée (pas de réponse). À droite (ou en tête au téléphone), la **liste des élèves** de la classe, avec recherche : un clic ouvre le détail d'un autre élève. Réglage « Détail d'un élève et page Notes de l'enseignant du thème standard » pour garder le tableau de WIMS.
 - **Élève précédent / suivant au clavier** : sur les pages qui ont « Part. précédent » et « Part. suivant » (détail des examens, détail des notes, scores bruts, fiche du participant, activité…), les flèches gauche et droite du clavier passent au participant précédent ou suivant, sauf pendant la saisie dans un champ.
 - **Icônes** : Nova affiche toujours le jeu d'icônes Lucide, même dans une classe ou sur un site réglés sur un autre jeu (« default », Font_Awesome…) ; le choix « Jeu d'icônes » de la page Apparence ne compte plus que pour les autres thèmes.
 - « Désactiver » n'est plus proposé pour une feuille ou un examen que WIMS refuserait de désactiver (feuille utilisée dans un examen, examen déjà commencé par des élèves, partage, structure). Si la classe permet « Désactiver malgré le partage », l'action reste proposée quand Nova peut passer outre (feuille ou examen actif).

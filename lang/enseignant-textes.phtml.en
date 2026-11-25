@@ -96,3 +96,8 @@
 !! header.phtml, docheader.phtml, tail.phtml : editeur de code (js/cm6.js ; nova.js editeursCode, 2026-11-18)
 <template id="nova-editeur-textes" data-find="Find" data-replace="Replace" data-next="next" data-previous="previous" data-all="all" data-match-case="match case" data-regexp="regexp" data-by-word="by word" data-replace-1="replace" data-replace-all="replace all" data-close="close" data-current-match="current match" data-replaced="replaced $ matches" data-replaced-line="replaced match on line $" data-on-line="on line" data-go-to-line="Go to line" data-go="go" data-source="Source" data-control-character="Control character" data-undo="Undo" data-redo="Redo" data-text-size="Text size" data-smaller="Smaller text" data-larger="Larger text" data-default="default" data-full-screen="Full screen" data-exit-full-screen="Exit full screen" data-syntax="Syntax" data-of="of" data-no-results="No results" data-show-replace="Show or hide replace"></template>
 !exit
+
+:examens_detail
+!! _widgets/eleves-liste.phtml (nova.js examensDetail)
+<template id="nova-xd-textes" data-eleves="Students" data-chercher="Search for a student" data-aucun="No student found." data-touches="previous / next student" data-precedent="Previous student" data-suivant="Next student" data-choisir="Choose another student" data-session-1="%1 session" data-session-n="%1 sessions" data-examen-1="%1 exam" data-examen-n="%1 exams" data-non-terminee="Not finished" data-signaler="Report a bug" data-non-ouvert="Exercise %1: not opened in this session" data-ouvrir="Exercise %1: %2 (see the statement and answers)"></template>
+!exit

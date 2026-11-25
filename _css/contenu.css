@@ -1053,6 +1053,83 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 .wimsbody .nova-nd-qualite.nova-nd-n-np { color: var(--nova-texte-2); font-weight: 400; }
 .wimsbody .nova-nd-pied { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nova-e2) var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); font-size: 13px; color: var(--nova-texte-2); }
 .wimsbody .nova-nd-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+/* Detail des examens, enseignant (adm/class/userscore, job=examcheck ; 2026-11-25, utilisateur, maquettes B et 1 ;
+ * nova.js examensDetail, elevesListe). Une carte par examen (classes de « Mes notes » : .nova-nd-carte, pastille,
+ * couleurs des notes), une ligne par session ; liste des eleves a droite sur grand ecran, barre « < nom v > » sinon.
+ * Reglage « notes-enseignant » du theme standard : tableau de WIMS. Avant nova.js, tableau cache (secours 3 s). */
+html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody p.exampart ~ :is(.table-scroll, table.wimstable):not([data-nova-detail]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.wimsbody .nova-xd { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--nova-e3); max-width: 860px; margin: var(--nova-e3) auto 0; text-align: left; }
+.wimsbody .nova-xd-cartes { min-width: 0; }
+.wimsbody .nova-xd-resume { margin: 0 2px var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-xd-tete { display: flex; align-items: center; gap: var(--nova-e3); padding: 10px var(--nova-e4); background: var(--nova-accent-doux); }
+.wimsbody .nova-xd-titre { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; font-size: 1rem; font-weight: 700; line-height: 1.3; text-align: left; overflow-wrap: anywhere; }
+.wimsbody .nova-xd-numex { color: var(--nova-texte-2); font-weight: 400; }
+.wimsbody .nova-xd-compte { flex: none; font-size: var(--nova-petit); color: var(--nova-texte-2); white-space: nowrap; }
+.wimsbody .nova-xd-session { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) auto auto; align-items: center; gap: var(--nova-e2) var(--nova-e3); padding: 10px var(--nova-e4); border-top: 1px solid var(--nova-bord); }
+.wimsbody .nova-xd-quand { display: flex; flex-direction: column; gap: 2px; font-size: var(--nova-petit); }
+.wimsbody .nova-xd-sous { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--nova-e2); color: var(--nova-texte-2); font-size: 12px; }
+.wimsbody .nova-xd-code { font-family: var(--nova-police-chiffres, ui-monospace), monospace; font-size: 11px; color: var(--nova-texte-2); }
+.wimsbody .nova-xd-etiquette { font-size: 11px; font-weight: 700; padding: 0 8px; border-radius: 999px; background: var(--nova-info-fond); color: var(--nova-info); white-space: nowrap; }
+.wimsbody .nova-xd-exos { display: flex; flex-wrap: wrap; gap: 6px; }
+.wimsbody .nova-xd-exo { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; min-width: 42px; padding: 3px 4px 4px; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); color: var(--nova-texte-2); font-size: 11px; line-height: 1.2; text-decoration: none; }
+.wimsbody a.nova-xd-exo:hover, .wimsbody a.nova-xd-exo:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 1px; text-decoration: none; }
+.wimsbody .nova-xd-exo.nova-xd-pas-ouvert { border-style: dashed; border-color: var(--nova-bord); opacity: .6; }
+.wimsbody .nova-xd-val { display: grid; place-items: center; min-width: 30px; min-height: 22px; }
+.wimsbody .nova-xd-val.nova-nd-qualite { min-width: 30px; padding: 1px 4px; font-size: 13px; }
+.wimsbody .nova-xd-ico { display: inline-block; width: 16px; height: 16px; min-width: 0; min-height: 0; background: var(--nova-texte-2); -webkit-mask: var(--nova-xd-m) center / contain no-repeat; mask: var(--nova-xd-m) center / contain no-repeat; vertical-align: -3px; }
+.wimsbody .nova-xd-exo .nova-xd-ico { margin: 3px 0; }
+.wimsbody .nova-xd-sablier { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 22h14'/%3E%3Cpath d='M5 2h14'/%3E%3Cpath d='M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22'/%3E%3Cpath d='M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2'/%3E%3C/svg%3E"); }
+.wimsbody .nova-xd-sans-reponse { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 19H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.7.7 0 0 1 2 21.286V5a2 2 0 0 1 1.184-1.826'/%3E%3Cpath d='m2 2 20 20'/%3E%3Cpath d='M8.656 3H20a2 2 0 0 1 2 2v11.344'/%3E%3C/svg%3E"); }
+.wimsbody .nova-xd-noteb { display: inline-flex; align-items: center; gap: 2px; }
+.wimsbody .nova-xd-note { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-xd-note small { font-weight: 400; opacity: .85; font-size: .8em; }
+.wimsbody .nova-xd-etoile { font-size: 12px; color: var(--nova-texte-2); border-bottom: 1px dotted; cursor: help; }
+.wimsbody .nova-xd-bug { display: inline-flex; }
+.wimsbody .nova-xd-bug button.dropdown { display: inline-grid; place-items: center; width: 36px; height: 36px; min-height: 0; margin: 0; padding: 0; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); color: var(--nova-texte-2); box-shadow: none; }
+.wimsbody .nova-xd-bug button.dropdown::before { content: ""; width: 18px; height: 18px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 12h.01'/%3E%3Cpath d='M19 12h.01'/%3E%3Cpath d='M5 12h.01'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 12h.01'/%3E%3Cpath d='M19 12h.01'/%3E%3Cpath d='M5 12h.01'/%3E%3C/svg%3E") center / contain no-repeat; }
+.wimsbody .nova-xd-bug button.dropdown::after { content: none; display: none; }
+.wimsbody .nova-xd-bug button.dropdown:hover { color: var(--nova-accent); border-color: var(--nova-accent); }
+.wimsbody .nova-xd-legende { margin-top: var(--nova-e3); }
+.wimsbody .nova-xd-legende > span { display: inline-flex; align-items: center; gap: 6px; }
+.wimsbody .nova-xd-legende .nova-xd-ico { flex: none; }
+/* Liste des eleves : colonne (grand ecran) ou liste qui s'ouvre sous la barre. */
+.wimsbody .nova-xd-liste { display: none; background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); box-shadow: var(--nova-ombre); padding: 10px; flex-direction: column; gap: 6px; min-width: 0; }
+.wimsbody .nova-xd-liste.nova-ouvert { display: flex; }
+.wimsbody .nova-xd-liste-tete { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--nova-texte-2); }
+.wimsbody input.nova-xd-chercher { width: 100%; box-sizing: border-box; margin: 0; }
+.wimsbody .nova-xd-liste ul { list-style: none; margin: 0; padding: 0; max-height: min(60vh, 26rem); overflow: auto; overscroll-behavior: contain; position: relative; }
+.wimsbody .nova-xd-liste li { margin: 0; padding: 0; }
+.wimsbody .nova-xd-liste li a { display: block; padding: 6px 9px; border-radius: var(--nova-rayon-petit); color: var(--nova-texte); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.wimsbody .nova-xd-liste li a:hover, .wimsbody .nova-xd-liste li a:focus-visible { background: var(--nova-accent-doux); }
+.wimsbody .nova-xd-liste li a[aria-current] { background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
+.wimsbody .nova-xd-aucun { margin: 0; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-xd-touches { display: none; margin: 0; padding-top: 6px; border-top: 1px solid var(--nova-bord); font-size: 12px; color: var(--nova-texte-2); }
+.wimsbody .nova-xd-touches kbd { font: inherit; font-size: 11px; border: 1px solid var(--nova-bord-fort); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--nova-surface); }
+.wimsbody .nova-xd-barre { display: flex; align-items: center; gap: var(--nova-e2); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); padding: 6px; }
+.wimsbody .nova-xd-fleche { flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-petit); color: var(--nova-lien); }
+.wimsbody .nova-xd-fleche::before { content: ""; width: 20px; height: 20px; background: currentColor; -webkit-mask: var(--nova-xd-m) center / contain no-repeat; mask: var(--nova-xd-m) center / contain no-repeat; }
+.wimsbody .nova-xd-prec { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m15 18-6-6 6-6'/%3E%3C/svg%3E"); }
+.wimsbody .nova-xd-suiv { --nova-xd-m: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E"); }
+.wimsbody .nova-xd-fleche[hidden] { display: none; }
+.wimsbody button.nova-xd-choix { flex: 1; min-width: 0; display: flex; align-items: center; gap: var(--nova-e2); min-height: 40px; margin: 0; padding: 6px 10px; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon-petit); background: var(--nova-surface); color: var(--nova-texte); font: inherit; font-weight: 700; text-align: left; box-shadow: none; }
+.wimsbody .nova-xd-choix-nom { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wimsbody .nova-xd-choix small { flex: none; font-weight: 400; color: var(--nova-texte-2); }
+.wimsbody .nova-xd-choix::after { content: ""; flex: none; width: 16px; height: 16px; background: var(--nova-texte-2); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat; }
+.wimsbody .nova-xd-choix[aria-expanded="true"]::after { transform: rotate(180deg); }
+@media (min-width: 1100px) {
+  .wimsbody .nova-xd.nova-xd-avec-liste { max-width: 1120px; grid-template-columns: minmax(0, 1fr) 240px; grid-template-areas: "cartes liste"; align-items: start; }
+  .wimsbody .nova-xd-avec-liste > .nova-xd-cartes { grid-area: cartes; }
+  .wimsbody .nova-xd-avec-liste > .nova-xd-liste { grid-area: liste; display: flex; position: sticky; top: 120px; }
+  .wimsbody .nova-xd-avec-liste > .nova-xd-barre { display: none; }
+  .wimsbody .nova-xd-touches { display: block; }
+}
+@media (max-width: 640px) {
+  .wimsbody .nova-xd-session { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "quand note bug" "exos exos exos"; }
+  .wimsbody .nova-xd-quand { grid-area: quand; }
+  .wimsbody .nova-xd-exos { grid-area: exos; }
+  .wimsbody .nova-xd-noteb { grid-area: note; }
+  .wimsbody .nova-xd-bug { grid-area: bug; }
+}
 /* Page « Notes » de l'enseignant, ligne « Afficher » (main.phtml : liens wims_button collés, choix en cours = span
  * .disabled grisé ; 2026-11-13, utilisateur) : sélecteur, choix en cours en accent, autres en contour.
  * Réglage « notes-enseignant » du thème standard. */

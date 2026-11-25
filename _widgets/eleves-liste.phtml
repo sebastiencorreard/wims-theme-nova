@@ -1,0 +1,18 @@
+!! Nova : liste des eleves du « Detail des examens » (adm/class/userscore, job=examcheck ; 2026-11-25, utilisateur,
+!! maquette B1). Lu par tail.phtml, enseignant seulement. nova.js examensDetail en fait une colonne a droite (grand ecran)
+!! ou une barre « < nom v > » ; les liens reprennent celui de « Part. suivant » de WIMS, autre eleve.
+!! Variables : nova_xdc classe ou zone de la liste (3 premiers niveaux, comme scripts/adm/class/getnextuser),
+!! nova_xdu eleve affiche (filtre).
+!set nova_xdc=!text select 0123456789/ in $wims_class
+!set nova_xdc=!replace internal / by , in $nova_xdc
+!if $(nova_xdc[4])!=$empty
+  !set nova_xdc=!item 1 to 3 of $nova_xdc
+!endif
+!set nova_xdc=!replace internal , by / in $nova_xdc
+!set nova_xdc=!nospace $nova_xdc
+!set nova_xdu=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.@- in $checkuser
+<ul id="nova-eleves" hidden data-courant="$nova_xdu">
+!sh sh $wims_home/public_html/themes/$wims_theme/_procs/eleves-liste.sh "$wims_home" "$nova_xdc"
+</ul>
+!read themes/$wims_theme/lang/enseignant-textes.phtml.$lang examens_detail
+!reset nova_xdc nova_xdu

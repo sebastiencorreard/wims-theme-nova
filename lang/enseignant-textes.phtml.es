@@ -96,3 +96,8 @@
 !! header.phtml, docheader.phtml, tail.phtml : editeur de code (js/cm6.js ; nova.js editeursCode, 2026-11-18)
 <template id="nova-editeur-textes" data-find="Buscar" data-replace="Reemplazar por" data-next="siguiente" data-previous="anterior" data-all="todo" data-match-case="distinguir mayúsculas" data-regexp="expresión regular" data-by-word="palabra completa" data-replace-1="reemplazar" data-replace-all="reemplazar todo" data-close="cerrar" data-current-match="coincidencia actual" data-replaced="$ reemplazos" data-replaced-line="reemplazado en la línea $" data-on-line="en la línea" data-go-to-line="Ir a la línea" data-go="ir" data-source="Fuente" data-control-character="Carácter de control" data-undo="Deshacer" data-redo="Rehacer" data-text-size="Tamaño del texto" data-smaller="Texto más pequeño" data-larger="Texto más grande" data-default="predeterminado" data-full-screen="Pantalla completa" data-exit-full-screen="Salir de pantalla completa" data-syntax="Coloreado" data-of="de" data-no-results="Sin resultados" data-show-replace="Mostrar u ocultar el reemplazo"></template>
 !exit
+
+:examens_detail
+!! _widgets/eleves-liste.phtml (nova.js examensDetail)
+<template id="nova-xd-textes" data-eleves="Alumnos" data-chercher="Buscar un alumno" data-aucun="Ningún alumno encontrado." data-touches="alumno anterior / siguiente" data-precedent="Alumno anterior" data-suivant="Alumno siguiente" data-choisir="Elegir otro alumno" data-session-1="%1 sesión" data-session-n="%1 sesiones" data-examen-1="%1 examen" data-examen-n="%1 exámenes" data-non-terminee="Sin terminar" data-signaler="Señalar un error" data-non-ouvert="Ejercicio %1: no abierto en esta sesión" data-ouvrir="Ejercicio %1: %2 (ver el enunciado y las respuestas)"></template>
+!exit

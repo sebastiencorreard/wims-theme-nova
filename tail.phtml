@@ -53,6 +53,10 @@
   <span id="nova-examtypes" hidden data-user="$checkuser" data-types="$nova_et"></span>
   !reset nova_et nova_s nova_x nova_f nova_n nova_t nova_k nova_r nova_c
 !endif
+!! Liste des eleves du Detail des examens (enseignant ; 2026-11-25).
+!if $module=adm/class/userscore and $job=examcheck and $checksession=$empty and $wims_user=supervisor and _check notin $wims_session
+  !read themes/$wims_theme/_widgets/eleves-liste.phtml
+!endif
 
 !if $slib_geogebra_exists=yes
   !read themes/_widgets/tailgeogebra.phtml

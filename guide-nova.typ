@@ -224,7 +224,7 @@ ne trouve pas son élément.
 
 #table(columns: (auto, auto, 1fr), align: left,
   [Ordre], [Fichier], [À savoir],
-  [1], [`htmlheader.phtml`], [Lu par le programme C de WIMS (`config.c`) : les `$variables` sont remplacées, *aucune commande `!` n'est exécutée* (un `!if` part tel quel dans la page). Toute logique va dans un widget (ex. `_widgets/accent.phtml`). Contient les scripts de tête : classes `nova-js`, `nova-std-<r>`, `nova-menu-simple`, `nova-role-…` posées sur `<html>` avant l'affichage.],
+  [1], [`htmlheader.phtml`], [Lu par le programme C de WIMS (`config.c`) : les `$variables` sont remplacées, *aucune commande `!` n'est exécutée* (un `!if` part tel quel dans la page). Toute logique va dans un widget (ex. `_widgets/accent.phtml`). Lie `css.css` et le jeu d'icônes Lucide du thème à la place de `$wims_CSS` (jeu forcé). Contient les scripts de tête : classes `nova-js`, `nova-std-<r>`, `nova-menu-simple`, `nova-role-…` posées sur `<html>` avant l'affichage.],
   [2], [`var.proc` du module], [Le module calcule ses variables *avant* le thème : Nova ne peut pas changer ce qu'il a déjà écrit dans ses fichiers d'index.],
   [3], [`lang/name.phtml.<l>`, puis `header.phtml`], [Textes de la barre, puis la barre et les *widgets d'action* : chacun lu sous sa condition (`!if $module=… and $wims_user=…`). Une action ajoutée ici est vue par le gabarit du module.],
   [4], [gabarit du module], [Le contenu (`.wimsbody`) : HTML de WIMS, non modifié.],
@@ -1174,8 +1174,10 @@ Nova n'utilise que le jeu *Lucide* (licence ISC, https://lucide.dev). Deux cas.
 #attention[Jamais de `#` brut dans un SVG en `data:` (`stroke="#000"` coupe l'adresse, l'icône disparaît sans
 erreur) : écrire `stroke='black'` ou `%23`.]
 
-*Une icône d'entrée de menu ou de barre de WIMS* : elle vient du jeu d'icônes choisi par le site (`default`,
-Font_Awesome, ou Lucide fourni par Nova). Donner à l'entrée une classe que ces jeux connaissent (@menu). Pour changer
+*Une icône d'entrée de menu ou de barre de WIMS* : elle vient du jeu d'icônes de WIMS. Sous Nova, c'est *toujours*
+Lucide : `htmlheader.phtml` lie lui-même `css.css` et `icones/Lucide/icon-min.css` au lieu de `$wims_CSS`, qui portait le
+jeu choisi par la classe ou le site (`default`, Font_Awesome…) ; ce choix ne vaut plus que pour les autres thèmes. Donner à
+l'entrée une classe que le jeu connaît (@menu). Pour changer
 l'icône Lucide d'une classe de WIMS, ou en donner une à une entrée de Nova : `icones/correspondance.py` (`G` : glyphe
 Font Awesome → icône Lucide ; `C` : classes de WIMS corrigées ; `E` : entrées propres à Nova), puis reconstruire
 `icones/Lucide/icon-min.css` par `icones/construire-lucide.py`, sur le poste du développeur :
@@ -1186,10 +1188,10 @@ icones/construire-lucide.py <icon-min.css de Font_Awesome> <node_modules/lucide-
 Le premier argument est la feuille du jeu Font_Awesome de WIMS (`public_html/gifs/themes/Font_Awesome/icon-min.css`), dont
 le script reprend chaque sélecteur ; le second, le dossier `icons/` du paquet `lucide-static` (version : `LUCIDE_VERSION` en
 tête du script) ; le troisième, facultatif, le fichier écrit (par défaut `icones/Lucide/icon-min.css`).
-`_procs/jeu-icones.sh` crée le lien `gifs/themes/Lucide` à la première page de configuration.
+`_procs/jeu-icones.sh` crée le lien `gifs/themes/Lucide`, pour que les classes d'un autre thème puissent choisir Lucide.
 
-#verifier[avec le jeu `default` (aucune icône de WIMS), Font_Awesome et Lucide : pas de tiret devant l'entrée, pas
-de double icône.]
+#verifier[dans une classe réglée sur le jeu `default` ou Font_Awesome : l'icône Lucide s'affiche quand même, pas de tiret
+devant l'entrée, pas de double icône.]
 
 == Passer à une nouvelle version de WIMS <wims>
 
@@ -1230,7 +1232,7 @@ qui montre les variantes ; on code celle qui est choisie).
   [Menu de l'enseignant simplifié, personnalisable], [Sept entrées utiles d'abord ; le reste à un clic], [Le serveur envoie tout, le navigateur masque],
   [Menu du compte réduit pour les élèves], [Moins de distraction ; rien de nécessaire], [Une condition dans `_widgets/user_links.phtml`],
   [Pas de Foundation complet], [64 Ko de CSS et 210 Ko de JS par page pour quelques classes utilisées], [`foundation-min.css` ; plus de JS de Foundation : ses composants sont repris dans `20-composants.js`],
-  [Icônes Lucide], [Un seul style, licence libre], [Toute nouvelle icône est une icône Lucide],
+  [Icônes Lucide, jeu forcé], [Un seul style, licence libre ; le jeu choisi par la classe est ignoré sous Nova], [Toute nouvelle icône est une icône Lucide],
   [Quatre langues complètes], [fr, en, es, it ; repli sur l'anglais pour les autres], [Tout texte nouveau dans les quatre],
 )
 

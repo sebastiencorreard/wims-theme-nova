@@ -16,7 +16,12 @@
 <!-- Foundation Accordion -->
 <link rel="stylesheet" href="html/themes/_css/foundation_accordion.css">
 
-$wims_CSS
+<!-- Nova : jeu d'icones Lucide FORCE (2026-11-25, utilisateur). La variable wims_CSS (src/config.c) n'est plus reprise : elle
+     liait css.css du theme puis gifs/themes/<jeu de la classe ou du site>/icon-min.css. Les deux liens sont ecrits ici,
+     le jeu lu dans le theme (icones/Lucide, icones en data URI). Ecart voulu : en mode "feuille de la classe"
+     (wims_css=class), WIMS ne liait pas css.css ; Nova le lie toujours (sans lui, la page est cassee). -->
+<link href="html/themes/$wims_theme/css.css?ver=$wims_version" rel="stylesheet">
+<link href="html/themes/$wims_theme/icones/Lucide/icon-min.css?ver=$wims_version" rel="stylesheet">
 
 <!-- METAS iOS : -->
 <link rel="apple-touch-icon" href="gifs/wims_logo.png">

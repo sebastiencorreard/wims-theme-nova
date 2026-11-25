@@ -2808,3 +2808,33 @@
     texte.remove();
   }
 
+
+  /* Participant precedent / suivant au clavier (2026-11-25, utilisateur) : sur les pages de WIMS qui portent les entrees
+   * « Part. precedent » / « Part. suivant » du menu (scripts/adm/class/getnextuser : detail des examens, des notes, scores
+   * bruts, fiche du participant, activite, travaux libres, variables techniques), fleche gauche / droite suit le lien.
+   * Rien quand on ecrit (champ, liste, editeur), avec une touche de modification, ni quand la fleche fait defiler un bloc
+   * plus large que lui (tableau large). aria-keyshortcuts sur les liens. */
+  function participantsFleches() {
+    var prec = document.querySelector('a.prev_participant'), suiv = document.querySelector('a.next_participant');
+    if (!prec && !suiv) return;
+    if (prec) prec.setAttribute('aria-keyshortcuts', 'ArrowLeft');
+    if (suiv) suiv.setAttribute('aria-keyshortcuts', 'ArrowRight');
+    var defile = function (el) {
+      for (; el && el.nodeType === 1 && el !== document.body && el !== document.documentElement; el = el.parentNode) {
+        if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX)) return true;
+      }
+      return false;
+    };
+    var parti = false;
+    document.addEventListener('keydown', function (e) {
+      if (parti || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.isComposing) return;
+      var lien = e.key === 'ArrowLeft' ? prec : e.key === 'ArrowRight' ? suiv : null;
+      if (!lien || !lien.isConnected) return;
+      var t = e.target;
+      if (t && t.closest && t.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"]), .cm-editor, [role="slider"], [role="tablist"], [role="menu"], [role="listbox"], dialog[open], .nova-dialogue')) return;
+      if (defile(t)) return;
+      e.preventDefault();
+      parti = true;
+      lien.click();
+    });
+  }

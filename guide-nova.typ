@@ -1045,6 +1045,14 @@ Modèles : désactiver (`desactiver.phtml`), propager (`propager.phtml`), renum�
 reconnaît la page, et son texte. La classe `.nova-vide` est déjà prise (elle masque) : la carte est
 `.nova-page-vide`.
 
+=== Raccourci clavier
+
+Modèle : `participantsFleches` (flèches gauche / droite = « Part. précédent » / « Part. suivant », entrées
+`prev_participant` / `next_participant` du menu, posées par le script de WIMS `adm/class/getnextuser` sur sept pages).
+Suivre le lien de WIMS par `click()`, jamais une adresse fabriquée ; ignorer la touche dans un champ, un éditeur, un
+menu, une fenêtre, avec Ctrl, Alt, Maj ou Cmd, et quand elle fait défiler un tableau plus large que son bloc ; nommer
+la touche par `aria-keyshortcuts` sur le lien.
+
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
 

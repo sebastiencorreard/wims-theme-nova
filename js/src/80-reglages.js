@@ -673,3 +673,70 @@
     document.head.appendChild(style);
     racineChangee();
   }
+
+  /* Aide de chaque reglage de Nova (2026-11-25, utilisateur) : bouton « Aide » comme ceux des reglages de WIMS
+   * (a.wims_button_help, a droite du champ), qui ouvre une fenetre (.nova-dialogue) : nom du reglage, « Ce qui change »,
+   * liste. Les textes arrivent dans un details.nova-app-aide-detail (lang/reglages-textes.phtml.<l>, aide_<cle>) : lisibles
+   * sans nova.js ; ici le details devient le bouton. Pages : Reglages de Nova (classe) et Apparence du site. */
+  function aidesReglages() {
+    var aides = document.querySelectorAll('.nova-app-ligne > details.nova-app-aide-detail');
+    if (!aides.length) return;
+    var fenetre = null, titre, sousTitre, corps, retour = null;
+    function creer(fermer) {
+      fenetre = document.createElement('dialog');
+      fenetre.className = 'nova-dialogue nova-aide-reglage';
+      titre = document.createElement('h1');
+      titre.id = 'nova-aide-reglage-titre';
+      fenetre.setAttribute('aria-labelledby', titre.id);
+      sousTitre = document.createElement('p');
+      sousTitre.className = 'nova-aide-reglage-sous';
+      corps = document.createElement('ul');
+      var x = document.createElement('button');
+      x.type = 'button'; x.className = 'close-button'; x.setAttribute('aria-label', fermer); x.textContent = '\u00D7';
+      var pied = document.createElement('div');
+      pied.className = 'wimscenter';
+      var ok = document.createElement('button');
+      ok.type = 'button'; ok.className = 'wims_button'; ok.textContent = fermer;
+      pied.appendChild(ok);
+      [titre, sousTitre, corps, x, pied].forEach(function (e) { fenetre.appendChild(e); });
+      fenetre.addEventListener('click', function (e) {
+        if (e.target === fenetre || e.target === x || e.target === ok) fenetre.close();
+      });
+      fenetre.addEventListener('close', function () { if (retour) retour.focus(); });
+      document.body.appendChild(fenetre);
+    }
+    // Nom du reglage : texte propre de .nova-app-nom (sans son aide courte), sinon la legende de la carte.
+    function nomReglage(ligne) {
+      var n = ligne.querySelector('.nova-app-nom');
+      var t = '';
+      if (n) {
+        for (var c = n.firstChild; c; c = c.nextSibling) { if (c.nodeType === 3) t += c.nodeValue; }
+        t = t.trim();
+      }
+      if (!t) { var lg = ligne.closest('fieldset'); lg = lg && lg.querySelector('legend'); t = lg ? lg.textContent.trim() : ''; }
+      return t;
+    }
+    Array.prototype.forEach.call(aides, function (d) {
+      var ligne = d.parentNode;
+      var resume = d.querySelector('summary');
+      var liste = d.querySelector('ul');
+      var nom = nomReglage(ligne);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wims_button_help nova-app-aide-bouton';
+      b.textContent = d.getAttribute('data-bouton') || 'Help';
+      if (nom) b.setAttribute('aria-label', b.textContent + ' : ' + nom);
+      b.setAttribute('aria-haspopup', 'dialog');
+      b.addEventListener('click', function () {
+        if (!fenetre) creer(d.getAttribute('data-fermer') || 'Close');
+        titre.textContent = nom;
+        sousTitre.textContent = resume ? resume.textContent : '';
+        corps.innerHTML = liste ? liste.innerHTML : '';
+        retour = b;
+        if (typeof fenetre.showModal === 'function') fenetre.showModal(); else fenetre.setAttribute('open', '');
+      });
+      ligne.classList.add('nova-app-avec-aide');
+      ligne.insertBefore(b, d);
+      d.hidden = true;
+    });
+  }

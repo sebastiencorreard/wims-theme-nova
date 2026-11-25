@@ -208,8 +208,23 @@ details.nova-app-std > summary:focus-visible, details.nova-app-detail > summary:
 .nova-app-ligne-std > details.nova-app-detail { grid-column: 1 / -1; }
 /* « Ce qui change » de chaque réglage de Nova (2026-11-25, utilisateur) : même bouton que les réglages du thème standard,
  * textes dans lang/reglages-textes.phtml.<l> (étiquettes aide_<clé>) ; sous la case d'un badge, aligné sur son texte. */
+/* Sans nova.js : le details reste lisible ; avec : remplacé par un bouton « Aide » qui ouvre une fenêtre (nova.js aidesReglages). */
 .nova-app-ligne > details.nova-app-aide-detail { grid-column: 1 / -1; }
 .nova-app-ligne.nova-bdg-badge > details.nova-app-aide-detail { padding-left: calc(22px + 48px + 2 * var(--nova-e3)); }
+html.nova-js .nova-app-ligne > details.nova-app-aide-detail { display: none; }
+.nova-app-ligne.nova-app-avec-aide { grid-template-columns: minmax(0, 1fr) auto auto; }
+.nova-app-ligne.nova-app-avec-aide > .nova-app-aide-bouton { grid-row: 1; grid-column: -2; align-self: center; margin: 0; }
+.nova-app-ligne.nova-app-texte.nova-app-avec-aide { grid-template-columns: minmax(0, 1fr) auto; }
+.nova-app-ligne.nova-app-texte.nova-app-avec-aide > :not(.nova-app-aide-bouton) { grid-column: 1; }
+.nova-app-ligne.nova-app-texte.nova-app-avec-aide > .nova-app-aide-bouton { align-self: start; }
+@media (max-width: 639.98px) {
+  .nova-app-ligne.nova-app-avec-aide { grid-template-columns: minmax(0, 1fr) auto; }
+  .nova-app-ligne.nova-app-avec-aide > :not(.nova-app-aide-bouton, .nova-app-nom, .nova-bdg-coche) { grid-column: 1 / -1; }
+  .nova-app-ligne.nova-app-avec-aide > .nova-app-aide-bouton { align-self: start; }
+}
+.nova-dialogue.nova-aide-reglage { width: min(34rem, calc(100vw - 32px)); max-height: calc(100vh - 32px); box-sizing: border-box; overflow: auto; }
+.nova-aide-reglage .nova-aide-reglage-sous { margin: 0 0 var(--nova-e2); font-size: var(--nova-petit); font-weight: 700; color: var(--nova-texte-2); }
+.nova-aide-reglage ul { margin: 0; padding-left: 1.2rem; display: grid; gap: var(--nova-e2); line-height: 1.45; }
 details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: var(--nova-petit); }
 details.nova-app-detail > summary::before { content: "\25B8"; }
 details.nova-app-detail[open] > summary::before { content: "\25BE"; }

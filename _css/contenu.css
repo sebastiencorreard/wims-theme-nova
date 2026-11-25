@@ -1090,6 +1090,8 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody p.exampart
 .wimsbody .nova-xd-bug button.dropdown::after { content: none; display: none; }
 .wimsbody .nova-xd-bug button.dropdown:hover { color: var(--nova-accent); border-color: var(--nova-accent); }
 .wimsbody .nova-xd-legende { margin-top: var(--nova-e3); }
+.wimsbody .nova-xd-rien { padding: var(--nova-e4); }
+.wimsbody .nova-xd-rien > p { margin: 0; color: var(--nova-texte-2); }
 .wimsbody .nova-xd-legende > span { display: inline-flex; align-items: center; gap: 6px; }
 .wimsbody .nova-xd-legende .nova-xd-ico { flex: none; }
 /* Liste des eleves : colonne (grand ecran) ou liste qui s'ouvre sous la barre. */

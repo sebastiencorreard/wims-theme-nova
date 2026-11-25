@@ -679,7 +679,7 @@
    * WIMS et ses signes (signesExamens). Avant nova.js, le tableau est cache (contenu.css, secours 3 s). */
   function examensDetail() {
     var intro = document.querySelector('.wimsbody p.exampart');
-    if (!intro) return;
+    if (!intro) { examensAucun(); return; }
     var cadre = null;
     for (var n = intro.nextElementSibling; n; n = n.nextElementSibling) {
       if (n.matches('.table-scroll, table.wimstable')) { cadre = n; break; }
@@ -841,6 +841,24 @@
     elevesListe(tout);
     cadre.parentNode.insertBefore(tout, cadre);
     cadre.remove();
+  }
+
+  /* Detail des examens d'un eleve sans session (examcheck.phtml : p.no_exampart au lieu du tableau ; 2026-11-25,
+   * utilisateur) : la liste des eleves reste a la meme place qu'avec les cartes ; le message de WIMS va dans une carte. */
+  function examensAucun() {
+    var p = document.querySelector('.wimsbody p.no_exampart');
+    if (!p || p.closest('.nova-xd') || standard('notes-enseignant')) return;
+    var tout = document.createElement('div');
+    tout.className = 'nova-xd';
+    var cartes = document.createElement('div');
+    cartes.className = 'nova-xd-cartes';
+    var carte = document.createElement('section');
+    carte.className = 'nova-nd-carte nova-xd-rien';
+    p.parentNode.insertBefore(tout, p);
+    carte.appendChild(p);
+    cartes.appendChild(carte);
+    tout.appendChild(cartes);
+    elevesListe(tout);
   }
 
   /* Liste des eleves du Detail des examens (examensDetail, maquette 1) : colonne avec recherche (sans accents), eleve

@@ -58,6 +58,24 @@
 !! Textes des cartes de la fiche (nova.js ficheEleve) : toutes les fiches.
 !if $module=adm/class/usermanage and $job=userprop and _tool notin $wims_session
   !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang inscription
+  !! Contexte de la fiche, pour le bouton tire de « Effacer le participant » (2026-11-26, utilisateur).
+  !! Variables : nova_fc = racine (portail, groupement), classe (zone d'une structure), cours, seule (classe seule).
+  !if $wims_typename iswordof group portal
+    !set nova_fc=racine
+  !else
+    !if $wims_typename=course
+      !set nova_fc=cours
+    !else
+      !! wims_superclass n'est pas vide dans une classe seule : type de structure (2 groupement, 4 portail).
+      !if $wims_supertype notwordof 2 4
+        !set nova_fc=seule
+      !else
+        !set nova_fc=classe
+      !endif
+    !endif
+  !endif
+  <span id="nova-fiche-contexte" hidden data-contexte="$nova_fc"></span>
+  !reset nova_fc
   !if $wims_user=supervisor and $wims_class=$wims_superclass and $wims_supertype iswordof 2 4 and $user_supervisable!=yes and $getuser!=$empty
     !read themes/$wims_theme/_widgets/inscription-classes.phtml
   !endif

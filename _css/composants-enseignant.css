@@ -1167,3 +1167,8 @@ html.nova-js:not(.nova-std-notes-enseignant) .wimsbody form:has(input[name="job"
 .nova-ic-rien { margin: var(--nova-e2) 0 0; color: var(--nova-texte-2); }
 .nova-ic-erreur { margin: var(--nova-e2) 0 0; color: var(--nova-erreur); font-weight: 600; }
 .nova-ic-erreur:empty { display: none; }
+/* Bouton tire de « Effacer le participant » (desinscrire / supprimer le compte), avec sa phrase d'explication. */
+.nova-pe-effacer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); }
+.wimsbody fieldset.property_fields > .nova-pe-effacer { border-top: 0; }
+.wimsbody .nova-pe-effacer > .wims_button { flex: none; margin: 0; }
+.wimsbody .nova-pe-effacer > .nova-pe-effacer-note { flex: 1 1 16rem; margin: 0; font-size: .85rem; color: var(--nova-texte-2); }

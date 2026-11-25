@@ -1626,13 +1626,15 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 ]
 
 #piege[Une adresse construite par Nova fait passer la page en anglais][
-  Après un clic sur un lien fabriqué par `nova.js`, la page suivante est en anglais (vu à la racine d'un portail
-  et d'un groupement).
+  Après un clic sur un lien fabriqué par `nova.js`, la page suivante est en anglais, sur un site en français.
 ][
-  `nova.js` lit la langue dans `<html lang>`, écrit par le C de WIMS (`src/exec.c`). À la racine d'une structure, il
-  vaut `en` sur des pages en français (cause dans WIMS non trouvée).
+  WIMS écrit `<html lang>` d'après le paramètre `lang=` de l'adresse, sinon d'après la langue du NAVIGATEUR
+  (`src/wims.c`, `predetermine_language`) ; le texte, lui, suit la langue de la session. Une page ouverte sans `lang=`
+  dans un navigateur réglé en anglais déclarait donc `en`, et `nova.js` recopiait cette langue dans ses liens.
 ][
-  Pour recharger une page de la session, ne pas mettre `lang=` dans l'adresse : la session garde sa langue.
+  Le script de tête (`htmlheader.phtml`) remet `<html lang>` à la langue de la session (`$lang`, meta
+  `nova-langue`) : `racineLangue()` et tout `document.documentElement.lang` sont justes. Tester avec un navigateur
+  dans une autre langue que le site (celui du banc de test est en anglais).
 ]
 
 #piege[Les notes des feuilles d'une classe ne comptent pas][

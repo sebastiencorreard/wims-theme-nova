@@ -36,10 +36,36 @@
     // Session et compteur de la page (champ du formulaire) : chaque requete suivante a son propre compteur.
     var sesChamp = (job.form.querySelector('input[name="session"]') || {}).value || '';
     var session = sesChamp.split('.')[0], compteur = parseInt(sesChamp.split('.')[1], 10) || 1;
-    var adresse = function (suite) { compteur++; return 'wims.cgi?session=' + encodeURIComponent(session) + '.' + compteur + suite; };  // sans lang : la session garde la sienne
+    var adresse = function (suite) { compteur++; return 'wims.cgi?session=' + encodeURIComponent(session) + '.' + compteur + '&lang=' + encodeURIComponent(racineLangue()) + suite; };
     var pause = function () { return new Promise(function (r) { setTimeout(r, 1600); }); };  // 2 requetes a moins d'1 s : la 2e est mal servie
+    /* « Effacer le participant » du menu (job=delprep : page de confirmation de WIMS), repris en bouton sur la fiche
+     * (2026-11-26, utilisateur) avec un libelle selon le contexte (#nova-fiche-contexte, tail.phtml) : racine d'une
+     * structure = supprimer le compte (scripts/adm/class/deluser le met de cote, inscriptions gardees) ; classe ou cours
+     * d'une structure = desinscrire, le compte reste ; classe seule = desinscrire (compte mis de cote avec ses notes).
+     * L'entree du menu prend le meme libelle, sauf reglage std textes. */
+    var contexte = (document.getElementById('nova-fiche-contexte') || { getAttribute: function () { return ''; } }).getAttribute('data-contexte') || '';
+    var lienEffacer = document.querySelector('a[href*="job=delprep"]');
+    var cleEffacer = contexte === 'racine' ? 'racine' : contexte === 'cours' ? 'cours' : 'classe';
+    if (lienEffacer && contexte && !standard('textes') && t('menu-' + cleEffacer, '')) {
+      var marche = document.createTreeWalker(lienEffacer, NodeFilter.SHOW_TEXT), dernier = null;
+      for (var n = marche.nextNode(); n; n = marche.nextNode()) if (n.nodeValue.trim()) dernier = n;
+      if (dernier) dernier.nodeValue = t('menu-' + cleEffacer, '');
+    }
+    function zoneEffacer() {
+      if (!lienEffacer || !contexte || !t('effacer-' + cleEffacer, '')) return null;
+      var z = el('div', 'nova-pe-effacer');
+      var a = el('a', 'wims_button wims_warning', t('effacer-' + cleEffacer, ''));
+      a.href = lienEffacer.href;
+      a.setAttribute('role', 'button');
+      z.appendChild(a);
+      z.appendChild(el('p', 'nova-pe-effacer-note', t('note-' + (contexte === 'seule' ? 'seule' : cleEffacer), '')));
+      return z;
+    }
+
     if (standard('notes-enseignant')) {
       fs.setAttribute('data-nova-ic', '');
+      var zs = zoneEffacer();
+      if (zs) { zs.classList.add('field', 'box'); fs.insertBefore(zs, fs.querySelector(':scope > .wimsform')); }
       if (!ic) return;
       if (!participe) {
         participe = el('div', 'field box');
@@ -70,6 +96,8 @@
     identite.appendChild(tete);
     var meta = el('div', 'nova-pe-meta');
     identite.appendChild(meta);
+    var zoneEff = zoneEffacer();
+    if (zoneEff) identite.appendChild(zoneEff);
 
     var classes = null, zonesUl = null;
     if (listes.length || ic) {

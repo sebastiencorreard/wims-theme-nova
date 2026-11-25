@@ -50,7 +50,7 @@
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
 <meta name="nova-type" content="$class_typename">
-<meta name="nova-css" content="681435ad2f">
+<meta name="nova-css" content="8b03a6050a">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -107,6 +107,12 @@
 <meta name="nova-structure" content="$wims_superclass">
 <meta name="nova-classe" content="$wims_class">
 <meta name="nova-utilisateur" content="$wims_user">
+<meta name="nova-langue" content="$lang">
+<script>/* Nova : langue de la page = langue de la session (2026-11-26). WIMS ecrit html lang d apres le parametre lang
+   de l adresse, sinon d apres la langue du navigateur (src/wims.c, predetermine_language) : une adresse sans lang (lien
+   fabrique par nova.js) donnait lang en sur une page en francais, et nova.js recopiait cette langue dans ses liens. */
+(function () { var m = document.querySelector('meta[name="nova-langue"]'); if (m && /^[a-z]{2}$/.test(m.content)) document.documentElement.lang = m.content; })();
+</script>
 <script>/* Nova : reglages pour rapprocher du theme standard (html.nova-std-...), poses avant l'affichage. La feuille
    de la classe est deja chargee (valeur calculee) ; site et structure : copie gardee par nova.js (sessionStorage,
    reglagesStructure). nova.js (reglagesStandard) recalcule ensuite. Pas de signe dollar ici. */
@@ -169,7 +175,7 @@
 })();
 </script>
 <meta name="nova-cm6" content="a649519ff0">
-<script src="html/themes/$wims_theme/js/nova.js?v=0bf5170ed0" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=ed2fa7838a" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

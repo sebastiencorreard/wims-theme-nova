@@ -206,6 +206,10 @@ details.nova-app-std[open] > summary::after { transform: rotate(-135deg); }
 details.nova-app-std > summary:focus-visible, details.nova-app-detail > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; border-radius: var(--nova-rayon); }
 .nova-app-ligne.nova-app-ligne-std { grid-template-columns: minmax(0, 1fr) auto; }
 .nova-app-ligne-std > details.nova-app-detail { grid-column: 1 / -1; }
+/* « Ce qui change » de chaque réglage de Nova (2026-11-25, utilisateur) : même bouton que les réglages du thème standard,
+ * textes dans lang/reglages-textes.phtml.<l> (étiquettes aide_<clé>) ; sous la case d'un badge, aligné sur son texte. */
+.nova-app-ligne > details.nova-app-aide-detail { grid-column: 1 / -1; }
+.nova-app-ligne.nova-bdg-badge > details.nova-app-aide-detail { padding-left: calc(22px + 48px + 2 * var(--nova-e3)); }
 details.nova-app-detail > summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; color: var(--nova-accent); font-weight: 700; font-size: var(--nova-petit); }
 details.nova-app-detail > summary::before { content: "\25B8"; }
 details.nova-app-detail[open] > summary::before { content: "\25BE"; }

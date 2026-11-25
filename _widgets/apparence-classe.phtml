@@ -35,6 +35,7 @@
         <div class="nova-app-ligne nova-app-couleur">
           <label class="nova-app-nom" for="nova-app-couleur">$nova_app_couleur_theme<span class="nova-app-aide">$nova_app_couleur_theme_aide</span></label>
           <input type="color" id="nova-app-couleur" class="nova-app-couleur-choix">
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_couleur
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c1">$nova_app_animations<span class="nova-app-aide">$nova_app_animations_aide</span></span>
@@ -42,6 +43,7 @@
             <label><input type="radio" name="nova_c_animations" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_animations" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_animations
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c3">$nova_app_clavier<span class="nova-app-aide">$nova_app_clavier_aide</span></span>
@@ -49,6 +51,7 @@
             <label><input type="radio" name="nova_c_clavier-maths" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_clavier-maths" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_clavier
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c7">$nova_app_fil<span class="nova-app-aide">$nova_app_fil_aide</span></span>
@@ -56,6 +59,7 @@
             <label><input type="radio" name="nova_c_fil-fixe" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_fil-fixe" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_fil
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c8">$nova_app_deco<span class="nova-app-aide">$nova_app_deco_aide</span></span>
@@ -63,6 +67,7 @@
             <label><input type="radio" name="nova_c_decorations" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_decorations" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_deco
         </div>
         !! Travail individualise SUSPENDU (2026-11-18, utilisateur) : oui=non -> oui=oui pour le rallumer (voir TI_ACTIF, nova.js).
         !if oui=non
@@ -90,6 +95,7 @@
             <label><input type="radio" name="nova_c_entree-directe" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_entree-directe" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_entree
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c5">$nova_app_masques_eleves<span class="nova-app-aide">$nova_app_masques_eleves_aide</span></span>
@@ -97,6 +103,7 @@
             <label><input type="checkbox" name="nova_c_masque" value="communication"> $nova_app_masque_communication</label>
             <label><input type="checkbox" name="nova_c_masque" value="liens"> $nova_app_masque_liens</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_masques
         </div>
         <div class="nova-app-ligne">
           <span class="nova-app-nom" id="nova-app-c-moy">$nova_app_moy<span class="nova-app-aide">$nova_app_moy_aide</span></span>
@@ -104,10 +111,12 @@
             <label><input type="radio" name="nova_c_notes-moyenne" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_notes-moyenne" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_moyenne
         </div>
         <div class="nova-app-ligne nova-app-texte">
           <span class="nova-app-nom" id="nova-app-c-seuil">$nova_rg_seuil<span class="nova-app-aide">$nova_rg_seuil_aide</span></span>
           <p class="nova-app-phrase">$nova_rg_seuil1 <input type="number" class="nova-app-nombre" data-cle="seuil-reussi" min="0" max="99" step="1" aria-labelledby="nova-app-c-seuil"> $nova_rg_seuil2</p>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_seuil
         </div>
         <div class="nova-app-ligne nova-app-activite">
           <span class="nova-app-nom" id="nova-app-c6">$nova_app_activite<span class="nova-app-aide">$nova_app_activite_aide</span></span>
@@ -115,6 +124,7 @@
             <label><input type="radio" name="nova_c_activite" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_activite" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_activite
           <details class="nova-app-detail"><summary>$nova_app_act_reglages</summary>
           <div class="nova-app-phrases">
             <label class="nova-app-phrase">$nova_app_act_seuil <input type="number" class="nova-app-nombre" name="nova_c_activite-seuil" min="1" max="7" step="1"> $nova_app_act_seuil2</label>
@@ -159,17 +169,21 @@
         <div class="nova-app-ligne nova-app-texte nova-rg-mots">
           <label class="nova-app-nom" for="nova-rg-dm-mots">$nova_rg_dm_mots<span class="nova-app-aide">$nova_rg_dm_mots_aide</span></label>
           <input type="text" id="nova-rg-dm-mots" class="nova-app-mots" data-cle="dm-mots" autocomplete="off" spellcheck="false">
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_dm_mots
         </div>
         <div class="nova-app-ligne nova-app-texte nova-rg-mots">
           <label class="nova-app-nom" for="nova-rg-dm-note">$nova_rg_dm_note<span class="nova-app-aide">$nova_rg_dm_note_aide</span></label>
           <input type="text" id="nova-rg-dm-note" class="nova-app-mots" data-cle="echauffement-note" autocomplete="off" spellcheck="false">
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_dm_note
         </div>
         <div class="nova-app-ligne nova-app-texte nova-rg-mots">
           <label class="nova-app-nom" for="nova-rg-dm-ent">$nova_rg_dm_ent<span class="nova-app-aide">$nova_rg_dm_ent_aide</span></label>
           <input type="text" id="nova-rg-dm-ent" class="nova-app-mots" data-cle="echauffement-entrainement" autocomplete="off" spellcheck="false">
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_dm_ent
         </div>
         <div class="nova-app-ligne nova-app-texte">
           <p class="nova-app-phrase">$nova_rg_dm_essais1 <input type="number" class="nova-app-nombre" data-cle="dm-note-essais" min="1" max="99" step="1" aria-label="$nova_rg_dm_essais1"> $nova_rg_dm_essais2</p>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_dm_essais
         </div>
       </fieldset>
     </section>
@@ -182,9 +196,11 @@
             <label><input type="radio" name="nova_c_badges" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_badges" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_badges
         </div>
         <div class="nova-app-ligne nova-bdg-badge">
           <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="fidelite"> <img src="themes/$wims_theme/img/badges/regularite/coeur_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_fid_nom<span class="nova-app-aide">$nova_bdg_fid_desc</span></span></label>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_fidelite
         </div>
         <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="fidelite">
           <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
@@ -195,6 +211,7 @@
         </div>
         <div class="nova-app-ligne nova-bdg-badge">
           <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="perseverance"> <img src="themes/$wims_theme/img/badges/perseverance/flamme_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_per_nom<span class="nova-app-aide">$nova_bdg_per_desc</span></span></label>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_perseverance
         </div>
         <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="perseverance">
           <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
@@ -206,6 +223,7 @@
         </div>
         <div class="nova-app-ligne nova-bdg-badge">
           <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="echauffement"> <img src="themes/$wims_theme/img/badges/entrainement/halteres_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_ech_nom<span class="nova-app-aide">$nova_bdg_ech_desc</span></span></label>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_echauffement
         </div>
         <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="echauffement">
           <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
@@ -216,6 +234,7 @@
         </div>
         <div class="nova-app-ligne nova-bdg-badge">
           <label class="nova-bdg-coche"><input type="checkbox" class="nova-bdg-actif" value="top"> <img src="themes/$wims_theme/img/badges/etoile/etoile_06.webp" alt="" width="48" height="48"> <span class="nova-app-nom">$nova_top_nom<span class="nova-app-aide">$nova_bdg_top_desc</span></span></label>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_top
         </div>
         <div class="nova-app-ligne nova-app-texte nova-bdg-detail" data-badge="top">
           <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
@@ -264,6 +283,7 @@
               <option value="aucun">$nova_bdg_coul_aucun</option>
             </select>.</p>
           <p class="nova-app-aide">$nova_bdg_coul_ordre</p>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_couleur_perso
         </div>
       </fieldset>
       <fieldset class="property_fields blockcenter nova-app-carte nova-bdg-avatar">
@@ -276,6 +296,7 @@
               <option value="oui">$nova_bdg_av_oui</option>
               <option value="non">$nova_bdg_av_non</option>
             </select></p>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_avatar
         </div>
         <div class="nova-app-ligne nova-app-texte">
           <details class="nova-app-detail nova-bdg-replie"><summary>$nova_bdg_reglages</summary><div class="nova-bdg-contenu">
@@ -297,6 +318,7 @@
             <label><input type="radio" name="nova_c_desactivation-forcee" value="oui"> $nova_app_oui</label>
             <label><input type="radio" name="nova_c_desactivation-forcee" value="non"> $nova_app_non</label>
           </span>
+          !read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_desact
         </div>
       </fieldset>
     </section>

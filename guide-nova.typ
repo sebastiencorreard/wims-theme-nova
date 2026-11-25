@@ -482,6 +482,10 @@ réglage voisin du même type (oui/non : `--nova-decorations` ; nombre : `--nova
   qui convient de « Réglages de Nova ») et `js/src/80-reglages.js`, `reglagesApparence` (liste `cles` ou `nombres`) :
   le JavaScript écrit le bloc `/* Nova : reglages de la page Apparence */ html:root { … }` de la feuille de la classe.
 + *Textes* : `lang/reglages.phtml.<l>` (libellé, aide), quatre langues.
++ *« Ce qui change »* (2026-11-25) : chaque ligne de réglage a son aide repliée, comme les réglages du thème standard :
+  une étiquette `:aide_<clé>` … `!exit` dans `lang/reglages-textes.phtml.<l>` (fr, en, es, it ; liste `<li>` : « Oui : … »,
+  « Non (par défaut) : … », « Sans changement : … »), lue à la fin de la ligne par
+  `!read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_<clé>` (aucun nom de variable : tampon des noms).
 + *Lecture* : en CSS, la variable elle-même ; en JS, `racineStyle('--nova-x')` (+ `VARS_DEMARRAGE`) ; côté serveur,
   `grep -ao` des déclarations dans les feuilles (voir `_procs/badges.awk`, section `#conf`).
 + *Zones* : la propagation aux zones dépendantes (`_procs/propager.sh`) recopie le bloc entier : rien à faire.

@@ -144,7 +144,7 @@
     var onglets = ongletsReglages(carte, nom);
     // Réglages de « Mon activité » (2026-11-08, utilisateur) : dépliés d'office quand la page est sur « Oui », masqués
     // sur « Non » (ils ne servent à rien). Ses dates de vacances ne bloquent alors plus l'enregistrement.
-    var actDetail = carte.querySelector('.nova-app-activite > details.nova-app-detail');
+    var actDetail = carte.querySelector('.nova-app-activite > details.nova-app-detail:not(.nova-app-aide-detail)');
     var activiteOui = function () { var r = carte.querySelector('input[name="nova_c_activite"]:checked'); return !!r && r.value === 'oui'; };
     if (actDetail) {
       actDetail.open = true;

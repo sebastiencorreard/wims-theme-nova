@@ -30,6 +30,7 @@ flyers à imprimer, restriction d'accès en quelques clics, configuration en car
 - Menu ☰ sur toutes les pages, même sans menu de gauche (préférences d'affichage, liste des examens, devoirs libres) : il contient le menu du compte (nom, « Changer le mot de passe », déconnexion).
 
 ### Enseignants
+- **Réglages de Nova** : chaque réglage a son « ▸ Ce qui change », comme les réglages du thème standard : ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site).
 - Réglages de Nova, onglet Élèves : **seuil « Exercice réussi »** (plus de 90 % des points demandés par défaut, règle de WIMS), appliqué aux pastilles de l'accueil, des séquences et de la page d'une feuille.
 - Séquences : déplacer une séquence ou changer son affichage ne recharge plus la page (la liste se met à jour aussitôt ; flèches et glisser-déposer en pause une seconde et demie) ;
 - Accueil : infobulle « Utilisé dans quelles séquences pédagogiques ? » sur le titre de la colonne des séquences ;

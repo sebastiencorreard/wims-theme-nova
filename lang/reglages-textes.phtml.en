@@ -37,3 +37,113 @@
 !! _widgets/apparence.phtml
 <template id="nova-apparence" data-sans-effet="$nova_sans" data-champ-theme="$nova_theme" data-couleur-theme="$nova_app_couleur_theme" data-masques="settings with no effect in the Nova theme, or rarely useful, are hidden." data-afficher="Show them" data-masquer="Hide them">
 !exit
+
+:aide_couleur
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Nova's accent colour: top bar, buttons, links, tabs, card titles.</li><li>It is the same value as &quot;Theme colour&quot; on the WIMS Appearance page: changing one changes the other.</li><li>With no colour chosen: that of the portal, the group or the site, otherwise Nova's plum.</li><li>Unchanged: status colours (green for done, orange for in progress, red), and the colour a student picked in &quot;My colour&quot;.</li></ul></details>
+!exit
+
+:aide_animations
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes: menus, windows and folded blocks slide open; stars appear after a right answer and the phone vibrates; the December garland twinkles.</li><li>No (default): everything appears at once, without motion.</li><li>Always off on a device set to reduce motion.</li><li>Unchanged: the hourglass of an action in progress always turns, and the avatar's coin gain stays animated.</li></ul></details>
+!exit
+
+:aide_clavier
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes: on phones and tablets, tapping an exercise's answer field opens a maths keyboard instead of the device's: digits, operations, brackets, square, cube, square root, power of 10, arrows and delete.</li><li>The &quot;ABC&quot; key brings back the device keyboard, to type letters.</li><li>No (default): the device keyboard, as with the standard theme.</li><li>Unchanged: on a computer, no on-screen keyboard.</li></ul></details>
+!exit
+
+:aide_fil
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes (default): on a large screen, the breadcrumb of teachers and administrators stays under the top bar when the page scrolls.</li><li>No: it scrolls with the page, as with the standard theme.</li><li>Unchanged: on a phone, the breadcrumb always scrolls; students have no breadcrumb but a &quot;Back&quot; button.</li></ul></details>
+!exit
+
+:aide_deco
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes (default): in December, a string of lights along the top of the top bar, behind the buttons, and faint snowflakes.</li><li>The garland twinkles only if animations are on.</li><li>Never during an exam.</li><li>No: no decoration on the bar all year round.</li></ul></details>
+!exit
+
+:aide_entree
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes (default): a student with only one course (portal) or one class (group) goes straight into it after logging in, if the home page of the structure has nothing else to show (no work, no message).</li><li>Back on the structure's home page through the breadcrumb, the student stays there.</li><li>No: the student lands on the structure's home page and picks the course, as with the standard theme.</li><li>No effect in a stand-alone class.</li></ul></details>
+!exit
+
+:aide_masques
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Communication ticked: the &quot;Communication&quot; section (forum, &quot;Write to the teacher&quot;) disappears from the students' menu.</li><li>External links ticked: the section with other classes and links to the school portal disappears, entirely, from the students' menu.</li><li>Nothing ticked: full students' menu, as with the standard theme.</li><li>Unchanged: the teacher's menu. Only the menu changes: the pages themselves stay open.</li></ul></details>
+!exit
+
+:aide_moyenne
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes (default): at the top of &quot;My scores&quot;, a card shows the student's average and, for the class, the minimum, average and maximum.</li><li>The same card appears in a student's detail seen by the teacher.</li><li>No: the card is removed; exam and sheet grades are still shown.</li></ul></details>
+!exit
+
+:aide_seuil
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>An exercise is &quot;Done&quot; (green dot) when its sheet's scoring indicator goes above this share of the required points.</li><li>90 (default): the WIMS rule. Lower, a student sees exercises done sooner.</li><li>&quot;Brilliantly done&quot; (star): done, with a quality above 9.</li><li>The same rule applies on the home page, in sequences and on a sheet's page.</li><li>Unchanged: grades, computed by WIMS as usual.</li><li>Empty field: value of the portal, the group or the site.</li></ul></details>
+!exit
+
+:aide_activite
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes (default): &quot;My activity&quot; in the student's menu opens a simple Nova page: working days this week, goal, working time, latest grades.</li><li>A student working fewer days than the chosen threshold is encouraged; beyond the chosen hours, the student is invited to take breaks.</li><li>During the chosen holidays, the page sets no goal.</li><li>No: the WIMS page (charts), as with the standard theme.</li></ul></details>
+!exit
+
+:aide_dm_mots
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>An exam is a WIMS homework when its title contains one of these words, followed or not by a number (&quot;DMWIMS03&quot;).</li><li>Nova uses it for the &quot;Graded homework&quot; button on your home page and for the Warm-up and Top badges.</li><li>Accents and capitals do not matter. Default: DMWIMS, DM.</li><li>Unchanged: the exams themselves; only their title is read.</li></ul></details>
+!exit
+
+:aide_dm_note
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>A WIMS homework whose title also contains one of these words is a graded homework.</li><li>The &quot;Graded homework&quot; button puts one of these words in the title of the exam it creates.</li><li>Top badge: only graded homework counts. Warm-up badge: practice sessions count before the graded homework is first opened.</li><li>Default: noté, test.</li></ul></details>
+!exit
+
+:aide_dm_ent
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>A WIMS homework whose title also contains one of these words is a practice homework.</li><li>A practice homework and its graded homework go together when they have the same content; otherwise, when their titles are identical apart from this word.</li><li>The &quot;Graded homework&quot; button appears next to a practice homework that does not have its graded homework yet.</li><li>Default: entrainement (accents ignored).</li></ul></details>
+!exit
+
+:aide_dm_essais
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Number of sessions of the exam created by the &quot;Graded homework&quot; button on your home page.</li><li>Default: 3.</li><li>Unchanged: graded homework already created; their number of sessions is changed on their page, as usual.</li></ul></details>
+!exit
+
+:aide_badges
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes: ticked badges are computed each time the student opens the home page; a &quot;Badges&quot; pill next to &quot;My scores&quot; opens their window, and a new level is announced once.</li><li>No (default): nothing is shown to students.</li><li>A level earned is never lost, even if badges are turned off and back on.</li><li>Never on the home page of a portal or a group (work happens in the courses), nor during an exam.</li></ul></details>
+!exit
+
+:aide_fidelite
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Ticked: one more level according to the number of weeks in which the student sent answers on at least the set number of days (1 by default).</li><li>Weeks counted with no need for a streak: a week without work (illness, holidays) loses nothing.</li><li>Default thresholds: 2 4 6 9 12 16 20 25 weeks.</li><li>Unticked: badge neither computed nor shown; levels already earned stay recorded.</li></ul></details>
+!exit
+
+:aide_perseverance
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Ticked: an exercise counts when the student gets at least 7/10 on it after at least 2 grades under 5/10 (adjustable).</li><li>Exam grades count too, unless the box is unticked in the badge settings.</li><li>Default thresholds: 1 3 5 10 15 20 25 30 exercises.</li><li>Unticked: badge neither computed nor shown; levels already earned stay recorded.</li></ul></details>
+!exit
+
+:aide_echauffement
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Ticked: a WIMS homework counts when the student has done at least 2 complete practice sessions (one answer to each exercise) before first opening the graded homework.</li><li>Homework recognised from the WIMS homework tab (same content, or title keywords).</li><li>Default thresholds: 1 3 5 8 12 16 21 26 homework.</li><li>Unticked: badge neither computed nor shown; levels already earned stay recorded.</li></ul></details>
+!exit
+
+:aide_top
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Ticked: a graded homework counts when the grade kept by WIMS reaches at least 9/10 (adjustable).</li><li>Graded homework recognised from the WIMS homework tab.</li><li>Default thresholds: 1 3 5 8 12 16 21 26 homework.</li><li>Unticked: badge neither computed nor shown; levels already earned stay recorded.</li></ul></details>
+!exit
+
+:aide_couleur_perso
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>At the chosen level of the chosen badge, the student can pick the colour of their interface (&quot;My colour&quot;, Profile menu) among ten readable colours; at the second level, gradients.</li><li>It replaces the theme colour for that student only, across the class or structure, exams included; never on grades, the timer or fields.</li><li>Default: colour at Regularity level 2, gradients at level 4.</li><li>&quot;nobody&quot;: choice turned off; students keep the theme colour.</li></ul></details>
+!exit
+
+:aide_avatar
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Offered: each student builds an avatar (&quot;My avatar&quot;, Profile menu) and sees it in the top bar, with their coins.</li><li>Coins are earned by doing exercises well (at least 7/10, answer sent at least 15 s after opening, once a day, at most 10 exercises a day) and spent on avatar items; some items are badge rewards.</li><li>Seen by the student and their teachers only: &quot;Photo board&quot; page and participant list.</li><li>No (default): no avatar, no coins.</li></ul></details>
+!exit
+
+:aide_desact
+!! _widgets/apparence-classe.phtml, apparence.phtml : aide repliee du reglage (2026-11-25)
+<details class="nova-app-detail nova-app-aide-detail"><summary>$nova_std_changements</summary><ul><li>Yes: when WIMS refuses to deactivate a sheet or an exam (shared with other classes, or sheet used in an exam), a discreet &quot;Deactivate anyway...&quot; link appears under the refusal; it opens a warning and offers a backup first.</li><li>The sheet or exam is then deactivated in every class of the share; changing its content puts the grades already recorded out of step.</li><li>No (default): the WIMS refusal, with no other choice, as with the standard theme.</li></ul></details>
+!exit

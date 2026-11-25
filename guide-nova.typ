@@ -705,7 +705,8 @@ Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la
   avant ou après.
 + Poser la condition *dans le widget*. `user.phtml` sert aussi à l'enseignant d'un portail ou d'un groupement, et
   dans chaque zone : tester le rôle (`$wims_user=supervisor`) et le type (`$class_typename`) avant d'afficher un
-  bloc d'élève.
+  bloc d'élève. À l'accueil d'une structure, l'enseignant est connecté sous son identifiant, PAS en `supervisor` :
+  le test du rôle ne l'écarte pas ; écarter la racine par `$class_type notwordof 2 3 4` (bouton « Mes notes »).
 + Textes : `lang/eleve.phtml.<l>` (lu en tête de `user.phtml`) ou `lang/enseignant.phtml.<l>` ; styles dans
   `accueil.css`.
 

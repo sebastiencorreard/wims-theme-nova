@@ -179,7 +179,9 @@
     !reset nova_cl nova_auj nova_bd nova_le nova_st nova_cx
   !endif
 !endif
-!if $wims_user!=supervisor and $wims_user!=$empty
+!! Pas a l'accueil d'un portail ou d'un groupement (class_type >= 2), comme Standard (is_interclass, usermenumodubox.proc) :
+!! un enseignant y est connecte sous son identifiant, pas en supervisor (vu par un collegue, 2026-11-25).
+!if $wims_user!=supervisor and $wims_user!=$empty and $class_type notwordof 2 3 4
   <div class="nova-mes-notes">
   !set wims_ref_class=nova-mes-notes-bouton
   !href module=adm/class/userscore &#127942; $wims_name_myscore &#127942;

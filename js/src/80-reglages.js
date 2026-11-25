@@ -728,7 +728,9 @@
       if (nom) b.setAttribute('aria-label', b.textContent + ' : ' + nom);
       b.setAttribute('aria-haspopup', 'dialog');
       b.addEventListener('click', function () {
-        if (!fenetre) creer(d.getAttribute('data-fermer') || 'Close');
+        // Texte de Fermer : celui de l'aide, sinon d'une autre aide de la page (liste du theme standard, sans le sien).
+        var f = d.getAttribute('data-fermer') || (document.querySelector('details.nova-app-aide-detail[data-fermer]') || d).getAttribute('data-fermer');
+        if (!fenetre) creer(f || 'Close');
         titre.textContent = nom;
         sousTitre.textContent = resume ? resume.textContent : '';
         corps.innerHTML = liste ? liste.innerHTML : '';

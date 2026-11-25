@@ -7,7 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Enseignants
-- **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site).
+- **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
 
 ### Corrections
 - Accueil d'un portail ou d'un groupement : le bouton « Mes notes » n'apparaît plus (il s'affichait pour les enseignants), comme dans le thème standard ; il reste dans les classes et les cours.

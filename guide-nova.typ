@@ -487,6 +487,7 @@ réglage voisin du même type (oui/non : `--nova-decorations` ; nombre : `--nova
   « Non (par défaut) : … », « Sans changement : … »), lue à la fin de la ligne par
   `!read themes/$wims_theme/lang/reglages-textes.phtml.$lang aide_<clé>` (aucun nom de variable : tampon des noms). Le
   gabarit écrit un `details.nova-app-aide-detail` ; `js/src/80-reglages.js`, `aidesReglages`, le remplace par le bouton.
+  Même bouton pour les listes « Ce qui change » des réglages du thème standard (`_widgets/apparence-standard.phtml`).
 + *Lecture* : en CSS, la variable elle-même ; en JS, `racineStyle('--nova-x')` (+ `VARS_DEMARRAGE`) ; côté serveur,
   `grep -ao` des déclarations dans les feuilles (voir `_procs/badges.awk`, section `#conf`).
 + *Zones* : la propagation aux zones dépendantes (`_procs/propager.sh`) recopie le bloc entier : rien à faire.

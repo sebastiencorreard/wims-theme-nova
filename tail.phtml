@@ -80,6 +80,11 @@
     !read themes/$wims_theme/_widgets/inscription-classes.phtml
   !endif
 !endif
+!! Plan du portail (2026-11-26, utilisateur) : premiere page de Gestion de structure (adm/class/gateway), administrateur
+!! a la racine d'un portail.
+!if $module=adm/class/gateway and $job=first and $wims_user=supervisor and $wims_class=$wims_superclass and $wims_supertype=4 and _tool notin $wims_session
+  !read themes/$wims_theme/_widgets/plan-portail.phtml
+!endif
 !! Liste des eleves (enseignant ; 2026-11-25) : pages a Part. precedent / suivant (entrees du menu posees par
 !! scripts/adm/class/getnextuser, qui laisse l'eleve affiche dans gn_st).
 !if $wims_user=supervisor and _check notin $wims_session and $gn_st!=$empty and (next_participant isin $wims_menu_items or prev_participant isin $wims_menu_items)

@@ -1173,3 +1173,124 @@ html.nova-js:not(.nova-std-notes-enseignant) .wimsbody form:has(input[name="job"
 .wimsbody fieldset.property_fields > .nova-pe-effacer { border-top: 0; }
 .wimsbody .nova-pe-effacer > .wims_button { flex: none; margin: 0; }
 .wimsbody .nova-pe-effacer > .nova-pe-effacer-note { flex: 1 1 16rem; margin: 0; font-size: .85rem; color: var(--nova-texte-2); }
+
+/* Plan du portail (Gestion de structure, adm/class/gateway ; nova.js planPortail, 2026-11-26, utilisateur, maquettes
+   1 a 4 de maquettes/structure-plan-2026-11-26.html). Une bande par niveau, tuiles de cours en colonnes, panneau de
+   proprietes (dialog) a droite, en bas au telephone. Pastilles d'acces cachees sauf interrupteur (.nova-pp-avec-acces). */
+.nova-pp { display: grid; gap: var(--nova-e3); margin: var(--nova-e3) 0; }
+.nova-pp-outils { display: flex; flex-wrap: wrap; gap: var(--nova-e2); align-items: center; }
+.nova-pp-outils .wims_button { margin: 0; }
+.nova-pp-interrupteur { display: inline-flex; align-items: center; gap: var(--nova-e2); margin-left: auto; padding: 6px 4px; border: 0; background: none; font: inherit; font-weight: 600; color: var(--nova-texte); cursor: pointer; }
+.nova-pp-glissiere { position: relative; flex: none; width: 36px; height: 20px; border-radius: 999px; background: var(--nova-bord-fort); }
+.nova-pp-glissiere::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--nova-surface); transition: left .15s; }
+.nova-pp-interrupteur[aria-checked="true"] .nova-pp-glissiere { background: var(--nova-accent); }
+.nova-pp-interrupteur[aria-checked="true"] .nova-pp-glissiere::after { left: 19px; }
+html.nova-sans-animation .nova-pp-glissiere::after { transition: none; }
+.nova-pp-plan { display: grid; gap: var(--nova-e2); }
+.nova-pp-bande { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: var(--nova-e2) var(--nova-e3); align-items: start; padding: var(--nova-e2) var(--nova-e3); background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); }
+.nova-pp-tete { display: grid; gap: var(--nova-e1); justify-items: start; align-content: start; }
+.nova-pp-nom { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+.nova-pp-effectif { font-size: .85rem; color: var(--nova-texte-2); font-variant-numeric: tabular-nums; }
+.wimsbody button.nova-pp-puce { margin: 0; border: 0; font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
+.wimsbody button.nova-pp-puce.wims_classes_direct_level { font-size: 1.05rem; }
+.wimsbody button.nova-pp-puce:hover, .wimsbody button.nova-pp-puce:focus-visible { outline: 2px solid var(--nova-zone-encre); outline-offset: 1px; }
+.nova-pp-lignes { display: grid; gap: var(--nova-e2); min-width: 0; }
+.nova-pp-ligne { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--nova-e2); align-items: center; }
+.nova-pp-ligne > .nova-pp-puce { justify-self: start; }
+.nova-pp-sans-prog { font-size: .85rem; color: var(--nova-texte-2); }
+.nova-pp-tuiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: var(--nova-e2); min-width: 0; }
+.wimsbody button.nova-pp-tuile { display: grid; gap: 1px; align-content: start; justify-items: start; min-width: 0; margin: 0; padding: 7px 10px; border: 2px solid transparent; border-radius: var(--nova-rayon); background: var(--nova-zone-fond); color: var(--nova-texte); font: inherit; text-align: left; cursor: pointer; }
+.wimsbody button.nova-pp-tuile::before { content: none; }
+.wimsbody button.nova-pp-tuile:hover, .wimsbody button.nova-pp-tuile:focus-visible { border-color: var(--nova-zone-encre); }
+.nova-pp-tuile b { font-size: 1rem; color: var(--nova-zone-encre); }
+.nova-pp-tuile small { max-width: 100%; font-size: .78rem; line-height: 1.3; color: var(--nova-texte-2); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.wimsbody button.nova-pp-sans-cours { background: transparent; border: 1px dashed var(--nova-bord-fort); }
+.nova-pp-sans-cours b { color: var(--nova-texte); }
+.nova-pp-sans-cours small { color: var(--nova-lien); font-weight: 700; }
+.wimsbody button.nova-pp-ajout { min-height: 3.2rem; margin: 0; border: 1px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon); background: transparent; color: var(--nova-lien); font: inherit; font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+.wimsbody button.nova-pp-ajout:hover, .wimsbody button.nova-pp-ajout:focus-visible { border-color: var(--nova-accent); background: var(--nova-accent-doux); }
+.wimsbody button.nova-pp-lien { margin: 0; padding: 2px 0; border: 0; background: none; font: inherit; font-size: .85rem; font-weight: 600; color: var(--nova-lien); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; cursor: pointer; }
+.nova-pp-voir-wims { justify-self: start; }
+/* Acces : caches sauf interrupteur */
+.nova-pp-acces, .nova-pp-acces-niveau, .nova-pp > .nova-pp-legende { display: none; }
+.nova-pp-avec-acces .nova-pp-acces { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 4px; }
+.nova-pp-avec-acces .nova-pp-acces-niveau { display: flex; flex-wrap: wrap; gap: 4px var(--nova-e3); grid-column: 1 / -1; margin: 0; padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); font-size: .82rem; color: var(--nova-texte-2); }
+.nova-pp-avec-acces > .nova-pp-legende { display: flex; }
+.nova-pp-pa { padding: 0 6px; border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface); font-size: .7rem; font-weight: 700; line-height: 1.5; color: var(--nova-texte-2); white-space: nowrap; }
+.nova-pp-pa-resp { border-color: var(--nova-accent); color: var(--nova-accent); }
+.nova-pp-pa-postes { border-color: var(--nova-attention); background: var(--nova-attention-fond); color: var(--nova-attention-texte, var(--nova-attention)); }
+.nova-pp-legende { flex-wrap: wrap; gap: 6px var(--nova-e3); align-items: center; margin: 0; font-size: .82rem; color: var(--nova-texte-2); }
+.nova-pp-qui .nova-pp-legende { display: flex; }
+/* Panneau */
+.nova-dialogue.nova-pp-panneau { position: fixed; inset: 0 0 0 auto; width: min(26rem, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: var(--nova-e4); border-radius: var(--nova-rayon-carte) 0 0 var(--nova-rayon-carte); box-sizing: border-box; overflow: auto; display: grid; gap: var(--nova-e3); align-content: start; }
+.nova-pp-panneau:not([open]) { display: none; }
+@media (max-width: 700px) {
+  .nova-dialogue.nova-pp-panneau { inset: auto 0 0 0; width: 100vw; height: auto; max-height: 88dvh; margin: 0; border-radius: var(--nova-rayon-carte) var(--nova-rayon-carte) 0 0; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
+}
+.nova-pp-p-tete { display: grid; gap: 2px; padding-right: 36px; }
+.nova-pp-p-tete h1 { margin: 0; font-size: 1.3rem; }
+.nova-pp-p-type { justify-self: start; font-size: .8rem; }
+.nova-pp-p-meta { margin: 0; font-size: .82rem; color: var(--nova-texte-2); overflow-wrap: anywhere; }
+.nova-pp-raccourcis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--nova-e2); }
+.nova-pp-raccourcis .wims_button { margin: 0; justify-content: center; text-align: center; }
+.nova-pp-raccourcis .wims_button:first-child { grid-column: 1 / -1; }
+.nova-pp-raccourcis .nova-pp-ouvrir { grid-column: 1 / -1; }
+.nova-pp-raccourcis .nova-pp-vise { outline: 3px solid var(--nova-accent-doux); }
+.nova-pp-onglets { display: flex; gap: 4px; border-bottom: 1px solid var(--nova-bord); }
+.nova-pp-onglets button { margin: 0 0 -1px; padding: 6px 12px; border: 0; border-bottom: 2px solid transparent; background: none; font: inherit; font-weight: 600; color: var(--nova-texte-2); cursor: pointer; }
+.nova-pp-onglets button[aria-selected="true"] { color: var(--nova-accent); border-bottom-color: var(--nova-accent); }
+.nova-pp-form { display: grid; gap: var(--nova-e3); margin: 0; }
+.nova-pp-vue { display: grid; gap: var(--nova-e2); }
+.nova-pp-vue[hidden] { display: none; }
+.nova-pp-vue .field { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; background: none; }
+.nova-pp-vue .field input:not([type="hidden"]), .nova-pp-vue .field select { width: 100%; box-sizing: border-box; }
+
+.nova-pp-form .wimscenter { display: flex; justify-content: flex-end; gap: var(--nova-e2); margin: 0; }
+.nova-pp-gestion { display: grid; gap: 6px; padding: var(--nova-e2) 0; }
+.nova-pp-gens { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.nova-pp-gens li { display: inline-flex; align-items: center; gap: 4px; padding: 2px 4px 2px 10px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; font-size: .88rem; }
+.nova-pp-gens li.nova-pp-aucun { padding: 0; border: 0; color: var(--nova-texte-2); }
+.nova-pp-retirer { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: none; font-size: 1.05rem; line-height: 1; color: var(--nova-texte-2); cursor: pointer; }
+.nova-pp-retirer:hover, .nova-pp-retirer:focus-visible { background: var(--nova-erreur-fond); color: var(--nova-erreur); }
+.nova-pp-ajout-gestion { display: flex; gap: var(--nova-e2); }
+.nova-pp-ajout-gestion select { flex: 1; min-width: 0; }
+.nova-pp-ajout-gestion .wims_button { margin: 0; }
+.nova-pp-aide { margin: 0; font-size: .82rem; color: var(--nova-texte-2); }
+.nova-pp-attente { margin: 0; color: var(--nova-texte-2); }
+.nova-pp-erreur { margin: 0; color: var(--nova-erreur); font-weight: 600; }
+.nova-pp-erreur:empty { display: none; }
+.nova-pp-danger { display: flex; justify-content: flex-end; padding-top: var(--nova-e3); border-top: 1px solid var(--nova-bord); }
+.nova-pp-danger .wims_button { margin: 0; }
+/* Qui a acces a quoi */
+.nova-dialogue.nova-pp-qui { width: min(60rem, calc(100vw - 32px)); max-height: calc(100dvh - 32px); box-sizing: border-box; overflow: auto; display: grid; gap: var(--nova-e3); }
+.nova-pp-qui:not([open]) { display: none; }
+.nova-pp-qui h1 { margin-bottom: 0; }
+.nova-pp-defile { overflow-x: auto; }
+.nova-pp-table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: .88rem; }
+.nova-pp-table th, .nova-pp-table td { padding: 8px 10px; border-bottom: 1px solid var(--nova-bord); text-align: left; vertical-align: top; }
+.nova-pp-table thead th { background: var(--nova-surface-2); font-size: .8rem; color: var(--nova-texte-2); }
+.nova-pp-table tbody th { font-weight: 600; white-space: nowrap; }
+.nova-pp-table tbody th small { display: block; font-family: var(--nova-police-chiffres, monospace); font-weight: 400; color: var(--nova-texte-2); }
+.nova-pp-table td { display: table-cell; }
+.nova-pp-marque { display: inline-block; margin: 0 4px 4px 0; padding: 1px 9px; border: 0; border-radius: 999px; font: inherit; font-size: .78rem; font-weight: 700; }
+button.nova-pp-marque { cursor: pointer; }
+button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
+.nova-pp-m-resp { background: var(--nova-accent-doux); color: var(--nova-accent); }
+.nova-pp-m-gest { background: var(--nova-succes-fond); color: var(--nova-succes); }
+.nova-pp-rien { color: var(--nova-bord-fort); }
+@media (max-width: 900px) {
+  .nova-pp-bande { grid-template-columns: minmax(0, 1fr); }
+  .nova-pp-tete { grid-template-columns: auto auto; justify-content: start; align-items: center; gap: var(--nova-e2); }
+  .nova-pp-ligne { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 500px) {
+  .nova-pp-tuiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .nova-pp-interrupteur { margin-left: 0; }
+}
+.nova-pp-tuile small.nova-pp-qui-resp { color: var(--nova-texte); }
+.nova-pp-vue .field { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--nova-e2); }
+.nova-pp-vue .field > * { grid-column: 1 / -1; }
+.nova-pp-vue .field > label, .nova-pp-vue .field > strong { grid-column: 1; font-weight: 700; font-size: .9rem; }
+.nova-pp-vue .field > .wims_button_help { grid-column: 2; grid-row: 1; float: none; margin: 0; }
+.nova-pp-vue .field .formHelp { font-size: .8rem; color: var(--nova-texte-2); }
+.nova-pp-gestion > strong { font-size: .9rem; }

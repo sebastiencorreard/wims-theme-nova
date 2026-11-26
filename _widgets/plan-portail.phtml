@@ -1,0 +1,16 @@
+!! Nova : plan du portail (Gestion de structure, adm/class/gateway, premiere page ; 2026-11-26, utilisateur, maquettes
+!! 1 a 4 de maquettes/structure-plan-2026-11-26.html). Lu par tail.phtml : administrateur (supervisor) a la racine d'un
+!! portail (supertype 4), job=first. Donne a nova.js (planPortail) les enseignants et les zones du portail
+!! (_procs/plan-portail.sh) ; tout changement passe ensuite par les pages de WIMS, depuis le navigateur.
+!! Reglage std tableaux : nova.js laisse la page de WIMS.
+!! Variables :
+!!   nova_pp_c  portail (chiffres seulement)
+!!   nova_pp_a  nom de l'administrateur (class_supervisor du portail), pour reconnaitre son compte d'enseignant
+!set nova_pp_c=!text select 0123456789 in $wims_superclass
+!set nova_pp_a=!defof class_supervisor in wimshome/log/classes/$nova_pp_c/.def
+!set nova_pp_a=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 .'-ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõöøùúûüışÿ in $nova_pp_a
+<ul id="nova-plan-donnees" hidden data-portail="$nova_pp_c" data-admin="$nova_pp_a">
+!sh sh $wims_home/public_html/themes/$wims_theme/_procs/plan-portail.sh "$wims_home" "$nova_pp_c"
+</ul>
+!read themes/$wims_theme/lang/enseignant-textes.phtml.$lang plan
+!reset nova_pp_c nova_pp_a

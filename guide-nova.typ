@@ -698,7 +698,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml`],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml` ; plan du portail (première page de Gestion de structure) : `76-plan-portail.js` (`planPortail`, `planPortailSuite`), `_widgets/plan-portail.phtml`, `_procs/plan-portail.sh`],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -1076,6 +1076,18 @@ et l'envoyer. Si un champ peut porter un accent (groupement : le libellé tradui
 inscriptions »), charger la page dans un `<iframe>` caché, cocher, cliquer le bouton : le navigateur encode comme
 WIMS l'attend. Dans les deux cas : un compteur de session neuf par requête, 1,6 s entre deux requêtes, la réussite lue
 dans la page renvoyée (message de WIMS, coche du tableau), puis rechargement de la page de départ.
+
+Plan du portail (`planPortail`, `76-plan-portail.js`) : la première page de « Gestion de structure »
+(`adm/class/gateway`, `job=first`) devient une bande par niveau. `_procs/plan-portail.sh` lit les index de la racine
+du portail et donne une ligne par zone ; `nova.js` range les cours sous leur programme et au nom de leur classe (un
+cours `niveau/classe/programme`). Le panneau d'une zone lit la page de propriétés de WIMS (`job=class&class=…`,
+`job=course&cparent=class&course=…`…), recopie ses champs et l'envoie dans un cadre caché avec le paramètre de la zone :
+la requête se suffit, elle ne dépend pas de la page que la session a vue avant. Autres accès de gestion : la même page
+avec `actype=add|del&more=<login>` (`jobs/supervisors.proc`). Ouvrir un cours : `job=addcourse` avec
+`courseclass`, `courseprog` et `confirm`. Effacer : la page de confirmation de WIMS. Les raccourcis Notes,
+Participants, Examens entrent dans la zone puis suivent le lien du menu (`planPortailSuite`, `sessionStorage`
+`nova-pp-suite`). Interrupteur des accès : `localStorage` `nova-pp-acces`. Réglage « Tableaux du thème standard » : page
+de WIMS seule.
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE
 actif et désactivé si la page a une zone de texte ; à 390 px.]
@@ -1625,6 +1637,16 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   ou ignorer tout chargement dont l'adresse n'est pas `wims.cgi` (`inscriptionsGroupement`, `75-fiche-eleve.js`).
 ]
 
+#piege[Toute action lue dans une page de WIMS semble refusée][
+  Nova lit la réponse de WIMS en arrière-plan et y cherche `.wims_msg.alert` : il y trouve « Votre session a expiré »,
+  alors que l'action a réussi.
+][
+  Chaque page d'un utilisateur connecté porte, cachée, la fenêtre de fin de session de WIMS
+  (`themes/_widgets/session_warn.phtml`, `#sess_dialog2`), qui contient un `div.wims_msg.alert`.
+][
+  Ignorer les messages contenus dans `[id^="sess_dialog"]` (`refus`, `76-plan-portail.js`).
+]
+
 #piege[Une adresse construite par Nova fait passer la page en anglais][
   Après un clic sur un lien fabriqué par `nova.js`, la page suivante est en anglais, sur un site en français.
 ][
@@ -2038,7 +2060,7 @@ niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "functi
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
   "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
-  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "75-fiche-eleve.js", "80-reglages.js", "99-demarrage.js")
+  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "75-fiche-eleve.js", "76-plan-portail.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))
@@ -2143,6 +2165,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`notes-detail.phtml`], [détail des notes],
   [`eleves-liste.phtml`], [liste des élèves des pages à « Part. précédent / suivant » de l'enseignant (`elevesListe`)],
   [`inscription-classes.phtml`], [classes d'un portail ou d'un groupement et classes de l'élève, pour « Inscrire dans une classe » de sa fiche (`ficheEleve`)],
+  [`plan-portail.phtml`], [enseignants et zones d'un portail, pour le plan de la Gestion de structure (`planPortail`) ; lu par `tail.phtml`, administrateur à la racine, `job=first`],
   [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
   [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],
@@ -2161,6 +2184,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`avatar.awk`, `avatar.proc`, `avatar-catalogue.txt`, `avatar-zones.sh`, `avatars-classe.sh`, `avatars-retour.sh`], [avatar],
   [`propager.sh`, `desactiver.sh`, `desactivables.sh`, `sequences.sh`, `examen.sh`], [actions de l'enseignant (`desactivables.sh` : lecture seule, refus de WIMS recalculés)],
   [`eleves-liste.sh`], [participants d'une classe ou d'une zone (`.userlist`), liste des élèves des pages à « Part. suivant »],
+  [`plan-portail.sh`], [niveaux, programmes, classes et cours d'un portail (index `levels`, `programs`, `classes`, `courses`), effectifs, postes sûrs, autres accès de gestion (`user_supervise` des enseignants) ; 300 zones au plus],
   [`serie-exos.sh`], [titres des exercices d'un module OEF (fichier `Extitles`), éditeur des paramètres d'une série],
   [`jeu-icones.sh`], [lien du jeu Lucide dans `gifs/themes`],
   [`suivi.pl`], [relevé du suivi en direct],
@@ -2580,10 +2604,12 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova-editeur-taille`], [taille du texte de l'éditeur de code, en px (absente : 14)],
   [`nova-fiche-avancees`], [options avancées d'une fiche de ressource ouvertes ou fermées],
   [`nova-session-activite`], [session et heure de la dernière page chargée (ou de « Rester connecté »), commune aux onglets],
+  [`nova-pp-acces`], [plan du portail : accès affichés sur les tuiles (`1`) ou non],
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
-(`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé), onglet « Feuilles » ouvert par défaut sur l'accueil
+(`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé), plan du portail (`nova-pp-rouvrir` : panneau à
+rouvrir après un changement d'accès ; `nova-pp-suite` : page à ouvrir une fois entré dans une zone), onglet « Feuilles » ouvert par défaut sur l'accueil
 (`nova-supervisor_list_selectedTab`, `nova-user_list_selectedTab` : valeur écrite par Nova dans la clé de WIMS)… Ces clés peuvent changer sans précaution.
 
 == Repères posés dans la page <annexe-reperes>

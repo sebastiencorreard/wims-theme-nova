@@ -1086,7 +1086,7 @@ la requête se suffit, elle ne dépend pas de la page que la session a vue avant
 avec `actype=add|del&more=<login>` (`jobs/supervisors.proc`). Ouvrir un cours : `job=addcourse` avec
 `courseclass`, `courseprog` et `confirm`. Effacer : la page de confirmation de WIMS. Les raccourcis Notes,
 Participants, Examens entrent dans la zone puis suivent le lien du menu (`planPortailSuite`, `sessionStorage`
-`nova-pp-suite`). Interrupteur des accès : `localStorage` `nova-pp-acces`. Réglage « Tableaux du thème standard » : page
+`nova-pp-suite`). Panneau NON modal (`dialog.show()`, pas `showModal`) : `html.nova-pp-ouvert` réserve sa place à droite (≥ 1100 px), sous la barre et le fil d'Ariane collé ; une requête d'un panneau remplacé est abandonnée. Interrupteur des accès : `localStorage` `nova-pp-acces`. Réglage « Tableaux du thème standard » : page
 de WIMS seule.
 
 #verifier[enseignant d'une classe seule, puis d'un portail (la page existe-t-elle en zone ?) ; l'éditeur TinyMCE

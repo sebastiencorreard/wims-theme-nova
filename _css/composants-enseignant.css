@@ -1222,10 +1222,10 @@ html.nova-sans-animation .nova-pp-glissiere::after { transition: none; }
 .nova-pp-legende { flex-wrap: wrap; gap: 6px var(--nova-e3); align-items: center; margin: 0; font-size: .82rem; color: var(--nova-texte-2); }
 .nova-pp-qui .nova-pp-legende { display: flex; }
 /* Panneau */
-.nova-dialogue.nova-pp-panneau { position: fixed; inset: 0 0 0 auto; width: min(26rem, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0; padding: var(--nova-e4); border-radius: var(--nova-rayon-carte) 0 0 var(--nova-rayon-carte); box-sizing: border-box; overflow: auto; display: grid; gap: var(--nova-e3); align-content: start; }
+.nova-dialogue.nova-pp-panneau { position: fixed; z-index: 60; inset: var(--nova-pp-haut, 0px) 0 0 auto; width: min(26rem, 100vw); max-width: 100vw; height: auto; max-height: none; margin: 0; box-shadow: -6px 0 24px rgb(0 0 0 / 12%); border: 0; border-left: 1px solid var(--nova-bord); padding: var(--nova-e4); border-radius: var(--nova-rayon-carte) 0 0 var(--nova-rayon-carte); box-sizing: border-box; overflow: auto; display: grid; gap: var(--nova-e3); align-content: start; }
 .nova-pp-panneau:not([open]) { display: none; }
 @media (max-width: 700px) {
-  .nova-dialogue.nova-pp-panneau { inset: auto 0 0 0; width: 100vw; height: auto; max-height: 88dvh; margin: 0; border-radius: var(--nova-rayon-carte) var(--nova-rayon-carte) 0 0; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
+  .nova-dialogue.nova-pp-panneau { inset: auto 0 0 0; width: 100vw; height: auto; max-height: 70dvh; margin: 0; border-left: 0; border-top: 1px solid var(--nova-bord); box-shadow: 0 -8px 24px rgb(0 0 0 / 14%); border-radius: var(--nova-rayon-carte) var(--nova-rayon-carte) 0 0; padding-bottom: calc(var(--nova-e4) + env(safe-area-inset-bottom, 0px)); }
 }
 .nova-pp-p-tete { display: grid; gap: 2px; padding-right: 36px; }
 .nova-pp-p-tete h1 { margin: 0; font-size: 1.3rem; }
@@ -1294,3 +1294,13 @@ button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px 
 .nova-pp-vue .field > .wims_button_help { grid-column: 2; grid-row: 1; float: none; margin: 0; }
 .nova-pp-vue .field .formHelp { font-size: .8rem; color: var(--nova-texte-2); }
 .nova-pp-gestion > strong { font-size: .9rem; }
+/* Panneau non modal : place reservee a droite sur grand ecran ; zone choisie entouree (2026-11-26, utilisateur). */
+@media (min-width: 1100px) {
+  html.nova-pp-ouvert .wimsbody { padding-right: calc(26rem + var(--nova-e3)); box-sizing: border-box; }
+}
+@media (max-width: 700px) {
+  html.nova-pp-ouvert .wimsbody { padding-bottom: 70dvh; }
+}
+.wimsbody button.nova-pp-tuile.nova-pp-choisi, .wimsbody button.nova-pp-puce.nova-pp-choisi { border-color: var(--nova-accent); outline: 3px solid var(--nova-accent-doux); outline-offset: 0; }
+.wimsbody button.nova-pp-puce.nova-pp-choisi { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-pp-p-tete h1:focus { outline: none; }

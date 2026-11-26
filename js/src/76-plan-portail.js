@@ -81,8 +81,10 @@
     var adresse = function (suite) { compteur++; return 'wims.cgi?session=' + session + '.' + compteur + '&lang=' + encodeURIComponent(racineLangue()) + suite; };
     var dernier = Date.now(), file = Promise.resolve();
     var attendre = function () { return new Promise(function (r) { setTimeout(r, Math.max(0, 1600 - (Date.now() - dernier))); }); };
-    var lire = function (suite) {
+    // garde : requete abandonnee si elle ne sert plus quand vient son tour (panneau remplace par un autre).
+    var lire = function (suite, garde) {
       var p = file.then(attendre).then(function () {
+        if (garde && !garde()) throw new Error('abandon');
         dernier = Date.now();
         return fetch(adresse(suite), { credentials: 'same-origin' });
       }).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
@@ -276,8 +278,13 @@
     montrerAcces(acces);
 
     /* Panneau d'une zone. prog : programme dont la classe n'a pas de cours (tuile en pointille). onglet : 'acces'. */
+    /* Panneau NON modal (2026-11-26, utilisateur) : la page reste visible et cliquable ; un clic sur une autre zone
+     * remplace le panneau. Grand ecran : html.nova-pp-ouvert reserve sa place a droite (le plan se resserre) et le
+     * panneau commence sous la barre du haut. Echap ou la croix le ferment. */
     function panneau(z, onglet, prog) {
-      if (typeof document.createElement('dialog').showModal !== 'function') { aller(pageZone(z)); return; }
+      if (typeof document.createElement('dialog').show !== 'function') { aller(pageZone(z)); return; }
+      var ancien = document.querySelector('dialog.nova-pp-panneau');
+      if (ancien) ancien.close();
       var d = zones[z], ty = d.type;
       var dlg = el('dialog', 'nova-dialogue nova-pp-panneau');
       dlg.setAttribute('aria-labelledby', 'nova-pp-titre');
@@ -389,7 +396,7 @@
       gest.appendChild(el('p', 'nova-pp-aide', t('autres-aide', '')));
 
       // Formulaire de proprietes de WIMS
-      lire(pageZone(z)).then(function (doc) {
+      lire(pageZone(z), function () { return dlg.isConnected; }).then(function (doc) {
         var fs = doc.querySelector('form fieldset.property_fields');
         var f = fs && fs.closest('form');
         var job = f && f.querySelector('input[name="job"]');
@@ -487,6 +494,7 @@
           });
         }
       }).catch(function (e) {
+        if (!dlg.isConnected) return;
         vuP.textContent = '';
         var p = el('p', 'nova-pp-erreur', t('erreur-chargement', 'The WIMS page could not be read.') + (e && e.message && e.message !== 'formulaire' ? ' ' + e.message : ''));
         vuP.appendChild(p);
@@ -498,11 +506,30 @@
       });
 
       choisir(onglet === 'acces');
-      dlg.addEventListener('close', function () { dlg.remove(); });
-      dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+      var marquer = function (oui) {
+        Array.prototype.forEach.call(plan.querySelectorAll('[data-zone="' + z + '"]'), function (x) { x.classList.toggle('nova-pp-choisi', oui); if (x.matches('button')) x.setAttribute('aria-expanded', oui ? 'true' : 'false'); });
+      };
+      var echap = function (e) { if (e.key === 'Escape' && !document.querySelector('dialog.nova-pp-qui')) dlg.close(); };
+      dlg.addEventListener('close', function () {
+        marquer(false);
+        document.removeEventListener('keydown', echap);
+        dlg.remove();
+        if (!document.querySelector('dialog.nova-pp-panneau')) document.documentElement.classList.remove('nova-pp-ouvert');
+      });
+      document.addEventListener('keydown', echap);
+      // Sous la barre du haut et sous le fil d'Ariane colle (cadre.css), qui passent au-dessus du panneau.
+      var haut = 0;
+      ['#wimstopbox', 'body > nav:has(> .breadcrumbs)'].forEach(function (sel) {
+        var x = document.querySelector(sel);
+        if (x && (sel === '#wimstopbox' || getComputedStyle(x).position === 'sticky')) haut = Math.max(haut, x.getBoundingClientRect().bottom);
+      });
+      if (haut) dlg.style.setProperty('--nova-pp-haut', haut + 'px');
       document.body.appendChild(dlg);
-      dlg.showModal();
-      fermer.focus();
+      document.documentElement.classList.add('nova-pp-ouvert');
+      dlg.show();
+      marquer(true);
+      h.setAttribute('tabindex', '-1');
+      h.focus({ preventScroll: true });
     }
 
     /* « Qui a acces a quoi » : enseignants en lignes, portail puis niveaux en colonnes. Responsable de toutes les zones

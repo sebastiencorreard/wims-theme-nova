@@ -545,6 +545,9 @@
     if (cellules.length > 6000) return;
     Array.prototype.forEach.call(cellules, function (c) {
       if (c.closest('.oefstatement, .oefanswer, form[name="replyform"]') || c.querySelector(BLOQUANT)) return;
+      // En-tete d'un tableau triable (Tablesort de WIMS : role columnheader, data-sort-method) : un clic sur la case trie ;
+      // seul le lien lui-meme ouvre sa page (vecu le 2026-11-27, page Notes : tri puis detail de la feuille).
+      if (c.matches('thead th') && (c.getAttribute('role') === 'columnheader' || c.hasAttribute('data-sort-method') || c.closest('tr[data-sort-method]'))) return;
       var liens = c.querySelectorAll(CLIQUABLE);
       if (liens.length !== 1) return;
       var lien = liens[0];

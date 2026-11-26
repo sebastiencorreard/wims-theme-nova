@@ -282,6 +282,21 @@
     var texte = function (n, defaut) { return (textes && textes.getAttribute('data-texte-' + n)) || defaut; };
     var choix = document.querySelector('select[name="showsheet"]');
     var cadre = choix && choix.closest('fieldset');
+    // Ligne « Afficher » : libelles courts (2026-11-27, utilisateur : « qualite », « pourcentage des points cumules »,
+    // « notes », « reussite », « acquisition », sur une ligne). WIMS ecrit toujours les cinq dans cet ordre
+    // (userscore/main.phtml, name_affi), le choix en cours en span. Reglage « Textes du thème standard » : ceux de WIMS.
+    var txChoix = document.getElementById('nova-choix-textes');
+    var ligneAffi = document.querySelector('.wimsbody .field.box:has(> a.wims_button[href*="job_affi="])');
+    if (ligneAffi && txChoix && !standard('textes')) {
+      var boutons = ligneAffi.querySelectorAll(':scope > :is(a, span).wims_button');
+      if (boutons.length === 5) ['quality', 'points', 'notes', 'best', 'level'].forEach(function (k, i) {
+        var court = txChoix.getAttribute('data-affi-' + k);
+        if (!court) return;
+        if (!boutons[i].title) boutons[i].title = boutons[i].textContent.trim();
+        boutons[i].textContent = court;
+      });
+      ligneAffi.classList.add('nova-affi');
+    }
     // Case du cadre « Choix des données » (sinon au-dessus du tableau), choix gardé par le navigateur.
     var ajouterCase = function (id, libelle, cle, defaut, appliquer) {
       var actif = defaut;

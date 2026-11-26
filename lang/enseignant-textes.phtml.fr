@@ -84,7 +84,7 @@
 
 :choix
 !! header.phtml, pages adm/ de l'enseignant (nova.js choixMultiples, audit C2, 2026-11-14)
-<template id="nova-choix-textes" data-tout="Tout cocher" data-rien="Tout décocher"></template>
+<template id="nova-choix-textes" data-examens="Examens seulement" data-feuilles="Feuilles seulement" data-affi-quality="qualité" data-affi-points="pourcentage des points cumulés" data-affi-notes="notes" data-affi-best="réussite" data-affi-level="acquisition" data-tout="Tout cocher" data-rien="Tout décocher"></template>
 !exit
 
 :ti

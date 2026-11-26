@@ -2762,6 +2762,24 @@
         sel.dispatchEvent(new Event('change', { bubbles: true }));
       });
       majTout();
+      // Page Notes (showsheet : feuilles « 3 », examens « E3 ») : « Examens seulement », « Feuilles seulement » (2026-11-27,
+      // utilisateur) ; cochent les uns, decochent les autres.
+      var valeurs = Array.prototype.map.call(sel.options, function (o) { return o.value; });
+      var estExamen = function (v) { return /^E\d+$/.test(v); };
+      if (valeurs.some(estExamen) && valeurs.some(function (v) { return /^\d+$/.test(v); })) {
+        [['examens', 'Exams only', true], ['feuilles', 'Worksheets only', false]].forEach(function (r) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'nova-choix-tout nova-choix-seuls';
+          b.textContent = tx.getAttribute('data-' + r[0]) || r[1];
+          b.addEventListener('click', function () {
+            cases.forEach(function (c, i) { var oui = estExamen(valeurs[i]) === r[2]; c.checked = oui; sel.options[i].selected = oui; });
+            majTout();
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+          tete.appendChild(b);
+        });
+      }
       boite.appendChild(tete);
       boite.appendChild(liste);
       sel.hidden = true;

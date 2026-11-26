@@ -1874,6 +1874,16 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == JavaScript
 
+#piege[Un clic sur un en-tête de tableau trie, puis ouvre une autre page][
+  On voit le tableau trié un instant, puis la page du lien de l'en-tête s'ouvre (page Notes : en-tête d'une feuille).
+][
+  `cellulesCliquables` rend cliquable toute cellule qui ne contient qu'un lien ; le tri de WIMS (Tablesort) réagit au clic
+  sur la cellule, puis Nova suit le lien.
+][
+  Une cellule d'en-tête triable (`role="columnheader"`, `data-sort-method`) n'est jamais rendue cliquable en entier : seul
+  son lien ouvre la page.
+]
+
 #piege[Un paramètre de l'adresse que `nova.js` ne trouve pas sur la vraie page][
   Le test, qui ouvre la page par une adresse écrite à la main, passe ; la page ouverte par un lien de WIMS se comporte
   comme si le paramètre manquait.

@@ -148,6 +148,57 @@
    * nom de classe, chronomètre, compte, langue. Les autres entrées (Aide, À propos, Retour à la
    * liste, Outils…) sont DÉPLACÉES dans un menu « ⋯ » — mêmes éléments, mêmes liens — et remises
    * à leur place exacte quand l'écran s'élargit. */
+  /* Copier le lien de l'exercice (entree .nova-copier-lien de _widgets/headmenu.phtml ; idee de Paul Byache, reprise le
+   * 2026-11-27, utilisateur). Clic = copie de l'adresse, « Lien copie » 2 s a la place du libelle. Ecouteur sur le document :
+   * l'entree peut etre rangee dans le menu « Plus » au telephone (barreCompacte). Copie refusee : fenetre avec l'adresse
+   * selectionnee. Sans JavaScript, l'entree reste un lien vers l'exercice. */
+  function lienExercice() {
+    if (!document.querySelector('.nova-copier-lien > a')) return;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('.nova-copier-lien > a');
+      if (!a) return;
+      e.preventDefault();
+      var adresse = a.href, texte = a.querySelector('.text_item') || a;
+      var fini = function (ok) {
+        if (ok) {
+          if (!a._novaLibelle) a._novaLibelle = texte.textContent;
+          texte.textContent = a.getAttribute('data-copie') + ' \u2713';
+          a.classList.add('nova-copie-faite');
+          clearTimeout(a._novaMinuterie);
+          a._novaMinuterie = setTimeout(function () { texte.textContent = a._novaLibelle; a.classList.remove('nova-copie-faite'); }, 2000);
+          return;
+        }
+        var dlg = document.createElement('dialog');
+        dlg.className = 'nova-dialogue nova-copier-lien-dialogue';
+        var p = document.createElement('label');
+        p.textContent = a.getAttribute('data-echec');
+        var champ = document.createElement('input');
+        champ.type = 'text'; champ.readOnly = true; champ.value = adresse;
+        p.appendChild(champ);
+        var f = document.createElement('button');
+        f.type = 'button'; f.className = 'wims_button';
+        var tx = document.getElementById('nova-textes');
+        f.textContent = (tx && tx.getAttribute('data-texte-fermer')) || 'Close';
+        f.addEventListener('click', function () { dlg.close(); });
+        dlg.addEventListener('close', function () { dlg.remove(); });
+        dlg.appendChild(p); dlg.appendChild(f);
+        document.body.appendChild(dlg);
+        if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+        champ.focus(); champ.select();
+      };
+      var repli = function () {
+        var z = document.createElement('textarea');
+        z.value = adresse; z.setAttribute('readonly', ''); z.style.position = 'fixed'; z.style.opacity = '0';
+        document.body.appendChild(z); z.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+        z.remove(); fini(ok);
+      };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(adresse).then(function () { fini(true); }, repli);
+      else repli();
+    });
+  }
+
   function barreCompacte() {
     var barre = document.getElementById('wimstopbox');
     if (!barre || !window.matchMedia) return;

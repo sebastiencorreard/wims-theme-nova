@@ -740,10 +740,11 @@ html.nova-sans-animation .nova-menu-piste, html.nova-sans-animation .nova-menu-p
 #wimstopbox .menuitem:is(.help, .whelp) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
 #wimstopbox .menuitem:is(.tchatclose) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E"); }
 #wimstopbox .menuitem:is(.exit) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m16 17 5-5-5-5'/%3E%3Cpath d='M21 12H9'/%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'/%3E%3C/svg%3E"); }
+#wimstopbox .menuitem.nova-copier-lien { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/%3E%3C/svg%3E"); }
 #wimstopbox .menuitem.nova-terminer { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.333 2q2 0 3.067-.8A1 1 0 0 1 20 4v10a1 1 0 0 1-.4.8A6 6 0 0 1 16 16c-3 0-5-2-8-2a6 6 0 0 0-4 1.528'/%3E%3C/svg%3E"); }
 #wimstopbox .menuitem.is-dropdown-submenu-parent:has(> a.account) { --nova-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.925 20.056a6 6 0 0 0-11.851.001'/%3E%3Ccircle cx='12' cy='11' r='4'/%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E"); }
 @media (min-width: 640px) {
-  #wimstopbox .menuitem:is(.class_home, .home, .back, .tools, .help, .whelp, .tchatclose, .exit, .nova-terminer):not(.is-dropdown-submenu .menuitem) > :is(a, .text_item)::before,
+  #wimstopbox .menuitem:is(.class_home, .home, .back, .tools, .help, .whelp, .tchatclose, .exit, .nova-terminer, .nova-copier-lien):not(.is-dropdown-submenu .menuitem) > :is(a, .text_item)::before,
   #wimstopbox .menuitem.is-dropdown-submenu-parent > a.account::before {
     content: "";
     display: inline-block;
@@ -1226,3 +1227,8 @@ html.nova-sans-liens body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumod
 body:has(> .nova-pied) { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
 body:has(> .nova-pied) > * { flex-shrink: 0; }
 body > .nova-pied { margin-top: auto; }
+
+/* Copier le lien de l'exercice (_widgets/headmenu.phtml, nova.js lienExercice ; 2026-11-27). Copie refusee : adresse
+ * selectionnee dans une fenetre. */
+.nova-copier-lien-dialogue label { display: grid; gap: var(--nova-e2); margin-bottom: var(--nova-e3); font-weight: 600; }
+.nova-copier-lien-dialogue input { width: 100%; box-sizing: border-box; font-weight: 400; }

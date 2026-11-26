@@ -9,8 +9,8 @@
 !default nova_chrono_libelle=Time left
 !default nova_chrono_fin_detail_exo=You can still finish the exercise, but the score goes down as time passes.
 !default nova_chrono_fin_detail_exo0=An answer sent now will score 0.
-!! Exercice OEF chronomï¿½trï¿½ (scoredelay=d1,d2, scripts/oef/var.proc) : aprï¿½s d1 (fin du dï¿½compte), la note baisse
-!! avec le retard et vaut 0 ï¿½ d2. Si d2 = d1, une rï¿½ponse tardive vaut 0 tout de suite (2026-11-03, utilisateur).
+!! Exercice OEF chronométré (scoredelay=d1,d2, scripts/oef/var.proc) : après d1 (fin du décompte), la note baisse
+!! avec le retard et vaut 0 à d2. Si d2 = d1, une réponse tardive vaut 0 tout de suite (2026-11-03, utilisateur).
 !if 0$delay2<=0$delay1
   !set nova_chrono_fin_detail_exo=$nova_chrono_fin_detail_exo0
 !endif
@@ -37,9 +37,15 @@
   !endif
   !reset wims_ref_class
 !next i_
-!if adm notin $module and home notin $module and ($wims_user== or $wims_user==supervisor)
-	<a href="$wims_ref_name?module=$module&amp;cmd=new&amp;exo=$thisexo" style="font-family : FontAwesome;content : '\f1e0';margin-right : 3px;">::before</a>
-	!endif
+!! Copier le lien de l'exercice (idee de Paul Byache, 2026-11-26 ; reprise le 2026-11-27, utilisateur) : visiteur ou
+!! enseignant, exercice OEF ($thisexo, scripts/oef/var.proc). Adresse = "lien pour cet exercice" de la page A propos
+!! (scripts/oef/about.phtml). Entree de la barre ; nova.js lienExercice copie l'adresse au clic (sans JS : simple lien).
+!!   nova_lien_exo : nom de l'exercice, filtre (lettres, chiffres, _ - .).
+!set nova_lien_exo=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-. in $thisexo
+!if $nova_lien_exo!=$empty and ($wims_user=$empty or $wims_user=supervisor) and adm/ notin $module and $module!=home
+  !read themes/$wims_theme/lang/name-textes.phtml.$lang lien_exercice
+!endif
+!reset nova_lien_exo
 !! Textes du thÃ¨me pour js/nova.js, utiles aussi hors de la fenÃªtre d'exercice (page de l'examen,
 !! oÃ¹ le chronomÃ¨tre est recopiÃ© depuis la page ; section Â« Profil Â»).
 !read themes/$wims_theme/lang/name-textes.phtml.$lang headmenu_2

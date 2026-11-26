@@ -659,6 +659,15 @@ Modèle : `_widgets/examencours.phtml` (bouton « Examen en cours »).
   `content: none`. Sans cela, le jeu Font_Awesome met un tiret devant le bouton.
 + `./construire-css.sh`.
 
+Exemple en place : « Copier le lien » d'un exercice OEF, pour un visiteur ou un enseignant (fin de
+`_widgets/headmenu.phtml`). L'entrée entière vit dans `lang/name-textes.phtml.<l>` (étiquette `lien_exercice`) :
+libellé, `title` et textes de nova.js en attributs `data-…`, adresse `cmd=new&exo=$thisexo` (le « lien pour cet
+exercice » de la page À propos), nom de l'exercice filtré avant d'être écrit. Sans JavaScript, c'est un lien ; nova.js
+`lienExercice` (`10-barre-menus.js`) copie l'adresse au clic, par un écouteur posé sur le document, car au téléphone
+l'entrée est rangée dans le menu latéral. Copie refusée (adresse en `http`, navigateur ancien) : une fenêtre montre
+l'adresse sélectionnée. Dans le menu latéral, l'icône vient du jeu de WIMS par la classe `link` du lien ; dans la
+barre, de `--nova-picto` (`cadre.css`).
+
 === Retirer ou déplacer une entrée de la barre
 
 + Relever sa classe dans l'inspecteur : `<li class="menuitem <nom>">` dans `#wimstopbox`.
@@ -2153,7 +2162,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [Widget], [Rôle],
   [`accent.phtml`], [couleur d'accent (site ou classe, sinon prune)],
   [`couleurs-notes.phtml`], [couleurs des notes dans les tableaux de WIMS],
-  [`headmenu.phtml`, `headhome.phtml`, `user_links.phtml`, `site_title.phtml`], [barre du haut (copies de WIMS)],
+  [`headmenu.phtml`, `headhome.phtml`, `user_links.phtml`, `site_title.phtml`], [barre du haut (copies de WIMS) ; « Copier le lien » d'un exercice],
   [`ariane.phtml`, `footer.phtml`, `classtitle.phtml`], [fil d'Ariane, pied de page, titre de zone],
   [`front.phtml`, `infos.phtml`, `search_classe.phtml`], [accueil du site],
   [`examencours.phtml`], [bouton « Examen en cours »],

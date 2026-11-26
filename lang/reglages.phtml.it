@@ -84,7 +84,7 @@
 !set nova_std_notes_enseignant_liste=<li>Dettaglio del lavoro di uno studente (nome cliccato nella pagina "Voti"): le tabelle di WIMS invece delle schede (media, esami, una scheda pieghevole per foglio).</li><li>Pagina "Voti": riga "Mostra" con i pulsanti di WIMS invece del selettore (scelta attuale a colori).</li><li>Dettaglio degli esami di uno studente: la tabella di WIMS (segni &#8224; e ??) invece di una scheda per esame.</li><li>Proprietà dell'account di uno studente: il modulo di WIMS (classi in elenco puntato) invece delle tre schede; il pulsante "Iscrivi a una classe" resta, senza croci per togliere.</li>
 !set nova_std_liens=Link standard
 !set nova_std_liens_aide=Link non sottolineati, neri nelle schede.
-!set nova_std_liens_liste=<li>Link del testo e delle tabelle (date, "Guida", titoli dei fogli...): non più sottolineati, riconoscibili solo dal colore.</li><li>Schede (Fogli, Esami della pagina iniziale del docente...): link neri come il testo, invece del colore dei link.</li><li>Riga di tabella cliccabile per intero: titolo in peso normale invece del semigrassetto.</li><li>Invariati: menu, pulsanti, pastiglie e schede.</li>
+!set nova_std_liens_liste=<li>Link del testo e delle tabelle (date, "Guida", titoli dei fogli...): non più sottolineati, riconoscibili solo dal colore.</li><li>Schede (Fogli, Esami della pagina iniziale del docente...): link neri come il testo, invece del colore dei link.</li><li>Invariati: menu, pulsanti, pastiglie e schede.</li>
 !set nova_app_activite=Pagina «La mia attività» degli studenti
 !set nova_app_activite_aide=Sostituisce la pagina di WIMS con una pagina semplice: regolarità, tempo di lavoro, ultimi voti.
 !set nova_app_act_seuil=Incoraggiare gli studenti che lavorano meno di

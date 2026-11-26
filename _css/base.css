@@ -33,8 +33,6 @@ html:where(:not(.nova-std-liens)) .ui-widget-content a:is(:hover, :focus) { colo
 :where(html:not(.nova-std-liens) .wimsbody) a:where([href]:not(.wims_button, [role], .ui-tabs-anchor, .ui-tabs-nav a)):is(:hover, :focus-visible) {
   text-decoration-color: currentColor;
 }
-/* Cellule de tableau cliquable en entier (nova.js cellulesCliquables) : son lien en semi-gras, titre de la ligne. */
-:where(html:not(.nova-std-liens) .wimsbody td.nova-cellule-clic) a[href] { font-weight: 600; }
 
 :focus-visible {
   outline: 3px solid color-mix(in oklab, var(--nova-accent) 70%, white);

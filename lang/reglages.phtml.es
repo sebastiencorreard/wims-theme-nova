@@ -82,6 +82,9 @@
 !set nova_std_notes_enseignant=Detalle de un alumno y página Notas del profesor estándar
 !set nova_std_notes_enseignant_aide=Tablas de WIMS en lugar de tarjetas, para el profesor.
 !set nova_std_notes_enseignant_liste=<li>Detalle del trabajo de un alumno (nombre pulsado en la página "Notas"): las tablas de WIMS en lugar de las tarjetas (media, exámenes, una tarjeta plegable por hoja).</li><li>Página "Notas": línea "Mostrar" con los botones de WIMS en lugar del selector (opción actual en color).</li><li>Detalle de los exámenes de un alumno: la tabla de WIMS (signos &#8224; y ??) en lugar de una tarjeta por examen.</li><li>Propiedades de la cuenta de un alumno: el formulario de WIMS (clases en lista con viñetas) en lugar de las tres tarjetas; el botón "Inscribir en una clase" se mantiene, sin cruces para retirar.</li>
+!set nova_std_liens=Enlaces estándar
+!set nova_std_liens_aide=Enlaces sin subrayar, negros en las pestañas.
+!set nova_std_liens_liste=<li>Enlaces del texto y de las tablas (fechas, "Guía", títulos de las hojas...): ya no subrayados, se reconocen solo por su color.</li><li>Pestañas (Hojas, Exámenes de la página de inicio del profesor...): enlaces negros como el texto, en lugar del color de los enlaces.</li><li>Fila de tabla que se pulsa entera: título en peso normal en lugar de seminegrita.</li><li>Sin cambios: menús, botones, pastillas y tarjetas.</li>
 !set nova_app_activite=Página «Mi actividad» de los alumnos
 !set nova_app_activite_aide=Sustituye la página de WIMS por una página sencilla: regularidad, tiempo de trabajo, últimas notas.
 !set nova_app_act_seuil=Animar a los alumnos que trabajan menos de

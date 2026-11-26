@@ -50,7 +50,7 @@
 <meta name="color-scheme" content="light">
 <meta name="nova-module" content="$module">
 <meta name="nova-type" content="$class_typename">
-<meta name="nova-css" content="8b03a6050a">
+<meta name="nova-css" content="16609a7b62">
 <script>/* Nova : menu enseignant simplifie sauf choix contraire (js/nova.js, basculeMenu).
    Les entrees gardees sont choisies par l'enseignant (localStorage nova_menu_garde), sinon la liste
    de Pion ; la regle qui masque les autres est ecrite ici, avant l'affichage, pour qu'aucune
@@ -127,7 +127,7 @@
   var mc = document.querySelector('meta[name="nova-classe"]');
   var connu = null;
   try { connu = sessionStorage.getItem('nova-std-' + (mc ? mc.content : '')); } catch (e) {}
-  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux', 'notes-eleve', 'notes-enseignant'].forEach(function (k) {
+  ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux', 'notes-eleve', 'notes-enseignant', 'liens'].forEach(function (k) {
     var v = connu !== null ? ((' ' + connu + ' ').indexOf(' ' + k + ' ') >= 0 ? 'oui' : 'non') : (st[k] || site[k] || 'non');
     if (v === 'oui') d.classList.add('nova-std-' + k);
   });
@@ -175,7 +175,7 @@
 })();
 </script>
 <meta name="nova-cm6" content="a649519ff0">
-<script src="html/themes/$wims_theme/js/nova.js?v=ed2fa7838a" defer></script>
+<script src="html/themes/$wims_theme/js/nova.js?v=20146cf2c8" defer></script>
 
 <style>
 /* Nova : les variables de WIMS, que les feuilles metier utilisent (var(--wims_...)), pointent sur

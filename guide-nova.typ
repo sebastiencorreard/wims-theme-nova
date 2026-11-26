@@ -1721,7 +1721,8 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 ][
   Les feuilles de WIMS restent chargées (Nova les surcharge sans les réécrire), et certaines ont des sélecteurs plus
   forts. Exemple : `.ui-widget input[type="submit"]` (spécificité 0,2,1) l'emporte sur `input[type="submit"]` (0,1,1),
-  même placée avant. Autre cause : `:not(a, b)` prend la spécificité de son argument *le plus fort*, si bien qu'une
+  même placée avant. Une feuille chargée *après* `css.css` gagne à spécificité égale : `.ui-widget-content a { color: #222 }`
+  de jQuery UI noircissait les liens des onglets (2026-11-26) ; `html .ui-widget-content a` (0,1,2) la bat. Autre cause : `:not(a, b)` prend la spécificité de son argument *le plus fort*, si bien qu'une
   règle commune en `:not(…)` peut battre une règle plus précise en apparence.
 ][
   Dans les outils du navigateur (Inspecter › Styles), repérer la règle gagnante et reprendre son préfixe

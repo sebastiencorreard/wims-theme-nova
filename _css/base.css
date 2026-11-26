@@ -16,6 +16,26 @@ body.main_body {
 a, .ui-widget-content a { color: var(--nova-lien); }
 a:hover, a:focus { color: var(--nova-lien-survol); }
 
+/* Liens reconnaissables (option B, utilisateur, 2026-11-26 ; réglage « liens » du thème standard).
+ * 1. Couleur : la feuille de jQuery UI (smoothness), chargée APRÈS css.css, pose `.ui-widget-content a { color: #222 }`
+ *    (0,1,1) : liens des onglets (titres des feuilles de l'accueil de l'enseignant…) noirs comme le texte. `html …` (0,1,2)
+ *    la bat sans battre les boutons (`.main_body .wims_button`, 0,2,0) ni les liens habillés par Nova.
+ * 2. Soulignement fin, plus clair, plein au survol, pour un lien DANS du texte ou un tableau. Tout en :where (0,0,1) :
+ *    toute règle de Nova qui habille un lien (carte, pastille, bouton, menu, onglet) garde son `text-decoration: none`. */
+html:where(:not(.nova-std-liens)) .ui-widget-content a { color: var(--nova-lien); }
+html:where(:not(.nova-std-liens)) .ui-widget-content a:is(:hover, :focus) { color: var(--nova-lien-survol); }
+:where(html:not(.nova-std-liens) .wimsbody) a:where([href]:not(.wims_button, [role], .ui-tabs-anchor, .ui-tabs-nav a)) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklab, currentColor 45%, transparent);
+}
+:where(html:not(.nova-std-liens) .wimsbody) a:where([href]:not(.wims_button, [role], .ui-tabs-anchor, .ui-tabs-nav a)):is(:hover, :focus-visible) {
+  text-decoration-color: currentColor;
+}
+/* Cellule de tableau cliquable en entier (nova.js cellulesCliquables) : son lien en semi-gras, titre de la ligne. */
+:where(html:not(.nova-std-liens) .wimsbody td.nova-cellule-clic) a[href] { font-weight: 600; }
+
 :focus-visible {
   outline: 3px solid color-mix(in oklab, var(--nova-accent) 70%, white);
   outline-offset: 2px;

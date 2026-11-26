@@ -163,7 +163,7 @@
       var r = el('span', 'nova-pp-pa nova-pp-pa-resp', initiales(d.r));
       r.title = t('leg-resp', 'manager') + ' : ' + nomDe(d.r);
       p.appendChild(r);
-      d.g.forEach(function (g) { var x = el('span', 'nova-pp-pa', '+ ' + initiales(g)); x.title = t('leg-gestion', 'other management access') + ' : ' + nomDe(g); p.appendChild(x); });
+      d.g.forEach(function (g) { var x = el('span', 'nova-pp-pa nova-pp-pa-gest', initiales(g)); x.title = t('leg-gestion', 'other management access') + ' : ' + nomDe(g); p.appendChild(x); });
       if (d.s && d.s !== 'all') { var s = el('span', 'nova-pp-pa nova-pp-pa-postes', t('acces-postes', 'trusted hosts')); s.title = d.s; p.appendChild(s); }
       return p;
     };
@@ -258,7 +258,7 @@
     if (!niveaux.length) bandes.appendChild(el('p', 'nova-pp-vide', t('aucun-niveau', 'No level yet.')));
     plan.appendChild(bandes);
     var leg = el('p', 'nova-pp-legende');
-    [['nova-pp-pa nova-pp-pa-resp', 'AB', 'leg-resp', 'manager'], ['nova-pp-pa', '+ AB', 'leg-gestion', 'other management access'], ['nova-pp-pa nova-pp-pa-postes', t('acces-postes', 'trusted hosts'), 'leg-postes', 'access limited to some computers']].forEach(function (x) {
+    [['nova-pp-pa nova-pp-pa-resp', 'AB', 'leg-resp', 'manager'], ['nova-pp-pa nova-pp-pa-gest', 'AB', 'leg-gestion', 'other management access'], ['nova-pp-pa nova-pp-pa-postes', t('acces-postes', 'trusted hosts'), 'leg-postes', 'access limited to some computers']].forEach(function (x) {
       var s = el('span');
       s.appendChild(el('span', x[0], x[1]));
       s.appendChild(document.createTextNode(' ' + t(x[2], x[3])));

@@ -1215,12 +1215,12 @@ html.nova-sans-animation .nova-pp-glissiere::after { transition: none; }
 .nova-pp-acces, .nova-pp-acces-niveau, .nova-pp > .nova-pp-legende { display: none; }
 /* Toute la largeur de la tuile (sinon certains navigateurs calculent une ligne au plus juste : une pastille par ligne). */
 .nova-pp-avec-acces .nova-pp-acces { display: flex; flex-wrap: wrap; gap: 2px; justify-self: stretch; width: 100%; min-width: 0; margin-top: 4px; }
-/* Acces affiches : tuiles plus larges pour garder les pastilles sur une ligne (trois enseignants tiennent). */
-.nova-pp-avec-acces .nova-pp-tuiles { grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); }
 .nova-pp-avec-acces .nova-pp-acces-niveau { display: flex; flex-wrap: wrap; gap: 4px var(--nova-e3); grid-column: 1 / -1; margin: 0; padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); font-size: .82rem; color: var(--nova-texte-2); }
 .nova-pp-avec-acces > .nova-pp-legende { display: flex; }
-.nova-pp-pa { padding: 0 4px; border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface); font-size: .7rem; font-weight: 700; line-height: 1.5; color: var(--nova-texte-2); white-space: nowrap; }
+.nova-pp-pa { padding: 0 4px; letter-spacing: 0; border: 1px solid var(--nova-bord); border-radius: 999px; background: var(--nova-surface); font-size: .7rem; font-weight: 700; line-height: 1.5; color: var(--nova-texte-2); white-space: nowrap; }
 .nova-pp-pa-resp { border-color: var(--nova-accent); color: var(--nova-accent); }
+/* Autre acces de gestion : sans le « + » (place pour deux enseignants sur une petite tuile), bord en pointille. */
+.nova-pp-pa-gest { border-style: dashed; border-color: var(--nova-texte-2); }
 .nova-pp-pa-postes { border-color: var(--nova-attention); background: var(--nova-attention-fond); color: var(--nova-attention-texte, var(--nova-attention)); }
 .nova-pp-legende { flex-wrap: wrap; gap: 6px var(--nova-e3); align-items: center; margin: 0; font-size: .82rem; color: var(--nova-texte-2); }
 .nova-pp-qui .nova-pp-legende { display: flex; }

@@ -122,10 +122,6 @@
   !if $nova_est_eleve!=yes
     !read themes/$wims_theme/_widgets/menu-serveur.phtml
   !endif
-  !! Zones de travail de l'accueil d'un portail en bandes par niveau (_widgets/zones-accueil.phtml ; 2026-11-27).
-  !if $nova_est_eleve!=yes and $module=home and $wims_class=$wims_superclass and $wims_supertype=4
-    !read themes/$wims_theme/_widgets/zones-accueil.phtml
-  !endif
   !if $nova_est_eleve=yes and $module=home
     !read themes/$wims_theme/_widgets/couleur-choix.phtml
   !endif

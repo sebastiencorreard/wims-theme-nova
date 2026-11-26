@@ -61,6 +61,43 @@
     if (regle) regle.remove();
   }
 
+  /* Cours d'un programme (accueil d'une structure, arbre des zones ; 2026-11-27, utilisateur) : sur la ligne du programme
+   * (CSS), chacun nommé par sa classe, le nom du cours de WIMS en info-bulle. Code d'un cours = code de sa classe + numéro du
+   * programme (2945398/1/101/201 : classe 1/101) ; nom de la classe lu dans l'arbre (lien, ou texte d'une classe que
+   * l'enseignant ne gère pas, code pris au premier lien en dessous). Nom de WIMS gardé si la classe n'est pas dans l'arbre
+   * ou a plusieurs cours dans ce programme. Réglage « Feuilles et examens en liste » : rien. */
+  function coursProgramme() {
+    if (standard('listes')) return;
+    var code = function (a) {
+      var m = a && /[?&+]class=([0-9%F\/]+)/.exec(a.getAttribute('href') || '');
+      return m ? decodeURIComponent(m[1]) : '';
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody ul.wims_subclasses'), function (arbre) {
+      if (arbre.parentNode.closest('ul.wims_subclasses')) return;
+      var classes = {};
+      Array.prototype.forEach.call(arbre.querySelectorAll('.wims_classes_direct_class'), function (sp) {
+        var a = sp.querySelector(':scope > a');
+        var c = code(a);
+        if (!a) { c = code(sp.parentNode.querySelector('.wims_classes_direct_course > a')).replace(/\/[0-9]+$/, ''); }
+        var nom = (a || sp).textContent.trim();
+        if (c && nom) classes[c] = nom;
+      });
+      Array.prototype.forEach.call(arbre.querySelectorAll('li > .wims_classes_direct_program'), function (pr) {
+        var cours = Array.prototype.map.call(pr.parentNode.querySelectorAll(':scope > ul > li > .wims_classes_direct_course > a'), function (a) {
+          return { a: a, classe: code(a).replace(/\/[0-9]+$/, '') };
+        });
+        cours.forEach(function (c) {
+          var nom = classes[c.classe];
+          var seul = cours.filter(function (d) { return d.classe === c.classe; }).length === 1;
+          if (!nom || !seul || c.a.hasAttribute('data-nova-cours')) return;
+          c.a.setAttribute('data-nova-cours', c.a.textContent.trim());
+          if (!c.a.title) c.a.title = c.a.textContent.trim();
+          c.a.textContent = nom;
+        });
+      });
+    });
+  }
+
   /* Restriction d'accès d'une classe (adm/class/config, job=access ; 2026-11-10, utilisateur, maquette A) : formulaire au-dessus
    * du champ de WIMS (accessdef), qui passe dans « Réglage expert » replié. Heures interdites chaque jour (une plage qui passe
    * minuit = deux lignes), périodes entre deux dates, portée « class » ou « class exercise ». Lignes de Nova entre

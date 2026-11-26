@@ -131,6 +131,11 @@ span.tooltip { color: var(--nova-lien); }
           mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .wims_subclasses .nova-replis-bouton[aria-expanded="false"]::before { transform: rotate(180deg); }
+/* Cours d'un programme sur la ligne du programme (accueil d'une structure ; 2026-11-27, utilisateur), chacun nommé par sa
+ * classe (nova.js coursProgramme). Réglage « Feuilles et examens en liste » : arbre de WIMS. */
+:where(html:not(.nova-std-listes)) .wims_subclasses li:has(> .wims_classes_direct_program) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+:where(html:not(.nova-std-listes)) .wims_subclasses li:has(> .wims_classes_direct_program) > ul { display: contents; }
+:where(html:not(.nova-std-listes)) .wims_subclasses li:has(> .wims_classes_direct_program) > ul > li { padding: 0; }
 /* Titre d'une zone : la pastille, en plus grand, sans cadre. */
 h1.wims_title [class^="wims_classes_direct_"] { padding: .05em .45em .1em .35em; border-radius: var(--nova-rayon-carte); }
 /* Légende : les mêmes pastilles, en petit, alignées. */

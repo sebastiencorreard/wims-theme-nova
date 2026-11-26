@@ -1,9 +1,0 @@
-!! Nova : zones de travail de l'accueil d'un portail en bandes par niveau (2026-11-27, utilisateur). Lu par header.phtml
-!! (accueil, racine d'un portail, enseignant ou administrateur). nova.js zonesAccueil lit la liste de WIMS de la page et
-!! la remplace ; la regle #nova-za-style la cache d'ici la (pas de clignotement), secours 3 s ; sans JavaScript ou sous
-!! le reglage std listes, rien n'est cache.
-!!   nova_za_c : numero du portail, chiffres seulement.
-!set nova_za_c=!text select 0123456789 in $wims_superclass
-<style id="nova-za-style">html.nova-js:not(.nova-std-listes) .wimsbody details > ul.wims_subclasses { visibility: hidden; animation: nova-revele 0s 3s forwards; }</style>
-!read themes/$wims_theme/lang/enseignant-textes.phtml.$lang zones_accueil
-!reset nova_za_c

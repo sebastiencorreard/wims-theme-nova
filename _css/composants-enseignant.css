@@ -1191,20 +1191,20 @@ html.nova-sans-animation .nova-pp-glissiere::after { transition: none; }
 .nova-pp-tete { display: grid; gap: var(--nova-e1); justify-items: start; align-content: start; }
 .nova-pp-nom { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
 .nova-pp-effectif { font-size: .85rem; color: var(--nova-texte-2); font-variant-numeric: tabular-nums; }
-.wimsbody button.nova-pp-puce { margin: 0; border: 0; font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
-.wimsbody button.nova-pp-puce.wims_classes_direct_level { font-size: 1.05rem; }
+.wimsbody :is(button, a, span).nova-pp-puce { margin: 0; border: 0; font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
+.wimsbody :is(button, a, span).nova-pp-puce.wims_classes_direct_level { font-size: 1.05rem; }
 .wimsbody button.nova-pp-puce:hover, .wimsbody button.nova-pp-puce:focus-visible { outline: 2px solid var(--nova-zone-encre); outline-offset: 1px; }
 .nova-pp-lignes { display: grid; gap: var(--nova-e2); min-width: 0; }
 .nova-pp-ligne { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--nova-e2); align-items: center; }
 .nova-pp-ligne > .nova-pp-puce { justify-self: start; }
 .nova-pp-sans-prog { font-size: .85rem; color: var(--nova-texte-2); }
 .nova-pp-tuiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: var(--nova-e2); min-width: 0; }
-.wimsbody button.nova-pp-tuile { display: grid; gap: 1px; align-content: start; justify-items: start; min-width: 0; margin: 0; padding: 7px 10px; border: 2px solid transparent; border-radius: var(--nova-rayon); background: var(--nova-zone-fond); color: var(--nova-texte); font: inherit; text-align: left; cursor: pointer; }
-.wimsbody button.nova-pp-tuile::before { content: none; }
-.wimsbody button.nova-pp-tuile:hover, .wimsbody button.nova-pp-tuile:focus-visible { border-color: var(--nova-zone-encre); }
+.wimsbody :is(button, div).nova-pp-tuile { display: grid; gap: 1px; align-content: start; justify-items: start; min-width: 0; margin: 0; padding: 7px 10px; border: 2px solid transparent; border-radius: var(--nova-rayon); background: var(--nova-zone-fond); color: var(--nova-texte); font: inherit; text-align: left; cursor: pointer; }
+.wimsbody :is(button, div).nova-pp-tuile::before { content: none; }
+.wimsbody :is(button, div).nova-pp-tuile:hover, .wimsbody :is(button, div).nova-pp-tuile:focus-visible { border-color: var(--nova-zone-encre); }
 .nova-pp-tuile b { font-size: 1rem; color: var(--nova-zone-encre); }
 .nova-pp-tuile small { max-width: 100%; font-size: .78rem; line-height: 1.3; color: var(--nova-texte-2); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
-.wimsbody button.nova-pp-sans-cours { background: transparent; border: 1px dashed var(--nova-bord-fort); }
+.wimsbody :is(button, div).nova-pp-sans-cours { background: transparent; border: 1px dashed var(--nova-bord-fort); }
 .nova-pp-sans-cours b { color: var(--nova-texte); }
 .nova-pp-sans-cours small { color: var(--nova-lien); font-weight: 700; }
 .wimsbody button.nova-pp-ajout { min-height: 3.2rem; margin: 0; border: 1px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon); background: transparent; color: var(--nova-lien); font: inherit; font-size: 1.2rem; font-weight: 700; cursor: pointer; }
@@ -1304,6 +1304,33 @@ button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px 
 @media (max-width: 700px) {
   html.nova-pp-ouvert .wimsbody { padding-bottom: 70dvh; }
 }
-.wimsbody button.nova-pp-tuile.nova-pp-choisi, .wimsbody button.nova-pp-puce.nova-pp-choisi { border-color: var(--nova-accent); outline: 3px solid var(--nova-accent-doux); outline-offset: 0; }
+.wimsbody :is(button, div).nova-pp-tuile.nova-pp-choisi, .wimsbody button.nova-pp-puce.nova-pp-choisi { border-color: var(--nova-accent); outline: 3px solid var(--nova-accent-doux); outline-offset: 0; }
 .wimsbody button.nova-pp-puce.nova-pp-choisi { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-pp-p-tete h1:focus { outline: none; }
+
+/* Zones de travail de l'accueil d'un portail (nova.js zonesAccueil, 2026-11-27) : dessin du plan du portail, tuiles en
+ * liens. Le lien du nom couvre la tuile ; le petit lien de la classe (participants, inscriptions) passe au-dessus. */
+.wimsbody details > .nova-za { margin: var(--nova-e2) 0 var(--nova-e1); padding: 0 var(--nova-e3); }
+/* Dans la carte « Vos zones de travail » : bandes sans cadre, separees par un filet ; colonne de tete commune a toutes
+ * les bandes (subgrid), a la largeur des pastilles (12rem au plus). */
+.nova-za { grid-template-columns: fit-content(12rem) minmax(0, 1fr); column-gap: var(--nova-e4); row-gap: 0; }
+.nova-za > .nova-pp-bande { grid-column: 1 / -1; grid-template-columns: subgrid; padding: var(--nova-e3) 0; background: none; border: 0; border-radius: 0; border-top: 1px solid var(--nova-bord); }
+.nova-za > .nova-pp-bande:first-child { border-top: 0; padding-top: var(--nova-e1); }
+.nova-za .nova-pp-ligne { grid-template-columns: fit-content(10rem) minmax(0, 1fr); }
+@media (max-width: 900px) {
+  .nova-za { grid-template-columns: minmax(0, 1fr); }
+  .nova-za .nova-pp-ligne { grid-template-columns: minmax(0, 1fr); }
+}
+.wimsbody a.nova-pp-puce { text-decoration: none; color: inherit; }
+.wimsbody a.nova-pp-puce:hover, .wimsbody a.nova-pp-puce:focus-visible { outline: 2px solid var(--nova-zone-encre); outline-offset: 1px; }
+.wimsbody div.nova-za-tuile { position: relative; }
+.wimsbody div.nova-za-tuile:has(a:hover, a:focus-visible) { border-color: var(--nova-zone-encre); }
+.wimsbody a.nova-za-lien { color: inherit; text-decoration: none; padding-right: 18px; }
+.wimsbody a.nova-za-lien::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.wimsbody a.nova-za-lien:focus-visible { outline: none; }
+.wimsbody a.nova-za-classe { position: absolute; z-index: 1; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 6px; color: var(--nova-texte-2); }
+.wimsbody a.nova-za-classe::before { content: ""; position: absolute; inset: 3px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E") center / contain no-repeat; }
+.wimsbody a.nova-za-classe:hover, .wimsbody a.nova-za-classe:focus-visible { color: var(--nova-zone-encre); background: var(--nova-surface); }
+.nova-za-autres { font-weight: 700; }

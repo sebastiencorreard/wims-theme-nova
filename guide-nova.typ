@@ -707,7 +707,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
   [Accueil], [Fichiers],
   [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
-  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml` ; plan du portail (première page de Gestion de structure) : `76-plan-portail.js` (`planPortail`, `planPortailSuite`), `_widgets/plan-portail.phtml`, `_procs/plan-portail.sh`],
+  [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml` ; plan du portail (première page de Gestion de structure) : `76-plan-portail.js` (`planPortail`, `planPortailSuite`), `_widgets/plan-portail.phtml`, `_procs/plan-portail.sh` ; zones de travail de l'accueil d'un portail en bandes par niveau : `77-zones-accueil.js` (`zonesAccueil`), `_widgets/zones-accueil.phtml`],
 )
 Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la page de haut en bas, et l'ordre des
 `!read` est l'ordre des blocs à l'écran.
@@ -2069,7 +2069,7 @@ niveau, dans l'ordre. Une fonction s'ouvre dans les sources par `grep -n "functi
 
 #let js-fichiers = ("00-commun.js", "10-barre-menus.js", "20-composants.js", "30-examen.js", "40-feuilles-notes.js",
   "50-exercice.js", "60-eleve.js", "61-couleur.js", "62-avatar.js", "70-enseignant.js",
-  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "75-fiche-eleve.js", "76-plan-portail.js", "80-reglages.js", "99-demarrage.js")
+  "71-sequences.js", "72-travail-individualise.js", "73-examen-contenu.js", "74-feuille-contenu.js", "75-fiche-eleve.js", "76-plan-portail.js", "77-zones-accueil.js", "80-reglages.js", "99-demarrage.js")
 #for f in js-fichiers {
   let src = read("/js/src/" + f)
   let m = src.match(regex("/\* ===== js/src/[^ ]+ : (.+?) ===== \*/"))
@@ -2175,6 +2175,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`eleves-liste.phtml`], [liste des élèves des pages à « Part. précédent / suivant » de l'enseignant (`elevesListe`)],
   [`inscription-classes.phtml`], [classes d'un portail ou d'un groupement et classes de l'élève, pour « Inscrire dans une classe » de sa fiche (`ficheEleve`)],
   [`plan-portail.phtml`], [enseignants et zones d'un portail, pour le plan de la Gestion de structure (`planPortail`) ; lu par `tail.phtml`, administrateur à la racine, `job=first`],
+  [`zones-accueil.phtml`], [accueil d'un portail (enseignant ou administrateur, racine) : textes de `zonesAccueil` et règle qui cache la liste de WIMS jusqu'à son passage (secours 3 s) ; lu par `header.phtml`],
   [`feuilles-valeurs.phtml`], [valeurs de chaque exercice des feuilles de l'accueil de l'élève, pour le seuil de réussite (`reclasserBarre`)],
   [`session.phtml`], [textes des avertissements de fin de session par inactivité (`sessionInactive`)],
   [`couleur-choix.phtml`], [« Ma couleur » de l'élève],

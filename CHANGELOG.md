@@ -8,7 +8,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 
 ### Élèves
 - **Pages moins larges** sur un grand écran : le contenu tient dans une colonne centrée (70rem, environ 1 100 px), plus facile à lire ; une page qui porte un grand tableau (notes de l'enseignant, par exemple) garde toute la largeur.
-- **Séquences et accueil** : les cartes des feuilles, examens et glossaires remplissent la largeur de la séquence, en colonnes égales, et deux cartes côte à côte ont la même hauteur.
+- **Séquences et accueil** : les cartes des feuilles, examens et glossaires remplissent la largeur de la séquence, en colonnes égales, avec une marge autour dans la carte de la séquence, et deux cartes côte à côte ont la même hauteur.
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants

@@ -788,7 +788,8 @@ html:where(:not(.nova-std-listes)) body li.wims_sheet_item:not(:has(a)), html:wh
  * module relit ses textes en vue élève, une surcharge de traduction n'y tiendrait pas. */
 html:not(.nova-std-examens) body:is(.nova-role-eleve *, #nova-specificite) .wimsbody h2:is(:has(+ #exam_desc), :has(+ ol.wims_exam), :has(+ .wims_msg + ol.wims_exam)) { display: none; }
 
-/* Accueil de l'élève : bouton « 🏆 Mes notes 🏆 » tout en haut (user.phtml, demande de l'utilisateur, 2026-10-03). */
+/* Accueil de l'élève : bouton « Mes notes » tout en haut (user.phtml, demande de l'utilisateur, 2026-10-03), icône Lucide
+ * « trophy » (emojis avant le 2026-11-27). */
 .nova-mes-notes { margin: 0 0 var(--nova-e4); text-align: center; }
 .nova-mes-notes a.nova-mes-notes-bouton {
   display: inline-flex;
@@ -1254,3 +1255,14 @@ html.nova-js.nova-role-eleve:not(.nova-feuille-prete, .nova-std-listes) :is(ol.w
 .nova-titre-rangee.nova-titre-rangee-etroite { grid-template-columns: minmax(0, 1fr); row-gap: var(--nova-e2); }
 .nova-titre-rangee.nova-titre-rangee-etroite > * { grid-column: 1 !important; }
 .nova-titre-rangee.nova-titre-rangee-etroite > :not(#classlogo, .wimslogo) { grid-row: 2; }
+
+/* Logo par défaut d'une classe (champ vide ou « wims » : WIMS écrit gifs/logo.gif ; 2026-11-27, utilisateur) : logo WIMS animé
+ * à la couleur du thème (img/wims_logo_v4_accent_fin.svg en masque, comme les logos « accent » de cadre.css). */
+#classlogo img[src$="gifs/logo.gif"] {
+  width: auto; height: var(--nova-logo-h, 100px); max-height: none; aspect-ratio: 1;
+  object-position: -99999px 0; background: var(--nova-accent);
+  -webkit-mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat;
+          mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat;
+}
+.nova-titre-rangee > :is(#classlogo, .wimslogo) img { width: auto; height: auto; max-height: var(--nova-logo-h, 100px); }
+.nova-titre-rangee > #classlogo img[src$="gifs/logo.gif"] { height: var(--nova-logo-h, 100px); }

@@ -154,7 +154,7 @@ dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
  * (une liste) en carte, une ligne par entrée : icône dans une pastille d'accent, libellé, chevron. Icône choisie d'après
  * la cible du lien (job, confcat) : vaut dans toutes les langues. Titre répété sous l'onglet masqué. Réglage std-listes. */
 :where(html:not(.nova-std-listes)) #widget_conf_list.ui-tabs > div > h2 { display: none; }
-:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul { list-style: none; margin: 0 auto var(--nova-e4); padding: 0; max-width: 46rem; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; text-align: left; }
+:where(html:not(.nova-std-listes)) #widget_conf_list > div > ul { list-style: none; margin: 0 auto var(--nova-e4); padding: 0; max-width: none; background: var(--nova-surface, #fff); border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); overflow: hidden; text-align: left; }
 :where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li { position: relative; display: flex; align-items: center; margin: 0; padding: 0; color: var(--nova-texte-2); list-style: none; }
 :where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li + li { border-top: 1px solid var(--nova-bord); }
 :where(html:not(.nova-std-listes)) #widget_conf_list > div > ul > li:hover { background: var(--nova-accent-doux); }
@@ -198,11 +198,11 @@ dialog.nova-qr-grand::backdrop { background: rgba(26, 29, 34, .7); }
  * cartes (titre de groupe, ligne = icône, libellé, description sans parenthèses, chevron ; ligne entière cliquable).
  * Listes masquées au plus 3 s en attendant nova.js. Réglage std-listes. */
 html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte):is(:has(> li > a[href*="adm%2Fclass%2Fconfig"][href*="job=arch"]), :has(a[href*="adm%2Fclass%2Fconfig"][href*="job=oefdefault"])) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
-.nova-cfg { max-width: 46rem; margin: 0 auto var(--nova-e5); text-align: left; }
+.nova-cfg { max-width: none; margin: 0 auto var(--nova-e5); text-align: left; }
 .nova-cfg > h2 { margin: var(--nova-e5) 0 var(--nova-e3); }
 .nova-cfg-titre { margin: var(--nova-e3) .25rem var(--nova-e1); font-weight: 700; }
 /* Onglets (2026-11-11, utilisateur) : barre de Réglages de Nova ; deux onglets côte à côte même au téléphone. */
-.nova-cfg-onglets { max-width: 46rem; margin: var(--nova-e4) auto var(--nova-e5); }
+.nova-cfg-onglets { max-width: none; margin: var(--nova-e4) auto var(--nova-e5); }
 .nova-cfg-onglets > .nova-onglets { margin-bottom: var(--nova-e3); }
 .nova-cfg-onglets section.nova-onglet[hidden] { display: none; }
 .nova-cfg-onglets .nova-cfg { margin-bottom: 0; }
@@ -282,7 +282,7 @@ html.nova-js:not(.nova-std-listes) .wimsbody ul.wims_nopuce:not(.nova-cfg-carte)
  * légende à pastilles ; orange et message au-delà de 80 %. La feuille de WIMS (quota_bar.css) est importée DANS la page,
  * après celle du thème : sélecteurs à deux classes. Titre et légende de WIMS masqués au plus 3 s. Réglage std-listes. */
 :where(html:not(.nova-std-listes)) .wims_quotafree { --nova-cap: var(--nova-accent); --nova-cap-doux: var(--nova-accent-doux);
-  max-width: 46rem; margin: var(--nova-e4) auto; padding: var(--nova-e4) var(--nova-e5); box-sizing: border-box;
+  max-width: none; margin: var(--nova-e4) auto; padding: var(--nova-e4) var(--nova-e5); box-sizing: border-box;
   background: var(--nova-surface); border: 1px solid var(--nova-bord); border-radius: 14px; text-align: left; }
 :where(html:not(.nova-std-listes)) .nova-cfg > .wims_quotafree { max-width: none; margin: var(--nova-e4) 0 0; }
 :where(html:not(.nova-std-listes)) .wims_quotafree.nova-capacite-pleine { --nova-cap: var(--nova-attention); --nova-cap-doux: var(--nova-attention-fond); }
@@ -614,12 +614,12 @@ html.nova-seq-glisse, html.nova-seq-glisse * { cursor: grabbing !important; user
 .nova-etat-ico[data-icone='plus'] { --nova-etat-picto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E"); }
 .wimsbody .nova-seq-reglages { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); margin: var(--nova-e4) 0 var(--nova-e2); padding: 8px 12px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); }
 .wimsbody label.nova-seq-inter { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; font-weight: 700; cursor: pointer; }
-.wimsbody .nova-seq-inter input { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 40px; height: 24px; margin: 0; border: 0; border-radius: 999px; background: var(--nova-bord-fort); cursor: pointer; transition: background .15s; }
-.wimsbody .nova-seq-inter input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 25%); transition: left .15s; }
-.wimsbody .nova-seq-inter input:checked { background: var(--nova-accent); }
-.wimsbody .nova-seq-inter input:checked::after { left: 19px; }
-.wimsbody .nova-seq-inter input:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
-html.nova-sans-animation .wimsbody .nova-seq-inter input, html.nova-sans-animation .wimsbody .nova-seq-inter input::after { transition: none; }
+.wimsbody :is(.nova-seq-inter, .nova-logo-inter) input { appearance: none; -webkit-appearance: none; position: relative; flex: none; width: 40px; height: 24px; margin: 0; border: 0; border-radius: 999px; background: var(--nova-bord-fort); cursor: pointer; transition: background .15s; }
+.wimsbody :is(.nova-seq-inter, .nova-logo-inter) input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / 25%); transition: left .15s; }
+.wimsbody :is(.nova-seq-inter, .nova-logo-inter) input:checked { background: var(--nova-accent); }
+.wimsbody :is(.nova-seq-inter, .nova-logo-inter) input:checked::after { left: 19px; }
+.wimsbody :is(.nova-seq-inter, .nova-logo-inter) input:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+html.nova-sans-animation .wimsbody :is(.nova-seq-inter, .nova-logo-inter) input, html.nova-sans-animation .wimsbody :is(.nova-seq-inter, .nova-logo-inter) input::after { transition: none; }
 .wimsbody .nova-seq-mot { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; color: var(--nova-texte-2); }
 .wimsbody .nova-seq-mot label { margin: 0; font-weight: 400; }
 .wimsbody .nova-seq-mot input[type='text'] { width: 6.5rem; min-height: 36px; margin: 0; }
@@ -1112,7 +1112,7 @@ body.main_body .nova-dialogue .nova-forcer-actions.wimscenter .wims_button.nova-
  * Reglage std notes-enseignant : formulaire de WIMS (seul le bouton d'inscription est ajoute). Masque avant nova.js. */
 html.nova-js:not(.nova-std-notes-enseignant) .wimsbody form:has(input[name="job"][value="userprop"]) fieldset.property_fields:not(.nova-pe) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 .wimsbody fieldset.property_fields.nova-pe {
-  display: grid; gap: var(--nova-e4); width: 100%; max-width: 48rem; margin: var(--nova-e4) auto; padding: 0;
+  display: grid; gap: var(--nova-e4); width: 100%; max-width: none; margin: var(--nova-e4) auto; padding: 0;
   border: 0; background: none; box-shadow: none; box-sizing: border-box; min-width: 0;
 }
 .wimsbody fieldset.property_fields.nova-pe > legend { display: none; }
@@ -1308,3 +1308,10 @@ button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px 
 .wimsbody button.nova-pp-tuile.nova-pp-choisi, .wimsbody button.nova-pp-puce.nova-pp-choisi { border-color: var(--nova-accent); outline: 3px solid var(--nova-accent-doux); outline-offset: 0; }
 .wimsbody button.nova-pp-puce.nova-pp-choisi { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-pp-p-tete h1:focus { outline: none; }
+
+/* Option « Logo » de la page Apparence d'une classe (nova.js logoClasse, 2026-11-27, utilisateur) : interrupteur « Afficher
+ * un logo », case « Logo WIMS animé, à la couleur du thème », champ de WIMS (adresse de l'image) si elle est décochée. */
+.wimsbody .nova-logo-choix { display: flex; flex-direction: column; align-items: flex-start; gap: var(--nova-e2); flex-basis: 100%; width: 100%; margin-top: var(--nova-e2); }
+.wimsbody label.nova-logo-inter { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; font-weight: 700; cursor: pointer; }
+.wimsbody label.nova-logo-wims { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin: 0; font-weight: 400; cursor: pointer; }
+.wimsbody .nova-logo-choix > input#pr_logo { width: 100%; max-width: 32rem; box-sizing: border-box; }

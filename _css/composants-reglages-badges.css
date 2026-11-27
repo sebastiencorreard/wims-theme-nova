@@ -38,7 +38,7 @@ fieldset.nova-app-carte > * { width: 100%; box-sizing: border-box; }
 .nova-app-erreur { margin: var(--nova-e2) 0 0; }
 /* Pages Apparence (site, classe) : largeur limitée sur un grand écran ; bouton d'aide à droite de son réglage,
  * avec une marge qui le sépare du réglage voisin (demandes de l'utilisateur, 2026-10-06). */
-body.nova-page-apparence .wimsbody { max-width: 60rem; margin-left: auto; margin-right: auto; }
+body.nova-page-apparence .wimsbody { max-width: 70rem; margin-left: auto; margin-right: auto; }
 body.nova-page-apparence .wimsbody :is(.field, li.field) > .wims_button_help.float_right { margin-right: var(--nova-e6); }
 /* Menus déroulants juste à droite de leur étiquette, comme dans les thèmes de WIMS (demande de l'utilisateur,
  * 2026-10-06) ; les champs texte restent sous leur libellé. */

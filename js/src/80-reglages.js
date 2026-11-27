@@ -32,6 +32,54 @@
     }
   }
 
+  // Option « Logo » de la page Apparence d'une classe (2026-11-27, utilisateur). Le champ texte de WIMS (pr_logo : adresse
+  // d'une image, « wims » ou « none ») devient un interrupteur « Afficher un logo » ; oui : case « Logo WIMS anime, à la
+  // couleur du thème » (valeur « wims » ; champ vide = logo par défaut, même affichage : contenu.css) ; décochée : le champ
+  // de WIMS, pour l'adresse de l'image. Non : « none », position du logo masquée. Réglage std « listes » : champ de WIMS.
+  function logoClasse(form, modele) {
+    var champ = form.querySelector('#pr_logo');
+    var ligne = champ && champ.closest('.field');
+    if (!ligne || standard('listes') || !modele.getAttribute('data-logo-wims')) return;
+    var cote = form.querySelector('#pr_logoside');
+    var ligneCote = cote && cote.closest('.field');
+    var valeur = champ.value.trim();
+    var perso = (valeur && !/^(none|wims|gifs\/logo\.gif)$/i.test(valeur)) ? valeur : '';
+    function caseAvecTexte(classe, texte, role) {
+      var l = document.createElement('label');
+      l.className = classe;
+      var c = document.createElement('input');
+      c.type = 'checkbox';
+      if (role) c.setAttribute('role', role);
+      l.appendChild(c);
+      l.appendChild(document.createTextNode(texte));
+      return l;
+    }
+    var bloc = document.createElement('div');
+    bloc.className = 'nova-logo-choix';
+    var inter = caseAvecTexte('nova-logo-inter', modele.getAttribute('data-logo-afficher'), 'switch');
+    var wims = caseAvecTexte('nova-logo-wims', modele.getAttribute('data-logo-wims'));
+    var oui = inter.firstChild, anime = wims.firstChild;
+    oui.checked = valeur.toLowerCase() !== 'none';
+    anime.checked = !perso;
+    champ.placeholder = modele.getAttribute('data-logo-exemple') || '';
+    champ.setAttribute('aria-label', modele.getAttribute('data-logo-image') || '');
+    bloc.appendChild(inter);
+    bloc.appendChild(wims);
+    ligne.appendChild(bloc);
+    bloc.appendChild(champ);
+    function maj() {
+      wims.style.display = oui.checked ? '' : 'none';
+      champ.style.display = oui.checked && !anime.checked ? '' : 'none';
+      if (ligneCote) ligneCote.style.display = oui.checked ? '' : 'none';
+      champ.value = !oui.checked ? 'none' : anime.checked ? 'wims' : perso;
+      champ.required = oui.checked && !anime.checked;
+    }
+    champ.addEventListener('input', function () { perso = champ.value.trim(); });
+    oui.addEventListener('change', maj);
+    anime.addEventListener('change', function () { maj(); if (!anime.checked) champ.focus(); });
+    maj();
+  }
+
   // Réglages de WIMS sans effet avec Nova : repliés derrière « Les afficher » (maquette A, 2026-10-06).
   function replierSansEffet(lignes, modele) {
     lignes = lignes.filter(Boolean);
@@ -103,6 +151,7 @@
       p.appendChild(a);
       formWims.parentNode.insertBefore(p, formWims);
       pageApparence(formWims, modele);
+      logoClasse(formWims, modele);
       var sans = (modele.getAttribute('data-sans-effet') || '').split(',').filter(Boolean);
       // « Transférer un fichier css » partage son cadre avec la zone de texte (où Nova écrit) : seul son
       // paragraphe est replié (data-sans-effet-ligne ; demande de l'utilisateur, 2026-10-07).

@@ -652,8 +652,9 @@
   // Logo de la classe (#classlogo, float_left/right) ou du titre WIMS (.wimslogo) : il ne flotte plus (2026-11-27,
   // utilisateur). Logo et titre sont ranges dans une grille (.nova-titre-rangee) : colonnes laterales de la largeur du logo
   // (--nova-logo-place), logo au bord du contenu de la page, a gauche ou a droite selon la classe, titre centre sur la page.
-  // Ni le titre ni la carte suivante ne sont plus decales (un flottant repoussait la premiere ligne de la carte). Peu de
-  // place (telephone) : logo au-dessus du titre, au meme bord (nova-titre-rangee-etroite). Sans nova.js : comme WIMS.
+  // Peu de place (telephone) : logo et titre reduits ensemble, par pas (--nova-logo-h de 100 a 40 px, titre jusqu'a 20 px),
+  // jusqu'a ce que le titre tienne en deux lignes sans mot coupe ; sinon logo au-dessus du titre, au meme bord
+  // (nova-titre-rangee-etroite). Sans nova.js : comme WIMS.
   function titresCentres() {
     var rangees = [];
     Array.prototype.forEach.call(document.querySelectorAll('#classlogo, .wimslogo'), function (logo) {
@@ -667,13 +668,36 @@
       rangees.push(rangee);
     });
     if (!rangees.length) return;
+    var PAS = 6, LOGO_MIN = 40, TITRE_MIN = 20;
+    function poser(r, h, taille) {
+      r.style.setProperty('--nova-logo-h', h + 'px');
+      if (r.novaTitre) r.novaTitre.style.fontSize = taille ? taille + 'px' : '';
+      r.style.setProperty('--nova-logo-place', Math.ceil(r.firstElementChild.getBoundingClientRect().width) + 'px');
+    }
+    function tient(r) {
+      var t = r.novaTitre;
+      if (!t) return true;
+      var lh = parseFloat(getComputedStyle(t).lineHeight) || parseFloat(getComputedStyle(t).fontSize) * 1.25;
+      return t.scrollWidth <= t.clientWidth + 1 && t.getBoundingClientRect().height <= 2 * lh + 2;
+    }
     function ajuster() {
-      var mesures = rangees.map(function (r) {
-        return [Math.ceil(r.firstElementChild.getBoundingClientRect().width), r.getBoundingClientRect().width];
-      });
-      rangees.forEach(function (r, i) {
-        r.style.setProperty('--nova-logo-place', mesures[i][0] + 'px');
-        r.classList.toggle('nova-titre-rangee-etroite', mesures[i][1] - 2 * mesures[i][0] < 280);
+      rangees.forEach(function (r) {
+        r.classList.remove('nova-titre-rangee-etroite');
+        var titre = r.lastElementChild;
+        r.novaTitre = titre.matches('h1, h2') ? titre : titre.querySelector('h1');
+        if (r.novaTitre) r.novaTitre.style.fontSize = '';
+        var taille0 = r.novaTitre ? parseFloat(getComputedStyle(r.novaTitre).fontSize) : 0;
+        r.style.removeProperty('--nova-logo-h');
+        var img = r.firstElementChild.querySelector('img');
+        var h0 = img ? Math.min(100, Math.round(img.getBoundingClientRect().height)) || 100 : 100;
+        for (var i = 0; i <= PAS; i++) {
+          var h = Math.round(h0 - (h0 - Math.min(h0, LOGO_MIN)) * i / PAS);
+          var taille = i ? Math.max(TITRE_MIN, taille0 - (taille0 - TITRE_MIN) * i / PAS) : 0;
+          poser(r, h, taille);
+          if (tient(r)) return;
+        }
+        poser(r, h0, 0);
+        r.classList.add('nova-titre-rangee-etroite');
       });
     }
     ajuster();
@@ -681,8 +705,12 @@
       var img = r.firstElementChild.querySelector('img');
       if (img && !img.complete) img.addEventListener('load', ajuster);
     });
-    var minuterie;
-    window.addEventListener('resize', function () { clearTimeout(minuterie); minuterie = setTimeout(ajuster, 150); });
+    var minuterie, largeur = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth === largeur) return;
+      largeur = window.innerWidth;
+      clearTimeout(minuterie); minuterie = setTimeout(ajuster, 150);
+    });
   }
 
   function largeurPage() {

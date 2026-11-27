@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Accueil du site (non connecté) : le choix de la langue est en haut du menu ☰, sous « Administration du site » ; le menu ne se referme plus quand on le déplie.
 - Accueil du site (non connecté) : deux cartes côte à côte ont la même hauteur.
 - **Pages moins larges** sur un grand écran : le contenu tient dans une colonne centrée (70rem, environ 1 100 px), plus facile à lire ; une page qui porte un grand tableau (notes de l'enseignant, par exemple) garde toute la largeur.
 - **Séquences et accueil** : les cartes des feuilles, examens et glossaires remplissent la largeur de la séquence, en colonnes égales, avec une marge autour dans la carte de la séquence, et deux cartes côte à côte ont la même hauteur.

@@ -36,7 +36,8 @@
     });
     document.addEventListener('click', function (e) {
       if (!document.body.classList.contains('nova-menu-ouvert')) return;
-      if (menu.contains(e.target) ? e.target.closest('a[href]') : !bouton.contains(e.target)) basculer(false);
+      // Un lien qui deplie quelque chose dans le menu (role=button : choix de la langue) le laisse ouvert (2026-11-27).
+      if (menu.contains(e.target) ? e.target.closest('a[href]:not([role="button"])') : !bouton.contains(e.target)) basculer(false);
     });
   }
 
@@ -904,8 +905,8 @@
   /* Pages d'un visiteur : accueil du site et classes virtuelles (Zone Élèves, Zone Enseignants, Classes ouvertes ;
    * 2026-11-27, utilisateur, maquette A ; _widgets/visiteur-barre.phtml pose html.nova-accueil-visiteur). Le menu latéral
    * est un tiroir ☰ à toutes les largeurs (cadre.css). La barre se vide dans le tiroir : « Administration du site »
-   * (cadenas) tout en haut ; « À propos de WIMS », Aide et la langue (une entrée qui déplie la liste, choixLangue) en bas,
-   * à part. Ces deux blocs sont posés APRÈS la construction de l'accordéon jQuery UI du menu (au « jQuery ready » de WIMS,
+   * (cadenas) tout en haut, la langue juste dessous (une entrée qui déplie la liste, choixLangue ; 2026-11-27, utilisateur,
+   * avant : en bas) ; « À propos de WIMS » et Aide en bas, à part. Ces deux blocs sont posés APRÈS la construction de l'accordéon jQuery UI du menu (au « jQuery ready » de WIMS,
    * après nova.js) : présents avant, ils en deviendraient des titres de rubrique (comme basculeMenu). Sélecteur de zone :
    * aria-current sur le bouton de la zone actuelle. Repli « Actualité et exemples » (_widgets/infos.phtml) gardé par le
    * navigateur (localStorage nova-accueil-infos, relu par le script du gabarit avant l'affichage). Réglage « Menus du thème
@@ -953,7 +954,7 @@
     var langues = barre.querySelector('#language_selector');
     if (langues) {
       var autres = langues.querySelectorAll('#lang_list a[href]');
-      if (autres.length) bas.appendChild(choixLangue(langues, autres));
+      if (autres.length) haut.appendChild(choixLangue(langues, autres));
       langues.remove();
     }
     var placer = function () {

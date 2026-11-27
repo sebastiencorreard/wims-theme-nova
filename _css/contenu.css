@@ -1032,9 +1032,37 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
  * masquée sur demande ; titre de l'examen en en-tête, deux lignes au plus, « … » au-delà (titre entier en info-bulle). */
 .wimsbody #TABLE_userlist .nova-col-masquee { display: none; }
 .wimsbody #TABLE_userlist th .nova-titre-examen { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-width: 10rem; margin-inline: auto; text-align: center; white-space: normal; overflow-wrap: anywhere; }
-/* Options de Nova (titres, moyenne) l'une sous l'autre (2026-11-12, utilisateur ; avant : côte à côte dans le flex du fieldset). */
-.wimsbody .nova-notes-option { display: flex; align-items: center; gap: var(--nova-e2); flex: 1 1 100%; }
-.wimsbody .nova-notes-option + .nova-notes-option { margin-top: calc(-1 * var(--nova-e3)); }
+/* Cadre « Quelles notes ? » (nova.js notesColonnes, 2026-11-28, utilisateur) : champs l'un sous l'autre (la ligne des
+ * pilules passait à droite de la liste) ; liste repliable ; pilules sur une ligne ; ligne « Affichage » : Moyenne (oeil),
+ * Feuilles et Examens en choix Numéro | Titre. */
+.wimsbody fieldset.nova-notes-cadre > .field { flex: 1 1 100%; min-width: 0; }
+.wimsbody .nova-choix-repli > summary { display: flex; align-items: center; gap: var(--nova-e2); min-height: 32px; cursor: pointer; font-weight: 700; list-style: none; }
+.wimsbody .nova-choix-repli > summary::-webkit-details-marker { display: none; }
+.wimsbody .nova-choix-repli > summary::before {
+  content: ""; flex: none; width: 7px; height: 7px; margin: 0 4px 3px 2px;
+  border-right: 2px solid var(--nova-texte-2); border-bottom: 2px solid var(--nova-texte-2); transform: rotate(-45deg);
+}
+.wimsbody .nova-choix-repli[open] > summary::before { transform: rotate(45deg); margin-bottom: 5px; }
+.wimsbody .nova-choix-repli[open] > summary { margin-bottom: var(--nova-e1); }
+.wimsbody .nova-affi { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2); }
+.wimsbody .nova-notes-affichage { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e4); }
+.wimsbody .nova-notes-affichage-titre { font-weight: 700; }
+.wimsbody button.nova-notes-moyenne {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; margin: 0; padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); box-shadow: none;
+  color: var(--nova-texte); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
+}
+.wimsbody button.nova-notes-moyenne[aria-pressed="false"] { color: var(--nova-texte-2); text-decoration: line-through; }
+.wimsbody button.nova-notes-moyenne:hover { background: var(--nova-surface-2); }
+.wimsbody .nova-notes-segment { display: inline-flex; align-items: center; gap: var(--nova-e2); }
+.wimsbody .nova-notes-segment-nom { font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-segment { display: inline-flex; padding: 2px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface-2); }
+.wimsbody .nova-segment > button {
+  min-height: 28px; margin: 0; padding: 0 var(--nova-e3); border: 0; border-radius: 999px; background: transparent; box-shadow: none;
+  color: var(--nova-texte-2); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
+}
+.wimsbody .nova-segment > button[aria-pressed="true"] { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-segment > button[aria-pressed="false"]:hover { color: var(--nova-texte); }
 /* Notes des feuilles et des examens centrées, « -- » et 0 compris (WIMS ne met une classe qu'aux cellules colorées) ;
  * 2026-11-12, utilisateur. Réglage « Tableaux du thème standard ». */
 html:not(.nova-std-tableaux) .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(:first-child) { text-align: center; }

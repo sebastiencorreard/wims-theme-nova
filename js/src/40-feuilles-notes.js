@@ -282,52 +282,109 @@
     var texte = function (n, defaut) { return (textes && textes.getAttribute('data-texte-' + n)) || defaut; };
     var choix = document.querySelector('select[name="showsheet"]');
     var cadre = choix && choix.closest('fieldset');
-    // Ligne « Afficher » : libelles courts (2026-11-27, utilisateur : « qualite », « pourcentage des points cumules »,
-    // « notes », « reussite », « acquisition », sur une ligne). WIMS ecrit toujours les cinq dans cet ordre
-    // (userscore/main.phtml, name_affi), le choix en cours en span. Reglage « Textes du thème standard » : ceux de WIMS.
+    // Cadre « Choix des données » allégé (2026-11-28, utilisateur : « faciliter la vision des notes ») : titre « Quelles
+    // notes ? », consigne de WIMS cachée (gardée pour les lecteurs d'écran), liste des feuilles et examens repliable
+    // (repliée dès qu'une feuille ou un examen est choisi), ligne des pilules sans « Afficher », ligne « Affichage » (Moyenne, Feuilles et
+    // Examens : Numéro | Titre) au lieu de trois cases. Champs du cadre l'un sous l'autre (CSS .nova-notes-cadre).
     var txChoix = document.getElementById('nova-choix-textes');
+    var tc = function (n, defaut) { return (txChoix && txChoix.getAttribute('data-' + n)) || defaut; };
+    if (cadre) {
+      cadre.classList.add('nova-notes-cadre');
+      if (!standard('textes')) {
+        var leg = cadre.querySelector(':scope > legend');
+        if (leg) leg.textContent = tc('quelles-notes', 'Which scores?');
+      }
+      var champListe = choix.closest('.field');
+      var boite = champListe && champListe.querySelector('.nova-choix');
+      if (boite) {
+        var consigne = champListe.querySelector(':scope > label');
+        if (consigne && !standard('textes')) consigne.classList.add('show-for-sr');
+        var repli = document.createElement('details');
+        repli.className = 'nova-choix-repli';
+        // Ouverte tant que rien n'est choisi (premiere visite), repliee ensuite : les notes d'abord.
+        repli.open = !Array.prototype.some.call(choix.options, function (o) { return o.selected; });
+        var resume = document.createElement('summary');
+        repli.appendChild(resume);
+        boite.parentNode.insertBefore(repli, boite);
+        repli.appendChild(boite);
+        var compter = function () {
+          var n = Array.prototype.filter.call(choix.options, function (o) { return o.selected; }).length;
+          resume.textContent = tc('liste-resume', 'Worksheets and exams: %1 of %2').replace('%1', n).replace('%2', choix.options.length);
+        };
+        choix.addEventListener('change', compter);
+        compter();
+      }
+    }
+    // Ligne des pilules : libelles courts avec majuscule, sans « Afficher » ; Notes, Reussite, Qualite, puis le reste
+    // (2026-11-28, utilisateur). WIMS ecrit toujours les cinq dans l'ordre quality, points, notes, best, level
+    // (userscore/main.phtml, name_affi), le choix en cours en span. Reglage « Textes du thème standard » : ceux de WIMS.
     var ligneAffi = document.querySelector('.wimsbody .field.box:has(> a.wims_button[href*="job_affi="])');
     if (ligneAffi && txChoix && !standard('textes')) {
       var boutons = ligneAffi.querySelectorAll(':scope > :is(a, span).wims_button');
-      if (boutons.length === 5) ['quality', 'points', 'notes', 'best', 'level'].forEach(function (k, i) {
-        var court = txChoix.getAttribute('data-affi-' + k);
-        if (!court) return;
-        if (!boutons[i].title) boutons[i].title = boutons[i].textContent.trim();
-        boutons[i].textContent = court;
-      });
+      if (boutons.length === 5) {
+        var cles = ['quality', 'points', 'notes', 'best', 'level'];
+        cles.forEach(function (k, i) {
+          var court = txChoix.getAttribute('data-affi-' + k) || boutons[i].textContent.trim();
+          if (!boutons[i].title) boutons[i].title = boutons[i].textContent.trim();
+          boutons[i].textContent = court.charAt(0).toUpperCase() + court.slice(1);
+        });
+        Array.prototype.slice.call(ligneAffi.childNodes).forEach(function (n) { if (n.nodeType === 3) n.parentNode.removeChild(n); });
+        [2, 3, 0, 1, 4].forEach(function (i) { ligneAffi.appendChild(boutons[i]); });
+      }
       ligneAffi.classList.add('nova-affi');
     }
-    // Case du cadre « Choix des données » (sinon au-dessus du tableau), choix gardé par le navigateur.
-    var ajouterCase = function (id, libelle, cle, defaut, appliquer) {
-      var actif = defaut;
-      try { var v = localStorage.getItem(cle); if (v !== null) actif = v === '1'; } catch (e) { /* sans stockage : défaut */ }
-      var champ = document.createElement('div');
-      champ.className = 'field box nova-notes-option';
-      var c = document.createElement('input');
-      c.type = 'checkbox';
-      c.id = id;
-      c.checked = actif;
-      var lib = document.createElement('label');
-      lib.htmlFor = id;
-      lib.textContent = libelle;
-      champ.appendChild(c);
-      champ.appendChild(lib);
-      c.addEventListener('change', function () {
-        appliquer(c.checked);
-        try { localStorage.setItem(cle, c.checked ? '1' : '0'); } catch (e) { /* cette page seulement */ }
-      });
-      if (cadre) {
-        var envoi = cadre.querySelector(':scope > .wimsform');
-        cadre.insertBefore(champ, envoi || null);
-      } else {
-        var avant = table.closest('.wims_scrollable, .table-scroll') || table;
-        avant.parentNode.insertBefore(champ, avant);
-      }
-      appliquer(actif);
+    // Ligne « Affichage » (2026-11-28, utilisateur) : memes cles localStorage qu'avant (nova-titres-feuilles,
+    // nova-titres-examens : 1 = titre ; nova-notes-sans-moyenne : 1 = masquee). Dans le cadre, sinon au-dessus du tableau.
+    var ligne = document.createElement('div');
+    ligne.className = 'field box nova-notes-affichage';
+    ligne.setAttribute('role', 'group');
+    var lig = document.createElement('span');
+    lig.className = 'nova-notes-affichage-titre';
+    lig.id = 'nova-notes-affichage-titre';
+    lig.textContent = tc('affichage', 'Display');
+    ligne.setAttribute('aria-labelledby', lig.id);
+    ligne.appendChild(lig);
+    var lire = function (cle, defaut) {
+      try { var v = localStorage.getItem(cle); if (v !== null) return v === '1'; } catch (e) { /* sans stockage : défaut */ }
+      return defaut;
     };
-    // (b) Titre au lieu du numéro (examens : 2026-11-08 ; feuilles et cases : 2026-11-09, utilisateur). Titres lus dans
-    // la liste de choix (option « 3 » = « 2/3: titre » pour la feuille 3, « E4 » = « Examen 4: titre »). Cochées par
-    // défaut, sauf réglage « Textes du thème standard ».
+    var ecrire = function (cle, oui) { try { localStorage.setItem(cle, oui ? '1' : '0'); } catch (e) { /* cette page seulement */ } };
+    var bouton = function (classe, texteB) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = classe;
+      if (texteB) b.textContent = texteB;
+      return b;
+    };
+    var nbControles = 0;
+    // (a) Moyenne : bouton à oeil (ouvert = affichée, barré = masquée).
+    var moy = table.querySelector('thead th.average');
+    if (moy) {
+      var rangM = Array.prototype.indexOf.call(moy.parentNode.children, moy);
+      var bm = bouton('nova-notes-moyenne');
+      var ico = document.createElement('span');
+      ico.className = 'nova-etat-ico';
+      ico.setAttribute('aria-hidden', 'true');
+      bm.appendChild(ico);
+      bm.appendChild(document.createTextNode(tc('moyenne', 'Average')));
+      var appliquerM = function (masquee) {
+        Array.prototype.forEach.call(table.rows, function (tr) { var c = tr.cells[rangM]; if (c) c.classList.toggle('nova-col-masquee', masquee); });
+        bm.setAttribute('aria-pressed', masquee ? 'false' : 'true');
+        bm.title = tc(masquee ? 'moyenne-montrer' : 'moyenne-masquer', masquee ? 'Show the average' : 'Hide the average');
+        ico.setAttribute('data-icone', masquee ? 'oeil-barre' : 'oeil');
+      };
+      bm.addEventListener('click', function () {
+        var masquee = bm.getAttribute('aria-pressed') === 'true';
+        appliquerM(masquee);
+        ecrire('nova-notes-sans-moyenne', masquee);
+      });
+      appliquerM(lire('nova-notes-sans-moyenne', false));
+      ligne.appendChild(bm);
+      nbControles++;
+    }
+    // (b) Titre au lieu du numéro (examens : 2026-11-08 ; feuilles : 2026-11-09, utilisateur). Titres lus dans la liste
+    // de choix (option « 3 » = « 3: titre » pour la feuille 3, « E4 » = « Examen 4: titre »). Titre par défaut, sauf
+    // réglage « Textes du thème standard ».
     var titres = { feuille: {}, examen: {} };
     if (choix) Array.prototype.forEach.call(choix.options, function (o) {
       var m = /^(E?)(\d+)$/.exec(o.value);
@@ -335,10 +392,10 @@
       if (m && i >= 0 && o.textContent.slice(i + 1).trim()) titres[m[1] ? 'examen' : 'feuille'][m[2]] = o.textContent.slice(i + 1).trim();
     });
     var types = [
-      ['feuille', 'nova-titres-feuilles', texte('titres-feuilles', 'Worksheets: show the title instead of the number'), function () {
+      ['feuille', 'nova-titres-feuilles', tc('feuilles-mot', 'Worksheets'), function () {
         return Array.prototype.map.call(table.querySelectorAll('thead th a[href*="numshowsheet"]'), function (a) { return [a.closest('th'), a]; });
       }],
-      ['examen', 'nova-titres-examens', texte('titres-examens', 'Exams: show the title instead of the number'), function () {
+      ['examen', 'nova-titres-examens', tc('examens-mot', 'Exams'), function () {
         return Array.prototype.map.call(table.querySelectorAll('thead th.name_exam'), function (th) { return [th, th]; });
       }]
     ];
@@ -349,32 +406,50 @@
         var m = /(\d+)$/.exec(origine);
         return { th: x[0], el: x[1], origine: origine, titre: m && titres[t[0]][m[1]] };
       }).filter(function (c) { return c.titre; });
-      ajouterCase(t[1], t[2], t[1], !standard('textes'), function (oui) {
+      if (!cellules.length) return;
+      var g = document.createElement('span');
+      g.className = 'nova-notes-segment';
+      var nom = document.createElement('span');
+      nom.className = 'nova-notes-segment-nom';
+      nom.textContent = t[2];
+      g.appendChild(nom);
+      var seg = document.createElement('span');
+      seg.className = 'nova-segment';
+      seg.setAttribute('role', 'group');
+      seg.setAttribute('aria-label', t[2]);
+      var bNum = bouton('', tc('numero', 'Number')), bTit = bouton('', tc('titre', 'Title'));
+      seg.appendChild(bNum);
+      seg.appendChild(bTit);
+      g.appendChild(seg);
+      var appliquerT = function (oui) {
+        bNum.setAttribute('aria-pressed', oui ? 'false' : 'true');
+        bTit.setAttribute('aria-pressed', oui ? 'true' : 'false');
         cellules.forEach(function (c) {
           c.el.textContent = '';
           if (oui) {
-            var s = document.createElement('span');
-            s.className = 'nova-titre-examen';
-            s.textContent = c.titre;
-            c.el.appendChild(s);
+            var sp = document.createElement('span');
+            sp.className = 'nova-titre-examen';
+            sp.textContent = c.titre;
+            c.el.appendChild(sp);
             c.th.title = c.origine + ' : ' + c.titre;
           } else {
             c.el.textContent = c.origine;
             c.th.removeAttribute('title');
           }
         });
-      });
+      };
+      bNum.addEventListener('click', function () { appliquerT(false); ecrire(t[1], false); });
+      bTit.addEventListener('click', function () { appliquerT(true); ecrire(t[1], true); });
+      appliquerT(lire(t[1], !standard('textes')));
+      ligne.appendChild(g);
+      nbControles++;
     });
-    // (a) Masquer la moyenne.
-    var moy = table.querySelector('thead th.average');
-    if (!moy) return;
-    var rang = Array.prototype.indexOf.call(moy.parentNode.children, moy);
-    ajouterCase('nova-sans-moyenne', texte('masquer-moyenne', 'Hide the average'), 'nova-notes-sans-moyenne', false, function (oui) {
-      Array.prototype.forEach.call(table.rows, function (tr) {
-        var c = tr.cells[rang];
-        if (c) c.classList.toggle('nova-col-masquee', oui);
-      });
-    });
+    if (!nbControles) return;
+    if (cadre) cadre.insertBefore(ligne, cadre.querySelector(':scope > .wimsform') || null);
+    else {
+      var avant = table.closest('.wims_scrollable, .table-scroll') || table;
+      avant.parentNode.insertBefore(ligne, avant);
+    }
   }
 
   /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types

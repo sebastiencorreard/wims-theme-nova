@@ -22,6 +22,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- Page Notes : cadre « Quelles notes ? » allégé : liste des feuilles et examens repliable, pilules Notes, Réussite, Qualité… en tête, une ligne « Affichage » (Moyenne, Feuilles et Examens : Numéro | Titre) au lieu de trois cases.
 - Listes à cocher (page Notes, Statistique d'activité…) : lignes resserrées à la souris et liste plus haute ; trois fois plus de feuilles et d'examens visibles.
 - Notes d'un élève : bouton « Détail des examens » en tête de la section et « Voir ses sessions et ses réponses » dans chaque examen passé.
 - Accueil : le sens du tri de la colonne « No » (croissant ou décroissant) est retenu par le navigateur.

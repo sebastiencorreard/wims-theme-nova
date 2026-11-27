@@ -33,7 +33,7 @@
 .nova-accueil-infos > .cell { flex: none; }
 .nova-accueil-site > .wims_widget_box { margin: 0; padding: 0; border: 0; box-shadow: none; background: none; width: auto; max-width: none; }
 .nova-accueil-infos .box_content, .nova-accueil-site .box_content { padding: 0; border: 0; background: none; box-shadow: none; }
-.nova-accueil-carte > h2.wims_title,
+.nova-accueil-carte > h2.wims_title, .nova-accueil-taxo > summary > h2.wims_title,
 .nova-accueil-infos .title_box,
 .nova-accueil-site .title_box {
   margin: 0 0 var(--nova-e3);
@@ -42,7 +42,7 @@
   border: 0;
   text-align: left;
 }
-.nova-accueil-carte > h2.wims_title,
+.nova-accueil-carte > h2.wims_title, .nova-accueil-taxo > summary > h2.wims_title,
 .nova-accueil-infos .title_box .wims_title,
 .nova-accueil-site .title_box .wims_title {
   margin: 0;
@@ -267,6 +267,17 @@ html.nova-std-textes .nova-accueil-titre-sr { display: none; }
 }
 .nova-taxo-zones a:hover { background: var(--nova-accent-doux); }
 .nova-taxo-liens { display: flex; flex-wrap: wrap; gap: var(--nova-e2) var(--nova-e4); margin: 0; font-size: var(--nova-petit); }
+/* Pleine largeur, repliable (2026-11-27, utilisateur) : <details>, le titre est le bouton (chevron à droite) ; état gardé
+ * par le navigateur (nova.js accueilVisiteur, localStorage nova-accueil-taxo). */
+.nova-accueil-recherches > .nova-accueil-taxo { grid-column: 1 / -1; }
+.nova-accueil-taxo > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--nova-e3); margin: calc(-1 * var(--nova-e2)); padding: var(--nova-e2); border-radius: var(--nova-rayon); list-style: none; cursor: pointer; }
+.nova-accueil-taxo > summary::-webkit-details-marker { display: none; }
+.nova-accueil-taxo > summary > h2.wims_title { margin: 0; }
+.nova-accueil-taxo > summary::after { content: ""; flex: 0 0 auto; width: 9px; height: 9px; margin: 0 var(--nova-e2) 4px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; color: var(--nova-texte-2); transform: rotate(45deg); }
+.nova-accueil-taxo[open] > summary::after { transform: rotate(-135deg); margin-bottom: -4px; }
+.nova-accueil-taxo > summary:hover { background: var(--nova-accent-doux); }
+.nova-accueil-taxo > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-accueil-taxo[open] > summary { margin-bottom: var(--nova-e2); }
 
 /* Barre du visiteur (2026-11-27, utilisateur, maquette A ; visitor.phtml) : ☰, marque WIMS et nom du serveur à gauche ;
  * « Élève » (plein) et « Enseignant » (contour) à droite, puis le logo de l'établissement sur une pastille blanche (logo

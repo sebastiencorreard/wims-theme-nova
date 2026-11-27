@@ -918,6 +918,11 @@
     if (repli) repli.addEventListener('toggle', function () {
       try { localStorage.setItem('nova-accueil-infos', repli.open ? 'ouvert' : 'ferme'); } catch (e) { /* rien de garde */ }
     });
+    // « Taxonomie et glossaire » repliable, même principe (localStorage nova-accueil-taxo, _widgets/taxo-glossaire.phtml).
+    var taxo = document.getElementById('nova-accueil-taxo');
+    if (taxo) taxo.addEventListener('toggle', function () {
+      try { localStorage.setItem('nova-accueil-taxo', taxo.open ? 'ouvert' : 'ferme'); } catch (e) { /* rien de garde */ }
+    });
     if (standard('menus')) return;
     var barre = document.getElementById('wimstopbox'), menu = document.getElementById('wimsmenumodubox');
     if (!barre || !menu || menu.querySelector('.nova-visiteur-plus, .nova-visiteur-haut')) return;   // déjà fait

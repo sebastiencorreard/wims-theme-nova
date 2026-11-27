@@ -12,8 +12,11 @@
 !set nova_gl_zones=!filelist $nova_gl_dir
 !set nova_gl_zones=!lines2items $nova_gl_zones
 !set nova_gl_n=0
-<section class="nova-accueil-carte nova-accueil-taxo">
-  <h2 class="wims_title">$nova_ac_taxo_titre</h2>
+!! Pleine largeur et repliable (2026-11-27, utilisateur) : <details> ; l'etat est garde par le navigateur (localStorage
+!! nova-accueil-taxo = ferme, ecrit par nova.js accueilVisiteur), relu par le script qui suit, avant l'affichage.
+<details class="nova-accueil-carte nova-accueil-taxo" id="nova-accueil-taxo" open>
+  <summary><h2 class="wims_title">$nova_ac_taxo_titre</h2></summary>
+  <script>try { if (localStorage.getItem('nova-accueil-taxo') === 'ferme') document.getElementById('nova-accueil-taxo').open = false; } catch (e) {}</script>
   !for nova_gl_z in $nova_gl_zones
     !set nova_gl_l=!filelist $nova_gl_dir/$nova_gl_z
     !set nova_gl_l=!lines2items $nova_gl_l
@@ -45,5 +48,5 @@
   !set wims_ref_class=nova-taxo-glossaires
   !href module=adm/tool/glossary&cmd=new $nova_ac_glossaires
   </p>
-</section>
+</details>
 !reset nova_gl_dir nova_gl_zones nova_gl_z nova_gl_l nova_gl_nom nova_gl_n

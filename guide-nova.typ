@@ -2658,6 +2658,7 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova-session-activite`], [session et heure de la dernière page chargée (ou de « Rester connecté »), commune aux onglets],
   [`nova-pp-acces`], [plan du portail : accès affichés sur les tuiles (`1`) ou non],
   [`nova-accueil-infos`], [accueil du site : « Actualité et exemples » replié (`ferme`) ou ouvert (`ouvert`, ou absente)],
+  [`nova-accueil-taxo`], [accueil du site : « Taxonomie et glossaire » repliée (`ferme`) ou ouverte (`ouvert`, ou absente)],
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement

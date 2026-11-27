@@ -2095,6 +2095,7 @@
     else if (job === 'hide') { ico = 'oeil-barre'; effet = t('cacher'); }
     else if (job === 'reactivate') { ico = 'retour'; libelle = t('reactiver') || libelle; effet = t(type === 'freework' ? 'reactiver-d' : 'reactiver-n'); }
     else if (job === 'chstatus') { ico = etat === 1 ? 'oeil-barre' : 'oeil'; effet = t(etat === 1 ? 'cacher' : 'montrer'); }
+    else if (job === 'duplicate') { ico = 'copie'; libelle = t('dupliquer') || libelle; effet = t('dupliquer-e'); groupe = 1; }
     else if (job === 'archive') { ico = 'archive'; effet = t('archiver'); groupe = 1; }
     else if (job === 'deactivate') { ico = 'marche'; effet = t('desactiver'); groupe = 2; }
     else if (job === 'prep_erase' || job === 'deldoc') { ico = 'corbeille'; effet = t('effacer'); groupe = 2; }
@@ -2207,6 +2208,10 @@
     function transformer(l) {
       var etat = l.etat, type = l.type;
       var liens = Array.prototype.slice.call(l.actions.querySelectorAll('a[href]'));
+      // Examen : « Dupliquer » (2026-11-27, utilisateur) : adm/class/exam job=duplicate, copie « En preparation » ouverte
+      // (meme lien que « DM note », dmNote), quel que soit l'etat de l'examen.
+      var fiche = type === 'exam' && t('dupliquer') && l.tr.querySelector('a[href*="module=adm%2Fclass%2Fexam"][href*="exam="]:not([href*="job="])');
+      if (fiche) { var dup = el('a', '', t('dupliquer')); dup.href = fiche.href + '&+cmd=new&+job=duplicate'; liens.push(dup); }
       var visibilite = type === 'tool' || type === 'glossary' || (type === 'doc' && liens.some(function (a) { return /job=chstatus/.test(a.href); }));
       var droits = type === 'doc' && !visibilite;
       var texte = l.marque.textContent.replace(/\s+/g, ' ').trim();

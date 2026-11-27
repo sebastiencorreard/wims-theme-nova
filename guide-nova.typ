@@ -1039,6 +1039,8 @@ Les liens d'action de WIMS (Activer, Expirer, Désactiver, Effacer…) sont dép
 d'état (`etatMenu`, `etatAction` : icône, effet, groupe), sur l'accueil (`etatsRessources`) et sur la page de la ressource
 (`ficheStatut`). Retirer une action avant eux : `desactivationsRefusees` retire « Désactiver » quand WIMS la refuserait
 (`_procs/desactivables.sh`). Ne pas fabriquer de lien : garder celui de WIMS, avec sa confirmation (`confirmationsRessources`).
+Seule exception, sur l'accueil : « Dupliquer » d'un examen, adresse de WIMS (`adm/class/exam`, `job=duplicate`, celle de
+« DM noté ») ajoutée par `etatsRessources`, textes `data-dupliquer`, `data-dupliquer-e` de `lang/enseignant-textes.phtml.<l>`.
 
 === Ajouter une action qui écrit sur le serveur
 

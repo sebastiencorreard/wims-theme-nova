@@ -558,7 +558,9 @@
    * le titre d'une famille la replie ou la déplie. WIMS en fait un accordéon jQuery UI que Nova
    * tient ouvert (cadre.css) ; on garde ses écouteurs à l'écart (capture, stopPropagation) et on
    * replie par une classe. L'état est gardé par navigateur et par nom de section (localStorage
-   * nova_menu_replie). En édition du menu simplifié, le titre garde son rôle (menuPersonnel). */
+   * nova_menu_replie). En édition du menu simplifié, le titre garde son rôle (menuPersonnel).
+   * Accueil du visiteur (2026-11-27, utilisateur) : « Documentation » et « Création de ressources » (reconnues à leurs liens :
+   * whelp, faq ; createxo, modtool) repliées par défaut ; celles qu'on a dépliées sont gardées (localStorage nova_menu_deplie). */
   function sectionsRepliables() {
     var menu = document.getElementById('wimsmenumodubox');
     if (!menu) return;
@@ -570,8 +572,13 @@
     var nom = function (t) { return t.textContent.replace(/\s+/g, ' ').trim(); };
     var replies = lire();
     if (!Array.isArray(replies)) replies = [];
+    var deplies = [];
+    try { deplies = JSON.parse(localStorage.getItem('nova_menu_deplie') || '[]'); } catch (e) { /* aucun */ }
+    if (!Array.isArray(deplies)) deplies = [];
+    var visiteur = document.documentElement.classList.contains('nova-accueil-visiteur');
+    var parDefaut = function (t) { return visiteur && !!t.nextElementSibling.querySelector('a.whelp, a.faq, a.createxo, a.modtool'); };
     var appliquer = function (t) {
-      var replie = replies.indexOf(nom(t)) >= 0;
+      var replie = parDefaut(t) ? deplies.indexOf(nom(t)) < 0 : replies.indexOf(nom(t)) >= 0;
       t.classList.toggle('nova-replie', replie);
       t.setAttribute('aria-expanded', replie ? 'false' : 'true');
     };
@@ -583,9 +590,9 @@
       appliquer(t);
     });
     var basculer = function (t) {
-      var i = replies.indexOf(nom(t));
-      if (i >= 0) replies.splice(i, 1); else replies.push(nom(t));
-      try { localStorage.setItem('nova_menu_replie', JSON.stringify(replies)); } catch (e) { /* choix non retenu */ }
+      var liste = parDefaut(t) ? deplies : replies, i = liste.indexOf(nom(t));
+      if (i >= 0) liste.splice(i, 1); else liste.push(nom(t));
+      try { localStorage.setItem(liste === deplies ? 'nova_menu_deplie' : 'nova_menu_replie', JSON.stringify(liste)); } catch (e) { /* choix non retenu */ }
       appliquer(t);
     };
     var cible = function (ev) {

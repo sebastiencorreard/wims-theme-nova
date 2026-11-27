@@ -1199,6 +1199,8 @@ html.nova-js:not(.nova-profil-pret) body:is(:has(#wimsmenumodubox), :is(.nova-ro
  * visitor.phtml) ; son fil d'Ariane ne laisse plus la place de la colonne. */
 @media (min-width: 1024px) {
   html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
+  /* Pied de WIMS dedans (accueil du site) : colonne, pour le pousser en bas (2026-11-27). */
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox:has(> #wimsmenumodubox):has(> #wimsmenubox.footer) { display: flex; flex-direction: column; align-items: stretch; }
   html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox > #wimsmenumodubox {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: min(320px, 86vw); max-height: none; min-height: 0; margin: 0;
@@ -1239,6 +1241,18 @@ html.nova-sans-liens body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumod
 body:has(> .nova-pied) { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
 body:has(> .nova-pied) > * { flex-shrink: 0; }
 body > .nova-pied { margin-top: auto; }
+/* Idem quand le pied est la barre de WIMS dans #wimsbodybox (accueils du visiteur et de l'enseignant, piedDePage ; 2026-11-27,
+ * utilisateur : « partout ») : #wimsbodybox (et #wimsfrontpage autour, accueil du site) prend la place libre ; grille menu |
+ * page (ordinateur) : sa ligne « pied » est la dernière ; sinon colonne, le pied poussé en bas. :where : rien n'est plus fort
+ * que les règles déjà là (la grille de l'ordinateur garde la main).*/
+:where(body:has(#wimsbodybox > #wimsmenubox.footer)) { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+:where(body:has(#wimsbodybox > #wimsmenubox.footer)) > * { flex-shrink: 0; }
+/* Accueil du site : body > #wimsfrontpage > #wimsbodybox. */
+:where(body:has(#wimsbodybox > #wimsmenubox.footer)) > :is(#wimsfrontpage, #wimsbodybox) { flex-grow: 1; }
+:where(body:has(#wimsbodybox > #wimsmenubox.footer)) > #wimsfrontpage { display: flex; flex-direction: column; }
+:where(#wimsfrontpage > #wimsbodybox) { flex-grow: 1; }
+:where(#wimsbodybox:has(> #wimsmenubox.footer)) { display: flex; flex-direction: column; align-items: stretch; }
+:where(#wimsbodybox) > #wimsmenubox.footer { margin-top: auto; }
 
 /* Copier le lien de l'exercice (_widgets/headmenu.phtml, nova.js lienExercice ; 2026-11-27). Copie refusee : adresse
  * selectionnee dans une fenetre. */

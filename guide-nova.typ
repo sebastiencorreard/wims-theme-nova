@@ -690,12 +690,15 @@ test `!if $nova_lc=passwd` ; pour une entrée nouvelle, écrire un `<li class="m
 
 Dans `_widgets/footer.phtml`, recopier un bloc existant :
 ```
-<div class="menuitem cgu">
-  !set wims_ref_class=cgu
-  !href module=adm/light&phtml=cgu.phtml $wims_name_cgu
+<div class="menuitem aboutw">
+  !set wims_ref_class=aboutw
+  !href target=wims_mhelp module=home&cmd=help&special_parm=about $nova_pq
+  !reset wims_ref_class
 </div>
 ```
-en changeant la classe, l'adresse et le texte. La classe (`cgu`, `help`) donne l'icône. Les libellés propres à l'enseignant sont les éléments de `nova_pied`
+en changeant la classe, l'adresse et le texte. La classe (`aboutw`, `help`) donne l'icône. Le pied reste en bas de l'écran
+sur une page courte (`cadre.css`, fin : colonne flexible) ; à l'accueil du site, c'est la barre de WIMS, dans
+`#wimsfrontpage > #wimsbodybox`, que les mêmes règles poussent en bas. Les libellés propres à l'enseignant sont les éléments de `nova_pied`
 (`lang/name.phtml.<l>`) : ajouter un élément à la fin, dans les quatre langues.
 
 #verifier[à 390 px : la barre tient sur une ligne, ce qui dépasse est dans « ⋯ » ; en élève et en enseignant ;
@@ -2666,6 +2669,7 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova_menu`, `nova_menu_garde` (+ suffixe `_modtool` ou `_p_<page>`)], [menu de l'enseignant : `complet` ou rien ; liste des entrées gardées (ou cachées, hors accueil)],
   [`nova_menu_envoi`], [choix de menu en attente d'envoi au serveur, avec le prochain lien suivi],
   [`nova_menu_replie`], [groupes du menu repliés],
+  [`nova_menu_deplie`], [accueil du visiteur : groupes repliés par défaut (Documentation, Création de ressources) que l'on a dépliés],
   [`nova-couleur|<structure>|<login>`], [couleur personnelle de l'élève, pour la poser avant l'affichage],
   [`nova-avatar|<structure>|<login>`], [avatar de l'élève, pour la barre],
   [`nova-trombinoscope`], [cases « Afficher » du trombinoscope],

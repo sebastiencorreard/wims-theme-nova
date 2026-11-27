@@ -7,6 +7,8 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Pied de page : toujours en bas de l'écran, y compris à l'accueil du site ; « À propos de WIMS » remplace les conditions générales d'utilisation.
+- Accueil du site : rubriques « Documentation » et « Création de ressources » du menu repliées par défaut ; le navigateur retient le choix.
 - Accueil du site (non connecté) : le choix de la langue est en haut du menu ☰, sous « Administration du site » ; le menu ne se referme plus quand on le déplie.
 - Accueil du site (non connecté) : deux cartes côte à côte ont la même hauteur.
 - **Pages moins larges** sur un grand écran : le contenu tient dans une colonne centrée (70rem, environ 1 100 px), plus facile à lire ; une page qui porte un grand tableau (notes de l'enseignant, par exemple) garde toute la largeur.

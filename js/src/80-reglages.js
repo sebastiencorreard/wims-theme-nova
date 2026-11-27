@@ -260,6 +260,13 @@
     var marque = '/* Nova : reglages de la page Apparence */';
     // La carte lit la zone de texte : au chargement, et quand le prof modifie lui-même le bloc Nova.
     var bloc = function () { return /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value); };
+    // Heure de fin (secondes) de « Desactiver malgre le partage » encore valable : bloc de la classe, sinon valeur en vigueur.
+    var finForcee = function () {
+      var m = /--nova-desactivation-forcee\s*:\s*(oui|non)/.exec(zone.value), mf = /--nova-desactivation-forcee-fin\s*:\s*(\d+)/.exec(zone.value);
+      var oui = m ? m[1] : getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee');
+      var fin = m ? (mf ? mf[1] : '') : getComputedStyle(document.documentElement).getPropertyValue('--nova-desactivation-forcee-fin');
+      return desactivationForceeActive(oui, fin) ? String(fin).trim() : '';
+    };
     var lire = function () {
       var lus = {};
       (zone.value.match(/--nova-[a-z-]+\s*:\s*(oui|non)/g) || []).forEach(function (d) {
@@ -268,6 +275,8 @@
       cles.forEach(function (k) {
         // Valeur de la feuille de la classe, sinon valeur en vigueur (site, portail).
         var v = lus[k] || getComputedStyle(document.documentElement).getPropertyValue('--nova-' + k).trim().replace(/["']/g, '');
+        // Desactiver malgre le partage : Oui seulement pendant ses 24 h (heure de fin du meme endroit que la valeur).
+        if (k === 'desactivation-forcee' && v === 'oui') v = finForcee() ? 'oui' : 'non';
         var r = carte.querySelector('input[name="nova_c_' + k + '"][value="' + (v === 'oui' ? 'oui' : 'non') + '"]');
         if (r) r.checked = true;
       });
@@ -287,8 +296,11 @@
     lire();
     var vac = vacancesApparence(carte, zone, modele);
     var ecrire = function () {
+      var finAvant = finForcee();
       var decl = cles.map(function (k) {
         var r = carte.querySelector('input[name="nova_c_' + k + '"]:checked');
+        // Desactiver malgre le partage (2026-11-27, utilisateur) : Oui pour 24 h, heure de fin gardee si deja en cours.
+        if (k === 'desactivation-forcee' && r && r.value === 'oui') return '--nova-' + k + ': oui; --nova-desactivation-forcee-fin: ' + (finAvant || String(Math.floor(Date.now() / 1000) + 86400)) + ';';
         return '--nova-' + k + ': ' + (r ? r.value : 'non') + ';';
       }).join(' ');
       nombres.forEach(function (k) {
@@ -302,7 +314,7 @@
       var ancien = /\/\* Nova : reglages de la page Apparence \*\/\s*html:root\s*\{([^}]*)\}/.exec(zone.value);
       (ancien ? ancien[1].match(/--nova-[a-z0-9-]+\s*:\s*[^;}]+/g) || [] : []).forEach(function (d) {
         var k = /--nova-([a-z0-9-]+)/.exec(d)[1];
-        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0 && k !== 'masques-eleves' && k !== 'communication-eleves' && k !== 'vacances') decl += ' ' + d.trim() + ';';
+        if (cles.indexOf(k) < 0 && nombres.indexOf(k) < 0 && k !== 'desactivation-forcee-fin' && k !== 'masques-eleves' && k !== 'communication-eleves' && k !== 'vacances') decl += ' ' + d.trim() + ';';
       });
       // Vacances (2026-11-07) : écrites ici seulement, retirées des autres blocs (ancien bloc des badges).
       decl += vac.decl();

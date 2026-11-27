@@ -26,6 +26,11 @@ esac
 permis=non; d=$C
 while [ -n "$d" ]; do
   v=$(sed -n 's/.*--nova-desactivation-forcee[[:space:]]*:[[:space:]]*\([a-z]*\).*/\1/p' "$H/log/classes/$d/css" 2>/dev/null | tail -n 1)
+  # Oui pour 24 h seulement (2026-11-27, utilisateur) : heure de fin (secondes) du meme fichier ; sans elle, expire.
+  if [ "$v" = oui ]; then
+    fin=$(sed -n 's/.*--nova-desactivation-forcee-fin[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p' "$H/log/classes/$d/css" 2>/dev/null | tail -n 1)
+    { [ -n "$fin" ] && [ "$fin" -gt "$(date +%s)" ]; } || v=non
+  fi
   [ -n "$v" ] && { permis=$v; break; }
   case "$d" in */*) d=${d%/*} ;; *) d= ;; esac
 done

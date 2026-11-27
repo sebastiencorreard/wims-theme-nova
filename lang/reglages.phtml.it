@@ -169,7 +169,7 @@
 !set nova_mois=gennaio,febbraio,marzo,aprile,maggio,giugno,luglio,agosto,settembre,ottobre,novembre,dicembre
 !set nova_version_dev=versione di sviluppo
 !set nova_app_desact=Disattivare nonostante la condivisione
-!set nova_app_desact_aide=Aggiunge un pulsante «Disattiva comunque...» quando WIMS rifiuta di disattivare un esame o un foglio condiviso con altre classi.
+!set nova_app_desact_aide=Aggiunge un pulsante «Disattiva comunque...» quando WIMS rifiuta di disattivare un esame o un foglio condiviso con altre classi. Torna da solo a No 24 ore dopo essere stato attivato.
 !set nova_app_desact_danger=Pericoloso: l'esame o il foglio viene disattivato in tutte le classi che lo condividono, e il suo contenuto è di nuovo modificabile; ogni modifica sfasa i voti registrati, in tutte quelle classi. WIMS lo vieta per questi motivi. Attivalo solo con cognizione di causa.
 !set nova_version_lien=Novità di ogni versione (nuova scheda)
 !set nova_rg_affichage=Visualizzazione

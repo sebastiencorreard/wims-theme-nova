@@ -49,7 +49,7 @@
   // parcours de l'élève, réglage de la carte d'une classe). Aussi : gabarits (!if oui=non), ti.css dans css.css.template.
   var TI_ACTIF = false;
   var VARS_DEMARRAGE = ['css', 'animations', 'fil-fixe', 'masques-eleves', 'communication-eleves', 'decorations', 'entree-directe',
-    'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'echauffement-entrainement', 'echauffement-note',
+    'activite', 'badges', 'badges-actifs', 'clavier-maths', 'desactivation-forcee', 'desactivation-forcee-fin', 'echauffement-entrainement', 'echauffement-note',
     'dm-mots', 'dm-note-essais', 'notes-moyenne', 'travail-individualise', 'seuil-reussi'];
   var racineCache = null;
   var racineLecteur = {
@@ -177,4 +177,11 @@
     if (deja === attendu || !window.fetch) { remplacer(); return; }
     try { sessionStorage.setItem(cle, attendu); } catch (e) { /* sans stockage : une redemande par page */ }
     fetch(href, { cache: 'reload', credentials: 'same-origin' }).then(remplacer, remplacer);
+  }
+
+  /* « Desactiver malgre le partage » (2026-11-27, utilisateur : reglage dangereux) : actif 24 h seulement.
+   * --nova-desactivation-forcee: oui ET --nova-desactivation-forcee-fin (secondes depuis 1970) dans le futur ; un oui sans
+   * fin (versions precedentes) compte comme expire. Meme regle cote serveur (_procs/desactiver.sh, desactivables.sh). */
+  function desactivationForceeActive(oui, fin) {
+    return String(oui || '').replace(/["']/g, '').trim() === 'oui' && /^\d+$/.test(String(fin || '').trim()) && +String(fin).trim() * 1000 > Date.now();
   }

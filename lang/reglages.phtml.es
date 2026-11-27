@@ -169,7 +169,7 @@
 !set nova_mois=enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre
 !set nova_version_dev=versión de desarrollo
 !set nova_app_desact=Desactivar a pesar del uso compartido
-!set nova_app_desact_aide=Añade un botón «Desactivar de todos modos...» cuando WIMS se niega a desactivar un examen o una hoja compartidos con otras clases.
+!set nova_app_desact_aide=Añade un botón «Desactivar de todos modos...» cuando WIMS se niega a desactivar un examen o una hoja compartidos con otras clases. Vuelve solo a No 24 h después de activarse.
 !set nova_app_desact_danger=Peligroso: el examen o la hoja se desactiva en todas las clases que lo comparten, y su contenido se puede volver a modificar; cualquier cambio desajusta las notas registradas, en todas esas clases. WIMS lo prohíbe por estas razones. Actívalo solo con conocimiento de causa.
 !set nova_version_lien=Novedades de cada versión (nueva pestaña)
 !set nova_rg_affichage=Visualización

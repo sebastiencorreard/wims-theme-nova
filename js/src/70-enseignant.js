@@ -818,8 +818,10 @@
     var f = document.getElementById('nova-forcer');
     var corps = document.querySelector('.wimsbody');
     if (!f || !corps || document.querySelector('.nova-forcer-bouton') || typeof document.createElement('dialog').showModal !== 'function') return;
-    // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur).
-    if (racineStyle().getPropertyValue('--nova-desactivation-forcee').replace(/["']/g, '').trim() !== 'oui') return;
+    // Seulement si la classe l'a permis (page Apparence, --nova-desactivation-forcee: oui ; 2026-11-08, utilisateur), depuis
+    // moins de 24 h (--nova-desactivation-forcee-fin ; 2026-11-27, utilisateur).
+    var rs = racineStyle();
+    if (!desactivationForceeActive(rs.getPropertyValue('--nova-desactivation-forcee'), rs.getPropertyValue('--nova-desactivation-forcee-fin'))) return;
     var placer = function (el) {
       var msg = corps.querySelector('.wims_msg, .oef_error, .wims_warning:not(.wims_button)');
       if (msg) msg.parentNode.insertBefore(el, msg.nextSibling);

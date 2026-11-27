@@ -23,6 +23,11 @@ nv_def() { sed -n "s/^\(!set \)\{0,1\}$1=//p" "$2" 2>/dev/null | tr ',' ' '; }
 nv_permis=non; nv_d=$C
 while [ -n "$nv_d" ]; do
   nv_v=$(sed -n 's/.*--nova-desactivation-forcee[[:space:]]*:[[:space:]]*\([a-z]*\).*/\1/p' "$H/log/classes/$nv_d/css" 2>/dev/null | tail -n 1)
+  # Oui pour 24 h seulement (2026-11-27, utilisateur) : heure de fin (secondes) du meme fichier ; sans elle, expire.
+  if [ "$nv_v" = oui ]; then
+    nv_fin=$(sed -n 's/.*--nova-desactivation-forcee-fin[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p' "$H/log/classes/$nv_d/css" 2>/dev/null | tail -n 1)
+    { [ -n "$nv_fin" ] && [ "$nv_fin" -gt "$(date +%s)" ]; } || nv_v=non
+  fi
   [ -n "$nv_v" ] && { nv_permis=$nv_v; break; }
   case "$nv_d" in */*) nv_d=${nv_d%/*} ;; *) nv_d= ;; esac
 done

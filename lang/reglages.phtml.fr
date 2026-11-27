@@ -169,7 +169,7 @@
 !set nova_mois=janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre
 !set nova_version_dev=version de développement
 !set nova_app_desact=Désactiver malgré le partage
-!set nova_app_desact_aide=Ajoute un bouton « Désactiver quand même... » quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes.
+!set nova_app_desact_aide=Ajoute un bouton « Désactiver quand même... » quand WIMS refuse de désactiver un examen ou une feuille partagés avec d'autres classes. Revient tout seul à Non 24 h après avoir été activé.
 !set nova_app_desact_danger=Dangereux : l'examen ou la feuille est désactivé dans toutes les classes du partage, et son contenu redevient modifiable ; un changement désaccorde les notes déjà enregistrées, dans toutes ces classes. WIMS l'interdit pour ces raisons. À n'activer qu'en connaissance de cause.
 !set nova_version_lien=Nouveautés de chaque version (nouvel onglet)
 !set nova_rg_affichage=Affichage

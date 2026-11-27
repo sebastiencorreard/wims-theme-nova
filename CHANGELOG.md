@@ -14,6 +14,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- **Désactiver malgré le partage** (réglage avancé, dangereux) : il revient tout seul à Non 24 h après avoir été activé ; le texte d'explication le dit.
 - **Sauvegarde et restauration d'un cours en partage** : un avertissement explique que le cours reçoit les ressources du programme, ce que casserait une restauration, et comment restaurer dans le programme pour toutes les classes du niveau.
 - **Classes virtuelles (visiteur)** : un seul titre « Accès élèves », « Accès enseignants » ou « Classes ouvertes », sans « Classes virtuelles » ni tirets ; « Entrer » pour se connecter à une classe ou s'y inscrire.
 - **Logo de la classe au bord de la page, titre centré** : le logo n'est plus flottant (il ne décale plus le titre ni le « Bonjour » de la carte en dessous) ; au téléphone, il passe au-dessus du titre.
@@ -37,6 +38,9 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Icônes** : Nova affiche toujours le jeu d'icônes Lucide, même dans une classe ou sur un site réglés sur un autre jeu (« default », Font_Awesome…) ; le choix « Jeu d'icônes » de la page Apparence ne compte plus que pour les autres thèmes.
 - « Désactiver » n'est plus proposé pour une feuille ou un examen que WIMS refuserait de désactiver (feuille utilisée dans un examen, examen déjà commencé par des élèves, partage, structure). Si la classe permet « Désactiver malgré le partage », l'action reste proposée quand Nova peut passer outre (feuille ou examen actif).
 - **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
+
+### Installation
+- « Désactiver malgré le partage » : un Oui enregistré avec une version précédente compte comme expiré ; le réactiver au besoin (valable 24 h).
 
 ### Corrections
 - Barre de score d'une feuille de beaucoup d'exercices : elle ne dépasse plus de la carte, les segments passent sur plusieurs lignes (de taille fixe à partir de 21 exercices).

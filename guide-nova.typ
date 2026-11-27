@@ -1366,6 +1366,14 @@ Dans le sens de la montée, rien à faire : à la première visite de l'élève,
 fichiers (`avatar.proc`, `user.phtml`, `_widgets/couleur-choix.phtml`) ; en attendant, les pages de l'enseignant
 lisent le nouveau nom, sinon l'ancien (`avatars-classe.sh`, `suivi.pl`).
 
+=== Ce qui a changé à la version 1.5
+
+Un réglage de la classe change de sens (décision de l'utilisateur, 27 novembre 2026) : `--nova-desactivation-forcee: oui`
+ne vaut plus que 24 heures, jusqu'à l'heure écrite dans `--nova-desactivation-forcee-fin` (secondes depuis 1970). Un
+« oui » enregistré par une version précédente n'a pas cette heure : il compte comme expiré, l'enseignant le réactive au
+besoin. Rien d'élève n'est touché ; une version précédente réinstallée relit le « oui » resté dans la feuille de la classe
+et l'applique sans limite, comme avant.
+
 === Ce que fait « Préparer le retour »
 
 Une version d'avant le 12 novembre ne connaît que les anciens noms. Installée telle quelle après une version
@@ -2495,7 +2503,8 @@ listes séparées par des espaces.
     ("travail-individualise", [Carte « Travail individualisé » de l'onglet « Page de présentation » d'une feuille (`travailIndividualise`) ; `non` par défaut, `oui` la montre. Les pages déjà écrites restent affichées aux élèves.]),
     ("notes-moyenne", [Carte « Moyenne globale » de « Mes notes » et du détail d'un élève vu par l'enseignant ; `non` la retire.]),
     ("seuil-reussi", [Exercice réussi (pastille verte) quand l'indicateur du barème dépasse ce pourcentage des points demandés, de 0 à 99 ; 90 par défaut (règle de WIMS). Accueil, séquences et page d'une feuille ; pas avec le réglage `listes`.]),
-    ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen. Vérifié aussi côté serveur.]),
+    ("desactivation-forcee", [Autorise « Désactiver quand même » une ressource partagée ou utilisée dans un examen, pendant 24 h (voir la ligne suivante). Vérifié aussi côté serveur.]),
+    ("desactivation-forcee-fin", [Heure de fin (secondes depuis 1970) du « oui » précédent, écrite par la carte de la classe à l'activation (maintenant + 24 h, gardée tant qu'elle court). Un « oui » sans elle, ou dépassé, vaut « non » (nova.js `desactivationForceeActive`, `_procs/desactiver.sh`, `desactivables.sh`).]),
     ("masques-eleves", [Rubriques du menu masquées aux élèves : liste parmi `communication` et `liens`, ou `aucune`.]),
     ("communication-eleves", [Ancien réglage (rubrique Communication des élèves), gardé pour les classes qui l'ont posé ; remplacé par `masques-eleves`.]),
   )),

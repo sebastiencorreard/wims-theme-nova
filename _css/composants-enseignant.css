@@ -747,6 +747,11 @@ body.main_body .wimsbody .nova-actions .nova-actions-liste > a.wims_button.wims_
 .wimsbody .nova-choix-tout:hover { text-decoration: underline; background: none; color: var(--nova-lien-survol); }
 .nova-choix-liste { max-height: 22rem; overflow-y: auto; border: 1px solid var(--nova-bord-fort); border-radius: var(--nova-rayon); background: var(--nova-surface); }
 .wimsbody .nova-choix-option { display: flex; align-items: center; gap: var(--nova-e3); min-height: var(--nova-cible); margin: 0; padding: 6px var(--nova-e3); font-weight: 400; cursor: pointer; }
+/* Lignes resserrees a la souris (2026-11-28, utilisateur : « en voir davantage ») : 28 px, texte plus petit ; au doigt,
+ * 40 px. Liste plus haute aussi (60 % de l'ecran). */
+@media (pointer: fine) { .wimsbody .nova-choix-option { box-sizing: border-box; min-height: 28px; padding: 3px var(--nova-e3); font-size: var(--nova-petit); line-height: 1.3; } }
+@media (pointer: coarse) { .wimsbody .nova-choix-option { box-sizing: border-box; min-height: 40px; padding: 4px var(--nova-e3); line-height: 1.3; } }
+.nova-choix-liste { max-height: max(22rem, 60vh); }
 .wimsbody .nova-choix-option + .nova-choix-option { border-top: 1px solid var(--nova-bord); }
 .wimsbody .nova-choix-option:hover { background: var(--nova-surface-2); }
 .wimsbody .nova-choix-option > input { flex: none; margin: 0; }

@@ -84,7 +84,7 @@
 !set nova_std_notes_enseignant_liste=<li>Detail of a student's work (name clicked on the "Scores" page): WIMS tables instead of cards (average, exams, one collapsible card per worksheet).</li><li>"Scores" page: "Show" line with WIMS buttons instead of the selector (current choice in colour).</li><li>Exam details of a student: the WIMS table (&#8224; and ?? signs) instead of one card per exam.</li><li>Account properties of a student: the WIMS form (classes as a bulleted list) instead of the three cards; the "Enrol in a class" button stays, without crosses to remove.</li>
 !set nova_std_liens=Standard links
 !set nova_std_liens_aide=Links not underlined, black in tabs.
-!set nova_std_liens_liste=<li>Links in text and tables (dates, "Guide", worksheet titles...): no longer underlined, recognisable by their colour only.</li><li>Tabs (Worksheets, Exams on the teacher's home page...): links black like the text, instead of the link colour.</li><li>Unchanged: menus, buttons, badges and cards.</li>
+!set nova_std_liens_liste=<li>Links in text and tables (dates, "Guide", worksheet titles...): no longer underlined, recognisable by their colour only.</li><li>Tabs (Worksheets, Exams on the teacher's home page...): links black like the text, instead of the link colour.</li><li>Unchanged: menus, buttons, badges and cards.</li><li>Group or portal home (student): "Register in a work area as a participant" stays a link instead of a button.</li>
 !set nova_app_activite=Students' "My activity" page
 !set nova_app_activite_aide=Replaces the WIMS page with a simple one: regularity, working time, latest scores.
 !set nova_app_act_seuil=Encourage students who work fewer than

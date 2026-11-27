@@ -187,3 +187,10 @@ body.user_error > .wims_msg { margin: 0 0 var(--nova-e4); }
 body.user_error > .wimscenter { margin-top: var(--nova-e4); text-align: center; }
 body.user_error > .wimscenter:has(> span.disabled_link) { display: none; }
 body.user_error > .wimscenter .wims_button { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--nova-e5); border-radius: var(--nova-rayon); }
+
+/* « S'inscrire dans une zone de travail » (accueil d'un groupement ou d'un portail, élève ; nova.js zoneInscrire,
+ * 2026-11-27, utilisateur) : bouton secondaire sous la liste des zones, icône Lucide plus. */
+/* En bloc en ligne (pas en flex) : sur deux lignes, le « + » reste contre le texte ; hauteur par le padding. */
+body .wimsbody > a.wims_button.nova-zone-inscrire { display: inline-block; height: auto; min-height: 0; padding-block: .6em; line-height: 1.4; text-align: center; margin: var(--nova-e3) 0 0; }
+.wimsbody > a.nova-zone-inscrire::before { content: ""; display: inline-block; vertical-align: -.2em; margin-right: .45em; width: 1.1em; height: 1.1em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='M12 5v14'/%3E%3C/svg%3E") center / contain no-repeat; }

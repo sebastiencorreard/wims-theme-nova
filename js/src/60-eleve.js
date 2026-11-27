@@ -367,3 +367,16 @@
     window.addEventListener('resize', ajuster);
     window.addEventListener('load', ajuster);
   }
+
+  /* « S'inscrire dans une zone de travail comme participant » (modules/home/subclasses.phtml, accueil d'un groupement ou
+   * d'un portail, eleve qui a plusieurs zones ; 2026-11-27, utilisateur) : lien nu de WIMS, sous la liste des zones,
+   * devenu bouton secondaire (icone plus), sans le point final. Reglage « Liens du theme standard » : lien tel quel. */
+  function zoneInscrire() {
+    if (standard('liens')) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody > a[href*="insc=yes"]'), function (a) {
+      if (a.classList.contains('nova-zone-inscrire')) return;
+      a.classList.add('wims_button', 'wims_secondary_button', 'nova-zone-inscrire');
+      var t = a.textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, '');
+      if (t) a.textContent = t;
+    });
+  }

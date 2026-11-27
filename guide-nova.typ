@@ -165,7 +165,7 @@ sont remplacés par les surcharges de traduction prévues par WIMS (@textes).
   [`js/src/`], [Sources de `nova.js`, par domaine (@annexe-js). Autres scripts de `js/` : chargés à la demande.],
   [`js/cm6/`], [Sources de l'éditeur de code (@editeur) : `entree.js` (éditeur, barre, recherche), `langue-documents.js` (documents, fabrique commune avec OEF), `langues-wims.js`, `langues-web.js`, `langues-python.js` (fichiers chargés à la demande), `etiquettes.js` (étiquettes de coloration partagées), `mots-wims.js` (listes de mots reprises d'EditArea), `icones.js` (Lucide), `construire.mjs` (assemblage), `LICENSE-CodeMirror` (MIT).],
   [`icones/`], [Jeu d'icônes Lucide pour WIMS et ses outils de construction.],
-  [`img/`, `polices/`, `_avatar/`], [Images (logos, badges), polices (Atkinson Hyperlegible), dessins de l'avatar.],
+  [`img/`, `polices/`, `_avatar/`], [Images (logos, badges ; `wims_logo_v4_accent.svg` et `wims_logo_v4_accent_fin.svg`, animés, rouges dans le fichier, prennent la couleur d'accent partout où une page les montre : masque CSS, fin de `cadre.css`), polices (Atkinson Hyperlegible), dessins de l'avatar.],
   [`guide-nova.typ`], [Ce guide (à la racine : Typst ne lit les sources que sous le dossier du fichier compilé).],
 )
 

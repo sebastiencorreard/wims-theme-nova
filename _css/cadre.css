@@ -1252,3 +1252,20 @@ html.nova-anonyme #wimsmenumodubox .menuitem:is(.myscore, .myactivity, .livret, 
 html.nova-anonyme :is(#wimsmenumodubox, #wimstopbox) .menuitem:has(> a:is([href*="adm%2Fclass%2Fuserscore"], [href*="adm%2Fclass%2Factivity"], [href*="nova_activite"], [href*="#nova-"])) { display: none !important; }
 html.nova-anonyme #wimsmenumodubox .wimsmenu:not(:has(> .menuitem:not(.myscore, .myactivity, .livret, .swork))),
 html.nova-anonyme #wimsmenumodubox .menu_title:has(+ .wimsmenu:not(:has(> .menuitem:not(.myscore, .myactivity, .livret, .swork)))) { display: none !important; }
+
+/* Logos WIMS « accent » (2026-11-27, utilisateur) : toute image wims_logo_v4_accent.svg ou wims_logo_v4_accent_fin.svg,
+ * où qu'elle soit (logo du site, actualités, message), prend la couleur d'accent du site, de la structure ou de la classe.
+ * Les fichiers sont rouges (un seul trait, animé en SMIL) : l'image est poussée hors de son cadre (object-position) et sa
+ * forme sert de masque, rempli par l'accent ; l'animation continue (vérifié sous Chromium). Le masque est la copie du thème
+ * (img/), même si la page lie une copie d'ailleurs. Dans la barre d'accent : couleur du texte de la barre (blanc). */
+img:is([src*="wims_logo_v4_accent."], [src*="wims_logo_v4_accent_fin."]) {
+  object-position: -99999px 0;
+  background: var(--nova-accent);
+  -webkit-mask: url("img/wims_logo_v4_accent.svg") center / contain no-repeat;
+          mask: url("img/wims_logo_v4_accent.svg") center / contain no-repeat;
+}
+img[src*="wims_logo_v4_accent_fin."] {
+  -webkit-mask-image: url("img/wims_logo_v4_accent_fin.svg");
+          mask-image: url("img/wims_logo_v4_accent_fin.svg");
+}
+#wimstopbox img:is([src*="wims_logo_v4_accent."], [src*="wims_logo_v4_accent_fin."]) { background: var(--nova-sur-accent); }

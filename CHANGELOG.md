@@ -43,6 +43,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - « Désactiver malgré le partage » : un Oui enregistré avec une version précédente compte comme expiré ; le réactiver au besoin (valable 24 h).
 
 ### Corrections
+- Exercice chronométré à plusieurs questions : le bandeau « Temps écoulé » reste affiché aux questions suivantes, jusqu'à la fin de l'exercice.
 - Barre de score d'une feuille de beaucoup d'exercices : elle ne dépasse plus de la carte, les segments passent sur plusieurs lignes (de taille fixe à partir de 21 exercices).
 - **Restauration d'une sauvegarde dans un cours qui reçoit les ressources de son programme** : WIMS remplaçait (case « Tout ») les feuilles, examens, documents et votes partagés par une copie figée, et le cours ne voyait plus ce qu'on ajoutait au programme (un DM WIMS, par exemple). Nova les retire de la restauration, ainsi que ce qui en dépend ; seuls les éléments propres au cours (notes, cahier de textes…) sont restaurés.
 - Menu latéral : une entrée longue (« Présentation en séquences ») tient sur une ligne, aussi sous Edge.

@@ -24,20 +24,7 @@
     document.body.appendChild(annonce);
     var precedent = null;
 
-    function bandeau() {
-      if (document.querySelector('.nova-chrono-bandeau')) return;
-      var b = document.createElement('div');
-      b.className = 'nova-chrono-bandeau';
-      b.setAttribute('role', 'alert');
-      var fort = document.createElement('strong');
-      fort.textContent = textes.fin;
-      var detail = document.createElement('span');
-      detail.textContent = boite.getAttribute('data-texte-fin-detail') || '';
-      b.appendChild(fort);
-      b.appendChild(detail);
-      var corps = document.querySelector('.wimsbody') || document.body;
-      corps.insertBefore(b, corps.firstChild);
-    }
+    function bandeau() { bandeauChrono(textes.fin, boite.getAttribute('data-texte-fin-detail') || ''); }
     function mettreAJour() {
       var m = /(\d+):(\d\d)/.exec(temps.textContent);
       if (!m) return;
@@ -51,6 +38,12 @@
       if (libelle && textes[etat]) libelle.textContent = textes[etat];
       if (etat !== 'normal') annonce.textContent = textes[etat] || '';
       if (etat === 'fin') bandeau();
+      // Exercice chronometre : le temps ecoule est retenu pour les questions suivantes (chronoExerciceSuite) ; un decompte
+      // de nouveau positif (exercice recommence) retire le bandeau retenu.
+      if (document.getElementById('clockoef')) {
+        if (etat === 'fin') chronoExerciceMemoire(true);
+        else { var vieux = document.querySelector('.nova-chrono-bandeau[data-nova-memoire]'); if (vieux) vieux.remove(); chronoExerciceMemoire(false); }
+      }
       precedent = etat;
     }
     new MutationObserver(mettreAJour).observe(temps, { childList: true, characterData: true, subtree: true });
@@ -300,6 +293,55 @@
     return /[?&+]session=[^&]*_check/.test(location.href) || !!document.querySelector('a[href*="_check."]');
   }
   function chronoExercice() { if (!fenetreVerification()) chronoMiroir(document.getElementById('clockoef'), false); }
+
+  // Bandeau « Temps ecoule » en tete de page (chronometre d'examen ou d'exercice).
+  function bandeauChrono(titre, texte) {
+    var b = document.querySelector('.nova-chrono-bandeau');
+    if (b) return b;
+    b = document.createElement('div');
+    b.className = 'nova-chrono-bandeau';
+    b.setAttribute('role', 'alert');
+    var fort = document.createElement('strong');
+    fort.textContent = titre;
+    var detail = document.createElement('span');
+    detail.textContent = texte;
+    b.appendChild(fort);
+    b.appendChild(detail);
+    var corps = document.querySelector('.wimsbody') || document.body;
+    corps.insertBefore(b, corps.firstChild);
+    return b;
+  }
+
+  /* Exercice chronometre a plusieurs questions (2026-11-27, utilisateur : « le bandeau disparait a la question d'apres ») :
+   * une fois le decompte a 00:00, le temps ecoule est retenu (sessionStorage, session + module) et le bandeau revient sur
+   * chaque page de l'exercice jusqu'a sa fin : page sans formulaire de reponse, autre module, ou exercice recommence
+   * (cmd=new/renew, meta nova-cmd ; WIMS remet alors l'heure de depart, scripts/oef/var.proc). */
+  function chronoExerciceCle() {
+    var m = /session=([^&.]+)/.exec(lienAccueil('')), mm = document.querySelector('meta[name="nova-module"]');
+    return (m ? m[1] : '') + ' ' + (mm ? mm.content : '');
+  }
+  function chronoExerciceMemoire(oui) {
+    try { if (oui) sessionStorage.setItem('nova-chrono-exercice', chronoExerciceCle()); else sessionStorage.removeItem('nova-chrono-exercice'); } catch (e) { /* sans stockage */ }
+  }
+  function chronoExerciceSuite() {
+    var retenu = null;
+    try { retenu = sessionStorage.getItem('nova-chrono-exercice'); } catch (e) { return; }
+    if (!retenu) return;
+    var cmd = document.querySelector('meta[name="nova-cmd"]');
+    cmd = cmd ? cmd.content : '';
+    if (retenu !== chronoExerciceCle() || cmd === 'new' || cmd === 'renew' || !document.querySelector('.oefform')) { chronoExerciceMemoire(false); return; }
+    // Decompte de WIMS deja positif : l'exercice a ete recommence, rien a retenir.
+    var horloge = document.getElementById('clockoef');
+    var m = horloge && /(\d+):(\d\d)/.exec(horloge.textContent);
+    if (m && +m[1] * 60 + +m[2] > 0) { chronoExerciceMemoire(false); return; }
+    var textes = document.getElementById('nova-textes');
+    var t = function (nom, defaut) { return (textes && textes.getAttribute('data-' + nom)) || defaut; };
+    var b = bandeauChrono(t('texte-fin', 'Time is up'), t('texte-fin-detail-exo', t('texte-fin-detail', '')));
+    if (!b.hasAttribute('data-nova-memoire')) b.setAttribute('data-nova-memoire', '');
+    // Chronometre de la barre encore vide (WIMS ne l'a pas relance) : 00:00, que chronometre() voit comme la fin.
+    var miroir = document.querySelector('.nova-chrono .nova-chrono-miroir');
+    if (miroir && !/\d/.test(miroir.textContent)) miroir.textContent = '00:00';
+  }
 
   /* Feuille d'exercices (adm/sheet, contenu.css) : le score de WIMS est un texte « Qualité: 0/10
    * Réussite: 0% Points requis:10 » ; il devient des étiquettes (libellé + valeur), et la valeur en %

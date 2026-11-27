@@ -804,6 +804,7 @@ un lien d'exercice d'examen pour tester (cela démarre une session et consomme u
 #table(columns: (1fr, 1.6fr), align: left,
   [Ce qui est en cause], [Où],
   [le chronomètre d'un examen], [`chronometre`, `chronoMiroir` (copie sur la page de l'examen) ; `chrono.css`],
+  [le bandeau « Temps écoulé » d'un exercice chronométré à plusieurs questions], [`chronoExerciceSuite`, `bandeauChrono` : retenu (sessionStorage) jusqu'à la fin de l'exercice, retiré si le décompte redevient positif ; exercice recommencé = meta `nova-cmd` (`new`, `renew`) de `htmlheader.phtml`],
   [le chronomètre d'un exercice à temps limité], [`chronoExercice` ; le bloc « Exercice OEF chronométré » de `headmenu.phtml`],
   [ce que l'élève voit pendant un examen (menu, « Terminer », aide grisée)], [`modeExamen`, `aideExamen`],
   [la page de l'examen (liste des exercices, étapes d'une série)], [`pagesExamen`, `examExercices`, `serieEtapes`, `typesExamen`],
@@ -2678,7 +2679,7 @@ sans elles, la page prend ses valeurs par défaut.
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
 (`nova-reglages-enregistre`, `nova-ti-ecrit` pour le Travail individualisé), plan du portail (`nova-pp-rouvrir` : panneau à
 rouvrir après un changement d'accès ; `nova-pp-suite` : page à ouvrir une fois entré dans une zone), onglet « Feuilles » ouvert par défaut sur l'accueil
-(`nova-supervisor_list_selectedTab`, `nova-user_list_selectedTab` : valeur écrite par Nova dans la clé de WIMS)… Ces clés peuvent changer sans précaution.
+(`nova-supervisor_list_selectedTab`, `nova-user_list_selectedTab` : valeur écrite par Nova dans la clé de WIMS), temps écoulé d'un exercice chronométré retenu pour ses questions suivantes (`nova-chrono-exercice` : session et module)… Ces clés peuvent changer sans précaution.
 
 == Repères posés dans la page <annexe-reperes>
 

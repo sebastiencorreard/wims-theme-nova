@@ -56,6 +56,11 @@
 <template id="nova-etats-textes" data-exercice="Ejercicio %1: %2" data-faire="Por hacer" data-cours="En curso" data-reussi="Logrado" data-brillant="Logrado con brillantez"></template>
 !exit
 
+:echeances
+!! user.phtml, accueil de l'eleve (nova.js echeancesSequences, 2026-11-27) : date limite des sequences
+<template id="nova-echeances" data-fins="$nova_sf" data-titre="para hacer hasta el %1" data-jusqu="Hasta el %1" data-reste="Quedan %1 días" data-dernier="¡Último día!" data-dernier-heure="Último día, hasta las %1" data-h="%1:00" data-hm="%1:%2" data-a-heure="%1 a las %2"></template>
+!exit
+
 :feuille
 !! header.phtml, page d'une feuille (adm/sheet ; nova.js feuilleExercices, audit D2 maquette B, 2026-11-14)
 <template id="nova-feuille-textes" data-exercice="Ejercicio %1: %2" data-feuille="Hoja %1" data-reussi="%1 ejercicio logrado de %2" data-reussis="%1 ejercicios logrados de %2" data-etat-reussi="Logrado" data-etat-brillant="Logrado con brillantez" data-etat-cours="En curso" data-etat-faire="Por hacer" data-points="%1 / %2 puntos" data-entrainement="Modo práctica" data-entrainement-aide="Tus respuestas no se califican mientras esté activado."></template>

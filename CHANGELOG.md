@@ -9,6 +9,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ### Élèves
 - **Pages moins larges** sur un grand écran : le contenu tient dans une colonne centrée (70rem, environ 1 100 px), plus facile à lire ; une page qui porte un grand tableau (notes de l'enseignant, par exemple) garde toute la largeur.
 - **Séquences et accueil** : les cartes des feuilles, examens et glossaires remplissent la largeur de la séquence, en colonnes égales, avec une marge autour dans la carte de la séquence, et deux cartes côte à côte ont la même hauteur.
+- **Date limite des séquences** : quand l'enseignant programme la fin d'affichage d'une séquence, son titre se termine par « (à faire jusqu'au mardi 8 déc.) », avec l'heure si ce n'est pas 23 h 59, et les cartes de feuille ou d'examen encore sans note portent une pastille : « Jusqu'au mar. 8 déc. » en bleu, « Plus que 3 jours » ou « Plus que 2 jours » en orange, « Dernier jour ! » en rouge.
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants

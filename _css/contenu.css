@@ -280,6 +280,26 @@
 }
 
 
+/* Date limite d'une séquence (2026-11-27, utilisateur, maquette C) : nova.js echeancesSequences. Parenthèse après le titre
+ * de la séquence ; pastille sur les cartes de feuille et d'examen sans note, à droite sous le titre (place de la note) :
+ * bleu d'information au-delà de 3 jours, orange à 3 et 2 jours, rouge le dernier jour. Icône Lucide alarm-clock. */
+.wims_title_seq .nova-echeance-titre { font-weight: 400; font-size: .8em; color: var(--nova-texte-2); }
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > div.nova-echeance {
+  order: 0; flex: 0 0 auto; align-self: flex-start; margin: 0 0 0 auto; text-align: right;
+}
+.nova-echeance > span {
+  display: inline-flex; align-items: center; gap: .35em; padding: 3px 12px; border-radius: 999px;
+  font-size: var(--nova-petit); font-weight: 600; white-space: nowrap;
+}
+.nova-echeance > span::before {
+  content: ""; flex: none; width: 1.05em; height: 1.05em; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2 2'/%3E%3Cpath d='M5 3 2 6'/%3E%3Cpath d='m22 6-3-3'/%3E%3Cpath d='M6.38 18.7 4 21'/%3E%3Cpath d='M17.64 18.67 20 21'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13' r='8'/%3E%3Cpath d='M12 9v4l2 2'/%3E%3Cpath d='M5 3 2 6'/%3E%3Cpath d='m22 6-3-3'/%3E%3Cpath d='M6.38 18.7 4 21'/%3E%3Cpath d='M17.64 18.67 20 21'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.nova-echeance-loin > span { background: var(--nova-info-fond); color: var(--nova-info); }
+.nova-echeance-proche > span { background: var(--nova-attention-fond); color: var(--nova-attention-texte); }
+.nova-echeance-dernier > span { background: var(--nova-erreur); color: #fff; }
+
 /* ---------- Rien de plus large que la place disponible ---------- */
 .wimsbody input, .wimsbody select, .wimsbody textarea,
 .wimsbody .field.box, .wimsbody fieldset {

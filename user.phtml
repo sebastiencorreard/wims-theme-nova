@@ -374,6 +374,21 @@
 !if $seq_open=yes
   !if $seq_cnt>0
     !read themes/_widgets/sequence.phtml
+    !! Fin d'affichage programmee de chaque sequence (fichier .S<n> de la classe, 2026-11-27, utilisateur) : date limite
+    !! dans le titre et pastille sur les cartes sans note (nova.js echeancesSequences). Meme lecture que le widget de WIMS
+    !! (variables techniques comprises) ; WIMS ne remet pas accessend a vide quand la condition est vide.
+    !! Variables : nova_sf "n:AAAAMMJJhhmm" des sequences visibles a fin programmee ; nova_si rang de la sequence.
+    !reset nova_sf
+    !for nova_si=1 to $seq_cnt
+      !reset accessend
+      !readproc adm/class/checkuserscorecondition S$nova_si
+      !if $output=yes and $accessend!=$empty
+        !set nova_sf=$nova_sf $nova_si:$accessend
+      !endif
+    !next nova_si
+    !if $nova_sf!=$empty
+      !read themes/$wims_theme/lang/eleve-textes.phtml.$lang echeances
+    !endif
   !endif
   !goto endbar
 !endif

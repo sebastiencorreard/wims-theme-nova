@@ -856,6 +856,7 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
   [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],
   [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes`, `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
+  [la date limite d'une séquence (titre, pastille « Jusqu'au … » des cartes sans note)], [`echeancesSequences` ; `user.phtml` lit la fin d'affichage de chaque séquence (fichier `.S<n>` de la classe, par `adm/class/checkuserscorecondition`, comme WIMS) dans `#nova-echeances` (étiquette `echeances` de `lang/eleve-textes.phtml.<l>`) ; bleu au-delà de 3 jours, orange à 3 et 2, rouge le dernier ; réglage `listes`],
   [le détail des notes d'un élève], [`notesDetail` ; `_widgets/notes-detail.phtml` (textes, sessions d'examen de l'élève, indicateur du barème de chaque feuille lu dans `sheets/.severity`) ; réglage `--nova-notes-moyenne` (carte de la moyenne) ; une ligne d'examen ou d'exercice est un `<details>` (`.nova-nd-rang`) dont le détail s'ouvre au toucher ; la ligne d'un exercice montre l'indicateur du barème (cumul, réussite ou acquis), la qualité passe dans le détail, sauf quand WIMS ne montre aucun indicateur à l'élève (ligne du barème sans troisième nombre)],
 )
 

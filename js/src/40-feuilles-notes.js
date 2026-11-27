@@ -888,3 +888,55 @@
       Array.prototype.forEach.call(parcours, function (pc) { ro.observe(pc.parentNode); });
     }
   }
+
+  /* Date limite d'une sequence (2026-11-27, utilisateur, maquette C) : fin d'affichage programmee de la sequence
+   * (.S<n> de la classe, lue par user.phtml via adm/class/checkuserscorecondition, #nova-echeances data-fins
+   * "n:AAAAMMJJhhmm"). Titre : « (a faire jusqu'au mardi 8 dec.) », heure ajoutee si ce n'est pas 23 h 59.
+   * Pastille sur les cartes de feuille et d'examen SANS note de cette sequence : bleu d'information plus de 3 jours
+   * restants, orange de 3 a 2 jours, rouge le dernier jour. Reglage « Feuilles et examens en liste » : rien. */
+  function echeancesSequences() {
+    if (standard('listes')) return;
+    var src = document.getElementById('nova-echeances');
+    if (!src) return;
+    var t = function (k, d) { return src.getAttribute('data-' + k) || d; };
+    var langue = racineLangue();
+    var aujourdHui = new Date(); aujourdHui.setHours(0, 0, 0, 0);
+    (src.getAttribute('data-fins') || '').trim().split(/\s+/).forEach(function (paire) {
+      var m = /^(\d+):(\d{4})(\d\d)(\d\d)(\d\d)?(\d\d)?$/.exec(paire);
+      if (!m) return;
+      var bloc = document.getElementById('wims_seq_' + m[1]);
+      if (!bloc || bloc.hasAttribute('data-nova-echeance')) return;
+      bloc.setAttribute('data-nova-echeance', '');
+      var jour = new Date(+m[2], +m[3] - 1, +m[4]);
+      var h = m[5] === undefined ? 23 : +m[5], mn = m[6] === undefined ? 59 : +m[6];
+      var heure = (h === 23 && mn === 59) ? '' : (mn ? t('hm', '%1:%2').replace('%2', (mn < 10 ? '0' : '') + mn) : t('h', '%1:00')).replace('%1', String(h));
+      var longue, courte;
+      try {
+        longue = jour.toLocaleDateString(langue, { weekday: 'long', day: 'numeric', month: 'short' });
+        courte = jour.toLocaleDateString(langue, { weekday: 'short', day: 'numeric', month: 'short' });
+      } catch (e) { longue = courte = jour.toLocaleDateString(); }
+      if (heure) { longue = t('a-heure', '%1, %2').replace('%1', longue).replace('%2', heure); courte = t('a-heure', '%1, %2').replace('%1', courte).replace('%2', heure); }
+      var titre = bloc.querySelector('.wims_title_seq .wims_title_item') || bloc.querySelector('.wims_title_seq');
+      if (titre && !titre.querySelector('.nova-echeance-titre')) {
+        var s = document.createElement('span');
+        s.className = 'nova-echeance-titre';
+        s.textContent = ' (' + t('titre', 'to do until %1').replace('%1', longue) + ')';
+        titre.appendChild(s);
+      }
+      var restants = Math.round((jour - aujourdHui) / 86400000) + 1;   // jours restants, aujourd'hui compris
+      if (restants < 1) return;
+      var etat = restants === 1 ? 'dernier' : restants <= 3 ? 'proche' : 'loin';
+      var texte = etat === 'dernier' ? (heure ? t('dernier-heure', 'Last day, until %1').replace('%1', heure) : t('dernier', 'Last day!'))
+        : etat === 'proche' ? t('reste', '%1 days left').replace('%1', String(restants))
+        : t('jusqu', 'Until %1').replace('%1', courte);
+      Array.prototype.forEach.call(bloc.querySelectorAll('li.wims_exam_item, li.wims_sheet_item'), function (li) {
+        if (li.querySelector(':scope > .nova-echeance, :scope > div.nova-note-examen, :scope > div.wims_user_info .wims_sheet_score')) return;
+        var d = document.createElement('div'), p = document.createElement('span');
+        d.className = 'nova-echeance nova-echeance-' + etat;
+        p.textContent = texte;
+        p.title = t('titre', 'to do until %1').replace('%1', longue);
+        d.appendChild(p);
+        li.appendChild(d);
+      });
+    });
+  }

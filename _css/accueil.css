@@ -335,6 +335,9 @@ html.nova-std-menus .nova-accueil-bandeau { display: none; }
 .nova-logo-site img { display: block; width: auto; max-width: 160px; height: auto; max-height: 36px; }
 #wimstopbox a.nova-logo-site, #wimstopbox a.nova-logo-site:hover { min-height: 0; padding: 4px var(--nova-e2); background: #fff; }
 .nova-logo-bas { display: none; }
+/* Logo clair a fond transparent (nova.js logoSite) : sans plaque sur la barre, plaque d'accent en bas de page. */
+#wimstopbox .nova-logo-site.nova-logo-clair, #wimstopbox a.nova-logo-site.nova-logo-clair:hover { background: transparent; padding-inline: 0; }
+.nova-logo-bas.nova-logo-clair { background: var(--nova-accent); padding: var(--nova-e2) var(--nova-e3); }
 html.nova-js.nova-accueil-visiteur:not(.nova-std-menus) #wimstopbox :is(.menuitem.aboutw, .menuitem.about, .menuitem.help, .menuitem.whelp, #language_selector, .menuitem.wimsmanager) { display: none; }
 html.nova-std-menus #wimstopbox > .nova-visiteur-acces { display: none; }
 html.nova-std-menus #wimstopbox > .nova-logo-barre { order: -1; }

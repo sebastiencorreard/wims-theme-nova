@@ -981,6 +981,34 @@
     });
   }
 
+  /* Logo de l'etablissement ($site_logo, _widgets/logo-site.phtml ; 2026-11-27, utilisateur : logo AMU blanc sur fond
+   * transparent) : pose d'ordinaire sur une plaque blanche (logo sombre sur la barre de couleur). Un logo clair a fond
+   * transparent (plus d'un pixel sur cinq transparent, pixels visibles clairs en moyenne) perd la plaque dans la barre et
+   * prend une plaque a la couleur d'accent en bas de page (telephone) : classe nova-logo-clair. Image d'un autre site
+   * illisible par le canevas : plaque blanche gardee. */
+  function logoSite() {
+    document.querySelectorAll('.nova-logo-site img').forEach(function (img) {
+      var lire = function () {
+        if (!img.naturalWidth) return;
+        try {
+          var l = Math.min(120, img.naturalWidth), h = Math.max(1, Math.round(l * img.naturalHeight / img.naturalWidth));
+          var c = document.createElement('canvas');
+          c.width = l; c.height = h;
+          var ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0, l, h);
+          var d = ctx.getImageData(0, 0, l, h).data, transparents = 0, vus = 0, clarte = 0;
+          for (var i = 0; i < d.length; i += 4) {
+            if (d[i + 3] < 32) { transparents++; continue; }
+            vus++;
+            clarte += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+          }
+          if (vus && transparents > d.length / 20 && clarte / vus > 200) img.closest('.nova-logo-site').classList.add('nova-logo-clair');
+        } catch (e) { /* image d'un autre site : plaque blanche */ }
+      };
+      if (img.complete) lire(); else img.addEventListener('load', lire);
+    });
+  }
+
   /* Pied de page (demande de l'utilisateur, 2026-10-08) : CGU et Aide (_widgets/footer.phtml, barre .nova-pied au format
    * du pied de page de l'enseignant) rejoignent, sur l'accueil de l'enseignant, sa barre #wimsmenubox.footer. */
   function piedDePage() {

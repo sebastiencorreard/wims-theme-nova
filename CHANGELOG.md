@@ -45,6 +45,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
 
 ### Installation
+- Logo de l'établissement (`site_logo`) : un logo clair sur fond transparent s'affiche sans plaque blanche dans la barre, sur une plaque à la couleur d'accent en bas de page au téléphone.
 - « Désactiver malgré le partage » : un Oui enregistré avec une version précédente compte comme expiré ; le réactiver au besoin (valable 24 h).
 
 ### Corrections

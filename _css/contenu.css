@@ -1198,7 +1198,7 @@ html.nova-js:has(#nova-seq-numero) .wimsbody .wims_seq_id:not(.nova-seq-num) { v
 /* Largeur standard des contenus (54 rem, comme les formulaires et les cartes de réglages ; 2026-11-19, utilisateur : « elles
  * occupent toute la largeur ») : carte « classe », onglets des ressources, moteur de recherche et message du haut, centrés. */
 .wimsbody > :is(.nova-carte-classe, #widget_supervisor_list),
-.wimsbody:has(> .nova-carte-classe) > :is(#wims_supervisor_search, .wims_msg) { box-sizing: border-box; max-width: 54rem; margin-inline: auto; }
+.wimsbody:has(> .nova-carte-classe) > :is(#wims_supervisor_search, .wims_msg) { box-sizing: border-box; max-width: none; margin-inline: auto; }
 .nova-carte-classe > :first-child { margin-top: 0; }
 .nova-carte-classe > :last-child { margin-bottom: 0; }
 .nova-carte-classe > .wimscenter { margin-top: var(--nova-e3); }
@@ -1244,7 +1244,13 @@ html.nova-sans-animation .nova-interrupteur, html.nova-sans-animation .nova-inte
 :where(html:not(.nova-std-listes))  ol.wims_sheet_list .nova-exo-chiffres { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 var(--nova-e2); margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
 html.nova-js.nova-role-eleve:not(.nova-feuille-prete, .nova-std-listes) :is(ol.wims_sheet_list .wims_sheet_score, ol.wims_sheet_list .wims_score_bar, .wimsbody > a.wims_button[href*="job=suspend"], .wimsbody > a.wims_button[href*="job=reopen"]) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 
-/* Titre centré malgré un logo flottant (nova.js titresCentres, 2026-11-27, utilisateur) : même marge des deux côtés, égale à
- * la place du logo ; le logo flotte dans l'une. Peu de place (téléphone) : logo au-dessus du titre, centré. */
-.nova-titre-logo { padding-inline: var(--nova-logo-place) !important; box-sizing: border-box; }
-:is(#classlogo, .wimslogo).nova-logo-dessus { float: none !important; display: block; text-align: center; }
+/* Logo et titre (nova.js titresCentres, 2026-11-27, utilisateur) : le logo ne flotte plus ; grille à trois colonnes, logo
+ * au bord du contenu de la page (gauche, ou droite : .nova-logo-droite), titre centré sur la page dans la colonne du milieu.
+ * Peu de place (téléphone) : logo au-dessus du titre, au même bord. */
+.nova-titre-rangee { display: grid; grid-template-columns: var(--nova-logo-place, auto) minmax(0, 1fr) var(--nova-logo-place, auto); align-items: center; column-gap: 0; }
+.nova-titre-rangee > :is(#classlogo, .wimslogo) { grid-column: 1; grid-row: 1; float: none !important; margin: 0; padding: 0; justify-self: start; line-height: 0; }
+.nova-titre-rangee.nova-logo-droite > :is(#classlogo, .wimslogo) { grid-column: 3; justify-self: end; }
+.nova-titre-rangee > :not(#classlogo, .wimslogo) { grid-column: 2; grid-row: 1; min-width: 0; margin-inline: 0; }
+.nova-titre-rangee.nova-titre-rangee-etroite { grid-template-columns: minmax(0, 1fr); row-gap: var(--nova-e2); }
+.nova-titre-rangee.nova-titre-rangee-etroite > * { grid-column: 1 !important; }
+.nova-titre-rangee.nova-titre-rangee-etroite > :not(#classlogo, .wimslogo) { grid-row: 2; }

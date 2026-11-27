@@ -59,7 +59,7 @@
 .property_fields .formHelp, .formHelp { margin-top: var(--nova-e1); font-size: .8125rem; color: var(--nova-texte-2); }
 /* Cartes de réglages (Configuration globale de la classe…, demande de l'utilisateur, 2026-10-08) : largeur limitée,
  * centrées ; le bouton « Aide » flottant d'un champ garde une marge à droite (il touchait la colonne voisine ou le bord). */
-.wimsbody fieldset.property_fields { max-width: 54rem; margin-inline: auto; box-sizing: border-box; }
+.wimsbody fieldset.property_fields { max-width: none; margin-inline: auto; box-sizing: border-box; }
 .property_fields .field .wims_button_help.float_right { margin-right: var(--nova-e3); }
 /* Champs de réglages plus lisibles (2026-10-08, validé par l'utilisateur) : champ de texte à une largeur raisonnable ;
  * bouton « Aide » collé au libellé qu'il explique, plus discret, au lieu d'être rejeté à droite de la colonne. Seulement

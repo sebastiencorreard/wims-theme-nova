@@ -1056,13 +1056,73 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
 .wimsbody button.nova-notes-moyenne:hover { background: var(--nova-surface-2); }
 .wimsbody .nova-notes-segment { display: inline-flex; align-items: center; gap: var(--nova-e2); }
 .wimsbody .nova-notes-segment-nom { font-size: var(--nova-petit); color: var(--nova-texte-2); }
-.wimsbody .nova-segment { display: inline-flex; padding: 2px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface-2); }
-.wimsbody .nova-segment > button {
+:is(.wimsbody, .nova-qn) .nova-segment { display: inline-flex; padding: 2px; border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface-2); }
+:is(.wimsbody, .nova-qn) .nova-segment > button {
   min-height: 28px; margin: 0; padding: 0 var(--nova-e3); border: 0; border-radius: 999px; background: transparent; box-shadow: none;
   color: var(--nova-texte-2); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
 }
-.wimsbody .nova-segment > button[aria-pressed="true"] { background: var(--nova-accent); color: var(--nova-sur-accent); }
-.wimsbody .nova-segment > button[aria-pressed="false"]:hover { color: var(--nova-texte); }
+:is(.wimsbody, .nova-qn) .nova-segment > button[aria-pressed="true"] { background: var(--nova-accent); color: var(--nova-sur-accent); }
+:is(.wimsbody, .nova-qn) .nova-segment > button[aria-pressed="false"]:hover { color: var(--nova-texte); }
+/* Page Notes : panneau « Quelles notes ? » à droite (nova.js notesPanneau, 2026-11-28, utilisateur, maquette
+ * notes-panneau). Ordinateur (>= 1024 px) : fixe sous la barre et le fil d'Ariane (--nova-qn-haut), la page lui laisse
+ * sa place ; menu de gauche masquable sur cette page (html.nova-qn-sans-menu). Plus étroit : par-dessus la page. */
+.wimsbody fieldset.nova-qn-cache { display: none; }
+.wimsbody .nova-qn-barre { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); margin: 0 0 var(--nova-e4); }
+.wimsbody .nova-qn-barre > .nova-affi { flex: 1 1 auto; margin: 0; padding: 0; border: 0; }
+.wimsbody .nova-qn-boutons { display: inline-flex; gap: var(--nova-e2); margin-left: auto; }
+.wimsbody button.nova-qn-bouton {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 34px; margin: 0; padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); box-shadow: none;
+  color: var(--nova-texte); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
+}
+.wimsbody button.nova-qn-bouton:hover { background: var(--nova-surface-2); }
+.wimsbody button.nova-qn-bouton-menu { width: 34px; padding: 0; justify-content: center; }
+.wimsbody button.nova-qn-bouton-menu[aria-pressed="false"] { border-color: var(--nova-accent); color: var(--nova-accent); }
+html.nova-qn-ouvert .wimsbody .nova-qn-ouvrir { display: none; }
+.nova-qn {
+  position: fixed; z-index: 95; top: var(--nova-qn-haut, 112px); right: 0; bottom: 0; width: 280px; box-sizing: border-box;
+  display: flex; flex-direction: column; background: var(--nova-surface); border-left: 1px solid var(--nova-bord); font-size: 13px;
+}
+.nova-qn[hidden] { display: none; }
+.nova-qn-tete { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 6px 14px; }
+.nova-qn-tete h2 { margin: 0; padding: 0; border: 0; font-size: 15px; font-weight: 800; text-align: left; }
+.nova-qn button { font: inherit; margin: 0; box-shadow: none; cursor: pointer; }
+.nova-qn .nova-qn-icone { display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--nova-rayon); background: none; color: var(--nova-texte-2); }
+.nova-qn .nova-qn-icone:hover { background: var(--nova-surface-2); }
+.nova-qn-rang { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; padding: 0 10px 6px; }
+.nova-qn .nova-qn-puce {
+  display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 8px; border: 1px solid var(--nova-bord-fort);
+  border-radius: 999px; background: var(--nova-surface); color: var(--nova-texte); font-size: 12px; font-weight: 600; white-space: nowrap;
+}
+.nova-qn .nova-qn-puce[aria-pressed="true"] { border-color: var(--nova-accent); background: var(--nova-accent-doux); color: var(--nova-accent); }
+.nova-qn .nova-qn-moy[aria-pressed="false"] { color: var(--nova-texte-2); text-decoration: line-through; }
+.nova-qn .nova-qn-seg { margin-left: auto; }
+.nova-qn .nova-qn-seg > button { min-height: 24px; font-size: 12px; }
+.nova-qn-liste { flex: 1; min-height: 0; overflow-y: auto; margin: 0 10px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); }
+.nova-qn-groupe { padding: 6px 8px 2px; border-top: 1px solid var(--nova-bord); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--nova-texte-2); }
+.nova-qn-groupe:first-child { border-top: 0; }
+.nova-qn .nova-qn-option { display: flex; align-items: center; gap: 8px; min-height: 26px; margin: 0; padding: 2px 8px; font-size: 12.5px; font-weight: 400; line-height: 1.25; cursor: pointer; }
+.nova-qn .nova-qn-option + .nova-qn-option { border-top: 1px solid var(--nova-bord); }
+.nova-qn .nova-qn-option:hover { background: var(--nova-surface-2); }
+.nova-qn .nova-qn-option > input { flex: none; width: 15px; height: 15px; min-width: 0; margin: 0; }
+.nova-qn-num { flex: none; min-width: 28px; font-weight: 700; color: var(--nova-texte-2); font-variant-numeric: tabular-nums; }
+.nova-qn-nom { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nova-qn-pied { padding: 10px; border-top: 1px solid var(--nova-bord); }
+.nova-qn .nova-qn-rafraichir { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; border: 0; border-radius: var(--nova-rayon); background: var(--nova-accent); color: var(--nova-sur-accent); font-weight: 700; }
+.nova-qn .nova-qn-rafraichir:hover { filter: brightness(1.08); }
+.nova-qn-voile { display: none; }
+@media (min-width: 1024px) {
+  html.nova-qn-ouvert #wimsbodybox, html.nova-qn-ouvert body > .nova-pied { margin-right: 280px; }
+  html.nova-qn-sans-menu #wimsbodybox:has(> #wimsmenumodubox) { grid-template-columns: 0 minmax(0, 1fr); }
+  html.nova-qn-sans-menu #wimsbodybox > #wimsmenumodubox { display: none; }
+  html.nova-qn-sans-menu body:has(#wimsbodybox > #wimsmenumodubox) > .nova-pied,
+  html.nova-qn-sans-menu body:has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: var(--nova-e5); }
+}
+@media (max-width: 1023.98px) {
+  .nova-qn { top: 0; z-index: 1000; width: min(300px, 86vw); box-shadow: var(--nova-ombre); }
+  html.nova-qn-ouvert .nova-qn-voile { display: block; position: fixed; inset: 0; z-index: 999; background: rgb(0 0 0 / 35%); }
+  .wimsbody button.nova-qn-bouton-menu { display: none; }
+}
 /* Notes des feuilles et des examens centrées, « -- » et 0 compris (WIMS ne met une classe qu'aux cellules colorées) ;
  * 2026-11-12, utilisateur. Réglage « Tableaux du thème standard ». */
 html:not(.nova-std-tableaux) .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(:first-child) { text-align: center; }

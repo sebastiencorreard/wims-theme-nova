@@ -391,6 +391,15 @@
       var i = o.textContent.indexOf(':');
       if (m && i >= 0 && o.textContent.slice(i + 1).trim()) titres[m[1] ? 'examen' : 'feuille'][m[2]] = o.textContent.slice(i + 1).trim();
     });
+    // Préfixe commun à tous les titres d'un groupe (« Evalwims-seconde : », « Test : ») retiré des en-têtes
+    // (2026-11-28, utilisateur ; titre entier en info-bulle), comme dans le panneau « Quelles notes ? ».
+    ['feuille', 'examen'].forEach(function (g) {
+      var cles = Object.keys(titres[g]);
+      if (cles.length < 2) return;
+      var m = /^([^:]{1,60}:\s*)/.exec(titres[g][cles[0]]);
+      if (!m || !cles.every(function (k) { return titres[g][k].indexOf(m[1]) === 0 && titres[g][k].length > m[1].length; })) return;
+      cles.forEach(function (k) { titres[g][k] = titres[g][k].slice(m[1].length); });
+    });
     var types = [
       ['feuille', 'nova-titres-feuilles', tc('feuilles-mot', 'Worksheets'), function () {
         return Array.prototype.map.call(table.querySelectorAll('thead th a[href*="numshowsheet"]'), function (a) { return [a.closest('th'), a]; });
@@ -450,6 +459,226 @@
       var avant = table.closest('.wims_scrollable, .table-scroll') || table;
       avant.parentNode.insertBefore(ligne, avant);
     }
+  }
+
+  /* Page Notes : choix des feuilles et examens dans un panneau à droite (2026-11-28, utilisateur, maquette
+   * maquettes/notes-panneau-2026-11-28 ; un seul « N° | Titre » pour feuilles et examens ; préfixes communs des titres
+   * retirés). Le cadre de WIMS reste dans le formulaire, caché : le panneau pilote sa liste (select showsheet) et les
+   * commandes déjà posées par notesColonnes (bouton Moyenne, segments Numéro | Titre), « Rafraîchir » l'envoie. Pilules
+   * Notes, Réussite... sorties du cadre, au-dessus du tableau, avec les boutons qui montrent les deux panneaux : celui de
+   * droite et, sur cette page seulement, le menu de gauche (ordinateur). localStorage nova_notes_panneau,
+   * nova_notes_menu (1 = ouvert / montré). Téléphone et tablette : panneau par-dessus la page, fermé au chargement.
+   * Réglage « Feuilles et examens en liste » : cadre au-dessus du tableau. */
+  function notesPanneau() {
+    var mm = document.querySelector('meta[name="nova-module"]');
+    var table = document.getElementById('TABLE_userlist');
+    var choix = document.querySelector('select[name="showsheet"]');
+    var cadre = choix && choix.closest('fieldset.nova-notes-cadre');
+    var tx = document.getElementById('nova-choix-textes');
+    if (!mm || mm.content !== 'adm/class/userscore' || !table || !cadre || !tx || standard('listes') || document.querySelector('.nova-qn')) return;
+    var form = cadre.closest('form');
+    var envoi = form && form.querySelector('input[type="submit"]');
+    if (!envoi) return;
+    var t = function (n, defaut) { return tx.getAttribute('data-' + n) || defaut; };
+    var el = function (tag, classe, texte) { var e = document.createElement(tag); if (classe) e.className = classe; if (texte) e.textContent = texte; return e; };
+    var ico = function (nom) { var s = el('span', 'nova-etat-ico'); s.setAttribute('data-icone', nom); s.setAttribute('aria-hidden', 'true'); return s; };
+    var lire = function (cle) { try { return localStorage.getItem(cle); } catch (e) { return null; } };
+    var ecrire = function (cle, v) { try { localStorage.setItem(cle, v); } catch (e) { /* cette page seulement */ } };
+    var racine = document.documentElement;
+    var large = window.matchMedia('(min-width: 1024px)');
+
+    var pan = el('aside', 'nova-qn');
+    pan.id = 'nova-qn';
+    pan.setAttribute('aria-labelledby', 'nova-qn-titre');
+    var tete = el('div', 'nova-qn-tete');
+    var h = el('h2', '', t('quelles-notes', 'Which scores?'));
+    h.id = 'nova-qn-titre';
+    var fermer = el('button', 'nova-qn-icone');
+    fermer.type = 'button';
+    fermer.title = t('panneau-masquer', 'Hide the panel');
+    fermer.setAttribute('aria-label', fermer.title);
+    fermer.appendChild(ico('panneau-fermer'));
+    tete.appendChild(h);
+    tete.appendChild(fermer);
+    pan.appendChild(tete);
+
+    // Rangée 1 : Tout, Feuilles, Examens (un clic coche le groupe, un second le décoche).
+    var opts = Array.prototype.slice.call(choix.options);
+    var estEx = function (o) { return /^E\d+$/.test(o.value); };
+    var cases = [];
+    var r1 = el('div', 'nova-qn-rang');
+    r1.setAttribute('role', 'group');
+    var groupes = [['tout', t('tout-court', 'All'), function () { return true; }]];
+    if (opts.some(estEx) && opts.some(function (o) { return !estEx(o); })) {
+      groupes.push(['feuilles', t('feuilles-mot', 'Worksheets'), function (o) { return !estEx(o); }]);
+      groupes.push(['examens', t('examens-mot', 'Exams'), estEx]);
+    }
+    var puces = groupes.map(function (g) {
+      var b = el('button', 'nova-qn-puce');
+      b.type = 'button';
+      var i = ico('case');
+      b.appendChild(i);
+      b.appendChild(document.createTextNode(g[1]));
+      b.addEventListener('click', function () {
+        var dans = opts.filter(g[2]);
+        var cocher = !dans.every(function (o) { return o.selected; });
+        dans.forEach(function (o) { o.selected = cocher; });
+        maj();
+      });
+      r1.appendChild(b);
+      return { b: b, i: i, f: g[2] };
+    });
+    pan.appendChild(r1);
+
+    // Rangée 2 : Moyenne (oeil) et N° | Titre, qui pilotent les commandes de notesColonnes.
+    var r2 = el('div', 'nova-qn-rang');
+    var bm = cadre.querySelector('button.nova-notes-moyenne');
+    if (bm) {
+      var pm = el('button', 'nova-qn-puce nova-qn-moy');
+      pm.type = 'button';
+      var im = ico('oeil');
+      pm.appendChild(im);
+      pm.appendChild(document.createTextNode(t('moyenne-court', 'Avg.')));
+      var majM = function () {
+        var vue = bm.getAttribute('aria-pressed') === 'true';
+        pm.setAttribute('aria-pressed', vue ? 'true' : 'false');
+        im.setAttribute('data-icone', vue ? 'oeil' : 'oeil-barre');
+        pm.title = bm.title;
+      };
+      pm.addEventListener('click', function () { bm.click(); majM(); });
+      majM();
+      r2.appendChild(pm);
+    }
+    var segs = cadre.querySelectorAll('.nova-notes-segment .nova-segment');
+    if (segs.length) {
+      var seg = el('span', 'nova-segment nova-qn-seg');
+      seg.setAttribute('role', 'group');
+      seg.title = t('num-titre-aide', 'Column headers: number or title');
+      seg.setAttribute('aria-label', seg.title);
+      var bN = el('button', '', t('num-court', 'No.')), bT = el('button', '', t('titre', 'Title'));
+      bN.type = bT.type = 'button';
+      seg.appendChild(bN);
+      seg.appendChild(bT);
+      var majT = function () {
+        var titre = segs[0].children[1].getAttribute('aria-pressed') === 'true';
+        bN.setAttribute('aria-pressed', titre ? 'false' : 'true');
+        bT.setAttribute('aria-pressed', titre ? 'true' : 'false');
+      };
+      var poser = function (k) { Array.prototype.forEach.call(segs, function (s) { s.children[k].click(); }); majT(); };
+      bN.addEventListener('click', function () { poser(0); });
+      bT.addEventListener('click', function () { poser(1); });
+      // Un seul choix pour les deux : celui des feuilles s'impose aux examens au chargement.
+      poser(segs[0].children[1].getAttribute('aria-pressed') === 'true' ? 1 : 0);
+      r2.appendChild(seg);
+    }
+    if (r2.children.length) pan.appendChild(r2);
+
+    // Liste : « F3 » / « E2 », titre sans le préfixe commun du groupe (« Evalwims-seconde : », « Test : »).
+    var liste = el('div', 'nova-qn-liste');
+    liste.setAttribute('role', 'group');
+    liste.setAttribute('aria-labelledby', 'nova-qn-titre');
+    var titreDe = function (o) { var i = o.textContent.indexOf(':'); return i >= 0 ? o.textContent.slice(i + 1).trim() : o.textContent.trim(); };
+    var prefixe = function (titres) {
+      if (titres.length < 2) return '';
+      var m = /^([^:]{1,60}:\s*)/.exec(titres[0]);
+      if (!m) return '';
+      return titres.every(function (x) { return x.indexOf(m[1]) === 0 && x.length > m[1].length; }) ? m[1] : '';
+    };
+    [[t('feuilles-mot', 'Worksheets'), t('lettre-feuille', 'W'), function (o) { return !estEx(o); }], [t('examens-mot', 'Exams'), t('lettre-examen', 'E'), estEx]].forEach(function (g) {
+      var dans = opts.filter(g[2]);
+      if (!dans.length) return;
+      liste.appendChild(el('div', 'nova-qn-groupe', g[0]));
+      var titres = dans.map(titreDe), p = prefixe(titres);
+      dans.forEach(function (o, k) {
+        var l = el('label', 'nova-qn-option');
+        l.title = o.textContent.trim();
+        var c = el('input');
+        c.type = 'checkbox';
+        c.addEventListener('change', function () { o.selected = c.checked; maj(); });
+        l.appendChild(c);
+        l.appendChild(el('span', 'nova-qn-num', g[1] + o.value.replace(/^E/, '')));
+        l.appendChild(el('span', 'nova-qn-nom', titres[k].slice(p.length)));
+        liste.appendChild(l);
+        cases.push([c, o]);
+      });
+    });
+    pan.appendChild(liste);
+    var pied = el('div', 'nova-qn-pied');
+    var raf = el('button', 'nova-qn-rafraichir');
+    raf.type = 'button';
+    raf.appendChild(ico('rafraichir'));
+    raf.appendChild(document.createTextNode(t('rafraichir', 'Refresh')));
+    raf.addEventListener('click', function () { envoi.click(); });
+    pied.appendChild(raf);
+    pan.appendChild(pied);
+
+    function maj() {
+      cases.forEach(function (x) { x[0].checked = x[1].selected; });
+      puces.forEach(function (p) {
+        var dans = opts.filter(p.f), plein = dans.length && dans.every(function (o) { return o.selected; });
+        p.b.setAttribute('aria-pressed', plein ? 'true' : 'false');
+        p.i.setAttribute('data-icone', plein ? 'case-cochee' : 'case');
+      });
+      choix.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    maj();
+
+    // Pilules au-dessus du tableau, avec les deux boutons de panneau ; cadre de WIMS caché (reste dans le formulaire).
+    var barre = el('div', 'nova-qn-barre');
+    var affi = cadre.querySelector('.nova-affi');
+    if (affi) barre.appendChild(affi);
+    var boutons = el('span', 'nova-qn-boutons');
+    var menu = document.querySelector('#wimsbodybox > #wimsmenumodubox');
+    var bMenu = null;
+    if (menu) {
+      bMenu = el('button', 'nova-qn-bouton nova-qn-bouton-menu');
+      bMenu.type = 'button';
+      bMenu.appendChild(ico('panneau-gauche'));
+      boutons.appendChild(bMenu);
+    }
+    var ouvrir = el('button', 'nova-qn-bouton nova-qn-ouvrir');
+    ouvrir.type = 'button';
+    ouvrir.setAttribute('aria-controls', 'nova-qn');
+    ouvrir.appendChild(ico('panneau-droit'));
+    ouvrir.appendChild(document.createTextNode(t('quelles-notes', 'Which scores?')));
+    boutons.appendChild(ouvrir);
+    barre.appendChild(boutons);
+    form.parentNode.insertBefore(barre, form);
+    cadre.classList.add('nova-qn-cache');
+    var voile = el('div', 'nova-qn-voile');
+    document.body.appendChild(voile);
+    document.body.appendChild(pan);
+
+    var placer = function () {
+      var b = document.getElementById('wimstopbox'), n = document.querySelector('body > nav:has(> .breadcrumbs)');
+      var haut = (b ? b.getBoundingClientRect().height : 64) + (n && getComputedStyle(n).position === 'sticky' ? n.getBoundingClientRect().height : 0);
+      racine.style.setProperty('--nova-qn-haut', Math.round(haut) + 'px');
+    };
+    var montrer = function (oui, garder) {
+      racine.classList.toggle('nova-qn-ouvert', oui);
+      ouvrir.setAttribute('aria-expanded', oui ? 'true' : 'false');
+      pan.hidden = !oui;
+      if (garder && large.matches) ecrire('nova_notes_panneau', oui ? '1' : '0');
+    };
+    ouvrir.addEventListener('click', function () { montrer(true, true); });
+    fermer.addEventListener('click', function () { montrer(false, true); ouvrir.focus(); });
+    voile.addEventListener('click', function () { montrer(false, true); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !large.matches && !pan.hidden) { montrer(false, true); ouvrir.focus(); } });
+    if (bMenu) {
+      var menuVu = function (oui, garder) {
+        racine.classList.toggle('nova-qn-sans-menu', !oui);
+        bMenu.setAttribute('aria-pressed', oui ? 'true' : 'false');
+        bMenu.title = t(oui ? 'menu-masquer' : 'menu-montrer', oui ? 'Hide the menu' : 'Show the menu');
+        bMenu.setAttribute('aria-label', bMenu.title);
+        if (garder) ecrire('nova_notes_menu', oui ? '1' : '0');
+      };
+      bMenu.addEventListener('click', function () { menuVu(bMenu.getAttribute('aria-pressed') !== 'true', true); });
+      menuVu(lire('nova_notes_menu') !== '0', false);
+    }
+    placer();
+    window.addEventListener('resize', placer);
+    montrer(large.matches && lire('nova_notes_panneau') !== '0', false);
+    if (large.addEventListener) large.addEventListener('change', function () { montrer(large.matches && lire('nova_notes_panneau') !== '0', false); });
   }
 
   /* Légende des types (adm/class/seq_legend.phtml : ul.inline de li.wims_*_item sans lien) : seulement les types

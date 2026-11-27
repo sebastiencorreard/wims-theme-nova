@@ -860,7 +860,7 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
   [l'état d'un exercice (réussi, brillant, en cours, à faire)], [`etatExercice`, `seuilReussi` ; réglage `--nova-seuil-reussi`],
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
   [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],
-  [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesColonnes` (cadre « Quelles notes ? » : liste repliable `.nova-choix-repli`, pilules réordonnées, ligne « Affichage » `.nova-notes-affichage` : Moyenne, Numéro | Titre `.nova-segment`), `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
+  [les tableaux de notes de l'enseignant], [`notesExamens`, `libellesNotes`, `notesPanneau` (panneau « Quelles notes ? » à droite, `.nova-qn`, pilote la liste et les commandes cachées du cadre ; menu de gauche masquable sur cette page, `html.nova-qn-sans-menu`), `notesColonnes` (cadre « Quelles notes ? » : liste repliable `.nova-choix-repli`, pilules réordonnées, ligne « Affichage » `.nova-notes-affichage` : Moyenne, Numéro | Titre `.nova-segment`), `legendeTypes`, `notesNaN` ; réglages `notes-eleve`, `notes-enseignant`],
   [la date limite d'une séquence (titre, pastille « Jusqu'au … » des cartes sans note)], [`echeancesSequences` ; `user.phtml` lit la fin d'affichage de chaque séquence (fichier `.S<n>` de la classe, par `adm/class/checkuserscorecondition`, comme WIMS) dans `#nova-echeances` (étiquette `echeances` de `lang/eleve-textes.phtml.<l>`) ; bleu au-delà de 3 jours, orange à 3 et 2, rouge le dernier ; réglage `listes`],
   [le détail des notes d'un élève], [`notesDetail` (« Détail des examens » : bouton `.nova-nd-detail-btn` à droite du titre et lien `.nova-nd-revoir` dans chaque examen passé, copies du lien `a.examdetail` du menu de WIMS, absents quand WIMS ne l'offre pas) ; `_widgets/notes-detail.phtml` (textes, sessions d'examen de l'élève, indicateur du barème de chaque feuille lu dans `sheets/.severity`) ; réglage `--nova-notes-moyenne` (carte de la moyenne) ; une ligne d'examen ou d'exercice est un `<details>` (`.nova-nd-rang`) dont le détail s'ouvre au toucher ; la ligne d'un exercice montre l'indicateur du barème (cumul, réussite ou acquis), la qualité passe dans le détail, sauf quand WIMS ne montre aucun indicateur à l'élève (ligne du barème sans troisième nombre)],
 )
@@ -2669,6 +2669,8 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova_menu`, `nova_menu_garde` (+ suffixe `_modtool` ou `_p_<page>`)], [menu de l'enseignant : `complet` ou rien ; liste des entrées gardées (ou cachées, hors accueil)],
   [`nova_menu_envoi`], [choix de menu en attente d'envoi au serveur, avec le prochain lien suivi],
   [`nova_menu_replie`], [groupes du menu repliés],
+  [`nova_notes_panneau`], [page Notes : panneau « Quelles notes ? » ouvert (1) ou masqué (0), ordinateur seulement],
+  [`nova_notes_menu`], [page Notes : menu de gauche montré (1) ou masqué (0)],
   [`nova_tri_no`], [accueil de l'enseignant : sens du tri de la colonne « No » par tableau (`{"wims_supervisor_sheet": "descending"}`), oublié par un tri sur une autre colonne],
   [`nova_menu_deplie`], [accueil du visiteur : groupes repliés par défaut (Documentation, Création de ressources) que l'on a dépliés],
   [`nova-couleur|<structure>|<login>`], [couleur personnelle de l'élève, pour la poser avant l'affichage],

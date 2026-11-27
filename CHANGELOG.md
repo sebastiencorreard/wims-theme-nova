@@ -38,6 +38,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Réglages de Nova** : chaque réglage a son bouton « Aide », comme les réglages de WIMS ; il ouvre une fenêtre qui explique ce que fait « Oui », ce que fait « Non », la valeur par défaut et ce qui ne change pas (classe, portail, groupement et page Apparence du site). Les réglages de « Rapprocher du thème standard » montrent la liste de leurs changements de la même façon, au lieu d'un « ▸ Ce qui change » replié.
 
 ### Corrections
+- Barre de score d'une feuille de beaucoup d'exercices : elle ne dépasse plus de la carte, les segments passent sur plusieurs lignes (de taille fixe à partir de 21 exercices).
 - **Restauration d'une sauvegarde dans un cours qui reçoit les ressources de son programme** : WIMS remplaçait (case « Tout ») les feuilles, examens, documents et votes partagés par une copie figée, et le cours ne voyait plus ce qu'on ajoutait au programme (un DM WIMS, par exemple). Nova les retire de la restauration, ainsi que ce qui en dépend ; seuls les éléments propres au cours (notes, cahier de textes…) sont restaurés.
 - Menu latéral : une entrée longue (« Présentation en séquences ») tient sur une ligne, aussi sous Edge.
 - Visiteur entré en « Anonyme » dans une classe ouverte : plus de « Mes notes », « Mes badges », « Ma couleur », « Mon activité » ni d'avatar (menu, barre et accueil), et plus aucun fichier de badges écrit à son nom.

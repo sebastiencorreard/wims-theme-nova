@@ -851,7 +851,7 @@ confirme « Terminer » : elle n'a aucun menu latéral, donc ni bouton ☰ ni ch
 #table(columns: (1fr, 1.6fr), align: left,
   [Ce qui est en cause], [Où],
   [les cartes d'exercices d'une feuille (élève)], [`feuilleExercices`, `feuilleProgression` ; `contenu.css` (`li.wims_sheet_item`) ; réglage `listes`],
-  [les barres de score], [`scores`, `reclasserBarre` ; `_widgets/feuilles-valeurs.phtml`],
+  [les barres de score], [`scores`, `reclasserBarre` ; `_widgets/feuilles-valeurs.phtml` ; segments sur plusieurs lignes, largeur fixe à partir de 21 (`contenu.css`, `ol:has(> li:nth-child(21))`)],
   [l'état d'un exercice (réussi, brillant, en cours, à faire)], [`etatExercice`, `seuilReussi` ; réglage `--nova-seuil-reussi`],
   [l'historique des essais d'un examen], [`historique`, `ajusterHistoriques`],
   [les couleurs des notes], [`--nova-note-*` de `jetons.css` ; `_widgets/couleurs-notes.phtml`],

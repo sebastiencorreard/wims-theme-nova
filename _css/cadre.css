@@ -1302,9 +1302,10 @@ html.nova-js:not(.nova-std-menus) :is(#language_selector, .nova-langue) img.vign
 nav:has(> .nova-langue-ariane) > .breadcrumbs { padding-right: calc(var(--nova-e5) + 150px); }
 .nova-langue-ariane { position: absolute; top: 50%; right: var(--nova-e5); transform: translateY(-50%); z-index: 95; }
 .nova-langue-ariane > a {
-  display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 36px; padding: 0 var(--nova-e3);
+  /* 28 px : tient dans la ligne du fil d'Ariane (35 px au telephone ; 38 px debordait, 2026-11-27, utilisateur). */
+  display: inline-flex; align-items: center; gap: var(--nova-e2); box-sizing: border-box; height: 28px; min-height: 0; padding: 0 var(--nova-e2) 0 4px;
   border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface);
-  color: var(--nova-texte); font-size: .9375rem; text-decoration: none;
+  color: var(--nova-texte); font-size: .875rem; line-height: 1; text-decoration: none;
 }
 .nova-langue-ariane > a:hover, .nova-langue-ariane > a[aria-expanded="true"] { background: var(--nova-accent-doux); }
 .nova-langue-ariane > a:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }

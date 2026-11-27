@@ -533,7 +533,22 @@
       var thNote = examens.querySelectorAll('thead th');
       var maxE = thNote.length ? (/\/\s*(\d+)/.exec(thNote[thNote.length - 1].textContent) || [])[1] : '';
       var bloc = el('section', 'nova-nd');
-      bloc.appendChild(el('h2', 'nova-nd-titre-sec', propre(cap ? cap.textContent : '')));
+      // Detail des examens (2026-11-28, utilisateur, maquette C) : la page de WIMS (job=examcheck) n'etait que dans le menu
+      // lateral (tiroir de l'eleve). Bouton a droite du titre (acces rapide) et lien dans chaque examen passe ouvert (l'eleve
+      // le decouvre en regardant sa note). Seulement si WIMS offre le lien (getuser.phtml : enseignant, ou class_examshow et
+      // un examen actif) ; l'entree du menu reste.
+      var lienDetail = document.querySelector('a.examdetail[href*="job=examcheck"]');
+      var titreE = el('h2', 'nova-nd-titre-sec', propre(cap ? cap.textContent : ''));
+      if (lienDetail) {
+        var teteE = el('div', 'nova-nd-tete');
+        teteE.appendChild(titreE);
+        var btnD = el('a', 'nova-nd-detail-btn');
+        btnD.href = lienDetail.href;
+        btnD.appendChild(el('span', 'nova-nd-detail-long', texte('detail-examens', 'Exam details')));
+        btnD.appendChild(el('span', 'nova-nd-detail-court', texte('detail-court', 'Details')));
+        teteE.appendChild(btnD);
+        bloc.appendChild(teteE);
+      } else bloc.appendChild(titreE);
       var carteE = el('div', 'nova-nd-carte'), restants = [];
       // Sessions de chaque examen : mots "examen:commencees:permises" (_widgets/notes-detail.phtml).
       var sessions = {}, srcS = document.getElementById('nova-notes-sessions');
@@ -561,6 +576,11 @@
           var phrase = pluriel(se.faites, texte('session', '%1 session started'), texte('sessions', '%1 sessions started'));
           if (se.permises > 0) phrase += POINT + (reste > 0 ? texte('reste', '%1 left').replace('%1', reste) : texte('reste-zero', 'none left'));
           det.appendChild(el('div', '', phrase));
+        }
+        if (lienDetail) {
+          var rev = el('a', 'nova-nd-revoir', texte(prof ? 'revoir-prof' : 'revoir', prof ? 'See their sessions and answers' : 'Review my answers'));
+          rev.href = lienDetail.href;
+          det.appendChild(rev);
         }
         rang.appendChild(det);
         carteE.appendChild(rang);

@@ -1065,6 +1065,21 @@ html.nova-js.nova-role-prof:not(.nova-std-notes-enseignant) .wimsbody table.wims
 .wimsbody .nova-nd-rang > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: -2px; }
 .wimsbody details.nova-nd-rang[open] { background: color-mix(in oklab, var(--nova-accent) 8%, var(--nova-surface)); }
 .wimsbody .nova-nd-rang-detail { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--nova-e4) 10px calc(var(--nova-e4) + 24px + var(--nova-e3)); font-size: 13px; color: var(--nova-texte-2); }
+.wimsbody .nova-nd-tete { display: flex; align-items: center; justify-content: space-between; gap: var(--nova-e3); margin: var(--nova-e5) 0 var(--nova-e2); }
+.wimsbody .nova-nd-tete > .nova-nd-titre-sec { margin: 0 2px; }
+.wimsbody a.nova-nd-detail-btn {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; box-sizing: border-box; min-height: 32px; padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-accent); border-radius: var(--nova-rayon); background: var(--nova-surface); color: var(--nova-accent);
+  font-size: .875rem; font-weight: 600; text-decoration: none; white-space: nowrap;
+}
+.wimsbody a.nova-nd-detail-btn:hover { background: var(--nova-accent-doux); }
+.wimsbody :is(a.nova-nd-detail-btn, a.nova-nd-revoir)::after {
+  content: ""; flex: none; width: 6px; height: 6px; border-right: 2px solid currentColor; border-top: 2px solid currentColor; transform: rotate(45deg);
+}
+.wimsbody .nova-nd-detail-court { display: none; }
+@media (max-width: 639.98px) { .wimsbody .nova-nd-detail-long { display: none; } .wimsbody .nova-nd-detail-court { display: inline; } }
+.wimsbody a.nova-nd-revoir { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; min-height: 32px; margin-top: 2px; color: var(--nova-lien); font-size: 14px; font-weight: 600; text-decoration: none; }
+.wimsbody a.nova-nd-revoir:hover { text-decoration: underline; }
 .wimsbody .nova-nd-nom { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .wimsbody .nova-nd-num { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--nova-texte-2); background: var(--nova-fond); border: 1px solid var(--nova-bord); }
 .wimsbody .nova-nd-restants { border-top: 1px solid var(--nova-bord); }

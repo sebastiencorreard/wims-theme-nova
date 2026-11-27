@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Mes notes : « Revoir mes réponses » dans chaque examen passé et bouton « Détail des examens » en tête de la section (quand la classe le permet).
 - Choix de la langue : seulement les langues que Nova traduit en entier (français, anglais, espagnol, italien).
 - Choix de la langue : le code de la langue (FR, EN…) remplace les drapeaux, partout.
 - Accueil du site : le choix de la langue sort du menu ☰, à droite du fil d'Ariane.
@@ -21,6 +22,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- Notes d'un élève : bouton « Détail des examens » en tête de la section et « Voir ses sessions et ses réponses » dans chaque examen passé.
 - Accueil : le sens du tri de la colonne « No » (croissant ou décroissant) est retenu par le navigateur.
 - Page Notes : « Cocher les examens » / « Décocher les examens » et de même pour les feuilles, au lieu de « Examens seulement » et « Feuilles seulement ».
 - Liste des examens de l'accueil : « Dupliquer » dans le menu de la pastille d'état (copie en préparation, mêmes exercices).

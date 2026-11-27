@@ -91,7 +91,8 @@
 !!   Pastille et annonces : nova_n niveau du badge, nova_i numero de l'image (au moins 1), nova_nv 1 = niveau nouveau,
 !!   nova_bnom nom du niveau, nova_bp nombre insere dans le message (%n), nova_bm message de l'annonce.
 !reset nova_bdg nova_lf nova_lp nova_lh nova_ld nova_lc nova_lr nova_lt nova_lu nova_xn
-!if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session
+!! Visiteur anonyme d'une classe ouverte (2026-11-27, utilisateur) : ni badges, ni couleur, ni fichier ecrit.
+!if $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and _exam notin $wims_session
   !ifval 0$class_type<2
     !set nova_cl=$wims_home/log/classes
     !set nova_auj=!char 1 to 8 of $wims_now
@@ -181,7 +182,7 @@
 !endif
 !! Pas a l'accueil d'un portail ou d'un groupement (class_type >= 2), comme Standard (is_interclass, usermenumodubox.proc) :
 !! un enseignant y est connecte sous son identifiant, pas en supervisor (vu par un collegue, 2026-11-25).
-!if $wims_user!=supervisor and $wims_user!=$empty and $class_type notwordof 2 3 4
+!if $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and $class_type notwordof 2 3 4
   <div class="nova-mes-notes">
   !set wims_ref_class=nova-mes-notes-bouton
   !href module=adm/class/userscore &#127942; $wims_name_myscore &#127942;
@@ -460,6 +461,30 @@
 !distribute items div,div into div0,div1
 
 !read themes/_procs/usermenumodubox.proc
+!! Visiteur anonyme d'une classe ouverte (2026-11-27, utilisateur) : groupe << Mes notes >> retire (notes, activite,
+!! livret, travail) ; html.nova-anonyme le cache aussi ailleurs (cadre.css).
+!! Variables : nova_ac lignes du menu, nova_ai rang, nova_al ligne, nova_an son nom, nova_as 1 dans le groupe retire,
+!! nova_ar menu reecrit.
+!if anonymous isin $wims_user
+  !set nova_ac=!linecnt $wims_rm_0
+  !reset nova_ar nova_as
+  !for nova_ai=1 to $nova_ac
+    !set nova_al=!line $nova_ai of $wims_rm_0
+    !set nova_an=!item 1 of $nova_al
+    !if $nova_an=itemsep
+      !reset nova_as
+      !set nova_an=!item 3 to -1 of $nova_al
+      !if $nova_an=$wims_name_myscore
+        !set nova_as=1
+      !endif
+    !endif
+    !if $nova_as!=1 and $nova_an notitemof myscore,myactivity,livret,swork
+      !set nova_ar=!append line $nova_al to $nova_ar
+    !endif
+  !next
+  !set wims_rm_0=$nova_ar
+  !reset nova_ac nova_ai nova_al nova_an nova_as nova_ar
+!endif
 
 !set wims_homeref_n0=!linecnt $wims_rm_0
 !!read themes/_widgets/usermenumodubox_accordion.phtml

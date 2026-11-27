@@ -122,7 +122,7 @@
   !if $nova_est_eleve!=yes
     !read themes/$wims_theme/_widgets/menu-serveur.phtml
   !endif
-  !if $nova_est_eleve=yes and $module=home
+  !if $nova_est_eleve=yes and $module=home and anonymous notin $wims_user
     !read themes/$wims_theme/_widgets/couleur-choix.phtml
   !endif
 !endif
@@ -209,6 +209,11 @@
       <span id="nova-eleve" hidden></span>
       !! html.nova-role-eleve (audit B2 point 4, 2026-11-13) : remplace body:has(#nova-eleve) dans le CSS, recalcul moins cher.
       <script>document.documentElement.classList.add('nova-role-eleve');</script>
+      !! Visiteur entre en anonyme dans une classe ouverte (2026-11-27, utilisateur) : rien de personnel (notes, badges,
+      !! couleur, activite, avatar). html.nova-anonyme : menus (cadre.css) et nova.js anonyme().
+      !if anonymous isin $wims_user
+        <script>document.documentElement.classList.add('nova-anonyme');</script>
+      !endif
       !! Nova : jetons de l'avatar a jour sur la page d'une feuille (retour d'exercice ; l'accueil passe par user.phtml).
       !if $module=adm/sheet
         !read themes/$wims_theme/_widgets/avatar-barre.phtml

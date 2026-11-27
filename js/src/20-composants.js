@@ -645,3 +645,12 @@
     sc.onload = lancer;
     document.head.appendChild(sc);
   }
+
+  /* Largeur de lecture (2026-11-27, utilisateur ; cadre.css) : la page est limitée à 64rem ; quand son contenu déborde
+   * (grand tableau des notes, liste d'élèves à colonnes nombreuses), elle reprend toute la largeur. Une seule lecture,
+   * à la fin du démarrage, avant les calques de Dynapi (posés après « load »). */
+  function largeurPage() {
+    var page = document.querySelector('#wimspagebox .wimsbody');
+    if (!page || page.classList.contains('nova-page-large')) return;
+    if (page.scrollWidth > page.clientWidth + 2) page.classList.add('nova-page-large');
+  }

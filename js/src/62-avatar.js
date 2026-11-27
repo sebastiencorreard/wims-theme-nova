@@ -168,7 +168,7 @@
     if (!ancien) barre.appendChild(zone);
   }
   function avatarBarre() {
-    if (!document.getElementById('nova-eleve') || !cleAvatar()) return;
+    if (!document.getElementById('nova-eleve') || !cleAvatar() || anonyme()) return;
     var source = document.getElementById('nova-avatar-barre');
     var memo = lireAvatar();
     var gain = 0;

@@ -1287,6 +1287,8 @@ qui montre les variantes ; on code celle qui est choisie).
   [Pas de Foundation complet], [64 Ko de CSS et 210 Ko de JS par page pour quelques classes utilisées], [`foundation-min.css` ; plus de JS de Foundation : ses composants sont repris dans `20-composants.js`],
   [Icônes Lucide, jeu forcé], [Un seul style, licence libre ; le jeu choisi par la classe est ignoré sous Nova], [Toute nouvelle icône est une icône Lucide],
   [Quatre langues complètes], [fr, en, es, it ; repli sur l'anglais pour les autres], [Tout texte nouveau dans les quatre],
+  [Page de 64rem au plus, centrée], [Lisibilité sur grand écran (2026-11-27)], [`.wimsbody` dans `cadre.css` ; pleine largeur pour un contenu qui déborde (`largeurPage`, classe `nova-page-large`), un tableau de 10 colonnes ou plus, une image à zones],
+  [Rien de personnel pour le visiteur anonyme], [Une classe ouverte partage le compte `anonymous<n>` : notes, badges, couleur, activité, avatar n'y ont pas de sens], [Tester `anonymous notin $wims_user` (gabarit), `anonyme()` (JS), `html.nova-anonyme` (CSS)],
 )
 
 // ================================================================= 6
@@ -2078,6 +2080,17 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
   Ces pages (`msg/user_error.phtml`) ne lisent aucun fichier du thème, seulement `css.css`.
 ][
   Seul le CSS peut les retoucher ; leur texte et leurs liens ne sont pas modifiables par le thème.
+]
+
+#piege[Un visiteur anonyme traité comme un élève][
+  Entré en « Anonyme » dans une classe ouverte, le visiteur voit « Mes notes », « Mes badges », « Ma couleur »… et
+  Nova écrit des fichiers de badges à son nom.
+][
+  WIMS le connecte sous un compte copié d'un modèle, `anonymous<n>` (`scripts/adm/class/anonymous.proc`) : `$wims_user`
+  n'est ni vide, ni `supervisor`, ni égal à `anonymous`.
+][
+  Tester `anonymous notin $wims_user` côté serveur ; `html.nova-anonyme` (posée par `header.phtml`) et `anonyme()` côté
+  navigateur. `user.phtml` retire le groupe « Mes notes » du menu ; `cadre.css` cache ces entrées sur les autres pages.
 ]
 
 // ================================================================= Annexes

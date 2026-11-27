@@ -3,7 +3,7 @@
 !! les jetons (module de confiance) ; ailleurs nova.js garde le dernier etat connu (localStorage). Eleves seulement, hors examen.
 !! Variables : nova_avb --nova-avatar (oui : avatar active) ; nova_avj jetons disponibles ; nova_avc choix enregistre
 !! (cat.val,...) ; nova_av, nova_ak, nova_cl, nova_auj : voir _procs/avatar.proc.
-!if $wims_user!=supervisor and $wims_user!=$empty and _exam notin $wims_session and _tool notin $wims_session and yes notin $user_supervisable
+!if $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and _exam notin $wims_session and _tool notin $wims_session and yes notin $user_supervisable
   !set nova_avb=!sh cat $wims_home/log/nova.conf $wims_home/log/classes/$wims_superclass/css $wims_home/log/classes/$wims_class/css 2>/dev/null | tr ';{}' '\n\n\n' | grep -o -- '--nova-avatar[[:space:]]*:[[:space:]]*[a-z]*' | tail -n 1 | sed 's/.*://' | tr -cd 'a-z'
   !reset nova_avc nova_avj
   !if $nova_avb=oui

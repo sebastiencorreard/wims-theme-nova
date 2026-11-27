@@ -139,6 +139,11 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 #wimsbodybox { padding: 0; margin: 0; }
 #wimspagebox { padding: 0; background: var(--nova-fond); }
 .wimsbody { padding: var(--nova-e6) var(--nova-e7); margin-left: 0; }
+/* Largeur de lecture (2026-11-27, utilisateur) : page centree, 64rem au plus (marges comprises). Sauf page plus large
+ * que cela (contenu qui deborde : nova.js largeurPage pose nova-page-large), tableau d'au moins 10 colonnes (notes de
+ * l'enseignant : il se tasserait sans deborder) et image a zones (usemap, zones non mises a l'echelle si elle est reduite). */
+.wimsbody { box-sizing: border-box; max-width: 64rem; margin-inline: auto; }
+.wimsbody:is(.nova-page-large, :has(img[usemap], table tr > :nth-child(10))) { max-width: none; }
 
 /* ---------- Menu latéral ---------- */
 /* Marges à gauche réduites (2026-11-11, utilisateur) : icône à 16 px du bord (24 avant), pour que les entrées
@@ -426,9 +431,9 @@ div.tailitem { font-size: var(--nova-petit); padding: 1px 0; }
 div.tailsepdoc { display: inline-block; }
 
 /* ---------- Contextes particuliers (repris de standard/_css/theme.css) ---------- */
-#wimsmhelp .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
-#wimsexam .wimsbody { padding-left: 10%; padding-right: 10%; margin-left: 0; }
-#wimslightpopup #wimsbodybox #wimspagebox .wimsbody { padding-left: 20px; padding-right: 20px; margin-left: 0; }
+#wimsmhelp .wimsbody { padding-left: 10%; padding-right: 10%; margin-inline: auto; }
+#wimsexam .wimsbody { padding-left: 10%; padding-right: 10%; margin-inline: auto; }
+#wimslightpopup #wimsbodybox #wimspagebox .wimsbody { padding-left: 20px; padding-right: 20px; margin-inline: auto; }
 #wimslightpopup #wimstailbox .tailitem { padding-right: 20px; text-align: right; color: var(--nova-texte-2); font-weight: 700; font-size: 90%; }
 #export_media { text-align: left; }
 #export_media a { min-height: initial; line-height: normal; padding: 0; }
@@ -1234,3 +1239,11 @@ body > .nova-pied { margin-top: auto; }
  * selectionnee dans une fenetre. */
 .nova-copier-lien-dialogue label { display: grid; gap: var(--nova-e2); margin-bottom: var(--nova-e3); font-weight: 600; }
 .nova-copier-lien-dialogue input { width: 100%; box-sizing: border-box; font-weight: 400; }
+
+/* Visiteur entre en anonyme dans une classe ouverte (2026-11-27, utilisateur) : aucune entree personnelle (notes,
+ * activite, livret, travail, badges, couleur, avatar), ou que WIMS ou Nova la pose ; groupe vide masque avec son titre.
+ * Sur l'accueil, user.phtml retire deja le groupe << Mes notes >>. */
+html.nova-anonyme #wimsmenumodubox .menuitem:is(.myscore, .myactivity, .livret, .swork, .profil_couleur, .profil_avatar),
+html.nova-anonyme :is(#wimsmenumodubox, #wimstopbox) .menuitem:has(> a:is([href*="adm%2Fclass%2Fuserscore"], [href*="adm%2Fclass%2Factivity"], [href*="nova_activite"], [href*="#nova-"])) { display: none !important; }
+html.nova-anonyme #wimsmenumodubox .wimsmenu:not(:has(> .menuitem:not(.myscore, .myactivity, .livret, .swork))),
+html.nova-anonyme #wimsmenumodubox .menu_title:has(+ .wimsmenu:not(:has(> .menuitem:not(.myscore, .myactivity, .livret, .swork)))) { display: none !important; }

@@ -37,6 +37,8 @@
    * recalculé ici, une fois les réglages du site et de la structure posés (reglagesStructure). */
   var CLES_STANDARD = ['menus', 'navigation', 'reponse', 'examens', 'textes', 'listes', 'menu-complet', 'dominos', 'tableaux', 'notes-eleve', 'notes-enseignant', 'liens'];
   function standard(k) { return document.documentElement.classList.contains('nova-std-' + k); }
+  // Visiteur entre en anonyme dans une classe ouverte (header.phtml, 2026-11-27) : rien de personnel.
+  function anonyme() { return document.documentElement.classList.contains('nova-anonyme'); }
 
   /* Variables de la racine pendant le démarrage (audit B2, 2026-11-13) : chaque getComputedStyle lu après une classe posée
    * recalculait toute la page (40 à 60 ms sur un téléphone modeste). Pendant demarrer(), les réglages --nova-… sont lus une

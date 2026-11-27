@@ -2,7 +2,7 @@
 !! Eleves seulement, hors examen et hors outil. Le choix et les achats arrivent par l'adresse (nova_avatar_choix,
 !! nova_avatar_ouvrir) et sont verifies par _procs/avatar.awk, element par element (jetons, niveaux de badge).
 !reset nova_avatar_page
-!if $wims_user!=supervisor and $wims_user!=$empty and yes notin $user_supervisable
+!if $wims_user!=supervisor and $wims_user!=$empty and anonymous notin $wims_user and yes notin $user_supervisable
   !if _tool notin $wims_session and _exam notin $wims_session
     !set nova_sq=!sh printf '%s' "$$QUERY_STRING"
     !set nova_sq=!replace internal & by $ $ in $nova_sq

@@ -61,6 +61,7 @@
   // Accueil de l'élève (#nova-couleur, user.phtml) : la valeur du serveur fait foi (vide : badges ou réglage coupés).
   // Puis l'entrée « Ma couleur » du menu Profil, sur toutes les pages ordinaires (mémoire de l'accueil).
   function couleurPerso() {
+    if (anonyme()) return;
     var source = document.getElementById('nova-couleur'), d = document.getElementById('nova-badges');
     // Badges coupés dans cette zone (data-bdg) : la couleur choisie ailleurs dans la structure reste, l'entrée du menu part.
     var bdg = source && source.getAttribute('data-bdg') === 'on';

@@ -78,7 +78,7 @@
    * (module adm/class/activity) mène à la page Nova de l'accueil (nova_activite=1, _widgets/activite.phtml), sauf
    * réglage --nova-activite: non (page Apparence) ou « Menus comme le thème standard ». */
   function activiteLien() {
-    if (!document.getElementById('nova-eleve') || standard('menus')) return;
+    if (!document.getElementById('nova-eleve') || standard('menus') || anonyme()) return;
     var v = racineStyle().getPropertyValue('--nova-activite').trim().replace(/["']/g, '');
     if (v === 'non') return;
     document.querySelectorAll('#wimsmenumodubox a[href*="module=adm%2Fclass%2Factivity"], #wimstopbox a[href*="module=adm%2Fclass%2Factivity"]').forEach(function (a) {
@@ -92,6 +92,7 @@
    *  - sur l'accueil (user.phtml) : pastille à côté de « Mes notes », annonce d'un nouveau niveau, et données
    *    du badge (#nova-badges, calculées par _procs/badges.awk) pour la fenêtre, ouverte d'un toucher. */
   function badges() {
+    if (anonyme()) return;
     var racine = document.documentElement;
     var actif = racineStyle().getPropertyValue('--nova-badges').trim().replace(/["']/g, '') === 'oui';
     if (racineStyle().getPropertyValue('--nova-badges-actifs').trim().replace(/["']/g, '') === 'aucun') actif = false;

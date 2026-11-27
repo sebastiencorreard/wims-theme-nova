@@ -2256,6 +2256,17 @@
   /* Colonne « No » des tableaux de ressources de l'accueil de l'enseignant (audit D3, 2026-11-13, utilisateur) : l'icône
    * et le numéro seuls ; le mot de WIMS (« Feuille », « Examen », « Document »...) reste lu par les lecteurs d'écran
    * (.nova-num-mot, caché à l'écran) et en info-bulle. Cellule sur une ligne. Réglage « Textes du thème standard ». */
+  /* Tri de la colonne « No » (2026-11-27, utilisateur) : Tablesort de WIMS compare des textes (« 11 » avant « 2 ») ;
+   * chaque cellule recoit data-sort = son numero sur 8 chiffres (lu par Tablesort avant le texte), croissant puis
+   * decroissant au clic comme les autres colonnes. Independant des reglages : c'est une correction. */
+  function triNumeros() {
+    var cellules = document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework, #wims_supervisor_glossary) table > tbody > tr > td:first-child:not([data-sort])');
+    Array.prototype.forEach.call(cellules, function (td) {
+      var m = /(\d+)\D*$/.exec(td.textContent);
+      if (m) td.setAttribute('data-sort', ('0000000' + m[1]).slice(-8));
+    });
+  }
+
   function numerosRessources() {
     if (standard('textes')) return;
     var cellules = document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework, #wims_supervisor_glossary) table > tbody > tr > td:first-child:not([data-nova-num])');

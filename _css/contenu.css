@@ -104,6 +104,12 @@
 .wims_seq .wims_desc_item { color: var(--nova-texte-2); }
 .wims_sheet_item, .wims_exam_item { max-width: 100%; box-sizing: border-box; }
 
+/* Cartes d'une séquence ou de l'accueil en grille (2026-11-27, utilisateur) : colonnes égales qui remplissent la
+ * largeur (avant : cartes à la largeur de leur contenu, vide sur le côté) ; cartes d'une même rangée à la même hauteur,
+ * contenu en haut ; « width: 45% » de sheet.css (WIMS) annulé. Réglage « Listes du thème standard » : les cartes de WIMS. */
+:where(html:not(.nova-std-listes)) .wimsbody ul.wims_work_list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--nova-e3); align-items: stretch; margin-left: 0; margin-right: 0; padding: 0; }
+:where(html:not(.nova-std-listes)) .wimsbody ul.wims_work_list > li:is(.wims_sheet_item, .wims_exam_item, .wims_doc_item, .wims_vote_item, .wims_tool_item, .wims_glossary_item, .wims_freework_item) { width: auto; margin: 0; align-content: flex-start; }
+
 /* ---------- Cartes des activités (séquences, accueil de classe, feuilles) ----------
  * Remplacent celles de sheet.css (cadre gris, bordure gauche épaisse, emoji) : surface blanche
  * arrondie, pastille d'icône de la couleur du type, carte cliquable EN ENTIER — le lien principal

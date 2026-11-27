@@ -139,10 +139,10 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
 #wimsbodybox { padding: 0; margin: 0; }
 #wimspagebox { padding: 0; background: var(--nova-fond); }
 .wimsbody { padding: var(--nova-e6) var(--nova-e7); margin-left: 0; }
-/* Largeur de lecture (2026-11-27, utilisateur) : page centree, 64rem au plus (marges comprises). Sauf page plus large
+/* Largeur de lecture (2026-11-27, utilisateur) : page centree, 70rem au plus (marges comprises ; 64rem le matin meme). Sauf page plus large
  * que cela (contenu qui deborde : nova.js largeurPage pose nova-page-large), tableau d'au moins 10 colonnes (notes de
  * l'enseignant : il se tasserait sans deborder) et image a zones (usemap, zones non mises a l'echelle si elle est reduite). */
-.wimsbody { box-sizing: border-box; max-width: 64rem; margin-inline: auto; }
+.wimsbody { box-sizing: border-box; max-width: 70rem; margin-inline: auto; }
 .wimsbody:is(.nova-page-large, :has(img[usemap], table tr > :nth-child(10))) { max-width: none; }
 
 /* ---------- Menu latéral ---------- */
@@ -165,7 +165,9 @@ body.main_body { max-width: none; margin: 0; padding: 0; }
   align-items: center;
   gap: var(--nova-e2);
   min-height: 40px;
-  padding: 0 var(--nova-e3) 0 var(--nova-e2);
+  /* Marge droite 4 px (12 avant ; 2026-11-27, utilisateur) : « Présentation en séquences » passait sur deux lignes sous
+   * Edge (texte un peu plus large que sous Chrome, 5 px de reste seulement). */
+  padding: 0 var(--nova-e1) 0 var(--nova-e2);
   border-radius: var(--nova-rayon);
   color: var(--nova-texte);
   text-decoration: none;

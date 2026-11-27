@@ -166,7 +166,14 @@ body.main_body .wims_button_help, body.main_body a.wims_button_help {
   background: color-mix(in oklab, var(--nova-accent) 14%, white);
   color: var(--nova-lien);
   border: 0;
+  /* Jamais l'italique ni la graisse du texte autour (2026-11-27, utilisateur : « [...] » des descriptions tronquées
+   * de WIMS, modules/home/sequence.phtml, en italique et maigre) : comme les autres boutons d'aide. */
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: normal;
 }
+/* « [...] » d'une description tronquée (sequence.phtml, sans espace avant) : bouton compact dans la ligne. */
+body.main_body :is(.wims_sheet_desc, .wims_exam_desc) > a.wims_button_help { min-height: 28px; margin-left: .35em; padding: 0 var(--nova-e2); line-height: 1; vertical-align: baseline; }
 body.main_body .wims_button_help:hover, body.main_body a.wims_button_help:hover {
   background: color-mix(in oklab, var(--nova-accent) 24%, white);
   color: var(--nova-lien);

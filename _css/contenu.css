@@ -1099,6 +1099,8 @@ html.nova-qn-ouvert .wimsbody .nova-qn-ouvrir { display: none; }
 .nova-qn .nova-qn-icone { display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: var(--nova-rayon); background: none; color: var(--nova-texte-2); }
 .nova-qn .nova-qn-icone:hover { background: var(--nova-surface-2); }
 .nova-qn-rang { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; padding: 0 10px 6px; }
+.nova-qn-rang:first-child { padding-top: 10px; }
+.nova-qn-rang > .nova-qn-icone { flex: none; margin-left: 2px; }
 .nova-qn .nova-qn-puce {
   display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 8px; border: 1px solid var(--nova-bord-fort);
   border-radius: 999px; background: var(--nova-surface); color: var(--nova-texte); font-size: 12px; font-weight: 600; white-space: nowrap;
@@ -1106,6 +1108,11 @@ html.nova-qn-ouvert .wimsbody .nova-qn-ouvrir { display: none; }
 .nova-qn .nova-qn-puce[aria-pressed="true"] { border-color: var(--nova-accent); background: var(--nova-accent-doux); color: var(--nova-accent); }
 .nova-qn .nova-qn-moy[aria-pressed="false"] { color: var(--nova-texte-2); text-decoration: line-through; }
 .nova-qn .nova-qn-seg { margin-left: auto; }
+/* Tableau des notes plus serré (2026-11-28, utilisateur : plus de notes d'un coup) : cellules moins hautes, colonne des
+ * noms assez large pour un nom sur deux lignes au plus. */
+html.nova-qn-page .wimsbody #TABLE_userlist :is(td, th) { padding-top: 3px; padding-bottom: 3px; line-height: 1.25; }
+html.nova-qn-page .wimsbody #TABLE_userlist tbody td:first-child { min-width: 9rem; }
+html.nova-qn-page .wimsbody #TABLE_userlist :is(tbody, tfoot) td:not(:first-child) { white-space: nowrap; }
 .nova-qn .nova-qn-seg > button { min-height: 24px; font-size: 12px; }
 .nova-qn-liste { flex: 1; min-height: 0; overflow-y: auto; margin: 0 10px; border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); }
 .nova-qn-groupe { padding: 6px 8px 2px; border-top: 1px solid var(--nova-bord); font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--nova-texte-2); }

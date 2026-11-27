@@ -486,22 +486,18 @@
     var lire = function (cle) { try { return localStorage.getItem(cle); } catch (e) { return null; } };
     var ecrire = function (cle, v) { try { localStorage.setItem(cle, v); } catch (e) { /* cette page seulement */ } };
     var racine = document.documentElement;
+    racine.classList.add('nova-qn-page');
     var large = window.matchMedia('(min-width: 1024px)');
 
     var pan = el('aside', 'nova-qn');
     pan.id = 'nova-qn';
-    pan.setAttribute('aria-labelledby', 'nova-qn-titre');
-    var tete = el('div', 'nova-qn-tete');
-    var h = el('h2', '', t('quelles-notes', 'Which scores?'));
-    h.id = 'nova-qn-titre';
+    // Pas de titre (2026-11-28, utilisateur) : nom pour les lecteurs d'écran, bouton de fermeture au bout de la rangée 2.
+    pan.setAttribute('aria-label', t('choix-donnees', 'Data selection'));
     var fermer = el('button', 'nova-qn-icone');
     fermer.type = 'button';
     fermer.title = t('panneau-masquer', 'Hide the panel');
     fermer.setAttribute('aria-label', fermer.title);
     fermer.appendChild(ico('panneau-fermer'));
-    tete.appendChild(h);
-    tete.appendChild(fermer);
-    pan.appendChild(tete);
 
     // Rangée 1 : Tout, Feuilles, Examens (un clic coche le groupe, un second le décoche).
     var opts = Array.prototype.slice.call(choix.options);
@@ -539,7 +535,7 @@
       pm.type = 'button';
       var im = ico('oeil');
       pm.appendChild(im);
-      pm.appendChild(document.createTextNode(t('moyenne-court', 'Avg.')));
+      pm.appendChild(document.createTextNode(t('moyenne', 'Average')));
       var majM = function () {
         var vue = bm.getAttribute('aria-pressed') === 'true';
         pm.setAttribute('aria-pressed', vue ? 'true' : 'false');
@@ -572,12 +568,13 @@
       poser(segs[0].children[1].getAttribute('aria-pressed') === 'true' ? 1 : 0);
       r2.appendChild(seg);
     }
-    if (r2.children.length) pan.appendChild(r2);
+    r2.appendChild(fermer);
+    pan.appendChild(r2);
 
     // Liste : « F3 » / « E2 », titre sans le préfixe commun du groupe (« Evalwims-seconde : », « Test : »).
     var liste = el('div', 'nova-qn-liste');
     liste.setAttribute('role', 'group');
-    liste.setAttribute('aria-labelledby', 'nova-qn-titre');
+    liste.setAttribute('aria-label', t('choix-donnees', 'Data selection'));
     var titreDe = function (o) { var i = o.textContent.indexOf(':'); return i >= 0 ? o.textContent.slice(i + 1).trim() : o.textContent.trim(); };
     var prefixe = function (titres) {
       if (titres.length < 2) return '';
@@ -663,7 +660,7 @@
     ouvrir.type = 'button';
     ouvrir.setAttribute('aria-controls', 'nova-qn');
     ouvrir.appendChild(ico('panneau-droit'));
-    ouvrir.appendChild(document.createTextNode(t('quelles-notes', 'Which scores?')));
+    ouvrir.appendChild(document.createTextNode(t('choix-donnees', 'Data selection')));
     boutons.appendChild(ouvrir);
     barre.appendChild(boutons);
     form.parentNode.insertBefore(barre, form);

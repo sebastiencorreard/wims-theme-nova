@@ -22,6 +22,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- Page Notes : lignes du tableau deux fois moins hautes (notes sur une ligne) ; panneau sans titre, « Moyenne » en entier, bouton « Choix des données » pour le rouvrir.
 - Page Notes : plus de titre ni de ligne de la classe, pilules Notes, Réussite… tout en haut et centrées, aide en une phrase ; « Masquer le menu » en tête du menu de gauche, « Menu » pour le rouvrir.
 - Page Notes : choix des feuilles et examens dans un panneau « Quelles notes ? » à droite, masquable (Tout, Feuilles, Examens, Moyenne, N° | Titre, « Rafraîchir ») ; menu de gauche masquable sur cette page ; préfixe commun des titres retiré des en-têtes.
 - Page Notes : cadre « Quelles notes ? » allégé : liste des feuilles et examens repliable, pilules Notes, Réussite, Qualité, Points cumulés (%)… en tête, une ligne « Affichage » (Moyenne, Feuilles et Examens : Numéro | Titre) au lieu de trois cases.

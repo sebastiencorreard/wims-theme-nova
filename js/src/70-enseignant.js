@@ -2265,6 +2265,32 @@
       var m = /(\d+)\D*$/.exec(td.textContent);
       if (m) td.setAttribute('data-sort', ('0000000' + m[1]).slice(-8));
     });
+    // Sens du tri de cette colonne retenu par le navigateur (2026-11-27, utilisateur) : localStorage nova_tri_no =
+    // {"<id du bloc>": "ascending"|"descending"} ; un tri sur une autre colonne l'oublie. Remis au chargement complet
+    // (Tablesort de WIMS est pose par un script de la page) : un clic pour croissant, deux pour decroissant.
+    var lire = function () { try { return JSON.parse(localStorage.getItem('nova_tri_no') || '{}') || {}; } catch (e) { return {}; } };
+    var tables = [];
+    Array.prototype.forEach.call(document.querySelectorAll('.wimsbody :is(#wims_supervisor_doc, #wims_supervisor_sheet, #wims_supervisor_exam, #wims_supervisor_vote, #wims_supervisor_tool, #wims_supervisor_freework, #wims_supervisor_glossary) table'), function (t) {
+      var bloc = t.closest('[id^="wims_supervisor_"]');
+      if (bloc && t.tBodies[0] && t.tBodies[0].rows.length > 1) tables.push([t, bloc.id]);
+    });
+    if (!tables.length) return;
+    var remettre = function () {
+      var etat = lire();
+      tables.forEach(function (x) {
+        var t = x[0], th = t.tHead && t.tHead.rows.length && t.tHead.rows[t.tHead.rows.length - 1].cells[0];
+        if (!th) return;
+        t.addEventListener('afterSort', function () {
+          var e = lire(), s = th.getAttribute('aria-sort');
+          if (s === 'ascending' || s === 'descending') e[x[1]] = s; else delete e[x[1]];
+          try { localStorage.setItem('nova_tri_no', JSON.stringify(e)); } catch (er) { /* rien de retenu */ }
+        });
+        var voulu = etat[x[1]];
+        if (th.getAttribute('role') !== 'columnheader' || !voulu) return;
+        for (var i = 0; i < 2 && th.getAttribute('aria-sort') !== voulu; i++) th.click();
+      });
+    };
+    if (document.readyState === 'complete') remettre(); else window.addEventListener('load', remettre);
   }
 
   function numerosRessources() {
@@ -2816,10 +2842,12 @@
         liste.appendChild(l);
         return c;
       });
+      var groupes = null;
       function majTout() {
         var toutes = cases.every(function (c) { return c.checked; });
         tout.textContent = tx.getAttribute(toutes ? 'data-rien' : 'data-tout');
         tout.setAttribute('aria-pressed', toutes ? 'true' : 'false');
+        if (groupes) groupes.forEach(function (f) { f(); });
       }
       tout.addEventListener('click', function () {
         var cocher = !cases.every(function (c) { return c.checked; });
@@ -2828,23 +2856,33 @@
         sel.dispatchEvent(new Event('change', { bubbles: true }));
       });
       majTout();
-      // Page Notes (showsheet : feuilles « 3 », examens « E3 ») : « Examens seulement », « Feuilles seulement » (2026-11-27,
-      // utilisateur) ; cochent les uns, decochent les autres.
+      // Page Notes (showsheet : feuilles « 3 », examens « E3 ») : « Cocher les examens » / « Décocher les examens », idem
+      // pour les feuilles (2026-11-27, utilisateur ; avant : « Examens seulement ») : cochent ou décochent un groupe sans
+      // toucher à l'autre ; « Décocher » quand tout le groupe est coché.
       var valeurs = Array.prototype.map.call(sel.options, function (o) { return o.value; });
       var estExamen = function (v) { return /^E\d+$/.test(v); };
+      var groupes = [];
       if (valeurs.some(estExamen) && valeurs.some(function (v) { return /^\d+$/.test(v); })) {
-        [['examens', 'Exams only', true], ['feuilles', 'Worksheets only', false]].forEach(function (r) {
+        [['examens', 'Exams', true], ['feuilles', 'Worksheets', false]].forEach(function (r) {
           var b = document.createElement('button');
           b.type = 'button';
           b.className = 'nova-choix-tout nova-choix-seuls';
-          b.textContent = tx.getAttribute('data-' + r[0]) || r[1];
+          var dans = function (i) { return estExamen(valeurs[i]) === r[2]; };
+          var plein = function () { return cases.every(function (c, i) { return !dans(i) || c.checked; }); };
           b.addEventListener('click', function () {
-            cases.forEach(function (c, i) { var oui = estExamen(valeurs[i]) === r[2]; c.checked = oui; sel.options[i].selected = oui; });
+            var cocher = !plein();
+            cases.forEach(function (c, i) { if (dans(i)) { c.checked = cocher; sel.options[i].selected = cocher; } });
             majTout();
             sel.dispatchEvent(new Event('change', { bubbles: true }));
           });
+          groupes.push(function () {
+            var p = plein();
+            b.textContent = tx.getAttribute('data-' + r[0] + (p ? '-decocher' : '-cocher')) || ((p ? 'Clear ' : 'Select ') + r[1].toLowerCase());
+            b.setAttribute('aria-pressed', p ? 'true' : 'false');
+          });
           tete.appendChild(b);
         });
+        majTout();
       }
       boite.appendChild(tete);
       boite.appendChild(liste);

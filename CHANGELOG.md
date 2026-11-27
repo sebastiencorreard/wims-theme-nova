@@ -21,6 +21,8 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- Accueil : le sens du tri de la colonne « No » (croissant ou décroissant) est retenu par le navigateur.
+- Page Notes : « Cocher les examens » / « Décocher les examens » et de même pour les feuilles, au lieu de « Examens seulement » et « Feuilles seulement ».
 - Liste des examens de l'accueil : « Dupliquer » dans le menu de la pastille d'état (copie en préparation, mêmes exercices).
 - **Désactiver malgré le partage** (réglage avancé, dangereux) : il revient tout seul à Non 24 h après avoir été activé ; le texte d'explication le dit.
 - **Sauvegarde et restauration d'un cours en partage** : un avertissement explique que le cours reçoit les ressources du programme, ce que casserait une restauration, et comment restaurer dans le programme pour toutes les classes du niveau.

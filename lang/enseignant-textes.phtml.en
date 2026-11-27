@@ -84,7 +84,7 @@
 
 :choix
 !! header.phtml, pages adm/ de l'enseignant (nova.js choixMultiples, audit C2, 2026-11-14)
-<template id="nova-choix-textes" data-examens="Exams only" data-feuilles="Worksheets only" data-affi-quality="quality" data-affi-points="percentage of cumulated points" data-affi-notes="scores" data-affi-best="success" data-affi-level="acquisition" data-tout="Select all" data-rien="Clear all"></template>
+<template id="nova-choix-textes" data-examens-cocher="Select the exams" data-examens-decocher="Clear the exams" data-feuilles-cocher="Select the worksheets" data-feuilles-decocher="Clear the worksheets" data-affi-quality="quality" data-affi-points="percentage of cumulated points" data-affi-notes="scores" data-affi-best="success" data-affi-level="acquisition" data-tout="Select all" data-rien="Clear all"></template>
 !exit
 
 :ti

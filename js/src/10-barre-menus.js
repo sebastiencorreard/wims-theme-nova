@@ -1002,6 +1002,20 @@
    * etiquette du code de la langue (« FR », « EN »), dans la couleur d'accent, pleine pour la langue actuelle : barre
    * (#language_selector), tiroir et rubrique Profil (choixLangue, .nova-langue). Reglage « Menus du theme standard » : les
    * drapeaux restent. Drapeaux caches par le CSS en attendant (3 s au plus sans nova.js). */
+  /* Langues proposees (2026-11-27, utilisateur : « ne propose que les langues disponibles ») : celles que Nova traduit en
+   * entier (fr, en, es, it ; les autres retombent sur l'anglais), parmi celles du site ($wims_site_languages, qui fait la
+   * liste de WIMS). La langue actuelle reste toujours. Tous les choix de langue (barre, tiroir, Profil, fil d'Ariane), quel
+   * que soit le reglage « Menus ». */
+  var LANGUES_NOVA = ['fr', 'en', 'es', 'it'];
+  function languesDisponibles() {
+    document.querySelectorAll('#lang_list a[href], .nova-langues a[href]').forEach(function (a) {
+      var m = /[?&]\+?lang=([a-z]{2})\b/.exec(a.getAttribute('href') || '');
+      if (!m || LANGUES_NOVA.indexOf(m[1]) >= 0 || a.classList.contains('current') || a.hasAttribute('aria-current')) return;
+      var bloc = a.closest('#lang_list > li, #lang_list > .menuitem') || a;
+      bloc.parentNode.removeChild(bloc);
+    });
+  }
+
   function codesLangues() {
     if (standard('menus')) return;
     document.querySelectorAll('#language_selector img, .nova-langue img').forEach(function (img) {

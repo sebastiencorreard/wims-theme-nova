@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Choix de la langue : seulement les langues que Nova traduit en entier (français, anglais, espagnol, italien).
 - Choix de la langue : le code de la langue (FR, EN…) remplace les drapeaux, partout.
 - Accueil du site : le choix de la langue sort du menu ☰, à droite du fil d'Ariane.
 - Pied de page : toujours en bas de l'écran, y compris à l'accueil du site ; « À propos de WIMS » remplace les conditions générales d'utilisation.

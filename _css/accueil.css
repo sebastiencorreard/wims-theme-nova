@@ -10,7 +10,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: var(--nova-e4);
-  align-items: start;
+  align-items: stretch;   /* deux cartes cote a cote : meme hauteur (2026-11-27, utilisateur ; avant : start) */
   margin: 0 0 var(--nova-e4);
   clear: both;   /* sous le logo du site, qui flotte à droite du titre */
 }

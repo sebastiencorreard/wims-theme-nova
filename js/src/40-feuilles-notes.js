@@ -465,8 +465,9 @@
    * maquettes/notes-panneau-2026-11-28 ; un seul « N° | Titre » pour feuilles et examens ; préfixes communs des titres
    * retirés). Le cadre de WIMS reste dans le formulaire, caché : le panneau pilote sa liste (select showsheet) et les
    * commandes déjà posées par notesColonnes (bouton Moyenne, segments Numéro | Titre), « Rafraîchir » l'envoie. Pilules
-   * Notes, Réussite... sorties du cadre, au-dessus du tableau, avec les boutons qui montrent les deux panneaux : celui de
-   * droite et, sur cette page seulement, le menu de gauche (ordinateur). localStorage nova_notes_panneau,
+   * Notes, Réussite... sorties du cadre, tout en haut et centrées (titre de la page réservé aux lecteurs d'écran), entre
+   * « Menu » (menu de gauche masqué) et « Quelles notes ? » (panneau masqué) ; « Masquer le menu » en tête du menu de
+   * gauche, sur cette page seulement (ordinateur). localStorage nova_notes_panneau,
    * nova_notes_menu (1 = ouvert / montré). Téléphone et tablette : panneau par-dessus la page, fermé au chargement.
    * Réglage « Feuilles et examens en liste » : cadre au-dessus du tableau. */
   function notesPanneau() {
@@ -624,17 +625,39 @@
     maj();
 
     // Pilules au-dessus du tableau, avec les deux boutons de panneau ; cadre de WIMS caché (reste dans le formulaire).
+    // Haut de page allégé (2026-11-28, utilisateur : « gagner de l'espace vertical ») : titre et ligne de la classe
+    // réservés aux lecteurs d'écran, pilules tout en haut et centrées, deux phrases d'aide de WIMS en une.
+    var titreBox = document.getElementById('wims_modu_title1');
+    if (titreBox) titreBox.classList.add('show-for-sr');
     var barre = el('div', 'nova-qn-barre');
+    var gauche = el('span', 'nova-qn-gauche');
+    barre.appendChild(gauche);
     var affi = cadre.querySelector('.nova-affi');
     if (affi) barre.appendChild(affi);
     var boutons = el('span', 'nova-qn-boutons');
     var menu = document.querySelector('#wimsbodybox > #wimsmenumodubox');
-    var bMenu = null;
+    var bMenu = null, bMenuVoir = null;
     if (menu) {
-      bMenu = el('button', 'nova-qn-bouton nova-qn-bouton-menu');
+      // Masquer : en tête du menu de gauche ; afficher : à gauche de la barre des pilules, là où était le menu.
+      bMenu = el('button', 'nova-qn-menu-masquer');
       bMenu.type = 'button';
-      bMenu.appendChild(ico('panneau-gauche'));
-      boutons.appendChild(bMenu);
+      bMenu.appendChild(ico('panneau-gauche-fermer'));
+      bMenu.appendChild(document.createTextNode(t('menu-masquer', 'Hide the menu')));
+      menu.insertBefore(bMenu, menu.firstChild);
+      bMenuVoir = el('button', 'nova-qn-bouton nova-qn-menu-voir');
+      bMenuVoir.type = 'button';
+      bMenuVoir.appendChild(ico('panneau-gauche-ouvrir'));
+      bMenuVoir.appendChild(document.createTextNode(t('menu-court', 'Menu')));
+      bMenuVoir.title = t('menu-montrer', 'Show the menu');
+      gauche.appendChild(bMenuVoir);
+    }
+    var phrases = [], n = form.nextElementSibling;
+    while (n && n.tagName === 'P') { phrases.push(n); n = n.nextElementSibling; }
+    if (phrases.length === 2 && !standard('textes') && t('aide-notes', '')) {
+      var une = el('p', 'nova-qn-aide', t('aide-notes', ''));
+      une.title = phrases.map(function (p) { return p.textContent.trim(); }).join(' ');
+      phrases[0].parentNode.insertBefore(une, phrases[0]);
+      phrases.forEach(function (p) { p.hidden = true; });
     }
     var ouvrir = el('button', 'nova-qn-bouton nova-qn-ouvrir');
     ouvrir.type = 'button';
@@ -667,12 +690,10 @@
     if (bMenu) {
       var menuVu = function (oui, garder) {
         racine.classList.toggle('nova-qn-sans-menu', !oui);
-        bMenu.setAttribute('aria-pressed', oui ? 'true' : 'false');
-        bMenu.title = t(oui ? 'menu-masquer' : 'menu-montrer', oui ? 'Hide the menu' : 'Show the menu');
-        bMenu.setAttribute('aria-label', bMenu.title);
         if (garder) ecrire('nova_notes_menu', oui ? '1' : '0');
       };
-      bMenu.addEventListener('click', function () { menuVu(bMenu.getAttribute('aria-pressed') !== 'true', true); });
+      bMenu.addEventListener('click', function () { menuVu(false, true); bMenuVoir.focus(); });
+      bMenuVoir.addEventListener('click', function () { menuVu(true, true); bMenu.focus(); });
       menuVu(lire('nova_notes_menu') !== '0', false);
     }
     placer();

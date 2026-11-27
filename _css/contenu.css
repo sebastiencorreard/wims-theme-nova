@@ -1067,17 +1067,26 @@ html.nova-sans-animation, html.nova-sans-animation *, html.nova-sans-animation *
  * notes-panneau). Ordinateur (>= 1024 px) : fixe sous la barre et le fil d'Ariane (--nova-qn-haut), la page lui laisse
  * sa place ; menu de gauche masquable sur cette page (html.nova-qn-sans-menu). Plus étroit : par-dessus la page. */
 .wimsbody fieldset.nova-qn-cache { display: none; }
-.wimsbody .nova-qn-barre { display: flex; flex-wrap: wrap; align-items: center; gap: var(--nova-e2) var(--nova-e3); margin: 0 0 var(--nova-e4); }
-.wimsbody .nova-qn-barre > .nova-affi { flex: 1 1 auto; margin: 0; padding: 0; border: 0; }
-.wimsbody .nova-qn-boutons { display: inline-flex; gap: var(--nova-e2); margin-left: auto; }
+.wimsbody .nova-qn-barre { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--nova-e2) var(--nova-e3); margin: 0 0 var(--nova-e3); }
+.wimsbody .nova-qn-barre > .nova-affi { justify-content: center; margin: 0; padding: 0; border: 0; }
+.wimsbody .nova-qn-gauche { justify-self: start; }
+.wimsbody .nova-qn-boutons { display: inline-flex; gap: var(--nova-e2); justify-self: end; }
+.wimsbody p.nova-qn-aide { margin: 0 0 var(--nova-e3); font-size: var(--nova-petit); color: var(--nova-texte-2); text-align: center; }
+html:not(.nova-qn-sans-menu) .wimsbody .nova-qn-menu-voir { display: none; }
+#wimsmenumodubox > button.nova-qn-menu-masquer {
+  display: flex; align-items: center; gap: var(--nova-e2); width: calc(100% - 2 * var(--nova-e3)); min-height: 36px; margin: var(--nova-e2) var(--nova-e3) var(--nova-e1);
+  padding: 0 var(--nova-e3); border: 1px dashed var(--nova-bord-fort); border-radius: var(--nova-rayon); background: none; box-shadow: none;
+  color: var(--nova-texte-2); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
+}
+#wimsmenumodubox > button.nova-qn-menu-masquer:hover { background: var(--nova-surface-2); color: var(--nova-texte); }
+@media (max-width: 1023.98px) { #wimsmenumodubox > button.nova-qn-menu-masquer, .wimsbody .nova-qn-menu-voir { display: none !important; } }
+@media (max-width: 639.98px) { .wimsbody .nova-qn-barre { grid-template-columns: 1fr; } .wimsbody .nova-qn-boutons { justify-self: center; } }
 .wimsbody button.nova-qn-bouton {
   display: inline-flex; align-items: center; gap: 6px; min-height: 34px; margin: 0; padding: 0 var(--nova-e3);
   border: 1px solid var(--nova-bord-fort); border-radius: 999px; background: var(--nova-surface); box-shadow: none;
   color: var(--nova-texte); font: inherit; font-size: var(--nova-petit); font-weight: 600; cursor: pointer;
 }
 .wimsbody button.nova-qn-bouton:hover { background: var(--nova-surface-2); }
-.wimsbody button.nova-qn-bouton-menu { width: 34px; padding: 0; justify-content: center; }
-.wimsbody button.nova-qn-bouton-menu[aria-pressed="false"] { border-color: var(--nova-accent); color: var(--nova-accent); }
 html.nova-qn-ouvert .wimsbody .nova-qn-ouvrir { display: none; }
 .nova-qn {
   position: fixed; z-index: 95; top: var(--nova-qn-haut, 112px); right: 0; bottom: 0; width: 280px; box-sizing: border-box;
@@ -1121,7 +1130,6 @@ html.nova-qn-ouvert .wimsbody .nova-qn-ouvrir { display: none; }
 @media (max-width: 1023.98px) {
   .nova-qn { top: 0; z-index: 1000; width: min(300px, 86vw); box-shadow: var(--nova-ombre); }
   html.nova-qn-ouvert .nova-qn-voile { display: block; position: fixed; inset: 0; z-index: 999; background: rgb(0 0 0 / 35%); }
-  .wimsbody button.nova-qn-bouton-menu { display: none; }
 }
 /* Notes des feuilles et des examens centrées, « -- » et 0 compris (WIMS ne met une classe qu'aux cellules colorées) ;
  * 2026-11-12, utilisateur. Réglage « Tableaux du thème standard ». */

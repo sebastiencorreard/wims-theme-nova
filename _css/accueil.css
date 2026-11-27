@@ -302,7 +302,7 @@ html.nova-std-textes .nova-accueil-titre-sr { display: none; }
 .nova-logo-site img { display: block; width: auto; max-width: 160px; height: auto; max-height: 36px; }
 #wimstopbox a.nova-logo-site, #wimstopbox a.nova-logo-site:hover { min-height: 0; padding: 4px var(--nova-e2); background: #fff; }
 .nova-logo-bas { display: none; }
-html.nova-js.nova-accueil-visiteur:not(.nova-std-menus) #wimstopbox :is(li.aboutw, #language_selector, .menuitem.wimsmanager) { display: none; }
+html.nova-js.nova-accueil-visiteur:not(.nova-std-menus) #wimstopbox :is(.menuitem.aboutw, .menuitem.about, .menuitem.help, .menuitem.whelp, #language_selector, .menuitem.wimsmanager) { display: none; }
 html.nova-std-menus #wimstopbox > .nova-visiteur-acces { display: none; }
 html.nova-std-menus #wimstopbox > .nova-logo-barre { order: -1; }
 @media (max-width: 767.98px) {
@@ -318,12 +318,25 @@ html.nova-std-menus #wimstopbox > .nova-logo-barre { order: -1; }
   .nova-logo-bas { display: flex; width: fit-content; margin: var(--nova-e4) auto 0; }
 }
 
-/* Fin de la rubrique « Site » du tiroir du visiteur (nova.js accueilVisiteur) : « À propos de WIMS », langue, puis
- * « Administration du site » (cadenas : mot de passe du gestionnaire), à part et en gris. */
-#wimsmenumodubox .nova-visiteur-plus.nova-visiteur-premier { margin-top: var(--nova-e2); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
-#wimsmenumodubox .nova-visiteur-plus.nova-admin { margin-top: var(--nova-e2); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
-#wimsmenumodubox .nova-visiteur-plus.nova-admin > a { color: var(--nova-texte-2); }
-/* Logo de l'établissement que WIMS remet en pied de page (themes/_widgets/tailbox.phtml) : déjà dans la barre (ou en bas
- * de page au téléphone). Réglage « Menus du thème standard » : celui de WIMS, pas celui du bas de page de Nova. */
-html:not(.nova-std-menus).nova-accueil-visiteur #wimstailbox .institution_logo { display: none; }
+/* Tiroir du visiteur (nova.js accueilVisiteur) : « Administration du site » tout en haut (cadenas : mot de passe du
+ * gestionnaire), en gris ; « À propos de WIMS », Aide et langue en bas, à part. */
+#wimsmenumodubox .nova-visiteur-haut { margin: 0 0 var(--nova-e2); padding-bottom: var(--nova-e2); border-bottom: 1px solid var(--nova-bord); }
+#wimsmenumodubox .nova-visiteur-haut .nova-admin > a { color: var(--nova-texte-2); }
+#wimsmenumodubox .nova-visiteur-plus { margin-top: var(--nova-e3); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
+/* Logo de l'établissement que WIMS remet en pied de page (themes/_widgets/tailbox.phtml) : déjà dans la barre (ou, sur
+ * l'accueil au téléphone, en bas de page ; dans une zone au téléphone, celui de WIMS reste). Réglage « Menus du thème standard » : celui de WIMS, pas celui du bas de page de Nova. */
+html:not(.nova-std-menus) #wimsfrontpage #wimstailbox .institution_logo { display: none; }
+@media (min-width: 640px) { html:not(.nova-std-menus).nova-accueil-visiteur #wimstailbox .institution_logo { display: none; } }
 html.nova-std-menus .nova-logo-bas { display: none !important; }
+
+/* Sélecteur de zone (Zone Élèves, Zone Enseignants d'un visiteur ; 2026-11-27, utilisateur) : les deux boutons dans une
+ * même pastille à contour ; la zone actuelle pleine (aria-current), l'autre en texte blanc, qui y mène. */
+#wimstopbox > .nova-visiteur-acces.nova-visiteur-zones { gap: 2px; padding: 2px; border: 2px solid rgb(255 255 255 / 80%); border-radius: 999px; }
+#wimstopbox .nova-visiteur-zones > a { min-height: 36px; border: 0; background: transparent; color: var(--nova-sur-accent); }
+#wimstopbox .nova-visiteur-zones > a.nova-visiteur-acces-eleve:not(.nova-visiteur-actif) { background: transparent; color: var(--nova-sur-accent); }
+#wimstopbox .nova-visiteur-zones > a:not(.nova-visiteur-actif):hover { background: rgb(255 255 255 / 14%); color: var(--nova-sur-accent); }
+#wimstopbox .nova-visiteur-zones > a.nova-visiteur-actif,
+#wimstopbox .nova-visiteur-zones > a.nova-visiteur-actif:hover { background: var(--nova-sur-accent); color: var(--nova-accent); }
+@media (max-width: 639.98px) {
+  #wimstopbox .nova-visiteur-zones > a { min-height: 32px; }
+}

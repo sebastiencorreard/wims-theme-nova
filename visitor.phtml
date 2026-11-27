@@ -15,10 +15,9 @@
 !! configuration du site, comme Pion2 a AMU). Menu lateral en tiroir a toutes les largeurs ; << A propos >>, la langue
 !! et << Administration du site >> (ex << WIMS gestion du site en ligne >>) passent dans le tiroir (nova.js
 !! accueilVisiteur, cadre.css). Reglage << Menus du theme standard >> : barre et colonne comme avant, sans les boutons.
-!! html.nova-accueil-visiteur : posee ici, avant l'affichage (CSS de la barre et du tiroir).
+!! Boutons, logo et html.nova-accueil-visiteur : _widgets/visiteur-barre.phtml (aussi lu par header.phtml, zones).
 !! Variables : nova_ac_hote, nom du serveur filtre (il vient de la requete).
 !read themes/$wims_theme/lang/accueil.phtml.$lang
-<script>document.documentElement.classList.add('nova-accueil-visiteur');</script>
 
   <div id="wimstopbox">
 !set nova_ac_hote=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-: in $httpd_HTTP_HOST
@@ -33,16 +32,7 @@
 !set N_manage=<span class="nova-nom-nova">$nova_ac_admin</span><span class="nova-nom-std">$N_manage</span>
 !read themes/_widgets/manager.phtml
     </div>
-    <div class="nova-visiteur-acces">
-!set wims_ref_class=nova-visiteur-acces-eleve
-!set wims_ref_title=$nova_ac_eleve_aide
-!href module=adm/class/classes&type=participant <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg><span>$nova_ac_eleve</span>
-!set wims_ref_class=nova-visiteur-acces-enseignant
-!set wims_ref_title=$nova_ac_enseignant_aide
-!href module=adm/class/classes&type=supervisor <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg><span>$nova_ac_enseignant</span>
-!reset wims_ref_class wims_ref_title
-    </div>
-!read themes/$wims_theme/_widgets/logo-site.phtml nova-logo-barre
+!read themes/$wims_theme/_widgets/visiteur-barre.phtml
   </div>
 !read themes/$wims_theme/_widgets/ariane.phtml
   <div id="wimsbodybox">

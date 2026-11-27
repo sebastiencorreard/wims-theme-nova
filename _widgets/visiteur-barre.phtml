@@ -1,0 +1,36 @@
+!! Nova : boutons << Eleve >> et << Enseignant >> et logo de l'etablissement dans la barre d'un visiteur (2026-11-27,
+!! utilisateur, maquette A). Lu par visitor.phtml (accueil du site) et par header.phtml sur les pages des classes
+!! virtuelles d'un visiteur (adm/class/classes : Zone Eleves, Zone Enseignants, Classes ouvertes). Pose
+!! html.nova-accueil-visiteur (tiroir a toutes les largeurs, cadre.css ; nova.js accueilVisiteur range A propos, Aide,
+!! langue et << Administration du site >> dans le tiroir). Dans une zone, les deux boutons forment un selecteur : la zone
+!! actuelle est pleine (nova-visiteur-actif, aria-current pose par nova.js), l'autre y mene.
+!! Variables
+!!   nova_vb_zone  zone actuelle : participant, supervisor, ou vide (accueil, classes ouvertes)
+!read themes/$wims_theme/lang/accueil.phtml.$lang
+<script>document.documentElement.classList.add('nova-accueil-visiteur');</script>
+!reset nova_vb_zone
+!if $module=adm/class/classes and $type isitemof participant,supervisor
+  !set nova_vb_zone=$type
+!endif
+!if $nova_vb_zone=$empty
+<div class="nova-visiteur-acces">
+!else
+<div class="nova-visiteur-acces nova-visiteur-zones">
+!endif
+!if $nova_vb_zone=participant
+  !set wims_ref_class=nova-visiteur-acces-eleve nova-visiteur-actif
+!else
+  !set wims_ref_class=nova-visiteur-acces-eleve
+!endif
+!set wims_ref_title=$nova_ac_eleve_aide
+!href module=adm/class/classes&type=participant <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg><span>$nova_ac_eleve</span>
+!if $nova_vb_zone=supervisor
+  !set wims_ref_class=nova-visiteur-acces-enseignant nova-visiteur-actif
+!else
+  !set wims_ref_class=nova-visiteur-acces-enseignant
+!endif
+!set wims_ref_title=$nova_ac_enseignant_aide
+!href module=adm/class/classes&type=supervisor <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg><span>$nova_ac_enseignant</span>
+!reset wims_ref_class wims_ref_title
+</div>
+!read themes/$wims_theme/_widgets/logo-site.phtml nova-logo-barre

@@ -235,6 +235,11 @@
       !endif
     !endif
     </div><!--wimsmenu-->
+    !! Nova : visiteur sur les pages des classes virtuelles (Zone Eleves, Zone Enseignants, Classes ouvertes) : barre et
+    !! tiroir de l'accueil du site, selecteur de zone (2026-11-27, utilisateur).
+    !if $wims_user=$empty and $module=adm/class/classes
+      !read themes/$wims_theme/_widgets/visiteur-barre.phtml
+    !endif
     <br class="clearall">
     !reset div1
     </div><!--wimstopbox-->

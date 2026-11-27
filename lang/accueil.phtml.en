@@ -1,6 +1,8 @@
 !! Nova : textes (en) de l'accueil du site pour un visiteur (visitor.phtml, _widgets/infos.phtml, _widgets/taxo-glossaire.phtml).
 !! Lus seulement par visitor.phtml (2026-11-27) : pas dans name.phtml, lu sur chaque page.
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!set nova_ac_bienvenue=Welcome to WIMS
+!set nova_ac_bienvenue_texte=Interactive online exercises. Choose your space.
 !set nova_ac_eleve=Student
 !set nova_ac_enseignant=Teacher
 !set nova_ac_eleve_aide=Enter my class

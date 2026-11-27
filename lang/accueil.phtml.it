@@ -3,6 +3,8 @@
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
 !! Textes anglais d'abord (repli : un texte absent de cette langue s'affiche en anglais, jamais vide).
 !read themes/$wims_theme/lang/accueil.phtml.en
+!set nova_ac_bienvenue=Benvenuti su WIMS
+!set nova_ac_bienvenue_texte=Esercizi interattivi online. Scegli il tuo spazio.
 !set nova_ac_eleve=Studente
 !set nova_ac_enseignant=Docente
 !set nova_ac_eleve_aide=Entra nella mia classe

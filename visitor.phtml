@@ -42,6 +42,25 @@
 !! utilisateur) ; cache par accueil.css, sauf reglage << Textes du theme standard >>. Titre pour les lecteurs d'ecran.
 <h1 class="show-for-sr nova-accueil-titre-sr">WIMS $nova_ac_hote</h1>
 !read themes/$wims_theme/_widgets/site_title.phtml
+!! Bandeau d'accueil (2026-11-27, utilisateur, maquette C) : << Bienvenue sur WIMS >>, une phrase et les boutons Eleve et
+!! Enseignant, en plus de ceux de la barre (gardes). Cache par accueil.css sous le reglage << Menus du theme standard >>.
+!if $s_category=V
+<section class="nova-accueil-bandeau" aria-labelledby="nova-accueil-bandeau-titre">
+  <div class="nova-accueil-bandeau-texte">
+    <h2 id="nova-accueil-bandeau-titre">$nova_ac_bienvenue</h2>
+    <p>$nova_ac_bienvenue_texte</p>
+  </div>
+  <div class="nova-accueil-bandeau-boutons">
+  !set wims_ref_class=nova-accueil-bandeau-eleve
+  !set wims_ref_title=$nova_ac_eleve_aide
+  !href module=adm/class/classes&type=participant <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg><span>$nova_ac_eleve</span>
+  !set wims_ref_class=nova-accueil-bandeau-enseignant
+  !set wims_ref_title=$nova_ac_enseignant_aide
+  !href module=adm/class/classes&type=supervisor <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg><span>$nova_ac_enseignant</span>
+  !reset wims_ref_class wims_ref_title
+  </div>
+</section>
+!endif
 !! Ordre de Pion2 (2026-11-27, utilisateur) : message du site, actualite et exemples (repliables), puis recherche de
 !! classe, recherche de ressource et << Taxonomie et glossaire >> cote a cote, puis << Sur ce site >>.
 !read themes/$wims_theme/_widgets/infos.phtml

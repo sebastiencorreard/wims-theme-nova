@@ -279,6 +279,28 @@ html.nova-std-textes .nova-accueil-titre-sr { display: none; }
 .nova-accueil-taxo > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
 .nova-accueil-taxo[open] > summary { margin-bottom: var(--nova-e2); }
 
+/* Bandeau d'accueil (2026-11-27, utilisateur, maquette C) : « Bienvenue sur WIMS », une phrase, boutons Élève (plein) et
+ * Enseignant (accent clair) à droite ; au téléphone, texte puis les deux boutons côte à côte. Réglage « Menus du thème
+ * standard » : pas de bandeau (comme les boutons de la barre). */
+.nova-accueil-bandeau { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nova-e3) var(--nova-e5); margin: 0 0 var(--nova-e4); padding: var(--nova-e4) var(--nova-e5) var(--nova-e4) var(--nova-e6); border-top: 4px solid var(--nova-accent); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre); clear: both; }
+html.nova-std-menus .nova-accueil-bandeau { display: none; }
+.nova-accueil-bandeau-texte { display: grid; gap: 4px; min-width: 0; }
+.wimsbody .nova-accueil-bandeau-texte > h2 { margin: 0; padding: 0; border: 0; background: none; color: var(--nova-texte); font-size: 1.375rem; font-weight: 700; line-height: 1.25; text-align: left; }
+.wimsbody .nova-accueil-bandeau-texte > p { margin: 0; color: var(--nova-texte-2); font-size: .9375rem; }
+.nova-accueil-bandeau-boutons { display: flex; gap: var(--nova-e3); }
+.wimsbody .nova-accueil-bandeau-boutons > a { display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-sizing: border-box; width: 230px; min-height: 52px; padding: 0 var(--nova-e4); border-radius: var(--nova-rayon); font-size: 1.125rem; font-weight: 700; text-decoration: none; }
+.wimsbody .nova-accueil-bandeau-boutons > a.nova-accueil-bandeau-eleve { background: var(--nova-accent); color: var(--nova-sur-accent); }
+.wimsbody .nova-accueil-bandeau-boutons > a.nova-accueil-bandeau-eleve:hover { background: color-mix(in oklab, var(--nova-accent) 85%, black); }
+.wimsbody .nova-accueil-bandeau-boutons > a.nova-accueil-bandeau-enseignant { background: color-mix(in oklab, var(--nova-accent) 12%, white); color: var(--nova-lien); }
+.wimsbody .nova-accueil-bandeau-boutons > a.nova-accueil-bandeau-enseignant:hover { background: color-mix(in oklab, var(--nova-accent) 22%, white); }
+.wimsbody .nova-accueil-bandeau-boutons > a:focus-visible { outline: 3px solid var(--nova-accent); outline-offset: 2px; }
+@media (max-width: 639.98px) {
+  .nova-accueil-bandeau { padding: var(--nova-e4); }
+  .wimsbody .nova-accueil-bandeau-texte > h2 { font-size: 1.25rem; }
+  .nova-accueil-bandeau-boutons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+  .wimsbody .nova-accueil-bandeau-boutons > a { width: auto; min-height: 48px; padding: 0 var(--nova-e2); font-size: 1.0625rem; }
+}
+
 /* Barre du visiteur (2026-11-27, utilisateur, maquette A ; visitor.phtml) : ☰, marque WIMS et nom du serveur à gauche ;
  * « Élève » (plein) et « Enseignant » (contour) à droite, puis le logo de l'établissement sur une pastille blanche (logo
  * sombre, comme celui d'AMU). Téléphone : logo WIMS seul, logo de l'établissement en bas de page. « À propos », la langue et

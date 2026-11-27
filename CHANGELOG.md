@@ -52,6 +52,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - « Désactiver malgré le partage » : un Oui enregistré avec une version précédente compte comme expiré ; le réactiver au besoin (valable 24 h).
 
 ### Corrections
+- Accueil de l'enseignant : la colonne « No » des documents, feuilles et examens se trie dans l'ordre des nombres (2 avant 11).
 - Réponse d'un exercice : les questions écrites en formule (fractions) gardent leur forme dans le tableau « n réponses justes sur N », et un exercice qui ne montre pas les réponses n'affiche plus de cases vides.
 - Exercice chronométré à plusieurs questions : le bandeau « Temps écoulé » reste affiché aux questions suivantes, jusqu'à la fin de l'exercice.
 - Barre de score d'une feuille de beaucoup d'exercices : elle ne dépasse plus de la carte, les segments passent sur plusieurs lignes (de taille fixe à partir de 21 exercices).

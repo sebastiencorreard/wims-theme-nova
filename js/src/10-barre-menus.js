@@ -912,8 +912,8 @@
   /* Pages d'un visiteur : accueil du site et classes virtuelles (Zone Élèves, Zone Enseignants, Classes ouvertes ;
    * 2026-11-27, utilisateur, maquette A ; _widgets/visiteur-barre.phtml pose html.nova-accueil-visiteur). Le menu latéral
    * est un tiroir ☰ à toutes les largeurs (cadre.css). La barre se vide dans le tiroir : « Administration du site »
-   * (cadenas) tout en haut, la langue juste dessous (une entrée qui déplie la liste, choixLangue ; 2026-11-27, utilisateur,
-   * avant : en bas) ; « À propos de WIMS » et Aide en bas, à part. Ces deux blocs sont posés APRÈS la construction de l'accordéon jQuery UI du menu (au « jQuery ready » de WIMS,
+   * (cadenas) tout en haut ; la langue à droite du fil d'Ariane (2026-11-27, utilisateur ; avant : dans le tiroir) ;
+   * « À propos de WIMS » et Aide en bas, à part. Ces deux blocs sont posés APRÈS la construction de l'accordéon jQuery UI du menu (au « jQuery ready » de WIMS,
    * après nova.js) : présents avant, ils en deviendraient des titres de rubrique (comme basculeMenu). Sélecteur de zone :
    * aria-current sur le bouton de la zone actuelle. Repli « Actualité et exemples » (_widgets/infos.phtml) gardé par le
    * navigateur (localStorage nova-accueil-infos, relu par le script du gabarit avant l'affichage). Réglage « Menus du thème
@@ -958,10 +958,27 @@
       ranger(item.querySelector('a[href]'), item.classList.contains('whelp') ? 'whelp' : 'help', bas);
       item.remove();
     });
+    // Langue : à droite du fil d'Ariane, hors du tiroir (2026-11-27, utilisateur : « la mettre en valeur ») ; bouton « FR
+    // Français » (téléphone : « FR »), liste en menu déroulant fermé par un clic ailleurs ou Échap. Sans fil d'Ariane : tiroir.
     var langues = barre.querySelector('#language_selector');
     if (langues) {
       var autres = langues.querySelectorAll('#lang_list a[href]');
-      if (autres.length) haut.appendChild(choixLangue(langues, autres));
+      var ariane = document.querySelector('nav > ul.breadcrumbs');
+      if (autres.length && ariane) {
+        var choix = choixLangue(langues, autres);
+        choix.className = 'nova-langue nova-langue-ariane';
+        var btn = choix.querySelector(':scope > a'), txt = choix.querySelector('.nova-langue-texte');
+        var actuelle = langues.querySelector('a.current .legende, .disabled .legende');
+        btn.setAttribute('aria-label', txt.textContent);
+        if (actuelle) txt.textContent = actuelle.textContent.trim();
+        ariane.parentNode.appendChild(choix);
+        var fermerLangues = function () {
+          var l = choix.querySelector('.nova-langues');
+          if (!l.hidden) { l.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+        };
+        document.addEventListener('click', function (e) { if (!choix.contains(e.target)) fermerLangues(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && choix.contains(document.activeElement)) { fermerLangues(); btn.focus(); } });
+      } else if (autres.length) haut.appendChild(choixLangue(langues, autres));
       langues.remove();
     }
     var placer = function () {
@@ -978,6 +995,23 @@
           if (bas.children.length) menu.appendChild(bas);
         }
       }, 0);
+    });
+  }
+
+  /* Choix de la langue (2026-11-27, utilisateur, maquette B) : les drapeaux GIF de WIMS (gifs/<code>.gif) deviennent une
+   * etiquette du code de la langue (« FR », « EN »), dans la couleur d'accent, pleine pour la langue actuelle : barre
+   * (#language_selector), tiroir et rubrique Profil (choixLangue, .nova-langue). Reglage « Menus du theme standard » : les
+   * drapeaux restent. Drapeaux caches par le CSS en attendant (3 s au plus sans nova.js). */
+  function codesLangues() {
+    if (standard('menus')) return;
+    document.querySelectorAll('#language_selector img, .nova-langue img').forEach(function (img) {
+      var m = /(?:^|\/)([a-z]{2})\.(?:gif|png|svg)(?:$|\?)/i.exec(img.getAttribute('src') || '');
+      if (!m) return;
+      var s = document.createElement('span');
+      s.className = 'nova-code-langue';
+      s.setAttribute('aria-hidden', 'true');
+      s.textContent = m[1].toUpperCase();
+      img.parentNode.replaceChild(s, img);
     });
   }
 

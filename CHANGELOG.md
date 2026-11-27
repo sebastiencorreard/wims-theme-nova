@@ -7,6 +7,8 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Choix de la langue : le code de la langue (FR, EN…) remplace les drapeaux, partout.
+- Accueil du site : le choix de la langue sort du menu ☰, à droite du fil d'Ariane.
 - Pied de page : toujours en bas de l'écran, y compris à l'accueil du site ; « À propos de WIMS » remplace les conditions générales d'utilisation.
 - Accueil du site : rubriques « Documentation » et « Création de ressources » du menu repliées par défaut ; le navigateur retient le choix.
 - Accueil du site (non connecté) : le choix de la langue est en haut du menu ☰, sous « Administration du site » ; le menu ne se referme plus quand on le déplie.

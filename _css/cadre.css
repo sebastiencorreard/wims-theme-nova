@@ -1283,3 +1283,53 @@ img[src*="wims_logo_v4_accent_fin."] {
           mask-image: url("img/wims_logo_v4_accent_fin.svg");
 }
 #wimstopbox img:is([src*="wims_logo_v4_accent."], [src*="wims_logo_v4_accent_fin."]) { background: var(--nova-sur-accent); }
+
+/* Choix de la langue : code de la langue a la place du drapeau (nova.js codesLangues, 2026-11-27, utilisateur, maquette B).
+ * Drapeaux masques en attendant nova.js (3 s au plus). */
+html.nova-js:not(.nova-std-menus) :is(#language_selector, .nova-langue) img.vignette { visibility: hidden; animation: nova-revele 0s 3s forwards; }
+.nova-code-langue {
+  display: inline-grid; place-items: center; flex: none; box-sizing: border-box; min-width: 28px; height: 20px; padding: 0 4px;
+  border-radius: 6px; background: var(--nova-accent-doux); color: var(--nova-accent);
+  font: 700 11px/1 var(--nova-police); letter-spacing: .04em;
+}
+:is(a.current, [aria-current]) > .nova-code-langue { background: var(--nova-accent); color: var(--nova-sur-accent); }
+#wimstopbox a.lang > .nova-code-langue { background: var(--nova-sur-accent); color: var(--nova-accent); }
+.nova-langue-ariane > a > .nova-code-langue { background: var(--nova-accent); color: var(--nova-sur-accent); }
+#wimstopbox [id="lang_list"] a .nova-code-langue { margin: 0; }
+
+/* Accueil du visiteur : choix de la langue a droite du fil d'Ariane (nova.js accueilVisiteur, 2026-11-27, utilisateur). */
+:where(nav:has(> .nova-langue-ariane)) { position: relative; }
+nav:has(> .nova-langue-ariane) > .breadcrumbs { padding-right: calc(var(--nova-e5) + 150px); }
+.nova-langue-ariane { position: absolute; top: 50%; right: var(--nova-e5); transform: translateY(-50%); z-index: 95; }
+.nova-langue-ariane > a {
+  display: inline-flex; align-items: center; gap: var(--nova-e2); min-height: 36px; padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon); background: var(--nova-surface);
+  color: var(--nova-texte); font-size: .9375rem; text-decoration: none;
+}
+.nova-langue-ariane > a:hover, .nova-langue-ariane > a[aria-expanded="true"] { background: var(--nova-accent-doux); }
+.nova-langue-ariane > a:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-langue-ariane > a::after {
+  content: ""; flex: none; width: 7px; height: 7px; margin: 0 2px 3px 2px;
+  border-right: 2px solid var(--nova-texte-2); border-bottom: 2px solid var(--nova-texte-2); transform: rotate(45deg);
+}
+.nova-langue-ariane > a[aria-expanded="true"]::after { transform: rotate(-135deg); margin-bottom: -3px; }
+.nova-langue-ariane .nova-langues {
+  position: absolute; top: calc(100% + 6px); right: 0; min-width: 220px; max-height: 70vh; overflow-y: auto; padding: var(--nova-e2);
+  border: 1px solid var(--nova-bord); border-radius: var(--nova-rayon-carte); background: var(--nova-surface); box-shadow: var(--nova-ombre);
+}
+.nova-langue-ariane .nova-langues[hidden] { display: none; }
+.nova-langue-ariane .nova-langues a {
+  display: flex; align-items: center; gap: var(--nova-e2); min-height: 40px; padding: 0 var(--nova-e3);
+  border-radius: var(--nova-rayon); color: var(--nova-texte); text-decoration: none;
+}
+.nova-langue-ariane .nova-langues a[href]:hover { background: var(--nova-accent-doux); }
+.nova-langue-ariane .nova-langues a[aria-current] { font-weight: 700; cursor: default; }
+.nova-langue-ariane .nova-langues a[aria-current]::after {
+  content: ""; width: 5px; height: 10px; margin: 0 6px 3px auto;
+  border-right: 2px solid var(--nova-accent); border-bottom: 2px solid var(--nova-accent); transform: rotate(45deg);
+}
+@media (max-width: 639.98px) {
+  nav:has(> .nova-langue-ariane) > .breadcrumbs { padding-right: calc(var(--nova-e4) + 76px); }
+  .nova-langue-ariane { right: var(--nova-e4); }
+  .nova-langue-ariane .nova-langue-texte { display: none; }
+}

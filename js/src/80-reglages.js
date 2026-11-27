@@ -62,14 +62,30 @@
     oui.checked = valeur.toLowerCase() !== 'none';
     anime.checked = !perso;
     champ.placeholder = modele.getAttribute('data-logo-exemple') || '';
-    champ.setAttribute('aria-label', modele.getAttribute('data-logo-image') || '');
+    // Apercu vivant du logo anime (2026-11-27, utilisateur) : masque du SVG rempli par la couleur du theme, suivie en direct
+    // quand le champ << Couleur du theme >> de la meme page change.
+    var apercu = document.createElement('span');
+    apercu.className = 'nova-logo-apercu';
+    apercu.setAttribute('aria-hidden', 'true');
+    wims.appendChild(apercu);
+    var couleur = form.querySelector('[name="' + modele.getAttribute('data-champ-theme') + '"]');
+    function teinte() { if (couleur && /^#[0-9a-f]{6}$/i.test(couleur.value)) apercu.style.backgroundColor = couleur.value; }
+    if (couleur) couleur.addEventListener('input', teinte);   // au depart : l'accent de la page (#676767 de WIMS = pas de couleur choisie)
+    // Libelle au-dessus du champ de l'adresse (2026-11-27, utilisateur) : on attend l'adresse d'une image.
+    var adresse = document.createElement('div');
+    adresse.className = 'nova-logo-adresse';
+    var libelle = document.createElement('label');
+    libelle.htmlFor = champ.id;
+    libelle.textContent = modele.getAttribute('data-logo-image') || '';
+    adresse.appendChild(libelle);
     bloc.appendChild(inter);
     bloc.appendChild(wims);
     ligne.appendChild(bloc);
-    bloc.appendChild(champ);
+    adresse.appendChild(champ);
+    bloc.appendChild(adresse);
     function maj() {
       wims.style.display = oui.checked ? '' : 'none';
-      champ.style.display = oui.checked && !anime.checked ? '' : 'none';
+      adresse.style.display = oui.checked && !anime.checked ? '' : 'none';
       if (ligneCote) ligneCote.style.display = oui.checked ? '' : 'none';
       champ.value = !oui.checked ? 'none' : anime.checked ? 'wims' : perso;
       champ.required = oui.checked && !anime.checked;

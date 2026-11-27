@@ -16,7 +16,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Logo de la classe au bord de la page, titre centré** : le logo n'est plus flottant (il ne décale plus le titre ni le « Bonjour » de la carte en dessous) ; au téléphone, il passe au-dessus du titre.
 - **Une seule largeur pour toutes les pages** : cartes, messages, textes de WIMS, configuration et page Apparence alignés sur la largeur de la page.
 - **Logo au téléphone** : logo et titre se réduisent ensemble pour rester sur la même ligne (titre de 20 px au moins) ; sinon le logo passe au-dessus.
-- **Option « Logo » de la page Apparence** : interrupteur « Afficher un logo », case « Logo WIMS animé, à la couleur du thème », sinon adresse de votre image ; sans logo défini, le logo WIMS animé à la couleur du thème remplace l'ancien logo de WIMS.
+- **Option « Logo » de la page Apparence** : interrupteur « Afficher un logo », case « Logo WIMS animé, à la couleur du thème » avec son aperçu animé (qui suit la couleur choisie), sinon adresse de votre image, expliquée au-dessus du champ ; sans logo défini, le logo WIMS animé à la couleur du thème remplace l'ancien logo de WIMS.
 - **Bouton « Mes notes »** : icône trophée au lieu des emojis.
 - **Logo WIMS à la couleur du site** : les logos animés `wims_logo_v4_accent.svg` et `wims_logo_v4_accent_fin.svg` (dans `img/` du thème) prennent la couleur d'accent du site ou de la classe partout où ils apparaissent (blancs dans la barre du haut).
 - **Logo de WIMS au lieu de la maison**, partout (barre, fil d'Ariane, menus), de la couleur du texte.

@@ -1314,4 +1314,8 @@ button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px 
 .wimsbody .nova-logo-choix { display: flex; flex-direction: column; align-items: flex-start; gap: var(--nova-e2); flex-basis: 100%; width: 100%; margin-top: var(--nova-e2); }
 .wimsbody label.nova-logo-inter { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin: 0; font-weight: 700; cursor: pointer; }
 .wimsbody label.nova-logo-wims { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; margin: 0; font-weight: 400; cursor: pointer; }
-.wimsbody .nova-logo-choix > input#pr_logo { width: 100%; max-width: 32rem; box-sizing: border-box; }
+.wimsbody .nova-logo-adresse { display: grid; gap: 4px; width: 100%; max-width: 32rem; }
+.wimsbody .nova-logo-adresse > label { margin: 0; font-weight: 400; font-size: var(--nova-petit); color: var(--nova-texte-2); }
+.wimsbody .nova-logo-adresse > input#pr_logo { width: 100%; box-sizing: border-box; }
+.wimsbody .nova-logo-apercu { flex: none; display: inline-block; width: 36px; height: 36px; margin-left: 4px; background: var(--nova-accent);
+  -webkit-mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat; mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat; }

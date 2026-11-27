@@ -649,6 +649,42 @@
   /* Largeur de lecture (2026-11-27, utilisateur ; cadre.css) : la page est limitée à 70rem ; quand son contenu déborde
    * (grand tableau des notes, liste d'élèves à colonnes nombreuses), elle reprend toute la largeur. Une seule lecture,
    * à la fin du démarrage, avant les calques de Dynapi (posés après « load »). */
+  // Titre centre sur la page malgre un logo flottant a sa gauche ou a sa droite (2026-11-27, utilisateur) : logo de la
+  // classe (#classlogo, float_left/right) ou du titre WIMS (.wimslogo). Le titre recoit des deux cotes une marge egale a la
+  // place du logo (--nova-logo-place, contenu.css) : le flottant tient dans l'une, l'autre equilibre. Si le titre n'a plus
+  // assez de place (telephone), le logo passe au-dessus, centre (nova-logo-dessus). Sans nova.js : comme WIMS.
+  function titresCentres() {
+    var paires = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#classlogo, .wimslogo'), function (logo) {
+      var titre = logo.nextElementSibling;
+      if (titre && (titre.matches('h1, h2, .title_box, [id^="wims_modu_title"]') || titre.querySelector('h1'))) paires.push([logo, titre]);
+    });
+    if (!paires.length) return;
+    function ajuster() {
+      var mesures = paires.map(function (p) {
+        var r = p[0].getBoundingClientRect(), cs = getComputedStyle(p[0]);
+        var parent = p[1].parentNode.getBoundingClientRect().width;
+        return [Math.ceil(r.width + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight)), parent];
+      });
+      paires.forEach(function (p, i) {
+        var place = mesures[i][0], dessus = mesures[i][1] - 2 * place < 280;
+        p[0].classList.toggle('nova-logo-dessus', dessus);
+        p[1].classList.toggle('nova-titre-logo', !dessus);
+        p[1].style.setProperty('--nova-logo-place', place + 'px');
+      });
+    }
+    ajuster();
+    paires.forEach(function (p) {
+      var img = p[0].querySelector('img');
+      if (img && !img.complete) img.addEventListener('load', ajuster);
+    });
+    var minuterie;
+    window.addEventListener('resize', function () { clearTimeout(minuterie); minuterie = setTimeout(function () {
+      paires.forEach(function (p) { p[0].classList.remove('nova-logo-dessus'); });
+      ajuster();
+    }, 150); });
+  }
+
   function largeurPage() {
     var page = document.querySelector('#wimspagebox .wimsbody');
     if (!page || page.classList.contains('nova-page-large')) return;

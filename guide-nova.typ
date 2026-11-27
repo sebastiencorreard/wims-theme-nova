@@ -1288,6 +1288,7 @@ qui montre les variantes ; on code celle qui est choisie).
   [Icônes Lucide, jeu forcé], [Un seul style, licence libre ; le jeu choisi par la classe est ignoré sous Nova], [Toute nouvelle icône est une icône Lucide],
   [Quatre langues complètes], [fr, en, es, it ; repli sur l'anglais pour les autres], [Tout texte nouveau dans les quatre],
   [Page de 70rem au plus, centrée], [Lisibilité sur grand écran (2026-11-27)], [`.wimsbody` dans `cadre.css` ; pleine largeur pour un contenu qui déborde (`largeurPage`, classe `nova-page-large`), un tableau de 10 colonnes ou plus, une image à zones],
+  [Titre centré malgré un logo], [Le logo de la classe (`#classlogo`) ou du titre WIMS (`.wimslogo`) flotte à côté du titre et le décentrait (2026-11-27, utilisateur)], [`titresCentres` (`20-composants.js`) : même marge des deux côtés (`--nova-logo-place`, `.nova-titre-logo`, `contenu.css`) ; peu de place : logo au-dessus (`.nova-logo-dessus`) ; sans nova.js : comme WIMS],
   [Rien de personnel pour le visiteur anonyme], [Une classe ouverte partage le compte `anonymous<n>` : notes, badges, couleur, activité, avatar n'y ont pas de sens], [Tester `anonymous notin $wims_user` (gabarit), `anonyme()` (JS), `html.nova-anonyme` (CSS)],
 )
 

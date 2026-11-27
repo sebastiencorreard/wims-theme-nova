@@ -20,7 +20,7 @@
 
 :lien_exercice
 !! _widgets/headmenu.phtml (lien de l'exercice ; nova.js lienExercice)
-<$div1 class="menuitem nova-copier-lien"><a class="link" href="$wims_ref_name?module=$module&amp;cmd=new&amp;exo=$nova_lien_exo" title="Copier le lien de cet exercice" data-copie="Lien copié" data-echec="Copiez ce lien :"><span class="text_item">Copier le lien</span></a></$div1>
+<$div1 class="menuitem nova-copier-lien"><a class="link" href="$wims_ref_name?module=$module&amp;cmd=new&amp;exo=$nova_lien_exo" title="Copier le lien direct vers cet exercice (extérieur à la classe)" data-copie="Lien copié" data-echec="Copiez ce lien :"><span class="text_item">Copier le lien</span></a></$div1>
 !exit
 
 :menu_bascule

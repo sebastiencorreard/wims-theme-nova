@@ -3,6 +3,16 @@
 !if $nova_std_textes=oui
   !exit
 !endif
+!! Nova : pages des classes virtuelles d'un visiteur (2026-11-27, utilisateur) : << Entrer >> pour SE CONNECTER a une
+!! classe ou s'y inscrire. Titres des zones : _widgets/visiteur-barre.phtml (html/name.phtml est relu apres ce fichier).
+!set name_text1=!nosubst Scegliete la riga corrispondente al corso o all'istituzione \
+che vi interessa e cliccate su <span class="wims_button disabled">$wims_name_Enter</span> per collegarvi o iscrivervi.\
+ <p>\
+Se non siete ancora iscritti e il corso è <span class="wims_label wims_warning">$name_protected</span>, consultate le istruzioni ricevute dal vostro docente o \
+coordinatore: in fase di registrazione potreste aver bisogno di una password.
+!set name_supervisor_text=!nosubst Selezionate la riga corrispondente al corso, al coordinamento di corsi o al portale cercato.\
+<br>Nel caso di coordinamenti di corsi o di portali, nella riga scegliete il bottone <span class="wims_button disabled">$wims_name_Enter</span> nella colonna "Docenti" per collegarvi a un corso o iscrivervi come docenti. Invece scegliete il bottone <span class="wims_button disabled">$wims_name_Enter</span> nella colonna "Docente/Coordinatore" per accedere alle funzioni di gestione.<br>\
+<p>Questa pagina è riservata agli accessi e alle registrazioni dei docenti.</p>
 !! Nova : page de connexion (adm/class/classes, authparticipant.phtml) sans les textes d'introduction
 !! (demande de l'utilisateur, 2026-10-03). Balises restees vides masquees par _css/composants.css.
 !set name_enterorregister=,

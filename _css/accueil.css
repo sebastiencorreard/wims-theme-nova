@@ -373,3 +373,19 @@ html.nova-std-menus .nova-logo-bas { display: none !important; }
 @media (max-width: 639.98px) {
   #wimstopbox .nova-visiteur-zones > a { min-height: 32px; }
 }
+
+/* Pages des classes virtuelles d'un visiteur (adm/class/classes : élèves, enseignants, classes ouvertes ; 2026-11-27,
+ * utilisateur) : pas de titre « Classes virtuelles » ; le nom de la zone (« Accès élèves »…, lang/adm_class_classes_…)
+ * devient le titre de la page, sans les tirets de WIMS (wimstitle.css). Réglage « Textes du thème standard ». */
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) .wimsbody:has(> #wims_modu_title3) > .title_box { display: none; }
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 > :is(.wims_title, br) { display: none; }
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 + .wims_content { margin-top: 0; padding-top: 0; }
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 > .wims_subtitle {
+  margin: var(--nova-e5) 0 var(--nova-e4); padding: 0; color: var(--nova-texte); font-size: 1.75rem; font-weight: 700;
+  line-height: 1.25; text-align: left; text-transform: none; letter-spacing: normal;
+}
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 > .wims_subtitle::before,
+:where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 > .wims_subtitle::after { content: none; }
+@media (max-width: 639.98px) {
+  :where(html.nova-accueil-visiteur:not(.nova-std-textes)) #wims_modu_title3 > .wims_subtitle { margin-top: var(--nova-e4); font-size: 1.375rem; }
+}

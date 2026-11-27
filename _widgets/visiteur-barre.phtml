@@ -8,6 +8,15 @@
 !!   nova_vb_zone  zone actuelle : participant, supervisor, ou vide (accueil, classes ouvertes)
 !read themes/$wims_theme/lang/accueil.phtml.$lang
 <script>document.documentElement.classList.add('nova-accueil-visiteur');</script>
+!! Noms des zones (titre de la page, fil d'Ariane) : << Acces eleves >>, << Acces enseignants >>, << Classes ouvertes >>
+!! (2026-11-27, utilisateur) ; WIMS les lit dans html/name.phtml, relu apres les textes du module : poses ici, avant le
+!! fil d'Ariane et le titre. Reglage << Textes du theme standard >> : ceux de WIMS.
+!read themes/$wims_theme/_procs/textes-standard.proc
+!if $module=adm/class/classes and $nova_std_textes!=oui
+  !set wims_name_n_participant=$nova_ac_zone_eleves
+  !set wims_name_n_supervisor=$nova_ac_zone_enseignants
+  !set wims_name_n_example=$nova_ac_zone_ouvertes
+!endif
 !reset nova_vb_zone
 !if $module=adm/class/classes and $type isitemof participant,supervisor
   !set nova_vb_zone=$type

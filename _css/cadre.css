@@ -768,16 +768,19 @@ html.nova-sans-animation .nova-menu-piste, html.nova-sans-animation .nova-menu-p
    * 2026-10-07 ; auparavant aucune icône au-delà de 640 px). */
   #wimstopbox .is-dropdown-submenu .menuitem > a::before { margin-right: 8px; }
 }
-/* Accueil : le logo de WIMS au lieu de la maison (img/logo-wims-blanc.svg, blanc pour la barre
- * d'accent), suivi de « WIMS » (_widgets/headhome.phtml). Une image et non un masque : le logo a
- * des dégradés, qu'un masque aplatirait. Au téléphone, le logo seul (règles plus haut). */
-#wimstopbox .menuitem:is(.class_home, .home) > :is(a, .text_item)::before {
-  width: 20px;
-  height: 22px;
-  background: url("img/logo-wims-blanc.svg") center / contain no-repeat;
-  -webkit-mask: none;
-          mask: none;
+/* Accueil : le logo de WIMS au lieu de la maison, PARTOUT (barre, fil d'Ariane, menus ; 2026-11-27, utilisateur) :
+ * img/logo-wims-blanc-v2.svg (traits seuls) en masque, donc de la couleur du texte (blanc dans la barre d'accent).
+ * Remplace la maison du jeu Lucide (--wims-icone, icon-min.css) et de Nova (--nova-picto). Avant : logo-wims-blanc.svg
+ * en image, barre seulement. Au téléphone, le logo seul dans la barre (règles plus haut). */
+#wimstopbox .menuitem:is(.class_home, .home) { --nova-picto: url("img/logo-wims-blanc-v2.svg"); }
+.menuitem:is(.class_home, .home) > :is(a, .text_item)::before,
+.menuitem :is(a, span, .text_item).class_home::before,
+.menuitem > .home::before {
+  background: currentColor !important;
+  -webkit-mask: url("img/logo-wims-blanc-v2.svg") center / contain no-repeat !important;
+          mask: url("img/logo-wims-blanc-v2.svg") center / contain no-repeat !important;
 }
+#wimstopbox .menuitem:is(.class_home, .home) > :is(a, .text_item)::before { width: 20px; height: 22px; }
 
 /* ---------- Chronomètre ou « Examen en cours » au centre de la barre (toutes largeurs) ----------
  * js/nova.js (centrerBarre) pose .nova-centre et --nova-centre-x : le centre de la barre si rien ne

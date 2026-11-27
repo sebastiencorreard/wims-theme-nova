@@ -5,6 +5,9 @@
 !read themes/$wims_theme/lang/accueil.phtml.en
 !set nova_ac_bienvenue=Benvenuti su WIMS
 !set nova_ac_bienvenue_texte=Esercizi interattivi online. Scegli il tuo spazio.
+!set nova_ac_zone_eleves=Accesso studenti
+!set nova_ac_zone_enseignants=Accesso docenti
+!set nova_ac_zone_ouvertes=Corsi aperti
 !set nova_ac_eleve=Studente
 !set nova_ac_enseignant=Docente
 !set nova_ac_eleve_aide=Entra nella mia classe

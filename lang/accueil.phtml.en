@@ -3,6 +3,9 @@
 !! Encodage latin-1 : WIMS sert ses pages en windows-1252.
 !set nova_ac_bienvenue=Welcome to WIMS
 !set nova_ac_bienvenue_texte=Interactive online exercises. Choose your space.
+!set nova_ac_zone_eleves=Student access
+!set nova_ac_zone_enseignants=Teacher access
+!set nova_ac_zone_ouvertes=Open classes
 !set nova_ac_eleve=Student
 !set nova_ac_enseignant=Teacher
 !set nova_ac_eleve_aide=Enter my class

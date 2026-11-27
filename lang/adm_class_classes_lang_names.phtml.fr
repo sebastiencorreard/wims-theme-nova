@@ -3,6 +3,16 @@
 !if $nova_std_textes=oui
   !exit
 !endif
+!! Nova : pages des classes virtuelles d'un visiteur (2026-11-27, utilisateur) : << Entrer >> pour SE CONNECTER a une
+!! classe ou s'y inscrire. Titres des zones : _widgets/visiteur-barre.phtml (html/name.phtml est relu apres ce fichier).
+!set name_text1=!nosubst <p>Choisissez la ligne correspondant à la classe ou l'établissement qui vous concerne.\
+Cliquez sur <span class="wims_button disabled">$wims_name_Enter</span> pour vous y connecter ou vous y inscrire\
+(si le statut est <span class="wims_label wims_warning">$name_protected</span>, vous avez besoin d'un mot de passe \
+que vous obtiendrez auprès de l'enseignant ou de l'administrateur).</p>
+!set name_supervisor_text=!nosubst Choisissez la ligne correspondant à la classe, au groupement ou à l'établissement cherché.\
+<br>Puis cliquez sur <span class="wims_button disabled">$wims_name_Enter</span> en tant qu'enseignant (pour vous connecter à une classe ou vous y inscrire)\
+ ou en tant qu'administrateur (pour gérer le groupement ou l'établissement).\
+<p> L'inscription est réservée ici aux enseignants.</p>
 !! Nova : page de connexion (adm/class/classes, authparticipant.phtml) sans les textes d'introduction
 !! (demande de l'utilisateur, 2026-10-03). Balises restees vides masquees par _css/composants.css.
 !set name_enterorregister=,

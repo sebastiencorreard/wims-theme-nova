@@ -705,7 +705,7 @@ pendant un examen (le chronomètre prend de la place) ; jeu Font_Awesome inject�
 
 #table(columns: (0.6fr, 1.6fr), align: left,
   [Accueil], [Fichiers],
-  [Site (visiteur)], [`visitor.phtml`, `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples), `search_classe.phtml` ; `_css/accueil.css`],
+  [Site (visiteur)], [`visitor.phtml` (barre : marque, boutons Élève et Enseignant, logo de l'établissement ; tiroir ☰ à toutes les largeurs, `html.nova-accueil-visiteur`), `_widgets/front.phtml`, `infos.phtml` (message, actualité, exemples, repliables), `search_classe.phtml`, `taxo-glossaire.phtml`, `logo-site.phtml` ; textes `lang/accueil.phtml.<l>` ; `_css/accueil.css` ; `10-barre-menus.js` (`accueilVisiteur` : « À propos », langue et « Administration du site » rangés en fin de rubrique « Site » du tiroir)],
   [Élève], [`user.phtml` (badges, avatar, couleur, cours unique) ; `_widgets/classtitle.phtml` ; `js/src/60-eleve.js`],
   [Enseignant], [`supervisor.phtml` ; `_widgets/statuts-ressources.phtml`, `sequences.phtml`, `replis-classes.phtml` ; `70-enseignant.js` (`accueilEnseignantCartes`, `colonneSequences` : infobulle de la colonne des séquences, `etatsRessources` ; menu d'une pastille : `etatMenu`, repris par la page d'une feuille ou d'un examen, `fichePastille`), `71-sequences.js` (`sequencesEnseignant` ; après un déplacement ou un réglage d'affichage, `seqRemplacer` met la page renvoyée par WIMS à la place de la liste, sans rechargement, puis relance `sequencesEnseignant`, `sequencesNumero`, `legendeTypes` ; pause `seqPauseFin` de 1,5 s depuis l'envoi) ; contenu d'une feuille, page d'une série, paramètres OEF : `74-feuille-contenu.js` (`feuilleContenu`, `serieModifier`, `serieEditeur` : paramètres enregistrés par la requête `job=chseries` de WIMS après le formulaire de la page, `aidesOef`) ; fiche d'un élève (Propriétés du compte) et inscription dans une classe depuis la racine d'une structure : `75-fiche-eleve.js` (`ficheEleve`), `_widgets/inscription-classes.phtml` ; plan du portail (première page de Gestion de structure) : `76-plan-portail.js` (`planPortail`, `planPortailSuite`), `_widgets/plan-portail.phtml`, `_procs/plan-portail.sh`],
 )
@@ -722,8 +722,8 @@ Ces trois gabarits sont des copies de ceux du thème standard : WIMS y écrit la
   dans chaque zone : tester le rôle (`$wims_user=supervisor`) et le type (`$class_typename`) avant d'afficher un
   bloc d'élève. À l'accueil d'une structure, l'enseignant est connecté sous son identifiant, PAS en `supervisor` :
   le test du rôle ne l'écarte pas ; écarter la racine par `$class_type notwordof 2 3 4` (bouton « Mes notes »).
-+ Textes : `lang/eleve.phtml.<l>` (lu en tête de `user.phtml`) ou `lang/enseignant.phtml.<l>` ; styles dans
-  `accueil.css`.
++ Textes : `lang/eleve.phtml.<l>` (lu en tête de `user.phtml`), `lang/enseignant.phtml.<l>` ou `lang/accueil.phtml.<l>`
+  (lu en tête de `visitor.phtml`) ; styles dans `accueil.css`.
 
 === Remplacer l'accueil par une page de Nova
 
@@ -1874,6 +1874,18 @@ découlent de l'ordre dans lequel WIMS assemble une page : relire le @assemblage
 
 == JavaScript
 
+#piege[Un bloc ajouté au menu latéral prend l'allure d'un titre de rubrique][
+  Sur l'accueil du site, les entrées « À propos », langue et administration, rangées par `nova.js` dans un bloc ajouté en
+  fin de menu, s'affichaient en petites capitales grises, repliables, comme « SITE » ou « DOCUMENTATION ».
+][
+  Le menu latéral du visiteur est un accordéon jQuery UI : il prend un enfant sur deux pour un titre de rubrique
+  (`ui-accordion-header`), même un bloc ajouté après lui.
+][
+  Ajouter un titre ET son bloc (comme « Plus » de `barreCompacte`), ou ranger les entrées dans une rubrique existante
+  (`accueilVisiteur` : la dernière, « Site »). Avant de nommer une classe, la chercher dans `css.css` (`grep -a`) :
+  `.nova-acces` (restriction d'accès) avait d'abord été reprise pour les boutons Élève et Enseignant.
+]
+
 #piege[Un clic sur un en-tête de tableau trie, puis ouvre une autre page][
   On voit le tableau trié un instant, puis la page du lien de l'en-tête s'ouvre (page Notes : en-tête d'une feuille).
 ][
@@ -2174,7 +2186,7 @@ nouveau n'y figure pas (@annexe-maintenir).
   [`couleurs-notes.phtml`], [couleurs des notes dans les tableaux de WIMS],
   [`headmenu.phtml`, `headhome.phtml`, `user_links.phtml`, `site_title.phtml`], [barre du haut (copies de WIMS) ; « Copier le lien » d'un exercice],
   [`ariane.phtml`, `footer.phtml`, `classtitle.phtml`], [fil d'Ariane, pied de page, titre de zone],
-  [`front.phtml`, `infos.phtml`, `search_classe.phtml`], [accueil du site],
+  [`front.phtml`, `infos.phtml`, `search_classe.phtml`, `taxo-glossaire.phtml`, `logo-site.phtml`], [accueil du site : « Sur ce site », actualité et exemples (repliables), recherche de classe, carte « Taxonomie et glossaire » (zones du glossaire de mathématiques présentes dans la langue de la page, lues dans `scripts/data/glossary/mathematics`), logo de l'établissement (`$site_logo` de la configuration, dans la barre ou en bas de page au téléphone)],
   [`examencours.phtml`], [bouton « Examen en cours »],
   [`menu-serveur.phtml`, `menu-bascule.phtml`, `replis-classes.phtml`, `std-menus.phtml`], [menu de l'enseignant, classes repliées, réglage « menus »],
   [`apparence.phtml`, `apparence-classe.phtml`, `apparence-standard.phtml`, `reglages-site.phtml`, `version.phtml`], [cartes « Réglages de Nova », enregistrement des réglages du site, version],
@@ -2624,6 +2636,7 @@ sans elles, la page prend ses valeurs par défaut.
   [`nova-fiche-avancees`], [options avancées d'une fiche de ressource ouvertes ou fermées],
   [`nova-session-activite`], [session et heure de la dernière page chargée (ou de « Rester connecté »), commune aux onglets],
   [`nova-pp-acces`], [plan du portail : accès affichés sur les tuiles (`1`) ou non],
+  [`nova-accueil-infos`], [accueil du site : « Actualité et exemples » replié (`ferme`) ou ouvert (`ouvert`, ou absente)],
 )
 `sessionStorage` (le temps d'un onglet) ne sert qu'à passer une information d'une page à la suivante : message
 reporté (`nova-message`), réglages standard déjà calculés (`nova-std-<classe>`), retour d'un enregistrement
@@ -2640,6 +2653,7 @@ s'appuie ; et balises `<meta>` que `nova.js` lit.
   [Repère], [Sens],
   [`html.nova-js`], [JavaScript tourne : les règles qui masquent en attendant `nova.js` ne valent que sous cette classe (@js)],
   [`html.nova-role-eleve`, `html.nova-role-prof`], [rôle de la personne connectée, connu avant l'affichage],
+  [`html.nova-accueil-visiteur`], [accueil du site (ou résultats de recherche) d'un visiteur : barre et tiroir propres, posée par `visitor.phtml` avant l'affichage],
   [`html.nova-std-<r>`], [le réglage « thème standard » `<r>` est choisi (@standard)],
   [`html.nova-sans-animation`], [animations coupées (@choix)],
   [`html.nova-menu-simple`, `html.nova-menu-edition`], [menu de l'enseignant simplifié ; en cours de personnalisation (@menu)],

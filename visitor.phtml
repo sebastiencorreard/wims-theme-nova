@@ -10,41 +10,67 @@
 !set table_colors=$wims_ref_bgcolor,$wims_ref_bgcolor
 </div>
 <div id="wimsfrontpage">
+!! Nova : accueil du site pour un visiteur (2026-11-27, utilisateur, maquette A) : marque WIMS et nom du serveur a gauche de
+!! la barre, boutons << Eleve >> et << Enseignant >> a droite, puis le logo de l'etablissement ($site_logo de la
+!! configuration du site, comme Pion2 a AMU). Menu lateral en tiroir a toutes les largeurs ; << A propos >>, la langue
+!! et << Administration du site >> (ex << WIMS gestion du site en ligne >>) passent dans le tiroir (nova.js
+!! accueilVisiteur, cadre.css). Reglage << Menus du theme standard >> : barre et colonne comme avant, sans les boutons.
+!! html.nova-accueil-visiteur : posee ici, avant l'affichage (CSS de la barre et du tiroir).
+!! Variables : nova_ac_hote, nom du serveur filtre (il vient de la requete).
+!read themes/$wims_theme/lang/accueil.phtml.$lang
+<script>document.documentElement.classList.add('nova-accueil-visiteur');</script>
 
   <div id="wimstopbox">
-!set positionlogo=left
-!read themes/_widgets/institution_logo.phtml
+!set nova_ac_hote=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-: in $httpd_HTTP_HOST
+!set wims_ref_class=nova-marque
+!href cmd=new&module=home <img src="html/themes/$wims_theme/img/wims_logo_v4_blanc.svg" width="32" height="32" alt=""><span class="nova-marque-nom">WIMS</span><span class="nova-marque-hote">$nova_ac_hote</span>
 
-!! maybe not useful if already called in header.phtml ?
 !read themes/$wims_theme/_widgets/user_links.phtml
 
     <div class="wimsmenu menu">
 !!read themes/_widgets/virtualzone.phtml
 !read themes/_widgets/authlogout.phtml
+!set N_manage=<span class="nova-nom-nova">$nova_ac_admin</span><span class="nova-nom-std">$N_manage</span>
 !read themes/_widgets/manager.phtml
-    </div><!--wimsmenu-->
+    </div>
+    <div class="nova-visiteur-acces">
+!set wims_ref_class=nova-visiteur-acces-eleve
+!set wims_ref_title=$nova_ac_eleve_aide
+!href module=adm/class/classes&type=participant <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg><span>$nova_ac_eleve</span>
+!set wims_ref_class=nova-visiteur-acces-enseignant
+!set wims_ref_title=$nova_ac_enseignant_aide
+!href module=adm/class/classes&type=supervisor <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg><span>$nova_ac_enseignant</span>
+!reset wims_ref_class wims_ref_title
+    </div>
+!read themes/$wims_theme/_widgets/logo-site.phtml nova-logo-barre
   </div>
 !read themes/$wims_theme/_widgets/ariane.phtml
-
   <div id="wimsbodybox">
     <div id="wimspagebox">
       <div class="wimsbody">
+!! Titre << WIMS WWW Interactive Multipurpose Server a ... >> : remplace par la marque de la barre (2026-11-27,
+!! utilisateur) ; cache par accueil.css, sauf reglage << Textes du theme standard >>. Titre pour les lecteurs d'ecran.
+<h1 class="show-for-sr nova-accueil-titre-sr">WIMS $nova_ac_hote</h1>
 !read themes/$wims_theme/_widgets/site_title.phtml
-!! Nova : accueil du site (2026-10-02) : actualité et exemples, puis les deux recherches côte à côte,
-!! puis « Sur ce site ».
+!! Ordre de Pion2 (2026-11-27, utilisateur) : message du site, actualite et exemples (repliables), puis recherche de
+!! classe, recherche de ressource et << Taxonomie et glossaire >> cote a cote, puis << Sur ce site >>.
 !read themes/$wims_theme/_widgets/infos.phtml
 <div class="nova-accueil-recherches">
+!read themes/$wims_theme/_widgets/search_classe.phtml
   <section class="nova-accueil-carte nova-recherche-ressource">
     <h2 class="wims_title">$name_search_all</h2>
 !read ./form.phtml
   </section>
-!read themes/$wims_theme/_widgets/search_classe.phtml
+!if $s_category=V
+  !read themes/$wims_theme/_widgets/taxo-glossaire.phtml
+!endif
 </div>
 !if $s_category=V
   !read themes/$wims_theme/_widgets/front.phtml
 !else
   !read ./result.phtml
 !endif
+!read themes/$wims_theme/_widgets/logo-site.phtml nova-logo-bas
       </div><!--end wimsbody-->
     </div><!--wimspagebox-->
 !distribute items div,div into div0,div1

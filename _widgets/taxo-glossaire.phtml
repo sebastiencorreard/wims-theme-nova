@@ -1,0 +1,49 @@
+!! Nova : carte << Taxonomie et glossaire >> de l'accueil du site (2026-11-27, utilisateur, d'apres la carte du theme
+!! Pion2 de wims.univ-amu.fr). Les zones du glossaire de mathematiques qui ont des fiches dans la langue de la page, en
+!! pastilles (Pion2 : menu deroulant), puis Taxonomie, Parcourir le site et Tous les glossaires. Lu par visitor.phtml.
+!! Variables
+!!   nova_gl_dir   dossier des donnees du glossaire de mathematiques (scripts/data/glossary/mathematics)
+!!   nova_gl_zones zones de ce dossier (algebra, analysis...), une par ligne
+!!   nova_gl_z     zone en cours de la boucle
+!!   nova_gl_l     langues de la zone (sous-dossiers fr, it, macro...)
+!!   nova_gl_nom   nom de la zone dans la langue de la page (bases/sys/domain, sinon le nom du dossier)
+!!   nova_gl_n     nombre de zones affichees
+!set nova_gl_dir=scripts/data/glossary/mathematics
+!set nova_gl_zones=!filelist $nova_gl_dir
+!set nova_gl_zones=!lines2items $nova_gl_zones
+!set nova_gl_n=0
+<section class="nova-accueil-carte nova-accueil-taxo">
+  <h2 class="wims_title">$nova_ac_taxo_titre</h2>
+  !for nova_gl_z in $nova_gl_zones
+    !set nova_gl_l=!filelist $nova_gl_dir/$nova_gl_z
+    !set nova_gl_l=!lines2items $nova_gl_l
+    !if $lang isitemof $nova_gl_l
+      !if $nova_gl_n=0
+        <p class="nova-taxo-sous">$nova_ac_glossaire_maths</p>
+        <ul class="nova-taxo-zones">
+      !endif
+      !increase nova_gl_n
+      !if $nova_gl_z=general
+        !set nova_gl_nom=$nova_ac_general
+      !else
+        !set nova_gl_nom=!lookup $nova_gl_z in bases/sys/domain/domain.$lang
+      !endif
+      !default nova_gl_nom=$nova_gl_z
+      <li>
+      !href module=adm/tool/glossary&cmd=new&gloss_lang=$lang&gloss_domain=mathematics&gloss_zone=$nova_gl_z&pref=OK $nova_gl_nom
+      </li>
+    !endif
+  !next
+  !if $nova_gl_n>0
+    </ul>
+  !endif
+  <p class="nova-taxo-liens">
+  !set wims_ref_class=nova-taxo-taxonomie
+  !href module=adm/browse&job=taxo $nova_ac_taxonomie
+  !set wims_ref_class=nova-taxo-parcourir
+  !href module=adm/browse $nova_ac_parcourir
+  !set wims_ref_class=nova-taxo-glossaires
+  !href module=adm/tool/glossary&cmd=new $nova_ac_glossaires
+  </p>
+</section>
+!reset nova_gl_dir nova_gl_zones nova_gl_z nova_gl_l nova_gl_nom nova_gl_n

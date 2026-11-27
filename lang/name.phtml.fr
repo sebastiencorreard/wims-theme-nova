@@ -7,10 +7,6 @@
 !set nova_menu_aide=Aide et outils
 !set nova_examencours=Examen en cours
 !set nova_examen_court=Examen
-!set nova_explorer=Explorer
-!set nova_taxonomie=Taxonomie
-!set nova_glossaires=Glossaires
-!set nova_parcourir=Parcourir le site
 !set nova_accueil=Accueil
 !set nova_rg_rubrique=Réglages de Nova
 !set nova_sv_titre=Suivi en direct

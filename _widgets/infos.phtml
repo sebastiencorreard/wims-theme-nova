@@ -6,14 +6,26 @@
   <div class="wims_motd">
     !read ./wimshome/log/motd.phtml.$lang
   </div>
+  !! Repliable (2026-11-27, utilisateur, comme << Actualites-Exemples >> de Pion2) : bouton discret au-dessus des cartes ;
+  !! l'etat est garde par le navigateur (localStorage nova-accueil-infos = ferme, ecrit par nova.js accueilVisiteur),
+  !! relu par le script qui suit, avant l'affichage. Titre << Actualite >> au lieu de << Informations >> (reglage
+  !! << Textes du theme standard >> : celui de WIMS). Variable : nova_ac_infos_std, titre de WIMS garde.
   !if $front_nbactu>0 or $front_nbslide>0
+    <details class="nova-accueil-repli" id="nova-accueil-repli" open>
+      <summary>$nova_ac_infos</summary>
+      <script>try { if (localStorage.getItem('nova-accueil-infos') === 'ferme') document.getElementById('nova-accueil-repli').open = false; } catch (e) {}</script>
     <div class="nova-accueil-infos">
     !if $front_nbactu>0
+      !set nova_ac_infos_std=$wims_name_Infos
+      !set wims_name_Infos=<span class="nova-nom-nova">$nova_ac_actualite</span><span class="nova-nom-std">$nova_ac_infos_std</span>
       !read themes/_widgets/news.phtml
+      !set wims_name_Infos=$nova_ac_infos_std
+      !reset nova_ac_infos_std
     !endif
     !if $front_nbslide>0
       !read themes/_widgets/examples.phtml
     !endif
     </div>
+    </details>
   !endif
 !endif

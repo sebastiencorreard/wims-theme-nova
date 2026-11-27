@@ -899,6 +899,58 @@
     fini();
   }
 
+  /* Accueil du site pour un visiteur (2026-11-27, utilisateur, maquette A ; visitor.phtml) : le menu latéral est un tiroir ☰
+   * à toutes les largeurs (cadre.css) ; « À propos de WIMS », la langue (une entrée qui déplie la liste, choixLangue) et
+   * « Administration du site » (icône cadenas) quittent la barre pour le bas du tiroir. Le repli « Actualité et exemples »
+   * (_widgets/infos.phtml) est gardé par le navigateur (localStorage nova-accueil-infos, relu par le script du gabarit avant
+   * l'affichage). Réglage « Menus du thème standard » : la barre reste comme avant. Appelée avant barreCompacte, qui sinon
+   * rangerait ces entrées dans « Plus ». */
+  function accueilVisiteur() {
+    if (!document.documentElement.classList.contains('nova-accueil-visiteur')) return;
+    var repli = document.getElementById('nova-accueil-repli');
+    if (repli) repli.addEventListener('toggle', function () {
+      try { localStorage.setItem('nova-accueil-infos', repli.open ? 'ouvert' : 'ferme'); } catch (e) { /* rien de garde */ }
+    });
+    if (standard('menus')) return;
+    var barre = document.getElementById('wimstopbox'), menu = document.getElementById('wimsmenumodubox');
+    if (!barre || !menu || menu.querySelector('.nova-visiteur-plus')) return;   // déjà fait
+    var groupe = document.createElement('div');
+    groupe.className = 'wimsmenu menu nova-visiteur-plus';
+    var ranger = function (lien, classe) {
+      if (!lien) return;
+      var d = document.createElement('div');
+      d.className = 'menuitem ' + classe;
+      d.appendChild(lien);
+      groupe.appendChild(d);
+    };
+    var apropos = barre.querySelector('.menuitem.aboutw');
+    if (apropos) { ranger(apropos.querySelector('a[href]'), 'aboutw'); apropos.remove(); }
+    var langues = barre.querySelector('#language_selector');
+    if (langues) {
+      var autres = langues.querySelectorAll('#lang_list a[href]');
+      if (autres.length) groupe.appendChild(choixLangue(langues, autres));
+      langues.remove();
+    }
+    var gestion = barre.querySelector('.menuitem.wimsmanager');
+    if (gestion) {
+      var lien = gestion.querySelector('a[href]');
+      if (lien) { lien.classList.remove('wimsmanager'); lien.classList.add('lock'); }
+      ranger(lien, 'nova-admin');
+      gestion.remove();
+    }
+    if (!groupe.children.length) return;
+    // Dans la dernière rubrique (« Site ») : le menu est un accordéon jQuery UI, qui prendrait un bloc ajouté seul pour
+    // un titre de rubrique (enfants pairs).
+    var rubriques = menu.querySelectorAll('.menu_title + .wimsmenu');
+    var derniere = rubriques.length ? rubriques[rubriques.length - 1] : null;
+    if (!derniere) { (menu.querySelector('.modubox_content') || menu).appendChild(groupe); return; }
+    Array.prototype.slice.call(groupe.children).forEach(function (e, i) {
+      e.classList.add('nova-visiteur-plus');
+      if (!i) e.classList.add('nova-visiteur-premier');
+      derniere.appendChild(e);
+    });
+  }
+
   /* Pied de page (demande de l'utilisateur, 2026-10-08) : CGU et Aide (_widgets/footer.phtml, barre .nova-pied au format
    * du pied de page de l'enseignant) rejoignent, sur l'accueil de l'enseignant, sa barre #wimsmenubox.footer. */
   function piedDePage() {

@@ -1185,25 +1185,27 @@ html.nova-js:not(.nova-std-examens) body:has(#wimstopbox .nova-examencours[data-
 html.nova-js #wimsmenumodubox:not(#wimsbodybox > *) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 html.nova-js:not(.nova-profil-pret) body:is(:has(#wimsmenumodubox), :is(.nova-role-eleve *, #nova-specificite)) #wimstopbox li:has(> a.account) { visibility: hidden; animation: nova-revele 0s 3s forwards; }
 /* Élève : plus de colonne à gauche, le menu latéral est le tiroir ☰ à toutes les largeurs (sans JavaScript, la
- * colonne reste). */
+ * colonne reste). Visiteur sur l'accueil du site : de même (2026-11-27, utilisateur, html.nova-accueil-visiteur posée par
+ * visitor.phtml) ; son fil d'Ariane ne laisse plus la place de la colonne. */
 @media (min-width: 1024px) {
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox > #wimsmenumodubox {
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox:has(> #wimsmenumodubox) { display: block; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox > #wimsmenumodubox {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: min(320px, 86vw); max-height: none; min-height: 0; margin: 0;
     overflow-y: auto; z-index: 300; padding-top: var(--nova-e5);
     transform: translateX(-102%); transition: transform .2s ease;
     box-shadow: 0 0 32px rgb(0 0 0 / 25%); visibility: hidden;
   }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimstopbox .nova-menu-bouton { display: inline-flex; }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) > .nova-pied { padding-left: var(--nova-e5); }
-  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsmenumodubox .menuitem { display: block; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite).nova-menu-ouvert #wimsbodybox > #wimsmenumodubox { transform: none; visibility: visible; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite).nova-menu-ouvert::after { content: ""; position: fixed; inset: 0; z-index: 250; background: rgb(0 0 0 / 40%); }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimstopbox .nova-menu-bouton { display: inline-flex; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) > .nova-pied { padding-left: var(--nova-e5); }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsmenumodubox .menuitem { display: block; }
+  html.nova-js:not(.nova-std-menus) body:is(.nova-accueil-visiteur *, #nova-specificite):has(#wimsbodybox > #wimsmenumodubox) .breadcrumbs { padding-left: var(--nova-e5); }
   /* Examen : ce que la barre réserve aux grands écrans est déjà dans le tiroir (section Profil). */
-  body:is(.nova-role-eleve *, #nova-specificite).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
+  body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite).nova-examen-session #wimstopbox .nova-examen-large { display: none !important; }
 }
-@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, #nova-specificite) #wimsbodybox > #wimsmenumodubox { transition: none; } }
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) { html.nova-js:not(.nova-std-menus) body:is(.nova-role-eleve *, .nova-accueil-visiteur *, #nova-specificite) #wimsbodybox > #wimsmenumodubox { transition: none; } }
 
 /* Réglage « Navigation complète pour l'élève » : liens du compte que Nova cache aux élèves (user_links.phtml). */
 html:not(.nova-std-navigation) #user_links > li.nova-lien-complet { display: none; }

@@ -7,10 +7,6 @@
 !set nova_menu_aide=Help and tools
 !set nova_examencours=Exam in progress
 !set nova_examen_court=Exam
-!set nova_explorer=Explore
-!set nova_taxonomie=Taxonomy
-!set nova_glossaires=Glossaries
-!set nova_parcourir=Browse the site
 !set nova_accueil=Home
 !set nova_rg_rubrique=Nova settings
 !set nova_sv_titre=Live monitoring

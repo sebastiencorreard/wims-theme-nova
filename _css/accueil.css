@@ -1,7 +1,8 @@
-/* Nova — accueil du site (visitor.phtml, _widgets/front.phtml, _widgets/search_classe.phtml).
- * Disposition B, choisie par l'utilisateur le 2026-10-02 : les deux recherches côte à côte, puis
- * l'actualité et les exemples côte à côte (widgets de WIMS : _widgets/news.phtml, examples.phtml,
- * carrousel Nova), puis « Sur ce site » et une ligne Explorer. Une colonne au téléphone. */
+/* Nova — accueil du site (visitor.phtml, _widgets/front.phtml, _widgets/search_classe.phtml, _widgets/taxo-glossaire.phtml).
+ * Disposition B, choisie par l'utilisateur le 2026-10-02, revue le 2026-11-27 (ordre du thème Pion2 de wims.univ-amu.fr) :
+ * l'actualité et les exemples côte à côte (widgets de WIMS : _widgets/news.phtml, examples.phtml, carrousel Nova),
+ * repliables ; puis recherche de classe, recherche de ressource et « Taxonomie et glossaire » ; puis « Sur ce site ».
+ * Une colonne au téléphone. Barre du visiteur (marque, boutons Élève et Enseignant, logo de l'établissement) : fin du fichier. */
 
 #wimsfrontpage #wims_title .wims_title { font-size: clamp(1.375rem, 4vw, 2rem); line-height: 1.2; }
 
@@ -198,15 +199,131 @@
   #exemples .nova-carrousel:has(.nova-car-piste) { padding: 0 40px; }   /* flèches de 32 px + marge */
 }
 
-/* Sur ce site : sans les bandes grises ; Explorer en ligne de liens. */
+/* Sur ce site : sans les bandes grises. */
 .nova-accueil-site .wims_home_list { margin: 0; padding: 0 0 0 1.1em; }
 .nova-accueil-site .wims_home_list > li { padding: var(--nova-e1) 0; background: none; }
-.nova-accueil-explorer {
+
+/* Titre « WIMS WWW Interactive Multipurpose Server à … » : remplacé par la marque de la barre (2026-11-27, utilisateur) ;
+ * réglage « Textes du thème standard » : le titre de WIMS revient, le titre pour lecteurs d'écran s'efface. */
+html:not(.nova-std-textes) #wimsfrontpage #wims_title { display: none; }
+html.nova-std-textes .nova-accueil-titre-sr { display: none; }
+
+/* Actualité et exemples repliables (2026-11-27, utilisateur : « bouton discret ») : une ligne de texte gris à droite,
+ * au-dessus des cartes, chevron qui tourne ; fermé, il reste seul. État gardé par nova.js accueilVisiteur. */
+.wimsbody details.nova-accueil-repli { margin: 0 0 var(--nova-e4); padding: 0; border: 0; background: none; box-shadow: none; }
+.nova-accueil-repli > .nova-accueil-infos { margin: 0; }
+.nova-accueil-repli > summary {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--nova-e2) var(--nova-e4);
-  margin: var(--nova-e4) 0 0;
+  align-items: center;
+  gap: var(--nova-e1);
+  width: fit-content;
+  margin: 0 0 var(--nova-e2) auto;
+  padding: 2px var(--nova-e2);
+  border-radius: var(--nova-rayon-petit);
   font-size: var(--nova-petit);
+  color: var(--nova-texte-2);
+  cursor: pointer;
+  list-style: none;
 }
-.nova-accueil-explorer > span { font-weight: 700; color: var(--nova-texte-2); }
+.nova-accueil-repli > summary::-webkit-details-marker { display: none; }
+.nova-accueil-repli > summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin: 0 2px 3px 4px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+.nova-accueil-repli[open] > summary::after { transform: rotate(-135deg); margin-bottom: -2px; }
+.nova-accueil-repli > summary:hover { color: var(--nova-texte); background: var(--nova-accent-doux); }
+.nova-accueil-repli > summary:focus-visible { outline: 2px solid var(--nova-accent); outline-offset: 2px; }
+.nova-accueil-repli:not([open]) > summary { margin-bottom: 0; }
+
+/* Taxonomie et glossaire (2026-11-27, utilisateur, d'après Pion2) : zones du glossaire de mathématiques en pastilles,
+ * puis Taxonomie, Parcourir le site, Tous les glossaires. */
+.nova-taxo-sous {
+  margin: 0 0 var(--nova-e2);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--nova-texte-2);
+}
+.nova-taxo-zones { display: flex; flex-wrap: wrap; gap: var(--nova-e2); margin: 0 0 var(--nova-e3); padding: 0; list-style: none; }
+.nova-taxo-zones > li { margin: 0; padding: 0; background: none; }
+.nova-taxo-zones a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 0 var(--nova-e3);
+  border: 1px solid var(--nova-lien);
+  border-radius: 999px;
+  color: var(--nova-lien);
+  font-size: var(--nova-petit);
+  font-weight: 600;
+  text-decoration: none;
+}
+.nova-taxo-zones a:hover { background: var(--nova-accent-doux); }
+.nova-taxo-liens { display: flex; flex-wrap: wrap; gap: var(--nova-e2) var(--nova-e4); margin: 0; font-size: var(--nova-petit); }
+
+/* Barre du visiteur (2026-11-27, utilisateur, maquette A ; visitor.phtml) : ☰, marque WIMS et nom du serveur à gauche ;
+ * « Élève » (plein) et « Enseignant » (contour) à droite, puis le logo de l'établissement sur une pastille blanche (logo
+ * sombre, comme celui d'AMU). Téléphone : logo WIMS seul, logo de l'établissement en bas de page. « À propos », la langue et
+ * l'administration vont dans le tiroir (nova.js accueilVisiteur) : masqués avant son passage. Réglage « Menus du thème
+ * standard » : ces entrées restent dans la barre, sans les deux boutons, logo à gauche. */
+#wimstopbox > a.nova-marque {
+  gap: var(--nova-e2);
+  margin-right: auto;
+  padding: 0 var(--nova-e2);
+  font-size: 1.25rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+#wimstopbox > a.nova-marque img { flex: none; width: 32px; height: 32px; }
+#wimstopbox .nova-marque-hote { font-size: .875rem; font-weight: 400; opacity: .85; }
+#wimstopbox > .nova-visiteur-acces { display: flex; flex: none; flex-direction: row; align-items: center; gap: var(--nova-e2); }
+#wimstopbox .nova-visiteur-acces > a {
+  gap: var(--nova-e2);
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--nova-e4);
+  border: 2px solid rgb(255 255 255 / 80%);
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+#wimstopbox .nova-visiteur-acces > a.nova-visiteur-acces-eleve { border-color: var(--nova-sur-accent); background: var(--nova-sur-accent); color: var(--nova-accent); }
+#wimstopbox .nova-visiteur-acces > a.nova-visiteur-acces-eleve:hover,
+#wimstopbox .nova-visiteur-acces > a.nova-visiteur-acces-eleve:focus-visible { background: color-mix(in oklab, var(--nova-sur-accent) 88%, var(--nova-accent)); color: var(--nova-accent); }
+#wimstopbox .nova-visiteur-acces > a svg { flex: none; }
+.nova-logo-site { display: inline-flex; flex: none; align-items: center; box-sizing: border-box; padding: 4px var(--nova-e2); border-radius: var(--nova-rayon-petit); background: #fff; }
+.nova-logo-site img { display: block; width: auto; max-width: 160px; height: auto; max-height: 36px; }
+#wimstopbox a.nova-logo-site, #wimstopbox a.nova-logo-site:hover { min-height: 0; padding: 4px var(--nova-e2); background: #fff; }
+.nova-logo-bas { display: none; }
+html.nova-js.nova-accueil-visiteur:not(.nova-std-menus) #wimstopbox :is(li.aboutw, #language_selector, .menuitem.wimsmanager) { display: none; }
+html.nova-std-menus #wimstopbox > .nova-visiteur-acces { display: none; }
+html.nova-std-menus #wimstopbox > .nova-logo-barre { order: -1; }
+@media (max-width: 767.98px) {
+  #wimstopbox .nova-marque-hote { display: none; }
+}
+@media (max-width: 639.98px) {
+  #wimstopbox { padding: 0 var(--nova-e2); }
+  #wimstopbox > a.nova-marque { padding: 0 var(--nova-e1); }
+  #wimstopbox .nova-marque-nom { display: none; }
+  #wimstopbox .nova-visiteur-acces > a { min-height: 36px; padding: 0 var(--nova-e3); }
+  #wimstopbox .nova-visiteur-acces > a svg { display: none; }
+  #wimstopbox > .nova-logo-barre { display: none; }
+  .nova-logo-bas { display: flex; width: fit-content; margin: var(--nova-e4) auto 0; }
+}
+
+/* Fin de la rubrique « Site » du tiroir du visiteur (nova.js accueilVisiteur) : « À propos de WIMS », langue, puis
+ * « Administration du site » (cadenas : mot de passe du gestionnaire), à part et en gris. */
+#wimsmenumodubox .nova-visiteur-plus.nova-visiteur-premier { margin-top: var(--nova-e2); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
+#wimsmenumodubox .nova-visiteur-plus.nova-admin { margin-top: var(--nova-e2); padding-top: var(--nova-e2); border-top: 1px solid var(--nova-bord); }
+#wimsmenumodubox .nova-visiteur-plus.nova-admin > a { color: var(--nova-texte-2); }
+/* Logo de l'établissement que WIMS remet en pied de page (themes/_widgets/tailbox.phtml) : déjà dans la barre (ou en bas
+ * de page au téléphone). Réglage « Menus du thème standard » : celui de WIMS, pas celui du bas de page de Nova. */
+html:not(.nova-std-menus).nova-accueil-visiteur #wimstailbox .institution_logo { display: none; }
+html.nova-std-menus .nova-logo-bas { display: none !important; }

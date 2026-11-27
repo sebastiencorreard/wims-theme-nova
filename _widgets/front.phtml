@@ -1,10 +1,6 @@
 !! Nova : contenu de l'accueil du site (d'après modules/home/front.phtml, disposition B du 2026-10-02).
-!! « Sur ce site » (log/front.phtml.$lang du gestionnaire, sinon le texte de WIMS) et une ligne
-!! Explorer. Le message du site, l'actualité et les exemples sont en tête : _widgets/infos.phtml.
-!default nova_explorer=Explore
-!default nova_taxonomie=Taxonomy
-!default nova_glossaires=Glossaries
-!default nova_parcourir=Browse the site
+!! « Sur ce site » (log/front.phtml.$lang du gestionnaire, sinon le texte de WIMS). La ligne Explorer
+!! est devenue la carte « Taxonomie et glossaire » (2026-11-27, _widgets/taxo-glossaire.phtml). Le message du site, l'actualité et les exemples sont en tête : _widgets/infos.phtml.
 !if $wims_user=$empty
   <div class="wims_frontpage nova-accueil-site">
     !readproc wimshome/log/front.phtml.$lang
@@ -15,10 +11,5 @@
     !else
       !read wimshome/log/front.phtml.$lang
     !endif
-    <p class="nova-accueil-explorer"><span>$nova_explorer</span>
-    !href module=adm/browse&job=taxo $nova_taxonomie
-    !href module=adm/tool/glossary&cmd=new $nova_glossaires
-    !href module=adm/browse $nova_parcourir
-    </p>
   </div>
 !endif

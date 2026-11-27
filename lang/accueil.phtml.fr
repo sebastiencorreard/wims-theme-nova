@@ -1,0 +1,17 @@
+!! Nova : textes (fr) de l'accueil du site pour un visiteur (visitor.phtml, _widgets/infos.phtml, _widgets/taxo-glossaire.phtml).
+!! Lus seulement par visitor.phtml (2026-11-27) : pas dans name.phtml, lu sur chaque page.
+!! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!set nova_ac_eleve=Élève
+!set nova_ac_enseignant=Enseignant
+!set nova_ac_eleve_aide=Entrer dans ma classe
+!set nova_ac_enseignant_aide=Gérer mes classes ou en créer une
+!set nova_ac_admin=Administration du site
+!set nova_ac_actualite=Actualité
+!set nova_ac_infos=Actualité et exemples
+!set nova_ac_taxo_titre=Taxonomie et glossaire
+!set nova_ac_glossaire_maths=Glossaire de mathématiques
+!set nova_ac_general=Général
+!set nova_ac_glossaires=Tous les glossaires
+!set nova_ac_logo=Logo de l'établissement
+!set nova_ac_taxonomie=Taxonomie
+!set nova_ac_parcourir=Parcourir le site

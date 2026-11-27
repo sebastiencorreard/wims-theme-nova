@@ -16,9 +16,5 @@
 !set nova_menu_simplifier=Menu vereenvoudigen
 !set nova_examen_a_terminer=Proefwerk afsluiten
 !set nova_examen_a_terminer_court=Afsluiten
-!set nova_explorer=Verkennen
-!set nova_taxonomie=Taxonomie
-!set nova_glossaires=Woordenlijsten
-!set nova_parcourir=Site doorbladeren
 !set nova_accueil=Start
 !! Carrousel des exemples de l'accueil (js/nova.js, carrousel)

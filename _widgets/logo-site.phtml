@@ -1,0 +1,11 @@
+!! Nova : logo de l'etablissement sur l'accueil du site (2026-11-27, utilisateur) : $site_logo et $site_logolink de la
+!! configuration du site (comme themes/_widgets/institution_logo.phtml de WIMS ; a AMU, logo pose par le theme Pion2).
+!! Lu deux fois par visitor.phtml, avec la classe du bloc en parametre : nova-logo-barre (a droite de la barre, ecran
+!! large) et nova-logo-bas (en bas de la page, telephone ; accueil.css choisit). Rien si le site n'a pas de logo.
+!if $site_logo!=$empty
+  !if $site_logolink!=$empty
+<a class="nova-logo-site $wims_read_parm" href="$site_logolink" target="wims_external"><img src="$site_logo" alt="$nova_ac_logo"></a>
+  !else
+<span class="nova-logo-site $wims_read_parm"><img src="$site_logo" alt="$nova_ac_logo"></span>
+  !endif
+!endif

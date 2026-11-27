@@ -1,0 +1,7 @@
+!! Nova : textes (nl) de l'accueil du site pour un visiteur (visitor.phtml, _widgets/infos.phtml, _widgets/taxo-glossaire.phtml).
+!! Lus seulement par visitor.phtml (2026-11-27) : pas dans name.phtml, lu sur chaque page.
+!! Encodage latin-1 : WIMS sert ses pages en windows-1252.
+!! Textes anglais (repli : jamais de texte vide).
+!read themes/$wims_theme/lang/accueil.phtml.en
+!set nova_ac_taxonomie=Taxonomie
+!set nova_ac_parcourir=Site doorbladeren

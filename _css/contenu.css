@@ -287,6 +287,13 @@
 :where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > div.nova-echeance {
   order: 0; flex: 0 0 auto; align-self: flex-start; margin: 0 0 0 auto; text-align: right;
 }
+/* Toujours en haut à droite, comme la note (utilisateur, 2026-11-27) : le titre lui laisse la place (base 0) ;
+ * au téléphone, sur la première ligne avec le numéro, le titre en entier dessous. */
+:where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item):has(> div.nova-echeance) > :is(a:first-of-type, span.wims_user_sheet_title, span.wims_user_exam_desc) { flex-basis: 0; }
+@media (max-width: 640px) {
+  :where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item) > div.nova-echeance { order: -1; }
+  :where(html:not(.nova-std-listes)) li:is(.wims_sheet_item, .wims_exam_item):has(> div.nova-echeance) > :is(a:first-of-type, span.wims_user_sheet_title, span.wims_user_exam_desc) { flex: 1 1 100%; }
+}
 .nova-echeance > span {
   display: inline-flex; align-items: center; gap: .35em; padding: 3px 12px; border-radius: 999px;
   font-size: var(--nova-petit); font-weight: 600; white-space: nowrap;

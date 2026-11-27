@@ -80,7 +80,7 @@
       if (!etat) { if (tr.textContent.trim()) inconnues++; return; }
       var reponseEleve = m[1] === 'ind' && tr.children.length >= 3;
       if (m[1] === 'cond') conditions++;
-      lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(),
+      lignes.push({ etat: etat, nom: tr.children[0].textContent.replace(/[\s:=]+$/, '').trim(), nomEl: tr.children[0],
         condition: m[1] === 'cond', eleve: reponseEleve ? tr.children[1] : null, juste: reponseEleve ? tr.children[2].querySelector('div.inline.tt') : null, champs: [] });
     });
     // Lignes sans état (« voir l'analyse », renvois) : sans conséquence s'il y a des conditions, qui donnent
@@ -187,6 +187,17 @@
     var titre = document.createElement('p');
     titre.className = 'nova-verdict-titre';
     corps.appendChild(titre);
+    // Nom d'une ligne : une formule (MathML, MathJax) est deplacee telle quelle, sans le « = » final (H4/math/quizzautomat
+    // courseop, signale par l'utilisateur le 2026-11-27 : « 3 x 35 » pour 3 x 3/5, barre de fraction perdue en texte).
+    var nomVers = function (el, ligne) {
+      var source = ligne.nomEl;
+      if (!source || !source.querySelector('.wims_mathml, math, mjx-container')) { el.appendChild(document.createTextNode(ligne.nom)); return; }
+      var dernier = function () { var n = source.lastChild; while (n && n.nodeType === 3 && !n.nodeValue.trim()) { var p = n.previousSibling; source.removeChild(n); n = p; } return n; };
+      var n = dernier();
+      if (n && n.nodeType === 3) n.nodeValue = n.nodeValue.replace(/[\s:=]+$/, '');
+      else if (n && n.nodeType === 1 && /^[\s=:]*$/.test(n.textContent) && n.textContent.trim()) source.removeChild(n);
+      while (source.firstChild) el.appendChild(source.firstChild);
+    };
     var libelle = function (etat) {
       return etat === 'mauvaise' ? texte('mauvaise', 'Wrong answer') : etat === 'partielle' ? texte('partielle', 'Partly correct answer')
         : etat === 'precision' ? texte('precision', 'Not precise enough') : texte('bonne', 'Correct answer');
@@ -237,7 +248,11 @@
       table.className = 'nova-verdict-tableau';
       // Conditions de l'auteur seulement (« 25 : OUI », H1/number/OEFevalwimsope decomp ; signalé par l'utilisateur,
       // 2026-11-12) : ni réponse de l'élève ni bonne réponse à montrer ; deux colonnes, nom et pastille, sans en-tête.
-      var sansReponses = lignes.every(function (l) { return l.condition; });
+      // Idem quand WIMS ne montre aucune reponse, ni de l'eleve ni la bonne (option noanalyzeprint de l'auteur, quizzautomat
+      // courseop, 2026-11-27 : colonne de cadres vides) : nom et pastille ; une reponse placee dans l'enonce y reste marquee.
+      var sansReponses = lignes.every(function (l) { return l.condition; }) || lignes.every(function (l) {
+        return !l.condition && !(l.eleve && reponseDonnee(l.eleve)) && !l.juste && !l.resume;
+      });
       var entete = sansReponses ? null : table.createTHead().insertRow();
       if (entete) [['', 'num'], [texte('votre-reponse', 'Your answer:').replace(/\s*:\s*$/, ''), 'eleve'], [texte('bonne', 'Correct answer'), 'bonne']].forEach(function (c) {
         var th = document.createElement('th');
@@ -259,10 +274,11 @@
         var num = document.createElement('th');
         num.scope = 'row';
         num.className = 'nova-verdict-num';
-        num.textContent = !ligne.nom ? '' : !ligne.condition && /^\d+$/.test(ligne.nom) ? '[' + ligne.nom + ']' : ligne.nom;
+        if (ligne.nom && !ligne.condition && /^\d+$/.test(ligne.nom)) num.textContent = '[' + ligne.nom + ']';
+        else if (ligne.nom) nomVers(num, ligne);
         tr.appendChild(num);
         var celEleve = tr.insertCell();
-        if (ligne.condition) {
+        if (ligne.condition || sansReponses) {
           // Condition (OUI / NON) : pastille ✓ ou ✕ dans la colonne « Bonne réponse » (seule colonne sans réponse).
           var marque = document.createElement('span');
           marque.className = ligne.etat === 'bonne' ? 'nova-verdict-coche' : 'nova-verdict-croix';
@@ -320,7 +336,7 @@
         if (ligne.etat === 'bonne') return;
         var li = document.createElement('li');
         // Le titre dit déjà « Mauvaise réponse » : « [k] : la bonne réponse était X » suffit.
-        li.textContent = ligne.nom ? ligne.nom + ' : ' : '';
+        if (ligne.nom) { nomVers(li, ligne); li.appendChild(document.createTextNode(' : ')); }
         if (ligne.etat === 'mauvaise' && ligne.juste) {
           li.appendChild(document.createTextNode(texte('bonne-etait', 'the correct answer was') + ' '));
           ligne.juste.classList.add('nova-verdict-juste');

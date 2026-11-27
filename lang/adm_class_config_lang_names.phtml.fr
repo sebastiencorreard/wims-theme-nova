@@ -1,0 +1,2 @@
+!! Nova : correctif de WIMS (restauration d'une classe qui recoit des ressources en partage) : _procs/restauration-partage.proc.
+!read themes/$wims_theme/_procs/restauration-partage.proc

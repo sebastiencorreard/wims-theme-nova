@@ -1319,3 +1319,11 @@ button.nova-pp-marque:hover, button.nova-pp-marque:focus-visible { outline: 2px 
 .wimsbody .nova-logo-adresse > input#pr_logo { width: 100%; box-sizing: border-box; }
 .wimsbody .nova-logo-apercu { flex: none; display: inline-block; width: 36px; height: 36px; margin-left: 4px; background: var(--nova-accent);
   -webkit-mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat; mask: url("img/wims_logo_v4_accent_fin.svg") center / contain no-repeat; }
+
+/* Avertissement de la restauration d'un cours en partage (_widgets/restauration-partage.phtml, 2026-11-27, utilisateur). */
+.wimsbody .nova-restauration-partage { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--nova-e3); text-align: left; }
+.wimsbody .nova-restauration-partage::before { grid-column: 1; grid-row: 1 / span 9; }
+.wimsbody .nova-restauration-partage > * { grid-column: 2; }
+.wimsbody .nova-restauration-partage > p { margin: 0 0 var(--nova-e2); }
+.wimsbody .nova-restauration-partage > ol { margin: 0; padding-left: 1.5em; }
+.wimsbody .nova-restauration-partage > ol > li { margin: 2px 0; }

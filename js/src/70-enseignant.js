@@ -1335,6 +1335,17 @@
    * titre à gauche, « occupé sur total (p %) » à droite, jauge fine (la barre de WIMS, restylée par le CSS), légende à
    * pastilles ; au-delà de 80 % occupés (utilisé + réservé), orange et message. Nombres lus dans le texte de WIMS
    * (titre « … (150 Mo) », légende « Utilisé: 1Mo ») : s'il ne se lit pas, rien ne change. Réglage standard « listes ». */
+  // Sauvegarde et restauration d'un cours qui recoit des ressources en partage (2026-11-27, utilisateur) : l'avertissement
+  // ecrit par _widgets/restauration-partage.phtml (en tete de page) passe juste au-dessus du formulaire de restauration
+  // (envoi de l'archive, puis choix des ressources). Sans nova.js : en tete de page.
+  function restaurationPartage() {
+    var avis = document.getElementById('nova-restauration-partage');
+    if (!avis) return;
+    var champ = document.querySelector('.wimsbody input[name="job2"][value="upload"], .wimsbody input[name="job2"][value="restore"], .wimsbody input[name="selection"]');
+    var cadre = champ && (champ.closest('fieldset') || champ.form);
+    if (cadre && cadre.parentNode) cadre.parentNode.insertBefore(avis, cadre);
+  }
+
   function capaciteClasse() {
     var q = document.querySelector('.wims_quotafree');
     var tx = document.getElementById('nova-capacite-textes');

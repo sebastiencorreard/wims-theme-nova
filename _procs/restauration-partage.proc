@@ -1,0 +1,37 @@
+!! Nova : correctif de WIMS 4.32 pour la restauration d'une sauvegarde dans une classe qui RECOIT des ressources en partage
+!! (cours d'un programme de portail, classe en partage ; 2026-11-27, utilisateur). Lu par lang/adm_class_config_lang_names.phtml.*,
+!! que scripts/adm/class/classlang lit apres les textes du module, AVANT le traitement (var.proc, puis arch/restore.proc).
+!! Defauts de WIMS : restore.proc retire les ressources partagees de la selection par une boucle sur $sharelist, jamais definie
+!! et fermee par !endif au lieu de !next ; puis les dependances (arch/recdep) en rajoutent (seq -> sheet, exam...). Avec la case
+!! << Tout >>, les liens du partage (sheets, exams, doc, vote) etaient remplaces par des copies figees : le cours ne recevait
+!! plus rien du programme (vecu : portail de l'utilisateur, cours 3e1, 2026-11-19 ; reproduit au banc le 2026-11-27).
+!! Ici : la selection perd chaque ressource recue en partage (sharing_<r> de neighbors) et celles qui en dependent.
+!! sharelist (liste de scripts/adm/class/stopshare) sert aussi a clean.proc (nettoyage selectif), qui ne la definit pas.
+!! Variables
+!!   sharelist    ressources partageables (variable attendue par WIMS)
+!!   nova_rp_sel  selection filtree, << all >> developpe comme restore.proc (reclist sans def ni sup)
+!!   nova_rp_k    ressource parcourue ; nova_rp_v  sa zone d'origine dans neighbors
+!set sharelist=exo,sheet,exam,vote,doc,forum,user,motd,sup,cdt,livret,seq,userphoto,tool,freework
+!if $job=arch and $job2=restore and $selection!=$empty
+  !set nova_rp_sel=!replace item all by user,exo,sheet,exam,doc,neighbor,log,forum,score,manual,cdt,vote,livret,seq,motd,userphoto,tool,freework in $selection
+  !for nova_rp_k in $sharelist
+    !set nova_rp_v=!defof sharing_$nova_rp_k in wimshome/log/classes/$wims_class/neighbors
+    !if $nova_rp_v!=$empty
+      !set nova_rp_sel=!listcomplement $nova_rp_k in $nova_rp_sel
+      !if $nova_rp_k=exo
+        !set nova_rp_sel=!listcomplement exam,freework,livret,seq,sheet in $nova_rp_sel
+      !endif
+      !if $nova_rp_k=sheet
+        !set nova_rp_sel=!listcomplement exam,livret,seq in $nova_rp_sel
+      !endif
+      !if $nova_rp_k isitemof doc,tool
+        !set nova_rp_sel=!listcomplement seq,sheet in $nova_rp_sel
+      !endif
+      !if $nova_rp_k isitemof exam,vote
+        !set nova_rp_sel=!listcomplement seq in $nova_rp_sel
+      !endif
+    !endif
+  !next nova_rp_k
+  !set selection=$nova_rp_sel
+  !reset nova_rp_sel nova_rp_k nova_rp_v
+!endif

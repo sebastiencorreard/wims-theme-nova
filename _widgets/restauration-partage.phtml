@@ -1,0 +1,23 @@
+!! Nova : avertissement sur la page Sauvegarde et restauration d'un cours (ou d'une classe) qui RECOIT des ressources en
+!! partage (2026-11-27, utilisateur) : les enjeux, et comment restaurer dans le programme pour tout le niveau. Lu par
+!! header.phtml (adm/class/config, job=arch, etapes first et upload). Texte en clair : lang/enseignant-textes.phtml.<lang>
+!! (restauration_partage), place par nova.js restaurationPartage au-dessus du formulaire. Correctif de WIMS qui retire ces
+!! ressources de la restauration : lang/adm_class_config_lang_names.phtml.<lang> (sharelist).
+!! Variables
+!!   nova_rp_src  zone qui partage (sharing_sheet, sinon exam, doc, exo, vote de neighbors), filtree
+!!   nova_rp_nom  son nom (class_description), lu dans le texte
+!!   nova_rp_k    ressource parcourue
+!reset nova_rp_src
+!for nova_rp_k in sheet,exam,doc,exo,vote
+  !if $nova_rp_src=$empty
+    !set nova_rp_src=!defof sharing_$nova_rp_k in wimshome/log/classes/$wims_class/neighbors
+  !endif
+!next nova_rp_k
+!if $nova_rp_src!=$empty
+  !set nova_rp_src=!item 1 of $nova_rp_src
+  !set nova_rp_src=!text select 0123456789/ in $nova_rp_src
+  !set nova_rp_nom=!defof class_description in wimshome/log/classes/$nova_rp_src/.def
+  !default nova_rp_nom=$nova_rp_src
+  !read themes/$wims_theme/lang/enseignant-textes.phtml.$lang restauration_partage
+!endif
+!reset nova_rp_src nova_rp_nom nova_rp_k

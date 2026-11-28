@@ -758,6 +758,7 @@ reconnaître l'état d'une case par sa couleur posée par Dynapi, sans l'effacer
 #table(columns: (1fr, 1.6fr), align: left,
   [Ce qui est en cause], [Fonction de `50-exercice.js`, réglage],
   [le verdict de la page de réponse (bandeau juste / faux, note)], [`alignerVerdict`, `noteSeule` ; réglage `reponse`],
+  [le bouton « Voir ma note » sous le verdict, en examen (note de l'exercice déplacée, cachée jusqu'au clic)], [`noteExamen`, session `_exam` seulement ; réglage `reponse`],
   [la réponse de l'élève réaffichée dans l'énoncé (cadre, pastille)], [`retourReponse` ; réglage `reponse`],
   [le tableau du verdict mêlé (« n réponses justes sur N »)], [`retourReponse` : nom de ligne en formule déplacé tel quel (`nomVers`) ; deux colonnes, nom et pastille, quand WIMS ne montre aucune réponse (conditions seules, option `noanalyzeprint` de l'auteur)],
   [les étoiles d'une bonne réponse], [`etoiles`, `nueeEtoiles`, `poserEtoiles` ; animations (@choix)],

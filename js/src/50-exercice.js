@@ -352,6 +352,7 @@
     }
     reponse.insertBefore(boite, reponse.firstChild);
     reponse.classList.add('nova-retour', 'nova-retour-pret');
+    noteExamen(reponse, boite, texte);
     // Renvois [k] de l'énoncé sans usage (demande de l'utilisateur, 2026-11-12) : le verdict ne les cite pas quand tout est
     // juste ou qu'il n'y a qu'une réponse, et le tableau de WIMS qu'ils désignent est masqué. Masqués (pas retirés).
     if (toutes || lignes.length === 1) {
@@ -360,6 +361,32 @@
       });
     }
     if (toutesFausses) vibrer();
+  }
+
+  // Note de l'exercice en examen (2026-11-28, utilisateur) : le verdict masque .answer_analysis, donc la note de WIMS
+  // (span.oef_modulescore, scripts/oef/answer.phtml) ; en session d'examen, un bouton « Voir ma note » la montre. La note
+  // (et les félicitations, la pénalité de retard) est déplacée sous le verdict, cachée jusqu'au clic. Hors examen : rien.
+  function noteExamen(reponse, boite, texte) {
+    var session = (location.search.match(/[?&]session=([^&]*)/) || [])[1] || '';
+    if (!/_exam/.test(session) && !document.body.classList.contains('nova-examen-session')) return;
+    var note = reponse.querySelector('.answer_analysis .oef_modulescore');
+    if (!note || !note.textContent.trim()) return;
+    var bloc = document.createElement('div');
+    bloc.className = 'nova-note-examen';
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'wims_button wims_secondary_button nova-voir-note';
+    bouton.textContent = texte('voir-note', 'See my score');
+    var cadre = document.createElement('p');
+    cadre.className = 'nova-note-examen-texte';
+    cadre.hidden = true;
+    cadre.setAttribute('aria-live', 'polite');
+    [note].concat(Array.prototype.slice.call(reponse.querySelectorAll('.answer_analysis :is(.oef_congratulations, .oef_penalty)')))
+      .forEach(function (el) { cadre.appendChild(el); cadre.appendChild(document.createTextNode(' ')); });
+    bouton.addEventListener('click', function () { cadre.hidden = false; bouton.hidden = true; });
+    bloc.appendChild(bouton);
+    bloc.appendChild(cadre);
+    boite.parentNode.insertBefore(bloc, boite.nextSibling);
   }
 
   // Verdict que Nova ne sait pas lire (tableau vide : le verdict est dans les commentaires de l'auteur, ex.

@@ -20,6 +20,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - **Séquences et accueil** : les cartes des feuilles, examens et glossaires remplissent la largeur de la séquence, en colonnes égales, avec une marge autour dans la carte de la séquence, et deux cartes côte à côte ont la même hauteur.
 - Accueil d'un groupement ou d'un portail : « S'inscrire dans une zone de travail comme participant » devient un bouton, sous la liste des zones.
 - **Date limite des séquences** : quand l'enseignant programme la fin d'affichage d'une séquence, son titre se termine par « (à faire jusqu'au mardi 8 déc.) », avec l'heure si ce n'est pas 23 h 59, et les cartes de feuille ou d'examen encore sans note portent une pastille : « Jusqu'au mar. 8 déc. » en bleu, « Plus que 3 jours » ou « Plus que 2 jours » en orange, « Dernier jour ! » en rouge.
+- **Examen** : après la réponse à un exercice, un bouton « Voir ma note » affiche la note de l'exercice (elle était masquée).
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants

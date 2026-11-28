@@ -932,6 +932,10 @@ html.nova-js:not(.nova-std-reponse) .oefanswer:not(.nova-retour-pret) .answer_an
   color: var(--nova-erreur);
 }
 .nova-verdict-eleve { margin: 0; color: var(--nova-texte-2); }
+/* Note de l'exercice en examen derriere « Voir ma note » (nova.js noteExamen, 2026-11-28, utilisateur). */
+.nova-note-examen { margin: calc(-1 * var(--nova-e2)) 0 var(--nova-e4); }
+.nova-note-examen-texte { margin: 0; padding: var(--nova-e2) var(--nova-e3); border-radius: var(--nova-rayon-carte); background: var(--nova-surface-2); font-weight: 600; }
+.nova-note-examen-texte[hidden], .nova-voir-note[hidden] { display: none; }
 /* Réponses justes et à revoir mêlées (variante A, utilisateur, 2026-11-12 ; avant : deux colonnes, 2026-10-08) : carte
  * neutre (fond blanc, choix de l'utilisateur), titre « n réponses justes sur N », tableau dans l'ordre des réponses :
  * [k] | votre réponse (cadre vert si juste, rouge si fausse) | bonne réponse (coche si juste). Défile dans son cadre

@@ -1415,3 +1415,20 @@ html.nova-js.nova-role-eleve:not(.nova-feuille-prete, .nova-std-listes) :is(ol.w
 }
 .nova-titre-rangee > :is(#classlogo, .wimslogo) img { width: auto; height: auto; max-height: var(--nova-logo-h, 100px); }
 .nova-titre-rangee > #classlogo img[src$="gifs/logo.gif"] { height: var(--nova-logo-h, 100px); }
+
+/* Mes notes / Détail du travail d'un élève : haut de page allégé (2026-11-28, utilisateur : « maximiser les infos affichées »).
+ * html.nova-nd-page posée par _widgets/notes-detail.phtml (job=getuser). Ligne de la classe gardée pour les lecteurs d'écran ;
+ * bloc nom + identifiant de WIMS masqué (enseignant : nom cliquable dans le titre, nova.js notesDetail) ; marges réduites.
+ * Réglages notes-eleve / notes-enseignant : page de WIMS. */
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve), html.nova-nd-page.nova-role-prof:not(.nova-std-notes-enseignant)) #wims_modu_title1 > .wims_classname {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve)) .wimsbody > div.center:has(> span.small > span.tt),
+:where(html.nova-nd-page.nova-role-prof.nova-js:not(.nova-std-notes-enseignant)) .wimsbody > div.center:has(> span.small > span.tt),
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve), html.nova-nd-page.nova-role-prof.nova-js:not(.nova-std-notes-enseignant)) .wimsbody > div.center:has(> span.small > span.tt) + br.spacer { display: none; }
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve), html.nova-nd-page.nova-role-prof:not(.nova-std-notes-enseignant)) .wimsbody { padding-top: var(--nova-e3); }
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve), html.nova-nd-page.nova-role-prof:not(.nova-std-notes-enseignant)) #wims_modu_title1 > h1.wims_title { margin-bottom: var(--nova-e3); }
+:where(html.nova-nd-page:not(.nova-role-prof, .nova-std-notes-eleve), html.nova-nd-page.nova-role-prof:not(.nova-std-notes-enseignant)) .wimsbody .nova-nd-moyenne { margin-top: 0; }
+.wimsbody h1.wims_title a.nova-nd-nom { color: inherit; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.15em; text-decoration-color: var(--nova-accent); }
+.wimsbody h1.wims_title a.nova-nd-nom:hover { color: var(--nova-accent); }
+.wimsbody h1.wims_title .nova-nd-nom-bloc .nova-en-ligne { vertical-align: middle; margin-left: 0.2em; }

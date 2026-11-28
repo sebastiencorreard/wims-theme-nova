@@ -13,6 +13,9 @@
 !! Variables : nova_nu l'eleve (celui de la session, ou getuser de l'adresse, filtre : lettres, chiffres, _ - . @) ;
 !!   nova_ns mots "examen:sessions commencees:essais permis".
 !if $job=getuser
+!! Haut de page allege (2026-11-28, utilisateur) : html.nova-nd-page (contenu.css) masque la ligne de la classe, le bloc
+!! nom + identifiant de WIMS et les espaces ; nova.js notesDetail met le nom (lien vers la fiche) dans le titre (enseignant).
+<script>document.documentElement.classList.add('nova-nd-page');</script>
   !set nova_nu=$wims_user
   !if $wims_user=supervisor
     !set nova_nu=!text select abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-.@ in $getuser

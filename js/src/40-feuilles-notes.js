@@ -770,6 +770,35 @@
       if (!standard('notes-eleve') && txT && txT.getAttribute('data-titre')) h1.textContent = txT.getAttribute('data-titre');
       h1.setAttribute('data-nova-titre', '');
     }
+    // Nom de l'élève dans le titre, lien vers sa fiche (2026-11-28, utilisateur) : le bloc nom + identifiant de WIMS est
+    // masqué par le CSS (html.nova-nd-page) ; on y reprend le lien (et la pastille « en ligne ») pour le titre.
+    var ndPage = document.documentElement.classList.contains('nova-nd-page');
+    var muP = document.querySelector('meta[name="nova-utilisateur"]');
+    var h1P = document.querySelector('#wims_modu_title1 > h1.wims_title');
+    var nomBloc = document.querySelector('.wimsbody > div.center > span.wims_emph');
+    var nomLien = nomBloc && nomBloc.querySelector('a[href*="job=userprop"]');
+    if (ndPage && h1P && nomLien && muP && muP.content === 'supervisor' && !standard('notes-enseignant') && !h1P.querySelector('.nova-nd-nom')) {
+      var nomTxt = nomLien.textContent.trim();
+      var bloc = document.createElement('span');
+      bloc.className = 'nova-nd-nom-bloc';
+      var lienT = nomLien.cloneNode(true);
+      lienT.className = 'nova-nd-nom';
+      lienT.removeAttribute('title');
+      bloc.appendChild(lienT);
+      var pastille = nomBloc.querySelector('.nova-en-ligne');
+      if (pastille) bloc.appendChild(pastille.cloneNode(true));
+      var place = false;
+      Array.prototype.slice.call(h1P.childNodes).forEach(function (n) {
+        if (place || n.nodeType !== 3) return;
+        var i = n.nodeValue.lastIndexOf(nomTxt);
+        if (i < 0) return;
+        var apres = n.splitText(i);
+        apres.nodeValue = apres.nodeValue.slice(nomTxt.length);
+        h1P.insertBefore(bloc, apres);
+        place = true;
+      });
+      if (!place) { h1P.appendChild(document.createTextNode(' ')); h1P.appendChild(bloc); }
+    }
     var examens = document.getElementById('TABLE_exam');
     var feuilles = document.querySelectorAll('.wimsbody table.wimstable[id^="TABLE_sheet"]:not([data-nova-detail])');
     if (!examens && !feuilles.length) return;

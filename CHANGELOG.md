@@ -7,6 +7,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 ## 1.5 — en préparation
 
 ### Élèves
+- Mes notes : plus de ligne de la classe ni d'identifiant, haut de page resserré (plus de notes à l'écran).
 - Mes notes : « Revoir mes réponses » dans chaque examen passé et bouton « Détail des examens » en tête de la section (quand la classe le permet).
 - Choix de la langue : seulement les langues que Nova traduit en entier (français, anglais, espagnol, italien).
 - Choix de la langue : le code de la langue (FR, EN…) remplace les drapeaux, partout.
@@ -22,6 +23,7 @@ l'enseignant ou le site ne l'active pas (page « Réglages de Nova » de la conf
 - Bouton « [...] » d'une description tronquée (et tous les boutons d'aide) : texte droit et en gras comme les autres boutons de Nova, plus en italique.
 
 ### Enseignants
+- Détail du travail d'un élève : nom de l'élève cliquable dans le titre (ouvre sa fiche) ; lignes de la classe, du nom et de l'identifiant retirées, haut de page resserré.
 - Page Notes : lignes du tableau deux fois moins hautes (notes sur une ligne) ; panneau sans titre, « Moyenne » en entier, bouton « Choix des données » pour le rouvrir.
 - Page Notes : plus de titre ni de ligne de la classe, pilules Notes, Réussite… tout en haut et centrées, aide en une phrase ; « Masquer le menu » en tête du menu de gauche, « Menu » pour le rouvrir.
 - Page Notes : choix des feuilles et examens dans un panneau « Quelles notes ? » à droite, masquable (Tout, Feuilles, Examens, Moyenne, N° | Titre, « Rafraîchir ») ; menu de gauche masquable sur cette page ; préfixe commun des titres retiré des en-têtes.
